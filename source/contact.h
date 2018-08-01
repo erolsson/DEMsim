@@ -88,7 +88,7 @@ namespace DEM{
             p2_(nullptr),
             surface_(s),
             r2_(p->get_radius()),
-            position_divider_(1z),
+            position_divider_(1),
             force_model_(p, s, increment),
             distance_function(&Contact::calculate_distance_vector_surface),
             tangential_function(&Contact::calculate_tangential_vector_surface)
