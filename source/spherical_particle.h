@@ -30,6 +30,7 @@ namespace DEM {
         using ContactPointerType = std::shared_ptr<Contact<ForceModel, SphericalParticle<ForceModel> >>;
 
         using ParticleBase<ForceModel>::id_;
+        using ParticleBase<ForceModel>::material_;
         using ParticleBase<ForceModel>::position_;
         using ParticleBase<ForceModel>::displacement_this_inc_;
         using ParticleBase<ForceModel>::rot_this_inc_;

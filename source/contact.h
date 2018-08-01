@@ -45,13 +45,24 @@ namespace DEM{
         SurfaceType*  const surface_;
 
         double r2_;                       // r2 - distance between particles or particle plane is overlap
-        Vec3 normal_;                     //Contact plane normal, same direction as normal_force_
+        char position_divider_;
+        Vec3 normal_;                     // Contact plane normal, same direction as normal_force_
 
         ForceModel force_model_;
-        bool const particle_contact_;
 
-        Vec3 calculate_distance_vector() const;
-        Vec3 calculate_tangential_displacement_this_inc() const;
+        Vec3 (Contact<ForceModel, ParticleType>::*distance_function)() const;
+        Vec3 (Contact<ForceModel, ParticleType>::*tangential_function)() const;
+        Vec3 (Contact<ForceModel, ParticleType>::*position_function)() const;
+
+        Vec3 calculate_distance_vector() const { return (this->*distance_function)(); }
+        Vec3 calculate_tangential_displacement_this_inc() const { return (this->*tangential_function)(); };
+
+        Vec3 calculate_distance_vector_particle() const;
+        Vec3 calculate_distance_vector_surface() const;
+
+        Vec3 calculate_tangential_vector_particle() const;
+        Vec3 calculate_tangential_vector_surface() const;
+
     };
 
 
@@ -62,8 +73,10 @@ namespace DEM{
             p2_(p2),
             surface_(nullptr),
             r2_(p1->get_radius() + p2->get_radius()),
+            position_divider_(2),
             force_model_(p1, p2, increment),
-            particle_contact_(true)
+            distance_function(&Contact::calculate_distance_vector_particle),
+            tangential_function(&Contact::calculate_tangential_vector_particle)
     {
         normal_ = calculate_distance_vector().normal();
     }
@@ -75,8 +88,10 @@ namespace DEM{
             p2_(nullptr),
             surface_(s),
             r2_(p->get_radius()),
+            position_divider_(1),
             force_model_(p, s, increment),
-            particle_contact_(false)
+            distance_function(&Contact::calculate_distance_vector_surface),
+            tangential_function(&Contact::calculate_tangential_vector_surface)
 
     {
         normal_ = calculate_distance_vector().normal();
@@ -93,39 +108,44 @@ namespace DEM{
         force_model_.update(h, dt);
     }
 
+    template<typename ForceModel, typename ParticleType>
+    Vec3 Contact<ForceModel, ParticleType>::calculate_distance_vector_particle() const
+    {
+        return p1_->get_position() - p2_->get_position();
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    Vec3 Contact<ForceModel, ParticleType>::calculate_distance_vector_surface() const
+    {
+        return surface_->vector_to_point(p1_->get_position());
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    Vec3 Contact<ForceModel, ParticleType>::calculate_tangential_vector_particle() const
+    {
+        Vec3 r1 = -normal_*(p1_->get_radius() - get_overlap()/2);
+        Vec3 u1 = p1_->get_displacement_this_increment() + cross_product(p1_->get_rotation_this_increment(), r1);
+
+        Vec3 r2 = normal_*(p2_->get_radius() - get_overlap()/2);
+        Vec3 u2 = p2_->get_displacement_this_increment() + cross_product(p2_->get_rotation_this_increment(), r2);
+        return (u1 - u2) - dot_product((u1 - u2), normal_)*normal_;
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    Vec3 Contact<ForceModel, ParticleType>::calculate_tangential_vector_surface() const
+    {
+        Vec3 r1 = -normal_*(p1_->get_radius() - get_overlap()/2);
+        Vec3 u1 = p1_->get_displacement_this_increment() + cross_product(p1_->get_rotation_this_increment(), r1);
+
+        return u1 - dot_product(u1, normal_)*normal_;
+    }
 
     template<typename ForceModel, typename ParticleType>
     Vec3 Contact<ForceModel, ParticleType>::position() const
     {
-        return Vec3();
+        return p1_->get_position - normal_*(p1_->get_radius() - get_overlap()/position_divider_);
     }
 
-
-    template<typename ForceModel, typename ParticleType>
-    Vec3 Contact<ForceModel, ParticleType>::calculate_distance_vector() const
-    {
-        if (particle_contact_)
-            return p1_->get_position() - p2_->get_position();
-        else if ( surface_ !=nullptr)
-            return surface_->vector_to_point(p1_->get_position());
-    }
-
-
-    template<typename ForceModel, typename ParticleType>
-    Vec3 Contact<ForceModel, ParticleType>::calculate_tangential_displacement_this_inc() const
-    {
-        Vec3 r1 = -normal_*(p1_->get_radius() - get_overlap()/2);
-        Vec3 u1 = p1_->get_displacement_this_increment() + cross_product(p1_->get_rotation_this_increment(), r1);
-        Vec3 u2 = Vec3(0., 0. , 0.);
-        if (particle_contact_) {
-            Vec3 r2 = normal_*(p2_->get_radius() - get_overlap()/2);
-            u2 = p2_->get_displacement_this_increment() + cross_product(p2_->get_rotation_this_increment(), r2);
-        }
-        else if (surface_ !=nullptr) {
-            u2 = surface_->displacement_this_inc(position());
-        }
-        return (u1 - u2) - dot_product((u1 - u2), normal_)*normal_;
-    }
 
 }
 
