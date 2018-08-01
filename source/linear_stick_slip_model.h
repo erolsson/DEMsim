@@ -8,8 +8,6 @@
 #include "vec3.h"
 #include "spherical_particle.h"
 #include "surface.h"
-#include "edge.h"
-
 namespace DEM {
     class LinearStickSlipModel {
         using ParticleType = SphericalParticle<LinearStickSlipModel>;
@@ -18,7 +16,6 @@ namespace DEM {
     public:
         LinearStickSlipModel(ParticleType*, ParticleType*, double);
         LinearStickSlipModel(ParticleType*, SurfaceType*, double);
-        LinearStickSlipModel(ParticleType*, Edge*, double);
 
         void update(double h, const Vec3& dt);
 

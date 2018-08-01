@@ -18,7 +18,6 @@ add_executable(DEMsim
         source/contact.h
         source/surface.h
         source/contact_vector.h
-        source/edge.h
-        source/edge.cpp source/particle_base.h source/linear_stick_slip_model.cpp source/linear_stick_slip_model.h source/material_base.h source/material_base.h source/collision_detector.h source/bounding_box.h source/bounding_box_projection.cpp source/bounding_box_projection.h)
+        source/particle_base.h source/linear_stick_slip_model.cpp source/linear_stick_slip_model.h source/material_base.h source/material_base.h source/collision_detector.h source/bounding_box.h source/bounding_box_projection.cpp source/bounding_box_projection.h)
 
 target_link_libraries (DEMsim Eigen3::Eigen)

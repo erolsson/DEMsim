@@ -8,11 +8,9 @@
 #include <memory>
 
 #include "surface.h"
-#include "edge.h"
 
 
 namespace DEM{
-    class Edge;
     template<typename ForceModel, typename ParticleType> class Surface;
 
     template<typename ForceModel, typename ParticleType>
@@ -24,7 +22,6 @@ namespace DEM{
         //Constructors
         Contact(ParticleType*, ParticleType*, double);
         Contact(ParticleType*, SurfaceType*,  double);
-        Contact(ParticleType*, Edge*,     double);
         ~Contact() = default;                        //No dynamic allocated memory
 
         void update();
@@ -36,7 +33,6 @@ namespace DEM{
 
         std::pair<ParticleType*, ParticleType*> get_particles() const  { return std::make_pair(p1_, p2_); }
         const SurfaceType* get_surface() const { return surface_; }
-        const Edge* get_edge() const { return edge_; }
 
         bool active() const { return force_model_.acitve();  }
         double get_overlap() const { return force_model_.get_overlap(); }
@@ -47,7 +43,6 @@ namespace DEM{
         ParticleType* const p1_;
         ParticleType* const p2_;
         SurfaceType*  const surface_;
-        Edge*         const edge_;
 
         double r2_;                       // r2 - distance between particles or particle plane is overlap
         Vec3 normal_;                     //Contact plane normal, same direction as normal_force_
@@ -66,7 +61,6 @@ namespace DEM{
             p1_(p1),
             p2_(p2),
             surface_(nullptr),
-            edge_(nullptr),
             r2_(p1->get_radius() + p2->get_radius()),
             force_model_(p1, p2, increment),
             particle_contact_(true)
@@ -80,24 +74,8 @@ namespace DEM{
             p1_(p),
             p2_(nullptr),
             surface_(s),
-            edge_(nullptr),
             r2_(p->get_radius()),
             force_model_(p, s, increment),
-            particle_contact_(false)
-
-    {
-        normal_ = calculate_distance_vector().normal();
-    }
-
-
-    template<typename ForceModel, typename ParticleType>
-    Contact<ForceModel, ParticleType>::Contact(ParticleType* p, Edge* e, double increment) :
-            p1_(p),
-            p2_(nullptr),
-            surface_(nullptr),
-            edge_(e),
-            r2_(p->get_radius()),
-            force_model_(p, e, increment),
             particle_contact_(false)
 
     {
@@ -130,8 +108,6 @@ namespace DEM{
             return p1_->get_position() - p2_->get_position();
         else if ( surface_ !=nullptr)
             return surface_->vector_to_point(p1_->get_position());
-        else
-            return edge_->vector_to_point(p1_->get_position());
     }
 
 

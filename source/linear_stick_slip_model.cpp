@@ -28,14 +28,6 @@ DEM::LinearStickSlipModel::LinearStickSlipModel(DEM::LinearStickSlipModel::Parti
     mu_ = mat1->mu_wall;
 }
 
-DEM::LinearStickSlipModel::LinearStickSlipModel(DEM::LinearStickSlipModel::ParticleType* p1, DEM::Edge*, double)
-{
-    auto mat1 = dynamic_cast<const LinearContactMaterial*>(p1->get_material());
-    double R0 = p1->get_radius();
-    k_ = mat1->k*R0;
-    kT_ = mat1->kT*R0;
-    mu_ = mat1->mu_wall;
-}
 
 void DEM::LinearStickSlipModel::update(double h, const Vec3& dt)
 {

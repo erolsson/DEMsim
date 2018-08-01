@@ -8,7 +8,6 @@
 #include <array>
 
 #include "surface.h"
-#include "edge.h"
 
 namespace DEM {
     template<typename ForceModel, typename particleType> class BoundingBox;
@@ -18,11 +17,8 @@ namespace DEM {
         using SurfaceType = Surface<ForceModel, ParticleType>;
 
     public:
-        ParticleType* p_;
-        SurfaceType* surf_;
-        Edge* edge;
-
         double value;
+
     private:
         char position_char_;
         char axis_;

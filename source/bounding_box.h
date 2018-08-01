@@ -5,8 +5,9 @@
 #ifndef DEMSIM_BOUNDING_BOX_H
 #define DEMSIM_BOUNDING_BOX_H
 
+#include <algorithm>
+
 #include "bounding_box_projection.h"
-#include "edge.h"
 #include "surface.h"
 
 namespace DEM {
@@ -17,7 +18,6 @@ namespace DEM {
     public:
         explicit BoundingBox(ParticleType*);
         explicit BoundingBox(SurfaceType*);
-        explicit BoundingBox(Edge*);
 
         void update() {update_function(); };
 
@@ -32,7 +32,6 @@ namespace DEM {
     private:
         ParticleType* particle_;
         SurfaceType* surface_;
-        Edge* edge_;
         double stretch_{ 0. };
 
         // Function pointer to the update function, set in the construction of the bounding box
@@ -40,14 +39,12 @@ namespace DEM {
         void (BoundingBox<ForceModel, ParticleType>::*update_function)();
         void particle_update();
         void surface_update();
-        void edge_update();
     };
 
     template<typename ForceModel, typename ParticleType>
     BoundingBox<ForceModel, ParticleType>::BoundingBox(ParticleType* p) :
         particle_(p),
         surface_(nullptr),
-        edge_(nullptr),
         update_function(&BoundingBox<ForceModel, ParticleType>::particle_update)
     {
 
@@ -57,21 +54,11 @@ namespace DEM {
     BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::SurfaceType* s) :
         particle_(nullptr),
         surface_(s),
-        edge_(nullptr),
         update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
     {
 
     }
 
-    template<typename ForceModel, typename ParticleType>
-    BoundingBox<ForceModel, ParticleType>::BoundingBox(Edge* e) :
-        particle_(nullptr),
-        surface_(nullptr),
-        edge_(e),
-        update_function(&BoundingBox<ForceModel, ParticleType>::edge_update)
-    {
-
-    }
 
     template<typename ForceModel, typename ParticleType>
     void BoundingBox<ForceModel, ParticleType>::particle_update()
@@ -90,12 +77,6 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     void BoundingBox<ForceModel, ParticleType>::surface_update()
-    {
-
-    }
-
-    template<typename ForceModel, typename ParticleType>
-    void BoundingBox<ForceModel, ParticleType>::edge_update()
     {
 
     }
