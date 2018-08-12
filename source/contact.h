@@ -52,7 +52,6 @@ namespace DEM{
 
         Vec3 (Contact<ForceModel, ParticleType>::*distance_function)() const;
         Vec3 (Contact<ForceModel, ParticleType>::*tangential_function)() const;
-        Vec3 (Contact<ForceModel, ParticleType>::*position_function)() const;
 
         Vec3 calculate_distance_vector() const { return (this->*distance_function)(); }
         Vec3 calculate_tangential_displacement_this_inc() const { return (this->*tangential_function)(); };

@@ -18,52 +18,32 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     class Contact;
 
-    class Amplitude;
-
     template<typename ForceModel, typename ParticleType>
     class Surface {
         using ContactPointerType = std::shared_ptr<Contact<ForceModel, ParticleType>>;
 
     public:
-        bool no_stiffness{false};
-        bool no_fracture{false};
-        bool tensile{true};
-        double adhesive_multiplier{1.0};
         double mass{0.};
         double max_velocity{0.};
-        bool force_control{false};
-
-        Amplitude* fx{nullptr};
-        Amplitude* fy{nullptr};
-        Amplitude* fz{nullptr};
+        bool force_control{ false };
 
         explicit Surface(unsigned);
-
         virtual ~Surface() = default;
-
         unsigned get_id() const { return id_; }
-
         virtual Vec3 get_normal(const Vec3&) const = 0;
-
         // virtual double get_curvature_radius() const = 0;  //  ToDo Implement later
         virtual double distance_to_point(const Vec3&) const = 0;
-
         virtual Vec3 vector_to_point(const Vec3&) const = 0;
-
         virtual Vec3 displacement_this_inc(const Vec3&) const = 0;
 
         virtual void move(const Vec3&, const Vec3&) = 0;
-
         virtual void rotate(const Vec3&, const Vec3&) = 0;
 
         virtual std::string output_data() const = 0;
-
         const Vec3& get_velocity() const { return velocity_; }
-
         const Vec3& get_acceleration() const { return acceleration_; }
 
         void set_velocity(const Vec3& v) { velocity_ = v; }
-
         void set_acceleration(const Vec3& a) { acceleration_ = a; }
 
         Vec3 get_tangential_displacement_this_inc(const Vec3& p) const
@@ -79,26 +59,21 @@ namespace DEM {
         }
 
         std::vector<ParticleType*> get_contacting_particles() const;
-
         double get_normal_force() const;
-
         Vec3 get_tangential_force() const;
-
         Vec3 get_total_force() const;
-
         void add_contact(ContactPointerType, std::size_t);
-
         void remove_contact(std::size_t);
 
     protected:
-        Vec3 velocity_{Vec3(0, 0, 0)};
-        Vec3 acceleration_{Vec3(0, 0, 0)};
-        Vec3 displacement_this_inc_{Vec3(0, 0, 0)};
+        Vec3 velocity_{ Vec3(0, 0, 0) };
+        Vec3 acceleration_{ Vec3(0, 0, 0) };
+        Vec3 displacement_this_inc_{ Vec3(0, 0, 0) };
 
         // Might be updated to std::vector<std::pair<Vec3, Vec3> >
         // to allow for multiple rotations
-        Vec3 rotation_this_inc_{Vec3(0, 0, 0)};
-        Vec3 rotation_point_{Vec3(0, 0, 0)};
+        Vec3 rotation_this_inc_{ Vec3(0, 0, 0) };
+        Vec3 rotation_point_{ Vec3(0, 0, 0) };
 
     private:
         unsigned id_;
