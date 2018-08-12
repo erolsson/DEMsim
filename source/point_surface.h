@@ -177,7 +177,7 @@ namespace DEM {
 
         return std::make_pair(Vec3(x_min, y_min, z_min), Vec3(x_max, y_max, z_max));
     }
-
+}
 
 
 #endif //DEMSIM_POINT_SURFACE_H
