@@ -162,7 +162,7 @@ namespace DEM {
         };
 
         auto z_cmp = [](const Vec3& v1, const Vec3& v2) -> bool {
-            return v1.y<v2.z;
+            return v1.z < v2.z;
         };
 
         double x_min = std::min_element(points_.begin(), points_.end(), x_cmp)->x;
