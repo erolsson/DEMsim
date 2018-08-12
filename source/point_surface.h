@@ -9,7 +9,6 @@
 #include <utility>
 #include <sstream>
 #include <algorithm>
-#include <functional>
 
 #include "vec3.h"
 #include "surface.h"
