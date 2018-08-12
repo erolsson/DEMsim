@@ -85,7 +85,7 @@ namespace DEM {
         void add_contact(ContactPointerType, std::size_t, int);
         void remove_contact(std::size_t);
 
-        std::string get_output_string() const override;
+        std::string get_output_string() const;
     private:
         double radius_;   // Not const due to particle swelling
         double inertia_;

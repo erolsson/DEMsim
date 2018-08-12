@@ -41,8 +41,6 @@ namespace DEM {
         const Vec3& get_displacement_this_increment() const { return displacement_this_inc_; }
         const Vec3& get_rotation_this_increment() const { return rot_this_inc_; }
 
-        std::string get_output_string() const;
-
     protected:
         const unsigned id_;
         double mass_;
