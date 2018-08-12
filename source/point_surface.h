@@ -7,6 +7,9 @@
 
 #include <vector>
 #include <utility>
+#include <sstream>
+#include <algorithm>
+#include <functional>
 
 #include "vec3.h"
 #include "surface.h"
@@ -24,11 +27,14 @@ namespace DEM {
         void rotate(const Vec3&, const Vec3&) override;
         std::string output_data() const override;
 
+        std::pair<Vec3, Vec3> bounding_box_values() const;
+
     private:
         std::vector<Vec3> points_;
         Vec3 normal_;
         bool infinite_;
 
+        using Surface<ForceModel, ParticleType>::id_;
         using Surface<ForceModel, ParticleType>::displacement_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_point_;
@@ -130,17 +136,48 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     std::string PointSurface<ForceModel, ParticleType>::output_data() const
     {
-        return std::__cxx11::string();
+        std::ostringstream stream;
+        stream << id_;
+        for(auto& p: points_) {
+            stream << "," << p.x << "," << p.y << "," << p.z;
+        }
+        return stream.str();
     }
 
     template<typename ForceModel, typename ParticleType>
     Vec3 PointSurface<ForceModel, ParticleType>::calculate_normal() const
     {
-            Vec3 normal = cross_product(points_[1]-points_[0], points_[2]-points_[1]);
-            return normal.normalize();
+        Vec3 normal = cross_product(points_[1]-points_[0], points_[2]-points_[1]);
+        return normal.normalize();
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    std::pair<Vec3, Vec3> PointSurface<ForceModel, ParticleType>::bounding_box_values() const
+    {
+        auto x_cmp = [](const Vec3& v1, const Vec3& v2) -> bool {
+            return v1.x < v2.x;
+        };
+
+        auto y_cmp = [](const Vec3& v1, const Vec3& v2) -> bool {
+            return v1.y < v2.y;
+        };
+
+        auto z_cmp = [](const Vec3& v1, const Vec3& v2) -> bool {
+            return v1.y<v2.z;
+        };
+
+        double x_min = std::min_element(points_.begin(), points_.end(), x_cmp)->x;
+        double x_max = std::max_element(points_.begin(), points_.end(), x_cmp)->x;
+
+        double y_min = std::min_element(points_.begin(), points_.end(), y_cmp)->y;
+        double y_max = std::max_element(points_.begin(), points_.end(), y_cmp)->y;
+
+        double z_min = std::min_element(points_.begin(), points_.end(), z_cmp)->z;
+        double z_max = std::max_element(points_.begin(), points_.end(), z_cmp)->z;
+
+        return std::make_pair(Vec3(x_min, y_min, z_min), Vec3(x_max, y_max, z_max));
     }
 
 
-}
 
 #endif //DEMSIM_POINT_SURFACE_H
