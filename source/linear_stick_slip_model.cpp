@@ -2,6 +2,8 @@
 // Created by erolsson on 2018-07-30.
 //
 
+#include <iostream>
+
 #include "linear_stick_slip_model.h"
 #include "linear_contact_material.h"
 #include "spherical_particle.h"

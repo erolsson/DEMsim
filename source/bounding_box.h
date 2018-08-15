@@ -16,8 +16,8 @@ namespace DEM {
     using BProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
     using SurfaceType = PointSurface<ForceModel, ParticleType>;
     public:
-        explicit BoundingBox(ParticleType*);
-        explicit BoundingBox(SurfaceType*);
+        explicit BoundingBox(ParticleType*, std::size_t);
+        explicit BoundingBox(SurfaceType*,  std::size_t);
 
         void update() {update_function(); };
 
@@ -42,21 +42,43 @@ namespace DEM {
     };
 
     template<typename ForceModel, typename ParticleType>
-    BoundingBox<ForceModel, ParticleType>::BoundingBox(ParticleType* p) :
+    BoundingBox<ForceModel, ParticleType>::BoundingBox(ParticleType* p, std::size_t idx) :
         particle_(p),
         surface_(nullptr),
-        update_function(&BoundingBox<ForceModel, ParticleType>::particle_update)
+        update_function(&BoundingBox<ForceModel, ParticleType>::particle_update),
+        bx(this, 2*idx, 'b'),
+        ex(this, 2*idx+1, 'e'),
+        by(this, 2*idx, 'b'),
+        ey(this, 2*idx+1, 'e'),
+        bz(this, 2*idx, 'b'),
+        ez(this, 2*idx+1, 'e')
     {
-        // Empty constructor
+        bx.setup();
+        by.setup();
+        bz.setup();
+        ex.setup();
+        ey.setup();
+        ez.setup();
     }
 
     template<typename ForceModel, typename ParticleType>
-    BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::SurfaceType* s) :
+    BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::SurfaceType* s, std::size_t idx) :
         particle_(nullptr),
         surface_(s),
-        update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
+        update_function(&BoundingBox<ForceModel, ParticleType>::surface_update),
+        bx(this, 2*idx, 'b'),
+        ex(this, 2*idx+1, 'e'),
+        by(this, 2*idx, 'b'),
+        ey(this, 2*idx+1, 'e'),
+        bz(this, 2*idx, 'b'),
+        ez(this, 2*idx+1, 'e')
     {
-        // Empty constructor
+        bx.setup();
+        by.setup();
+        bz.setup();
+        ex.setup();
+        ey.setup();
+        ez.setup();
     }
 
 
@@ -90,4 +112,5 @@ namespace DEM {
     }
 
 }
+
 #endif //DEMSIM_BOUNDING_BOX_H

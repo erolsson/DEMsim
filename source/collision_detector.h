@@ -6,35 +6,75 @@
 #define DEMSIM_COLLISION_DETECTOR_H
 
 #include <vector>
+#include <omp.h>
+
+#include "bounding_box.h"
+#include "bounding_box_projection.h"
+#include "contact_matrix.h"
+#include "point_surface.h"
 
 namespace DEM {
+    template <typename ForceModel, typename ParticleType>
     class CollisionDetector {
-        std::vector<BBProjection*> xproj;
-        std::vector<BBProjection*> yproj;
-        std::vector<BBProjection*> zproj;
-        std::vector<BoundingBox*> boxes;
-        std::vector<Particle*>& particles;
-        std::vector<Surface*>& surfaces;
-        std::vector<Edge*>& edges;
-        Engine& engine;
-        ContactMatrix<BBPair> activeCollisions;
+        using BoundingBoxType = BoundingBox<ForceModel, ParticleType>;
+        using BoundingBoxProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
+        using CollisionPair = std::pair<BoundingBoxType*, BoundingBoxType*>;
+        using ContactPointerType = std::shared_ptr<Contact<ForceModel, ParticleType> >;
+
+    public:
+        CollisionDetector(const std::vector<ParticleType*>&,
+                const std::vector<PointSurface<ForceModel, ParticleType>*>&);
+
+        void setup();
+        std::vector<CollisionPair> do_check();  //Not const due to re-ordering of the proj vectors
+
+    private:
+        std::vector<BoundingBox<ForceModel, ParticleType> > bounding_boxes_;
+        std::vector<BoundingBoxProjection<ForceModel, ParticleType>* > xproj_;
+        std::vector<BoundingBoxProjection<ForceModel, ParticleType>* > yproj_;
+        std::vector<BoundingBoxProjection<ForceModel, ParticleType>* > zproj_;
+
+        std::vector<ParticleType*>& particles_;
+        std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces_;
+
+        ContactMatrix<CollisionPair> active_collisions_;
         //BoolMatrix activeCollisions;
-        void generateBoundingBoxes();
-        void updateBoundingBoxes(double k);
+        void generate_boundingBoxes();
+        void update_bounding_boxes();
 
-        double overlap(BBProjection*, BBProjection*) const;
-        double overlap(Particle*, Particle*) const;
 
-        void checkPossibleCollisionPairs(std::vector<cType>&);
-        void checkBoundingBoxVector(std::vector<BBProjection*>&);
+        void check_possible_collision_pairs(std::vector<CollisionPair>&);
+        void check_bounding_box_vector(std::vector<BoundingBoxProjectionType*>&);
         bool overlapping(BBProjection*, BBProjection*) const;
-        double distanceParticleWall(const Particle*, const Surface*) const;
-        bool insideTriangle(const Vec3&, const Surface*) const;
         void destroyContact(BBProjection*, BBProjection*);
         void createContact(BBProjection*, BBProjection*);
         inline bool checkOtherAxes(BBProjection&, BBProjection&) const;
-        void checkSurfaces();
-        void checkEdges();
     };
+
+    template<typename ForceModel, typename ParticleType>
+    void CollisionDetector<ForceModel, ParticleType>::setup()
+    {
+        for(const auto& iter: particles_){
+            bounding_boxes_.emplace_back(*iter);
+        }
+
+        for(const auto& iter: point_surfaces_){
+            bounding_boxes_.emplace_back(*iter);
+        }
+
+
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    void CollisionDetector<ForceModel, ParticleType>::update_bounding_boxes()
+    {
+        #pragma omp parallel for
+        for(auto iter=bounding_boxes_.begin(); iter!=bounding_boxes_.end(); ++iter){
+            iter->update();
+        }
+    }
+
+
 }
+
 #endif //DEMSIM_COLLISION_DETECTOR_H
