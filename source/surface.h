@@ -74,9 +74,10 @@ namespace DEM {
         // to allow for multiple rotations
         Vec3 rotation_this_inc_{ Vec3(0, 0, 0) };
         Vec3 rotation_point_{ Vec3(0, 0, 0) };
+        unsigned id_;
 
     private:
-        unsigned id_;
+
         ContactVector<ContactPointerType> contacts_{ContactVector<ContactPointerType>()};
     };
 

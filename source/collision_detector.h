@@ -52,6 +52,14 @@ namespace DEM {
     };
 
     template<typename ForceModel, typename ParticleType>
+    CollisionDetector<ForceModel, ParticleType>::CollisionDetector(const std::vector<ParticleType*>& particles,
+            const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces) :
+            particles_(particles), point_surfaces_(point_surfaces)
+    {
+        //Empty constructor
+    }
+
+    template<typename ForceModel, typename ParticleType>
     void CollisionDetector<ForceModel, ParticleType>::setup()
     {
         for(const auto& iter: particles_){
