@@ -8,8 +8,9 @@
 #include "spherical_particle.h"
 #include "linear_stick_slip_model.h"
 #include "point_surface.h"
+#include "collision_detector.h"
 
-int main(int argc, char** argv)
+int main(int, char**)
 {
     using namespace DEM;
     using ForceModel = LinearStickSlipModel;
@@ -31,6 +32,8 @@ int main(int argc, char** argv)
     particles.push_back(&p1);
     particles.push_back(&p2);
 
-
+    CollisionDetector<ForceModel, ParticleType> collision_detector(particles, surfaces);
+    collision_detector.setup();
+    collision_detector.do_check();
     return 0;
 }

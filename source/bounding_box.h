@@ -19,7 +19,7 @@ namespace DEM {
         explicit BoundingBox(ParticleType*, std::size_t);
         explicit BoundingBox(SurfaceType*,  std::size_t);
 
-        void update() {update_function(); };
+        void update() {(this->*update_function)(); };
 
         void set_stretch(double stretch) {stretch_ = stretch; }
         BProjectionType bx;
@@ -43,15 +43,15 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     BoundingBox<ForceModel, ParticleType>::BoundingBox(ParticleType* p, std::size_t idx) :
-        particle_(p),
-        surface_(nullptr),
-        update_function(&BoundingBox<ForceModel, ParticleType>::particle_update),
         bx(this, 2*idx, 'b'),
         ex(this, 2*idx+1, 'e'),
         by(this, 2*idx, 'b'),
         ey(this, 2*idx+1, 'e'),
         bz(this, 2*idx, 'b'),
-        ez(this, 2*idx+1, 'e')
+        ez(this, 2*idx+1, 'e'),
+        particle_(p),
+        surface_(nullptr),
+        update_function(&BoundingBox<ForceModel, ParticleType>::particle_update)
     {
         bx.setup();
         by.setup();
@@ -63,15 +63,15 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::SurfaceType* s, std::size_t idx) :
-        particle_(nullptr),
-        surface_(s),
-        update_function(&BoundingBox<ForceModel, ParticleType>::surface_update),
         bx(this, 2*idx, 'b'),
         ex(this, 2*idx+1, 'e'),
         by(this, 2*idx, 'b'),
         ey(this, 2*idx+1, 'e'),
         bz(this, 2*idx, 'b'),
-        ez(this, 2*idx+1, 'e')
+        ez(this, 2*idx+1, 'e'),
+        particle_(nullptr),
+        surface_(s),
+        update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
     {
         bx.setup();
         by.setup();

@@ -31,7 +31,7 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     BoundingBoxProjection<ForceModel, ParticleType>::BoundingBoxProjection(BoundingBox<ForceModel, ParticleType>* bbox,
                                                                            std::size_t idx, char position) :
-            bbox_(bbox), index_(idx), position_char_(position)
+            position_char_(position), bbox_(bbox), index_(idx)
     {
         // Empty constructor
     }
