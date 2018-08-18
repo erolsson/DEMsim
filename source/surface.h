@@ -27,17 +27,17 @@ namespace DEM {
         double max_velocity{0.};
         bool force_control{ false };
 
-        explicit Surface(unsigned);
+        explicit Surface(unsigned id);
         virtual ~Surface() = default;
         unsigned get_id() const { return id_; }
-        virtual Vec3 get_normal(const Vec3&) const = 0;
+        virtual Vec3 get_normal(const Vec3& position) const = 0;
         // virtual double get_curvature_radius() const = 0;  //  ToDo Implement later
-        virtual double distance_to_point(const Vec3&) const = 0;
-        virtual Vec3 vector_to_point(const Vec3&) const = 0;
-        virtual Vec3 displacement_this_inc(const Vec3&) const = 0;
+        virtual double distance_to_point(const Vec3& point) const = 0;
+        virtual Vec3 vector_to_point(const Vec3& point) const = 0;
+        virtual Vec3 displacement_this_inc(const Vec3& position) const = 0;
 
-        virtual void move(const Vec3&, const Vec3&) = 0;
-        virtual void rotate(const Vec3&, const Vec3&) = 0;
+        virtual void move(const Vec3& distance, const Vec3& velocity) = 0;
+        virtual void rotate(const Vec3& position, const Vec3& rotation_vector) = 0;
 
         virtual std::string output_data() const = 0;
         const Vec3& get_velocity() const { return velocity_; }
@@ -46,9 +46,10 @@ namespace DEM {
         void set_velocity(const Vec3& v) { velocity_ = v; }
         void set_acceleration(const Vec3& a) { acceleration_ = a; }
 
-        Vec3 get_tangential_displacement_this_inc(const Vec3& p) const
+        Vec3 get_tangential_displacement_this_inc(const Vec3& point) const
         {
-            return displacement_this_inc(p)-dot_product(displacement_this_inc(p), get_normal(p))*get_normal(p);
+            return displacement_this_inc(point)-
+            dot_product(displacement_this_inc(point), get_normal(point))*get_normal(point);
         }
 
         void rest()
@@ -62,8 +63,8 @@ namespace DEM {
         double get_normal_force() const;
         Vec3 get_tangential_force() const;
         Vec3 get_total_force() const;
-        void add_contact(ContactPointerType, std::size_t);
-        void remove_contact(std::size_t);
+        void add_contact(ContactPointerType contact, std::size_t index_of_other_object);
+        void remove_contact(std::size_t index_of_other_object);
 
     protected:
         Vec3 velocity_{ Vec3(0, 0, 0) };
@@ -132,15 +133,15 @@ namespace DEM {
     }
 
     template<typename ForceModel, typename ParticleType>
-    void Surface<ForceModel, ParticleType>::add_contact(ContactPointerType contact, size_t pos)
+    void Surface<ForceModel, ParticleType>::add_contact(ContactPointerType contact, size_t index_of_other_object)
     {
-        contacts_.insert(pos, contact);
+        contacts_.insert(index_of_other_object, contact);
     }
 
     template<typename ForceModel, typename ParticleType>
-    void Surface<ForceModel, ParticleType>::remove_contact(size_t pos)
+    void Surface<ForceModel, ParticleType>::remove_contact(size_t index_of_other_object)
     {
-        contacts_.erase(pos);
+        contacts_.erase(index_of_other_object);
     }
 
 }

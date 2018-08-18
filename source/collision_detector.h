@@ -23,8 +23,8 @@ namespace DEM {
 
     public:
         using CollisionPair = std::pair<BoundingBoxType*, BoundingBoxType*>;
-        CollisionDetector(const std::vector<ParticleType*>&,
-                const std::vector<PointSurface<ForceModel, ParticleType>*>&);
+        CollisionDetector(const std::vector<ParticleType*>& particles,
+                const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces);
 
         void setup();
         std::vector<CollisionPair> do_check();  //Not const due to re-ordering of the proj vectors
@@ -85,7 +85,7 @@ namespace DEM {
     void CollisionDetector<ForceModel, ParticleType>::update_bounding_boxes()
     {
         #pragma omp parallel for
-        for(std::size_t i = 0; i!= bounding_boxes_.size(); ++i){
+        for(std::size_t i = 0; i < bounding_boxes_.size(); ++i){
             bounding_boxes_[i].update();
         }
     }

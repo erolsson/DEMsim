@@ -17,13 +17,13 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     class PointSurface : public Surface<ForceModel, ParticleType> {
     public:
-        PointSurface(unsigned, std::vector<Vec3>, bool);
+        PointSurface(unsigned id, std::vector<Vec3> points, bool infinite);
         Vec3 get_normal(const Vec3&) const override { return normal_; }
-        double distance_to_point(const Vec3&) const override;
-        Vec3 vector_to_point(const Vec3&) const override;
-        Vec3 displacement_this_inc(const Vec3&) const override;
-        void move(const Vec3&, const Vec3&) override;
-        void rotate(const Vec3&, const Vec3&) override;
+        double distance_to_point(const Vec3& point) const override;
+        Vec3 vector_to_point(const Vec3& point) const override;
+        Vec3 displacement_this_inc(const Vec3& position) const override;
+        void move(const Vec3& distance, const Vec3& velocity) override;
+        void rotate(const Vec3& point, const Vec3& rotation_vector) override;
         std::string output_data() const override;
 
         std::pair<Vec3, Vec3> bounding_box_values() const;
@@ -122,12 +122,12 @@ namespace DEM {
     }
 
     template<typename ForceModel, typename ParticleType>
-    void PointSurface<ForceModel, ParticleType>::rotate(const Vec3& point, const Vec3& vector)
+    void PointSurface<ForceModel, ParticleType>::rotate(const Vec3& point, const Vec3& rotation_vector)
     {
         for(auto& p: points_) {
-            p += cross_product(vector, p-point);
+            p += cross_product(rotation_vector, p-point);
         }
-        rotation_this_inc_ = vector;
+        rotation_this_inc_ = rotation_vector;
         rotation_point_ = point;
         normal_ = calculate_normal();
     }
