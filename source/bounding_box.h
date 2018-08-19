@@ -23,6 +23,9 @@ namespace DEM {
         void update();
         void set_stretch(double stretch) {stretch_ = stretch; }
 
+        ParticleType* get_particle() const { return particle_;}
+        SurfaceType* get_surface() const { return surface_;}
+
         BProjectionType bx;
         BProjectionType ex;
         BProjectionType by;
@@ -126,8 +129,6 @@ namespace DEM {
     void BoundingBox<ForceModel, ParticleType>::update()
     {
         (this->*update_function)();
-        // std::cout << bx.value << ", " << ex.value << ", " << by.value << ", " << ey.value << ", "
-        //          << bz.value << ", " << ez.value;
     }
 
 

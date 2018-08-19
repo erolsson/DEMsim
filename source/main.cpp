@@ -35,5 +35,12 @@ int main(int, char**)
     CollisionDetector<ForceModel, ParticleType> collision_detector(particles, surfaces, matrix);
     collision_detector.setup();
     collision_detector.do_check();
+
+    auto contacts_to_create = collision_detector.contacts_to_create();
+    std::cout << "Contacts to create" << std::endl;
+    for (const auto& contact : contacts_to_create) {
+        std::cout << "\t" << contact.first->get_id() << ", " << contact.second->get_id() << std::endl;
+    }
+
     return 0;
 }

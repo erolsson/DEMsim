@@ -29,6 +29,7 @@ namespace DEM {
         std::array<const std::size_t*, 4> get_indices_on_other_axes() const { return other_indices_; }
         const BoundingBox<ForceModel, ParticleType>* get_bounding_box() const { return bbox_;}
         std::size_t get_id() const {return bbox_->get_id(); }
+        std::size_t get_index() const { return  index_; }
 
     private:
         double value = 0;
@@ -37,7 +38,6 @@ namespace DEM {
         const BoundingBox<ForceModel, ParticleType>* bbox_;
         std::array<const std::size_t*, 4> other_indices_ = { nullptr, nullptr, nullptr, nullptr };
         std::size_t index_;
-
     };
 
     template<typename ForceModel, typename ParticleType>
@@ -70,8 +70,6 @@ namespace DEM {
             other_indices_[3] = &(bbox_->ey.index_);
         }
     }
-
-
 }
 #endif //DEMSIM_BOUNDING_BOX_PROJECTION_H
 

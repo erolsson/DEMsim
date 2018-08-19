@@ -61,6 +61,9 @@ namespace DEM {
         check_bounding_box_vector(xproj_);
         check_bounding_box_vector(yproj_);
         check_bounding_box_vector(zproj_);
+        for(const auto& bbp : xproj_)
+            std::cout << "Particle " <<  bbp->get_bounding_box()->get_particle()->get_id() << " "
+                      << bbp->get_position_char() << "x " <<  bbp->get_index() << std::endl;
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -75,12 +78,15 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     void CollisionDetector<ForceModel, ParticleType>::setup()
     {
-        for(std::size_t i = 0; i != particles_.size(); ++i){
-            bounding_boxes_.emplace_back(particles_[i], i);
+        std::size_t counter = 0;
+        for(const auto& p: particles_){
+            bounding_boxes_.emplace_back(p, counter);
+            ++counter;
         }
 
-        for(std::size_t i = 0; i != point_surfaces_.size(); ++i){
-            bounding_boxes_.emplace_back(point_surfaces_[i], i);
+        for(const auto& s: point_surfaces_){
+            bounding_boxes_.emplace_back(s, counter);
+            ++counter;
         }
 
         for(auto& bounding_box: bounding_boxes_){
@@ -111,38 +117,41 @@ namespace DEM {
         for (unsigned i = 0; i != vector.size(); ++i){
              unsigned j = i;
              while (j != 0 && vector[j-1]->get_value() > vector[j]->get_value()){
-                BoundingBoxProjectionType* BBm = vector[j];
-                BoundingBoxProjectionType* BBn = vector[j-1];
 
-                //depending on de beginnings and endings of the swapping
-                // remove or add contact
-                char c1 = BBm->get_position_char();
-                char c2 = BBn->get_position_char();
+                 BoundingBoxProjectionType* BBm = vector[j];
+                 BoundingBoxProjectionType* BBn = vector[j-1];
 
-                if (c1 == 'e' && c2 == 'b') {
-                    auto id_pair = std::make_pair(BBm->get_id(), BBn->get_id());
-                    if (!contacts_to_create_.erase(id_pair)) {
-                        if (contacts_.exist(id_pair.first, id_pair.second)){
-                            contacts_to_destroy_.push_back(std::make_pair(BBm->get_bounding_box(),
-                                    BBn->get_bounding_box()));
-                        }
-                    }
-                }
-                else if (c1 == 'b' && c2 == 'e'){
-                    if(check_other_axes(BBm, BBn)) {
-                        contacts_to_create_.insert(std::make_pair(BBm->get_id(), BBn->get_id()),
-                                                   std::make_pair(BBm->get_bounding_box(), BBn->get_bounding_box()));
-                    }
-                }
+                 //depending on de beginnings and endings of the swapping
+                 // remove or add contact
+                 char c1 = BBm->get_position_char();
+                 char c2 = BBn->get_position_char();
 
-                BoundingBoxProjectionType* temp = vector[j];
-                vector[j] = vector[j-1];
-                vector[j-1] = temp;
-                --j;
-                BBn->increase_index();
-                BBm->decrease_index();
-            }
+                 if (c1 == 'e' && c2 == 'b') {
+                     auto id_pair = std::make_pair(BBm->get_id(), BBn->get_id());
+                     if (!contacts_to_create_.erase(id_pair)) {
+                         if (contacts_.exist(id_pair.first, id_pair.second)){
+                             contacts_to_destroy_.push_back(std::make_pair(BBm->get_bounding_box(),
+                                     BBn->get_bounding_box()));
+                         }
+                     }
+                 }
+                 else if (c1 == 'b' && c2 == 'e') {
+                     if (check_other_axes(BBm, BBn)) {
+                         contacts_to_create_.insert(std::make_pair(BBm->get_id(), BBn->get_id()),
+                                                    std::make_pair(BBm->get_bounding_box(), BBn->get_bounding_box()));
+                     }
+                 }
+
+                 BoundingBoxProjectionType* temp = vector[j];
+                 vector[j] = vector[j-1];
+                 vector[j-1] = temp;
+                 --j;
+                 std::cout << "changing idx" << std::endl;
+                 BBn->increase_index();
+                 BBm->decrease_index();
+             }
         }
+        std::cout << "done with projection vector " <<  std::endl;
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -152,8 +161,14 @@ namespace DEM {
     {
         auto idx1 = b1->get_indices_on_other_axes();
         auto idx2 = b2->get_indices_on_other_axes();
+        std::cout << "Particles " << b1->get_bounding_box()->get_particle()->get_id() << ", ";
+        std::cout << b2->get_bounding_box()->get_particle()->get_id() << std::endl;
+
+        std::cout << *idx1[0] << ", " << *idx1[1] << ", " << *idx1[2] << ", " << *idx1[3] << std::endl;
+        std::cout << *idx2[0] << ", " << *idx2[1] << ", " << *idx2[2] << ", " << *idx2[3] << std::endl;
         //checking the first of the axes
         if ( (*idx1[0] < *idx2[0] && *idx2[0] < *idx1[1]) || (*idx2[0] < *idx1[0] && *idx1[0] < *idx2[1]) ) {
+
             if ( (*idx1[2] < *idx2[2] && *idx2[2] < *idx1[3]) || (*idx2[2] < *idx1[2] && *idx1[2] < *idx2[3]) ) {
                 return true;
             }
