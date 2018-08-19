@@ -17,21 +17,21 @@ namespace DEM {
     template <typename ForceModel, typename ParticleType> class Contact;
     template <typename ForceModel, typename ParticleType>
     class CollisionDetector {
+        using ContactPointerType = std::shared_ptr<Contact<ForceModel, ParticleType> >;
     public:
-
         using BoundingBoxType = BoundingBox<ForceModel, ParticleType>;
         using BoundingBoxProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
         using CollisionPair = std::pair<BoundingBoxType*, BoundingBoxType*>;
         CollisionDetector(const std::vector<ParticleType*>& particles,
-                const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces);
+                          const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces,
+                          const ContactMatrix<ContactPointerType>& contacts);
 
         void setup();
         void do_check();  //Not const due to re-ordering of the proj vectors
-        std::vector<CollisionPair> contacts_to_create() const;
-        std::vector<CollisionPair> contacts_to_destroy() const;
+        std::vector<CollisionPair> contacts_to_create() const { return contacts_to_create_; }
+        std::vector<CollisionPair> contacts_to_destroy() const { return contacts_to_destroy_;}
 
     private:
-        using ContactPointerType = std::shared_ptr<Contact<ForceModel, ParticleType> >;
         std::vector<BoundingBox<ForceModel, ParticleType> > bounding_boxes_;
         std::vector<BoundingBoxProjectionType*> xproj_;
         std::vector<BoundingBoxProjectionType*> yproj_;
@@ -39,24 +39,23 @@ namespace DEM {
 
         const std::vector<ParticleType*>& particles_;
         const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces_;
+        const ContactMatrix<ContactPointerType>& contacts_;
 
-        ContactMatrix<ContactPointerType>& contacts_;
+        std::vector<CollisionPair> contacts_to_create_ = std::vector<CollisionPair>();
+        std::vector<CollisionPair> contacts_to_destroy_ = std::vector<CollisionPair>();
+
         //BoolMatrix activeCollisions;
         void update_bounding_boxes();
 
-
-        // void check_possible_collision_pairs(std::vector<CollisionPair>&);
         void check_bounding_box_vector(std::vector<BoundingBoxProjectionType*>& vector);
-        // bool overlapping(BBProjection*, BBProjection*) const;
-        // void destroyContact(BBProjection*, BBProjection*);
-        // void createContact(BBProjection*, BBProjection*);
-        // inline bool checkOtherAxes(BBProjection&, BBProjection&) const;
+        bool check_other_axes(const BoundingBoxProjectionType& b1, const BoundingBoxProjectionType& b2) const;
     };
 
     template<typename ForceModel, typename ParticleType>
-    std::vector<typename CollisionDetector<ForceModel, ParticleType>::CollisionPair>
-            CollisionDetector<ForceModel, ParticleType>::do_check()
+    void CollisionDetector<ForceModel, ParticleType>::do_check()
     {
+        contacts_to_create_.clear();
+        contacts_to_destroy_.clear();
         update_bounding_boxes();
         check_bounding_box_vector(xproj_);
         check_bounding_box_vector(yproj_);
@@ -65,8 +64,9 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     CollisionDetector<ForceModel, ParticleType>::CollisionDetector(const std::vector<ParticleType*>& particles,
-            const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces) :
-            particles_(particles), point_surfaces_(point_surfaces)
+            const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces,
+            const ContactMatrix<ContactPointerType>& contacts) :
+            particles_(particles), point_surfaces_(point_surfaces), contacts_(contacts)
     {
         //Empty constructor
     }
@@ -128,8 +128,24 @@ namespace DEM {
                 BBn->increase_index();
                 BBm->decrease_index();
             }
-
         }
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    bool
+    CollisionDetector<ForceModel, ParticleType>::check_other_axes(const CollisionDetector::BoundingBoxProjectionType& b1,
+            const CollisionDetector::BoundingBoxProjectionType& b2) const
+    {
+        auto idx1 = b1.get_indices_on_other_axes();
+        auto idx2 = b2.get_indices_on_other_axes();
+        //checking the first of the axes
+        if ( (*idx1[0] < *idx2[0] && *idx2[0] < *idx1[1]) || (*idx2[0] < *idx1[0] && *idx1[0] < *idx2[1]) ) {
+            if ( (*idx1[2] < *idx2[2] && *idx2[2] < *idx1[3]) || (*idx2[2] < *idx1[2] && *idx1[2] < *idx2[3]) ) {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
 
