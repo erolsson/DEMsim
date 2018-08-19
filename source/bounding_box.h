@@ -19,6 +19,12 @@ namespace DEM {
         explicit BoundingBox(ParticleType* particle, std::size_t index);
         explicit BoundingBox(SurfaceType* surface,  std::size_t index);
 
+        // Copy constructor and assignment operator needed due to pointers between different projection vectors
+        // which becomes invalid when different boundingboxes are re-allocated due to vector-over-capacity
+        // These constructors repairs the pointers
+        BoundingBox(const BoundingBox& rhs);
+        BoundingBox& operator=(const BoundingBox& rhs);
+
         std::size_t get_id() const;
         void update();
         void set_stretch(double stretch) {stretch_ = stretch; }
@@ -83,6 +89,48 @@ namespace DEM {
         ex.setup();
         ey.setup();
         ez.setup();
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    BoundingBox<ForceModel, ParticleType>::BoundingBox(const BoundingBox& rhs) :
+        bx(this, rhs.bx.get_index(), 'b', 'x'),
+        ex(this, rhs.ex.get_index(), 'e', 'x'),
+        by(this, rhs.by.get_index(), 'b', 'y'),
+        ey(this, rhs.ey.get_index(), 'e', 'y'),
+        bz(this, rhs.bz.get_index(), 'b', 'z'),
+        ez(this, rhs.ex.get_index(), 'e', 'z'),
+        particle_(rhs.particle_),
+        surface_(rhs.surface_),
+        update_function(rhs.update_function)
+    {
+        bx.setup();
+        by.setup();
+        bz.setup();
+        ex.setup();
+        ey.setup();
+        ez.setup();
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    BoundingBox<ForceModel, ParticleType>& BoundingBox<ForceModel, ParticleType>::operator=(const BoundingBox& rhs)
+    {
+        if (*this != rhs) {  // Avoiding x=x
+            bx(this, rhs.bx.get_index(), 'b', 'x');
+            ex(this, rhs.ex.get_index(), 'e', 'x'),
+            by(this, rhs.by.get_index(), 'b', 'y'),
+            ey(this, rhs.ey.get_index(), 'e', 'y'),
+            bz(this, rhs.bz.get_index(), 'b', 'z'),
+            ez(this, rhs.ex.get_index(), 'e', 'z'),
+            particle_(rhs.particle_);
+            surface_(rhs.surface_);
+            update_function(rhs.update_function);
+            bx.setup();
+            by.setup();
+            bz.setup();
+            ex.setup();
+            ey.setup();
+            ez.setup();
+        }
     }
 
 

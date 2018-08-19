@@ -61,9 +61,6 @@ namespace DEM {
         check_bounding_box_vector(xproj_);
         check_bounding_box_vector(yproj_);
         check_bounding_box_vector(zproj_);
-        for(const auto& bbp : xproj_)
-            std::cout << "Particle " <<  bbp->get_bounding_box()->get_particle()->get_id() << " "
-                      << bbp->get_position_char() << "x " <<  bbp->get_index() << std::endl;
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -79,6 +76,7 @@ namespace DEM {
     void CollisionDetector<ForceModel, ParticleType>::setup()
     {
         std::size_t counter = 0;
+        // bounding_boxes_.reserve(particles_.size() + point_surfaces_.size());
         for(const auto& p: particles_){
             bounding_boxes_.emplace_back(p, counter);
             ++counter;
@@ -146,12 +144,11 @@ namespace DEM {
                  vector[j] = vector[j-1];
                  vector[j-1] = temp;
                  --j;
-                 std::cout << "changing idx" << std::endl;
+
                  BBn->increase_index();
                  BBm->decrease_index();
              }
         }
-        std::cout << "done with projection vector " <<  std::endl;
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -161,11 +158,7 @@ namespace DEM {
     {
         auto idx1 = b1->get_indices_on_other_axes();
         auto idx2 = b2->get_indices_on_other_axes();
-        std::cout << "Particles " << b1->get_bounding_box()->get_particle()->get_id() << ", ";
-        std::cout << b2->get_bounding_box()->get_particle()->get_id() << std::endl;
 
-        std::cout << *idx1[0] << ", " << *idx1[1] << ", " << *idx1[2] << ", " << *idx1[3] << std::endl;
-        std::cout << *idx2[0] << ", " << *idx2[1] << ", " << *idx2[2] << ", " << *idx2[3] << std::endl;
         //checking the first of the axes
         if ( (*idx1[0] < *idx2[0] && *idx2[0] < *idx1[1]) || (*idx2[0] < *idx1[0] && *idx1[0] < *idx2[1]) ) {
 
