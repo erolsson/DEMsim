@@ -20,6 +20,8 @@ namespace DEM {
         BoundingBoxProjection(BoundingBox<ForceModel, ParticleType>*, std::size_t, char);
         double value = 0;
         void setup();
+        void increase_index() { ++index_; }
+        void decrease_index() { --index_; }
 
     private:
         char position_char_;
@@ -59,12 +61,7 @@ namespace DEM {
         }
     }
 
-    template<typename ForceModel, typename ParticleType>
-    bool operator<(const BoundingBoxProjection<ForceModel, ParticleType>& b1,
-                   const BoundingBoxProjection<ForceModel, ParticleType>& b2)
-    {
-        return b1.value < b2.value;
-    }
+
 }
 #endif //DEMSIM_BOUNDING_BOX_PROJECTION_H
 
