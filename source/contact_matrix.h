@@ -34,9 +34,10 @@ namespace DEM {
         explicit ContactMatrix(size_t);
         std::vector<T>& get_objects() {return data_;};
         const std::vector<T>& get_objects() const {return data_;}
-        void insert(size_t, size_t, const T&);
-        void erase(size_t, size_t);
-        bool exist(size_t, size_t) const;
+        void insert(size_t idx1, size_t idx2, const T&);
+        void erase(size_t idx1, size_t idx2);
+        bool exist(size_t idx1, size_t idx2) const;
+
     private:
         std::vector<std::map<std::size_t, std::size_t> > data_indices_;
         std::vector<std::pair<std::size_t, std::size_t> > matrix_indices_;
@@ -56,28 +57,28 @@ DEM::ContactMatrix<T>::ContactMatrix(size_t N):
 
 
 template<typename T>
-void DEM::ContactMatrix<T>::insert(std::size_t x, std::size_t y, const T& obj)
+void DEM::ContactMatrix<T>::insert(std::size_t idx1, std::size_t idx2, const T& obj)
 {
-    if(!exist(x, y) && !exist(y, x)){
-        data_indices_[x].insert(std::pair<std::size_t, std::size_t>(y, data_.size()));
-        matrix_indices_.push_back(std::pair<std::size_t, std::size_t>(x, y));
+    if(!exist(idx1, idx2) && !exist(idx2, idx1)){
+        data_indices_[idx1].insert(std::pair<std::size_t, std::size_t>(idx2, data_.size()));
+        matrix_indices_.push_back(std::pair<std::size_t, std::size_t>(idx1, idx2));
         data_.push_back(obj);
     }
 }
 
 
 template<typename T>
-void DEM::ContactMatrix<T>::erase(size_t x, size_t y)
+void DEM::ContactMatrix<T>::erase(size_t idx1, size_t idx2)
 {
     //Finding the index
-    auto pos = data_indices_[x].find(y);
-    if(pos != data_indices_[x].end()) {
-        data_indices_[x].erase(pos);
+    auto pos = data_indices_[idx1].find(idx2);
+    if(pos != data_indices_[idx1].end()) {
+        data_indices_[idx1].erase(pos);
     }
     else {
-        pos = data_indices_[y].find(x);
-        if(pos!=data_indices_[y].end())
-            data_indices_[y].erase(pos);
+        pos = data_indices_[idx2].find(idx1);
+        if(pos!=data_indices_[idx2].end())
+            data_indices_[idx2].erase(pos);
         else
             return;
     }
@@ -96,9 +97,10 @@ void DEM::ContactMatrix<T>::erase(size_t x, size_t y)
 
 
 template<typename T>
-bool DEM::ContactMatrix<T>::exist(size_t x, size_t y) const
+bool DEM::ContactMatrix<T>::exist(size_t idx1, size_t idx2) const
 {
-     return data_indices_[x].find(y) != data_indices_[x].end() || data_indices_[y].find(x) != data_indices_[y].end();
+     return data_indices_[idx1].find(idx2) != data_indices_[idx1].end() ||
+         data_indices_[idx2].find(idx1) != data_indices_[idx2].end();
 }
 
 

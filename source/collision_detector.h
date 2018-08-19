@@ -18,7 +18,7 @@ namespace DEM {
     template <typename ForceModel, typename ParticleType> class Contact;
     template <typename ForceModel, typename ParticleType>
     class CollisionDetector {
-        using ContactPointerType = std::shared_ptr<Contact<ForceModel, ParticleType> >;
+        using ContactPointerType = Contact<ForceModel, ParticleType>*;
     public:
         using BoundingBoxType = BoundingBox<ForceModel, ParticleType>;
         using BoundingBoxProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
@@ -127,7 +127,7 @@ namespace DEM {
                  if (c1 == 'e' && c2 == 'b') {
                      auto id_pair = std::make_pair(BBm->get_id(), BBn->get_id());
                      if (!contacts_to_create_.erase(id_pair)) {
-                         if (contacts_.exist(id_pair.first, id_pair.second)){
+                         if (contacts_.exist(id_pair.first, id_pair.second)) {
                              contacts_to_destroy_.push_back(std::make_pair(BBm->get_bounding_box(),
                                      BBn->get_bounding_box()));
                          }

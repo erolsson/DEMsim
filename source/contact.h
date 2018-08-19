@@ -15,7 +15,7 @@ namespace DEM{
 
     template<typename ForceModel, typename ParticleType>
     class Contact {
-        using ContactPointerType = std::shared_ptr<Contact<ForceModel, ParticleType> >;
+        using ContactPointerType = Contact<ForceModel, ParticleType>*;
         using SurfaceType = Surface<ContactPointerType, ParticleType>;
 
     public:

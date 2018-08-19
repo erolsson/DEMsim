@@ -27,7 +27,7 @@ namespace DEM {
 
     template<typename ForceModel>
     class SphericalParticle : public ParticleBase<ForceModel> {
-        using ContactPointerType = std::shared_ptr<Contact<ForceModel, SphericalParticle<ForceModel> >>;
+        using ContactPointerType = Contact<ForceModel, SphericalParticle<ForceModel>>*;
 
         using ParticleBase<ForceModel>::id_;
         using ParticleBase<ForceModel>::material_;

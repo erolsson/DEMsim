@@ -15,10 +15,10 @@ int main(int, char**)
     using namespace DEM;
     using ForceModel = LinearStickSlipModel;
     using ParticleType = SphericalParticle<ForceModel>;
-    using ContactType = std::shared_ptr<Contact<ForceModel, ParticleType>>;
+    using ContactType = Contact<ForceModel, ParticleType>;
     using PointSurfaceType = PointSurface<ForceModel, ParticleType>;
 
-    DEM::ContactMatrix<ContactType> matrix = DEM::ContactMatrix<ContactType>(3);
+    DEM::ContactMatrix<ContactType*> matrix = DEM::ContactMatrix<ContactType*>(3);
     DEM::LinearContactMaterial m = DEM::LinearContactMaterial(0, 1000);
     m.density = 1;
     m.k = 10;
@@ -34,12 +34,25 @@ int main(int, char**)
 
     CollisionDetector<ForceModel, ParticleType> collision_detector(particles, surfaces, matrix);
     collision_detector.setup();
-    collision_detector.do_check();
 
-    auto contacts_to_create = collision_detector.contacts_to_create();
-    std::cout << "Contacts to create" << std::endl;
-    for (const auto& contact : contacts_to_create) {
-        std::cout << "\t" << contact.first->get_id() << ", " << contact.second->get_id() << std::endl;
+    for (unsigned i = 0; i!= 100; ++i) {
+        collision_detector.do_check();
+
+        auto contacts_to_create = collision_detector.contacts_to_create();
+        auto contacts_to_destroy = collision_detector.contacts_to_destroy();
+        std::cout << "Contacts to create" << std::endl;
+        for (const auto& contact : contacts_to_create) {
+            std::cout << "\t" << contact.first->get_id() << ", " << contact.second->get_id() << std::endl;
+            auto c = new ContactType(contact.first->get_particle(), contact.second->get_particle(), 0.);
+            matrix.insert(contact.first->get_id(), contact.second->get_id(), c);
+        }
+
+        std::cout << "Contacts to destroy" << std::endl;
+        for (const auto& contact : contacts_to_destroy) {
+            std::cout << "\t" << contact.first->get_id() << ", " << contact.second->get_id() << std::endl;
+        }
+
+        p1.move(Vec3(0.05, 0., 0.));
     }
 
     return 0;
