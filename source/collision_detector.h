@@ -11,6 +11,7 @@
 #include "bounding_box.h"
 #include "bounding_box_projection.h"
 #include "contact_matrix.h"
+#include "contact_vector.h"
 #include "point_surface.h"
 
 namespace DEM {
@@ -28,27 +29,27 @@ namespace DEM {
 
         void setup();
         void do_check();  //Not const due to re-ordering of the proj vectors
-        std::vector<CollisionPair> contacts_to_create() const { return contacts_to_create_; }
+        std::vector<CollisionPair> contacts_to_create() const { return contacts_to_create_.get_objects(); }
         std::vector<CollisionPair> contacts_to_destroy() const { return contacts_to_destroy_;}
 
     private:
-        std::vector<BoundingBox<ForceModel, ParticleType> > bounding_boxes_;
-        std::vector<BoundingBoxProjectionType*> xproj_;
-        std::vector<BoundingBoxProjectionType*> yproj_;
-        std::vector<BoundingBoxProjectionType*> zproj_;
+        std::vector<BoundingBox<ForceModel, ParticleType> > bounding_boxes_{};
+        std::vector<BoundingBoxProjectionType*> xproj_{};
+        std::vector<BoundingBoxProjectionType*> yproj_{};
+        std::vector<BoundingBoxProjectionType*> zproj_{};
 
         const std::vector<ParticleType*>& particles_;
         const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces_;
         const ContactMatrix<ContactPointerType>& contacts_;
 
-        std::vector<CollisionPair> contacts_to_create_ = std::vector<CollisionPair>();
-        std::vector<CollisionPair> contacts_to_destroy_ = std::vector<CollisionPair>();
+        ContactVector<CollisionPair, std::pair<std::size_t, std::size_t>> contacts_to_create_{};
+        std::vector<CollisionPair> contacts_to_destroy_ {};
 
         //BoolMatrix activeCollisions;
         void update_bounding_boxes();
 
         void check_bounding_box_vector(std::vector<BoundingBoxProjectionType*>& vector);
-        bool check_other_axes(const BoundingBoxProjectionType& b1, const BoundingBoxProjectionType& b2) const;
+        bool check_other_axes(const BoundingBoxProjectionType* b1, const BoundingBoxProjectionType* b2) const;
     };
 
     template<typename ForceModel, typename ParticleType>
@@ -107,18 +108,24 @@ namespace DEM {
     void CollisionDetector<ForceModel, ParticleType>::check_bounding_box_vector(
             std::vector<CollisionDetector::BoundingBoxProjectionType*>& vector)
     {
-        for(unsigned i = 0; i != vector.size(); ++i){
-            unsigned j = i;
-            while(j != 0 && (vector[j-1]->val() > vector[j]->val())){
+        for (unsigned i = 0; i != vector.size(); ++i){
+             unsigned j = i;
+             while (j != 0 && (vector[j-1]->val() > vector[j]->val())){
                 BoundingBoxProjectionType* BBm = vector[j];
                 BoundingBoxProjectionType* BBn = vector[j-1];
                 //depending on de beginnings and endings of the swapping
                 // remove or add contact
-                if(BBm->position_char_() == 'e' && BBn->position_char_() == 'b')
-                    destroyContact(BBm, BBn);
-                if(BBm->position_char_() == 'b' && BBn->position_char_() == 'e'){
-                    if(checkOtherAxes(*BBm, *BBn))
-                        active_collisions_.insert(BBm->ID(), BBn->ID(), BBPair(BBm,BBn));
+                if (BBm->position_char_() == 'e' && BBn->position_char_() == 'b') {
+                    auto id_pair = make_pair(BBm->ID(), BBn->ID());
+                    if (!contacts_to_create_.erase(id_pair)) {
+                        if (contacts_.exist(id_pair)){
+                            contacts_to_destroy_.push_back(std::make_pair(BBm))
+                        }
+                    }
+                }
+                if (BBm->position_char_() == 'b' && BBn->position_char_() == 'e'){
+                    if(checkOtherAxes(BBm, BBn))
+                        contacts_to_create_.insert(std::make_pair(BBm->ID(), BBn->ID()), std::make_pair(BBm,BBn));
                 }
 
                 BoundingBoxProjectionType* temp = vector[j];
@@ -133,11 +140,11 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     bool
-    CollisionDetector<ForceModel, ParticleType>::check_other_axes(const CollisionDetector::BoundingBoxProjectionType& b1,
-            const CollisionDetector::BoundingBoxProjectionType& b2) const
+    CollisionDetector<ForceModel, ParticleType>::check_other_axes(const CollisionDetector::BoundingBoxProjectionType* b1,
+            const CollisionDetector::BoundingBoxProjectionType* b2) const
     {
-        auto idx1 = b1.get_indices_on_other_axes();
-        auto idx2 = b2.get_indices_on_other_axes();
+        auto idx1 = b1->get_indices_on_other_axes();
+        auto idx2 = b2->get_indices_on_other_axes();
         //checking the first of the axes
         if ( (*idx1[0] < *idx2[0] && *idx2[0] < *idx1[1]) || (*idx2[0] < *idx1[0] && *idx1[0] < *idx2[1]) ) {
             if ( (*idx1[2] < *idx2[2] && *idx2[2] < *idx1[3]) || (*idx2[2] < *idx1[2] && *idx1[2] < *idx2[3]) ) {

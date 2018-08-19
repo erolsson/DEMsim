@@ -9,15 +9,15 @@
 #include <vector>
 
 namespace DEM{
-    template<typename T>
+    template<typename T, typename KeyType=std::size_t>
     class ContactVector {
     public:
         ContactVector() = default;
         std::vector<T>& get_objects() {return data_;}
         const std::vector<T>& get_objects() const {return data_;}
-        void insert(std::size_t, const T&);
-        void erase(std::size_t);
-        bool exist(std::size_t) const;
+        void insert(KeyType key, const T& obj);
+        bool erase(KeyType key);
+        bool exist(KeyType key) const;
 
     private:
         std::map<std::size_t, std::size_t> data_indices_;
@@ -26,21 +26,21 @@ namespace DEM{
     };
 
 
-    template<typename T>
-    void ContactVector<T>::insert(std::size_t x, const T& obj)
+    template<typename T, typename KeyType>
+    void ContactVector<T, KeyType>::insert(KeyType key, const T& obj)
     {
-        if (!exist(x)) {
-            data_indices_.insert(std::pair<std::size_t, std::size_t>(x, data_.size()));
-            vector_indices_.push_back(x);
+        if (!exist(key)) {
+            data_indices_.insert(std::pair<std::size_t, std::size_t>(key, data_.size()));
+            vector_indices_.push_back(key);
             data_.push_back(obj);
         }
     }
 
-    template<typename T>
-    void ContactVector<T>::erase(std::size_t x)
+    template<typename T, typename KeyType>
+    bool ContactVector<T, KeyType>::erase(KeyType key)
     {
-        if (exist(x) ){
-            auto pos = data_indices_.find(x);
+        if (exist(key) ){
+            auto pos = data_indices_.find(key);
             data_indices_.erase(pos);
             std::size_t i = pos->second;   // Index where the removed element was, swapping with the last element
             if (i != data_.size() - 1) {
@@ -50,13 +50,15 @@ namespace DEM{
             }
             vector_indices_.pop_back();
             data_.pop_back();
+            return true;
         }
+        return false;
     }
 
-    template<typename T>
-    bool ContactVector<T>::exist(std::size_t x) const
+    template<typename T, typename KeyType>
+    bool ContactVector<T, KeyType>::exist(KeyType key) const
     {
-        return data_indices_.find(x) != data_indices_.end();
+        return data_indices_.find(key) != data_indices_.end();
     }
 }
 

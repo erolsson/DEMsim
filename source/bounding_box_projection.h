@@ -24,6 +24,7 @@ namespace DEM {
         void decrease_index() { --index_; }
 
         std::array<std::size_t*, 4> get_indices_on_other_axes() const { return other_indices_; }
+        BoundingBox<ForceModel, ParticleType>& get_bounding_box() const { return bbox_;}
 
     private:
         char position_char_;
