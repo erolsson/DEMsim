@@ -27,9 +27,9 @@ namespace DEM {
         double max_velocity{0.};
         bool force_control{ false };
 
-        explicit Surface(unsigned id);
+        explicit Surface(std::size_t id);
         virtual ~Surface() = default;
-        unsigned get_id() const { return id_; }
+        std::size_t get_id() const { return id_; }
         virtual Vec3 get_normal(const Vec3& position) const = 0;
         // virtual double get_curvature_radius() const = 0;  //  ToDo Implement later
         virtual double distance_to_point(const Vec3& point) const = 0;
@@ -75,7 +75,7 @@ namespace DEM {
         // to allow for multiple rotations
         Vec3 rotation_this_inc_{ Vec3(0, 0, 0) };
         Vec3 rotation_point_{ Vec3(0, 0, 0) };
-        unsigned id_;
+        std::size_t id_;
 
     private:
 
@@ -83,7 +83,7 @@ namespace DEM {
     };
 
     template<typename ForceModel, typename ParticleType>
-    Surface<ForceModel, ParticleType>::Surface(unsigned id)
+    Surface<ForceModel, ParticleType>::Surface(std::size_t id)
             :
             id_(id)
     {

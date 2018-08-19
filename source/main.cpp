@@ -15,10 +15,10 @@ int main(int, char**)
     using namespace DEM;
     using ForceModel = LinearStickSlipModel;
     using ParticleType = SphericalParticle<ForceModel>;
-    using ContactType = Contact<ForceModel, ParticleType>;
+    using ContactType = std::shared_ptr<Contact<ForceModel, ParticleType>>;
     using PointSurfaceType = PointSurface<ForceModel, ParticleType>;
 
-    DEM::ContactMatrix<ContactType> matrix = DEM::ContactMatrix<ContactType>(100);
+    DEM::ContactMatrix<ContactType> matrix = DEM::ContactMatrix<ContactType>(3);
     DEM::LinearContactMaterial m = DEM::LinearContactMaterial(0, 1000);
     m.density = 1;
     m.k = 10;
@@ -32,7 +32,7 @@ int main(int, char**)
     particles.push_back(&p1);
     particles.push_back(&p2);
 
-    CollisionDetector<ForceModel, ParticleType> collision_detector(particles, surfaces);
+    CollisionDetector<ForceModel, ParticleType> collision_detector(particles, surfaces, matrix);
     collision_detector.setup();
     collision_detector.do_check();
     return 0;

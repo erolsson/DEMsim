@@ -18,10 +18,11 @@ namespace DEM{
         void insert(KeyType key, const T& obj);
         bool erase(KeyType key);
         bool exist(KeyType key) const;
+        void clear();
 
     private:
-        std::map<std::size_t, std::size_t> data_indices_;
-        std::vector<std::size_t> vector_indices_;
+        std::map<KeyType, std::size_t> data_indices_;
+        std::vector<KeyType> vector_indices_;
         std::vector<T> data_;
     };
 
@@ -30,7 +31,7 @@ namespace DEM{
     void ContactVector<T, KeyType>::insert(KeyType key, const T& obj)
     {
         if (!exist(key)) {
-            data_indices_.insert(std::pair<std::size_t, std::size_t>(key, data_.size()));
+            data_indices_.insert(std::pair<KeyType, std::size_t>(key, data_.size()));
             vector_indices_.push_back(key);
             data_.push_back(obj);
         }
@@ -59,6 +60,14 @@ namespace DEM{
     bool ContactVector<T, KeyType>::exist(KeyType key) const
     {
         return data_indices_.find(key) != data_indices_.end();
+    }
+
+    template<typename T, typename KeyType>
+    void ContactVector<T, KeyType>::clear()
+    {
+        data_indices_.clear();
+        vector_indices_.clear();
+        data_.clear();
     }
 }
 

@@ -19,9 +19,10 @@ namespace DEM {
         explicit BoundingBox(ParticleType* particle, std::size_t index);
         explicit BoundingBox(SurfaceType* surface,  std::size_t index);
 
+        std::size_t get_id() const;
         void update();
-
         void set_stretch(double stretch) {stretch_ = stretch; }
+
         BProjectionType bx;
         BProjectionType ex;
         BProjectionType by;
@@ -43,12 +44,12 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     BoundingBox<ForceModel, ParticleType>::BoundingBox(ParticleType* particle, std::size_t index) :
-        bx(this, 2*index, 'b'),
-        ex(this, 2*index+1, 'e'),
-        by(this, 2*index, 'b'),
-        ey(this, 2*index+1, 'e'),
-        bz(this, 2*index, 'b'),
-        ez(this, 2*index+1, 'e'),
+        bx(this, 2*index,   'b', 'x'),
+        ex(this, 2*index+1, 'e', 'x'),
+        by(this, 2*index,   'b', 'y'),
+        ey(this, 2*index+1, 'e', 'y'),
+        bz(this, 2*index,   'b', 'z'),
+        ez(this, 2*index+1, 'e', 'z'),
         particle_(particle),
         surface_(nullptr),
         update_function(&BoundingBox<ForceModel, ParticleType>::particle_update)
@@ -63,12 +64,12 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::SurfaceType* surface, std::size_t index) :
-        bx(this, 2*index, 'b'),
-        ex(this, 2*index+1, 'e'),
-        by(this, 2*index, 'b'),
-        ey(this, 2*index+1, 'e'),
-        bz(this, 2*index, 'b'),
-        ez(this, 2*index+1, 'e'),
+        bx(this, 2*index,   'b', 'x'),
+        ex(this, 2*index+1, 'e', 'x'),
+        by(this, 2*index,   'b', 'y'),
+        ey(this, 2*index+1, 'e', 'y'),
+        bz(this, 2*index,   'b', 'z'),
+        ez(this, 2*index+1, 'e', 'z'),
         particle_(nullptr),
         surface_(surface),
         update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
@@ -79,6 +80,16 @@ namespace DEM {
         ex.setup();
         ey.setup();
         ez.setup();
+    }
+
+
+    template<typename ForceModel, typename ParticleType>
+    std::size_t BoundingBox<ForceModel, ParticleType>::get_id() const
+    {
+        if (surface_ == nullptr) {
+            return particle_->get_id();
+        }
+        return surface_->get_id();
     }
 
 
@@ -118,6 +129,7 @@ namespace DEM {
         // std::cout << bx.value << ", " << ex.value << ", " << by.value << ", " << ey.value << ", "
         //          << bz.value << ", " << ez.value;
     }
+
 
 }
 

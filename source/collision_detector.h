@@ -22,7 +22,7 @@ namespace DEM {
     public:
         using BoundingBoxType = BoundingBox<ForceModel, ParticleType>;
         using BoundingBoxProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
-        using CollisionPair = std::pair<BoundingBoxType*, BoundingBoxType*>;
+        using CollisionPair = std::pair<const BoundingBoxType*, const BoundingBoxType*>;
         CollisionDetector(const std::vector<ParticleType*>& particles,
                           const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces,
                           const ContactMatrix<ContactPointerType>& contacts);
@@ -110,22 +110,29 @@ namespace DEM {
     {
         for (unsigned i = 0; i != vector.size(); ++i){
              unsigned j = i;
-             while (j != 0 && (vector[j-1]->val() > vector[j]->val())){
+             while (j != 0 && vector[j-1]->get_value() > vector[j]->get_value()){
                 BoundingBoxProjectionType* BBm = vector[j];
                 BoundingBoxProjectionType* BBn = vector[j-1];
+
                 //depending on de beginnings and endings of the swapping
                 // remove or add contact
-                if (BBm->position_char_() == 'e' && BBn->position_char_() == 'b') {
-                    auto id_pair = make_pair(BBm->ID(), BBn->ID());
+                char c1 = BBm->get_position_char();
+                char c2 = BBn->get_position_char();
+
+                if (c1 == 'e' && c2 == 'b') {
+                    auto id_pair = std::make_pair(BBm->get_id(), BBn->get_id());
                     if (!contacts_to_create_.erase(id_pair)) {
-                        if (contacts_.exist(id_pair)){
-                            contacts_to_destroy_.push_back(std::make_pair(BBm))
+                        if (contacts_.exist(id_pair.first, id_pair.second)){
+                            contacts_to_destroy_.push_back(std::make_pair(BBm->get_bounding_box(),
+                                    BBn->get_bounding_box()));
                         }
                     }
                 }
-                if (BBm->position_char_() == 'b' && BBn->position_char_() == 'e'){
-                    if(checkOtherAxes(BBm, BBn))
-                        contacts_to_create_.insert(std::make_pair(BBm->ID(), BBn->ID()), std::make_pair(BBm,BBn));
+                else if (c1 == 'b' && c2 == 'e'){
+                    if(check_other_axes(BBm, BBn)) {
+                        contacts_to_create_.insert(std::make_pair(BBm->get_id(), BBn->get_id()),
+                                                   std::make_pair(BBm->get_bounding_box(), BBn->get_bounding_box()));
+                    }
                 }
 
                 BoundingBoxProjectionType* temp = vector[j];
