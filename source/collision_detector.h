@@ -38,6 +38,8 @@ namespace DEM {
         std::vector<BoundingBoxProjectionType*> yproj_{};
         std::vector<BoundingBoxProjectionType*> zproj_{};
 
+        std::size_t n_ = 0;
+
         const std::vector<ParticleType*>& particles_;
         const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces_;
         const ContactMatrix<ContactPointerType>& contacts_;
@@ -97,12 +99,13 @@ namespace DEM {
             zproj_.push_back(&bounding_box.bz);
             zproj_.push_back(&bounding_box.ez);
         }
+        n_ = xproj_.size();
     }
 
     template<typename ForceModel, typename ParticleType>
     void CollisionDetector<ForceModel, ParticleType>::update_bounding_boxes()
     {
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for(std::size_t i = 0; i < bounding_boxes_.size(); ++i){
             bounding_boxes_[i].update();
         }
@@ -112,7 +115,7 @@ namespace DEM {
     void CollisionDetector<ForceModel, ParticleType>::check_bounding_box_vector(
             std::vector<CollisionDetector::BoundingBoxProjectionType*>& vector)
     {
-        for (unsigned i = 0; i != vector.size(); ++i){
+        for (unsigned i = 0; i != n_; ++i){
              unsigned j = i;
              while (j != 0 && vector[j-1]->get_value() > vector[j]->get_value()){
 
