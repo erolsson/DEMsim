@@ -33,7 +33,7 @@ namespace DEM {
         double radius_;
         Vec3 axis_;
         Vec3 point_;
-        bool invard_;
+        bool inward;
     };
 
 
@@ -44,7 +44,7 @@ namespace DEM {
         radius_(radius),
         axis_(axis),
         point_(center_point),
-        invard_(invard)
+        inward(invard)
     {
         // Empty constructor
     }
@@ -52,13 +52,17 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     Vec3 Cylinder<ForceModel, ParticleType>::get_normal(const Vec3& position) const
     {
-        return Vec3();
+        Vec3 n = position - dot_product(axis_, position)*axis_;
+        if (inward)
+            return -n.normalize();
+        return n.normalize();
     }
 
     template<typename ForceModel, typename ParticleType>
     double Cylinder<ForceModel, ParticleType>::distance_to_point(const Vec3& point) const
     {
-        return 0;
+        Vec3 n = get_normal(point);
+        return radius_ + dot_product(point, n);
     }
 
     template<typename ForceModel, typename ParticleType>
