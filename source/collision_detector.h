@@ -20,9 +20,11 @@ namespace DEM {
     class CollisionDetector {
         using ContactPointerType = Contact<ForceModel, ParticleType>*;
     public:
+
         using BoundingBoxType = BoundingBox<ForceModel, ParticleType>;
-        using BoundingBoxProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
         using CollisionPair = std::pair<const BoundingBoxType*, const BoundingBoxType*>;
+        using BoundingBoxProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
+
         CollisionDetector(const std::vector<ParticleType*>& particles,
                           const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces,
                           const ContactMatrix<ContactPointerType>& contacts);

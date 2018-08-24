@@ -16,7 +16,7 @@ namespace DEM{
     template<typename ForceModel, typename ParticleType>
     class Contact {
         using ContactPointerType = Contact<ForceModel, ParticleType>*;
-        using SurfaceType = Surface<ContactPointerType, ParticleType>;
+        using SurfaceType = Surface<ForceModel, ParticleType>;
 
     public:
         //Constructors

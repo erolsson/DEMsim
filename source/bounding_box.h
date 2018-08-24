@@ -8,13 +8,13 @@
 #include <algorithm>
 
 #include "bounding_box_projection.h"
-#include "point_surface.h"
+#include "surface.h"
 
 namespace DEM {
     template <typename ForceModel, typename ParticleType>
     class BoundingBox {
     using BProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
-    using SurfaceType = PointSurface<ForceModel, ParticleType>;
+    using SurfaceType = Surface<ForceModel, ParticleType>;
     public:
         explicit BoundingBox(ParticleType* particle, std::size_t index);
         explicit BoundingBox(SurfaceType* surface,  std::size_t index);
@@ -48,7 +48,8 @@ namespace DEM {
         // In doing so, if statements is avoided at each update
         void (BoundingBox<ForceModel, ParticleType>::*update_function)();
         void particle_update();
-        void surface_update();
+        void point_surface_update();
+        void cylinder_update();
     };
 
     template<typename ForceModel, typename ParticleType>
@@ -81,7 +82,7 @@ namespace DEM {
         ez(this, 2*index+1, 'e', 'z'),
         particle_(nullptr),
         surface_(surface),
-        update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
+        update_function(&BoundingBox<ForceModel, ParticleType>::point_surface_update)
     {
         bx.setup();
         by.setup();
@@ -160,7 +161,7 @@ namespace DEM {
     }
 
     template<typename ForceModel, typename ParticleType>
-    void BoundingBox<ForceModel, ParticleType>::surface_update()
+    void BoundingBox<ForceModel, ParticleType>::point_surface_update()
     {
         auto bbox = surface_->bounding_box_values();
         bx.value = bbox.first.x - stretch_;

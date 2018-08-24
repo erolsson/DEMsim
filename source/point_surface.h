@@ -19,6 +19,7 @@ namespace DEM {
     public:
         PointSurface(unsigned id, std::vector<Vec3> points, bool infinite);
         Vec3 get_normal(const Vec3&) const override { return normal_; }
+        Vec3 get_normal() const { return normal_; }
         double distance_to_point(const Vec3& point) const override;
         Vec3 vector_to_point(const Vec3& point) const override;
         Vec3 displacement_this_inc(const Vec3& position) const override;
@@ -26,12 +27,12 @@ namespace DEM {
         void rotate(const Vec3& point, const Vec3& rotation_vector) override;
         std::string output_data() const override;
 
-        std::pair<Vec3, Vec3> bounding_box_values() const;
+        std::pair<Vec3, Vec3> bounding_box_values() const override;
 
     private:
         std::vector<Vec3> points_;
-        Vec3 normal_;
         bool infinite_;
+        Vec3 normal_;
 
         using Surface<ForceModel, ParticleType>::id_;
         using Surface<ForceModel, ParticleType>::displacement_this_inc_;
@@ -107,7 +108,7 @@ namespace DEM {
     Vec3 PointSurface<ForceModel, ParticleType>::displacement_this_inc(const Vec3& position) const
     {
         return displacement_this_inc_ +
-                crossProduct(rotation_this_inc_, position - rotation_point_);
+                cross_product(rotation_this_inc_, position - rotation_point_);
     }
 
     template<typename ForceModel, typename ParticleType>

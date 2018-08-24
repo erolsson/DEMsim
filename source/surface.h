@@ -40,6 +40,7 @@ namespace DEM {
         virtual void rotate(const Vec3& position, const Vec3& rotation_vector) = 0;
 
         virtual std::string output_data() const = 0;
+        virtual std::pair<Vec3, Vec3> bounding_box_values() const = 0;
         const Vec3& get_velocity() const { return velocity_; }
         const Vec3& get_acceleration() const { return acceleration_; }
 
