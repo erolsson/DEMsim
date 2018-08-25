@@ -5,10 +5,10 @@
 #ifndef DEMSIM_POINT_SURFACE_H
 #define DEMSIM_POINT_SURFACE_H
 
+#include <algorithm>
+#include <sstream>
 #include <vector>
 #include <utility>
-#include <sstream>
-#include <algorithm>
 
 #include "vec3.h"
 #include "surface.h"
@@ -112,8 +112,9 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     Vec3 PointSurface<ForceModel, ParticleType>::displacement_this_inc(const Vec3& position) const
     {
-        return displacement_this_inc_ +
-                cross_product(rotation_this_inc_, position - rotation_point_);
+        if (rotation_this_inc_.is_zero())
+            return displacement_this_inc_;
+        return displacement_this_inc_ + cross_product(rotation_this_inc_, position - rotation_point_);
     }
 
     template<typename ForceModel, typename ParticleType>

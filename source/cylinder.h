@@ -5,6 +5,8 @@
 #ifndef DEMSIM_CYLINDER_H
 #define DEMSIM_CYLINDER_H
 
+#include <sstream>
+
 #include "surface.h"
 #include "vec3.h"
 
@@ -12,7 +14,8 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     class Cylinder : public Surface<ForceModel, ParticleType> {
     public:
-        Cylinder(unsigned id, double radius, Vec3 axis, Vec3 center_point, double length, bool inward=false);
+        Cylinder(unsigned id, double radius, Vec3 axis, Vec3 center_point, double length,
+                bool inward=true, bool infinite=false);
         ~Cylinder() override = default;
 
         Vec3 get_normal(const Vec3& position) const override;
@@ -27,7 +30,9 @@ namespace DEM {
         std::string output_data() const override;
         std::pair<Vec3, Vec3> bounding_box_values() const override;
 
-        void expand(double radius_increase);
+        void expand(double radius_increase) { radius_ += radius_increase; }
+        double get_radius() const { return radius_; }
+
     private:
         using Surface<ForceModel, ParticleType>::id_;
         using Surface<ForceModel, ParticleType>::displacement_this_inc_;
@@ -40,18 +45,23 @@ namespace DEM {
         Vec3 point_;
         double length_;
         bool inward_;
+        bool infinite_;
+        // To allow fast functions for a common case, currently only z-aligned is supported in the collision detector!!!
+        bool z_aligned_;
     };
 
 
     template<typename ForceModel, typename ParticleType>
     Cylinder<ForceModel, ParticleType>::Cylinder(unsigned id, double radius, Vec3 axis,
-                                                 Vec3 center_point, double length, bool inward) :
+                                                 Vec3 center_point, double length, bool inward, bool infinite) :
         Surface<ForceModel, ParticleType>::Surface(id),
         radius_(radius),
-        axis_(axis),
+        axis_(axis.normalize()),
         point_(center_point),
         length_(length),
-        inward_(inward)
+        inward_(inward),
+        infinite_(infinite),
+        z_aligned_(axis_ == Vec3(0, 0, 1))
     {
         // Empty constructor
     }
@@ -84,7 +94,7 @@ namespace DEM {
     {
         if (rotation_this_inc_.is_zero())
             return displacement_this_inc_;
-
+        return cross_product(rotation_this_inc_, position - rotation_point_) + displacement_this_inc_;
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -101,24 +111,25 @@ namespace DEM {
         point_ += cross_product(rotation_vector, point_ - position);
         Vec3 p1 = cross_product(rotation_vector, point_ - position + axis_);
         axis_ = (p1 + axis_).normalize();
+
+        rotation_this_inc_ = rotation_vector;
+        rotation_point_ = position;
+        z_aligned_ = rotation_vector == Vec3(0, 0, 0);
     }
 
     template<typename ForceModel, typename ParticleType>
     std::string Cylinder<ForceModel, ParticleType>::output_data() const
     {
-        return std::__cxx11::string();
+        std::ostringstream stream;
+        stream << id_ << ", " << radius_;
+        return stream.str();
     }
 
     template<typename ForceModel, typename ParticleType>
     std::pair<Vec3, Vec3> Cylinder<ForceModel, ParticleType>::bounding_box_values() const
     {
-        return std::pair<Vec3, Vec3>();
-    }
+        //Cylinders not aligned with the z-axis not implemented but support exists
 
-    template<typename ForceModel, typename ParticleType>
-    void Cylinder<ForceModel, ParticleType>::expand(double radius_increase)
-    {
-        radius_ += radius_increase;
     }
 
 

@@ -5,13 +5,12 @@
 #ifndef DEMSIM_SURFACE_H
 #define DEMSIM_SURFACE_H
 
-#include <vector>
 #include <map>
 #include <memory>
+#include <vector>
 
-#include "vec3.h"
 #include "contact_vector.h"
-
+#include "vec3.h"
 
 
 namespace DEM {
@@ -84,8 +83,7 @@ namespace DEM {
     };
 
     template<typename ForceModel, typename ParticleType>
-    Surface<ForceModel, ParticleType>::Surface(std::size_t id)
-            :
+    Surface<ForceModel, ParticleType>::Surface(std::size_t id) :
             id_(id)
     {
         //Empty constructor
