@@ -35,7 +35,7 @@ public:
 
     //Functions that hopefully is self-explaining
     inline Vec3& normalize() {
-        double l = 1.0/length();
+        double l = inv_length();
         x*=l; y*=l; z*=l;
         return *this;
     }
@@ -49,7 +49,8 @@ public:
     }
 
     inline Vec3 normal() const {
-        return *this/length();
+        double inv = inv_length();
+        return *this*inv;
     }
 
     //Common vector operations, should be self-explaining
@@ -74,7 +75,8 @@ public:
     }
 
     inline const Vec3 operator/(double factor) const {
-        return Vec3(x/factor, y/factor, z/factor);
+        double inv = 1/factor;
+        return *this*inv;
     }
 
     inline Vec3& operator*=(double factor) {
@@ -96,6 +98,11 @@ public:
         x = 0.;
         y = 0.;
         z = 0.;
+    }
+
+private:
+    double inv_length() const{
+        return 1./length();
     }
 
 };

@@ -14,12 +14,16 @@ namespace DEM {
     public:
         Cylinder(unsigned id, double radius, Vec3 axis, Vec3 center_point, double length, bool inward=false);
         ~Cylinder() override = default;
+
         Vec3 get_normal(const Vec3& position) const override;
+
         double distance_to_point(const Vec3& point) const override;
         Vec3 vector_to_point(const Vec3& point) const override;
         Vec3 displacement_this_inc(const Vec3& position) const override;
+
         void move(const Vec3& distance, const Vec3& velocity) override;
         void rotate(const Vec3& position, const Vec3& rotation_vector) override;
+
         std::string output_data() const override;
         std::pair<Vec3, Vec3> bounding_box_values() const override;
 
@@ -78,19 +82,25 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     Vec3 Cylinder<ForceModel, ParticleType>::displacement_this_inc(const Vec3& position) const
     {
-        return displacement_this_inc_;
+        if (rotation_this_inc_.is_zero())
+            return displacement_this_inc_;
+
     }
 
     template<typename ForceModel, typename ParticleType>
     void Cylinder<ForceModel, ParticleType>::move(const Vec3& distance, const Vec3& velocity)
     {
-
+        point_ += distance;
+        velocity_ = velocity;
+        displacement_this_inc_ = distance;
     }
 
     template<typename ForceModel, typename ParticleType>
     void Cylinder<ForceModel, ParticleType>::rotate(const Vec3& position, const Vec3& rotation_vector)
     {
-
+        point_ += cross_product(rotation_vector, point_ - position);
+        Vec3 p1 = cross_product(rotation_vector, point_ - position + axis_);
+        axis_ = (p1 + axis_).normalize();
     }
 
     template<typename ForceModel, typename ParticleType>

@@ -18,13 +18,18 @@ namespace DEM {
     class PointSurface : public Surface<ForceModel, ParticleType> {
     public:
         PointSurface(unsigned id, std::vector<Vec3> points, bool infinite);
+        ~PointSurface() override = default;
+
         Vec3 get_normal(const Vec3&) const override { return normal_; }
-        Vec3 get_normal() const { return normal_; }
+        Vec3 get_normal() const { return normal_; }     //Convenience function for avoiding to pass an arbitrary point
+
         double distance_to_point(const Vec3& point) const override;
         Vec3 vector_to_point(const Vec3& point) const override;
         Vec3 displacement_this_inc(const Vec3& position) const override;
+
         void move(const Vec3& distance, const Vec3& velocity) override;
         void rotate(const Vec3& point, const Vec3& rotation_vector) override;
+
         std::string output_data() const override;
 
         std::pair<Vec3, Vec3> bounding_box_values() const override;
@@ -117,8 +122,8 @@ namespace DEM {
         for (auto& p: points_){
             p += distance;
         }
-        velocity_ = velocity;
         displacement_this_inc_ = distance;
+        velocity_ = velocity;
         normal_ = calculate_normal();
     }
 
