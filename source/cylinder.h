@@ -11,6 +11,8 @@
 #include "vec3.h"
 
 namespace DEM {
+    // ToDo: update this class to allow for cylinders with arbitrary orientation, currently cylinders aligned in the
+    //       z-axis are only working properly in the collision handling
     template<typename ForceModel, typename ParticleType>
     class Cylinder : public Surface<ForceModel, ParticleType> {
     public:
@@ -69,7 +71,7 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     Vec3 Cylinder<ForceModel, ParticleType>::get_normal(const Vec3& position) const
     {
-        Vec3 n = (position - point_) - dot_product(axis_, position)*axis_;
+        Vec3 n = (position-point_) - dot_product(axis_, position)*axis_;
         if (inward_)
             return -n.normalize();
         return n.normalize();
@@ -79,14 +81,28 @@ namespace DEM {
     double Cylinder<ForceModel, ParticleType>::distance_to_point(const Vec3& point) const
     {
         Vec3 n = get_normal(point);
-        return radius_ + dot_product((point - point_), n);
+        if (!infinite_) {
+            double position_on_axis = dot_product(point-point_, axis_);
+            if (position_on_axis<0 || position_on_axis>length_) {
+                Vec3 point_on_surface = point_+axis_*position_on_axis;
+                return (point-point_on_surface).length();
+            }
+        }
+        return (radius_ + dot_product((point-point_), n))*n;
     }
 
     template<typename ForceModel, typename ParticleType>
     Vec3 Cylinder<ForceModel, ParticleType>::vector_to_point(const Vec3& point) const
     {
         Vec3 n = get_normal(point);
-        return (radius_ + dot_product((point - point_), n))*n;
+        if (!infinite_) {
+            double position_on_axis = dot_product(point - point_, axis_);
+            if (position_on_axis < 0 || position_on_axis > length_) {
+                Vec3 point_on_surface = point_+axis_*position_on_axis;
+                return point - point_on_surface;
+            }
+        }
+        return (radius_ + dot_product((point-point_), n))*n;
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -129,9 +145,29 @@ namespace DEM {
     std::pair<Vec3, Vec3> Cylinder<ForceModel, ParticleType>::bounding_box_values() const
     {
         //Cylinders not aligned with the z-axis not implemented but support exists
-
+        double x_max = point_.x;
+        double x_min = point_.x;
+        double y_min = point_.y;
+        double y_max = point_.y;
+        double z_min = -1e99;
+        double z_max = 1e99;
+        if (inward_){
+            x_min -= radius_/sqrt(2);
+            x_max += radius_/sqrt(2);
+            y_min -= radius_/sqrt(2);
+            y_max += radius_/sqrt(2);
+        } else {
+            x_min -= radius_;
+            x_max += radius_;
+            y_min -= radius_;
+            y_max += radius_;
+        }
+        if ( !infinite_ ) {
+            z_min = point_.z;
+            z_max = point_.z + length_;
+        }
+        return std::make_pair(Vec3(x_min, y_min, z_min), Vec3(x_max, y_max, z_max));
     }
-
 
 }
 

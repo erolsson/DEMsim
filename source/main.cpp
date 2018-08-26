@@ -1,14 +1,15 @@
 #include <iostream>
 #include <vector>
 
-#include "linear_contact_material.h"
-#include "contact_matrix.h"
-#include "vec3.h"
-#include "contact.h"
-#include "spherical_particle.h"
-#include "linear_stick_slip_model.h"
-#include "point_surface.h"
 #include "collision_detector.h"
+#include "contact.h"
+#include "contact_matrix.h"
+#include "cylinder.h"
+#include "linear_stick_slip_model.h"
+#include "linear_contact_material.h"
+#include "point_surface.h"
+#include "spherical_particle.h"
+#include "vec3.h"
 
 int main(int, char**)
 {
