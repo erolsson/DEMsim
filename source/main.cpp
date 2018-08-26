@@ -17,8 +17,8 @@ int main(int, char**)
     using ForceModel = LinearStickSlipModel;
     using ParticleType = SphericalParticle<ForceModel>;
     using ContactType = Contact<ForceModel, ParticleType>;
-    using PointSurfaceType = PointSurface<ForceModel, ParticleType>;
     using SurfaceType = Surface<ForceModel, ParticleType>;
+    using CylinderType = Cylinder<ForceModel, ParticleType>;
 
     DEM::ContactMatrix<ContactType*> matrix = DEM::ContactMatrix<ContactType*>(3);
     DEM::LinearContactMaterial m = DEM::LinearContactMaterial(0, 1000);
@@ -38,17 +38,20 @@ int main(int, char**)
     PointSurface<ForceModel, ParticleType> surf(2, points, true);
 
     // Testing the cylinder class
-    Cylinder<ForceModel, ParticleType> cylinder(3, 1., Vec3(0, 0, 1), Vec3(1, 0, 0), 2);
+    CylinderType cylinder(3, 1., Vec3(0, 0, 1), Vec3(1, 0, 0), 2);
     std::cout << "cylinder normal " << cylinder.get_normal(Vec3(0.5, 0.5, 0)) << std::endl;
-    std::cout << "vector to cylinder " << cylinder.vector_to_point(Vec3(1, 0, 0)) << std::endl;
+    std::cout << "vector to cylinder " << cylinder.vector_to_point(Vec3(3, 0, 3)) << std::endl;
 
     std::vector<ParticleType*> particles;
-    std::vector<PointSurfaceType*> surfaces;
+    std::vector<SurfaceType*> surfaces;
+
     std::cout << "Surface normal " << surf.get_normal() << std::endl;
 
     particles.push_back(&particle1);
     particles.push_back(&particle2);
     surfaces.push_back(&surf);
+    surfaces.push_back(&cylinder);
+
     CollisionDetector<ForceModel, ParticleType> collision_detector(particles, surfaces, matrix);
     collision_detector.setup();
 

@@ -12,6 +12,7 @@
 #include "bounding_box_projection.h"
 #include "contact_matrix.h"
 #include "contact_vector.h"
+#include "cylinder.h"
 #include "point_surface.h"
 
 namespace DEM {
@@ -24,9 +25,11 @@ namespace DEM {
         using BoundingBoxType = BoundingBox<ForceModel, ParticleType>;
         using CollisionPair = std::pair<const BoundingBoxType*, const BoundingBoxType*>;
         using BoundingBoxProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
+        using SurfaceType = Surface<ForceModel, ParticleType>;
+        using CylinderType = Cylinder<ForceModel, ParticleType>;
 
         CollisionDetector(const std::vector<ParticleType*>& particles,
-                          const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces,
+                          const std::vector<SurfaceType*>& surfaces,
                           const ContactMatrix<ContactPointerType>& contacts);
 
         void setup();
@@ -40,10 +43,13 @@ namespace DEM {
         std::vector<BoundingBoxProjectionType*> yproj_{};
         std::vector<BoundingBoxProjectionType*> zproj_{};
 
+        // Requires special treatment
+        std::vector<BoundingBox<ForceModel, ParticleType> > bounding_boxes_for_cylinders_;
+
         std::size_t n_ = 0;
 
         const std::vector<ParticleType*>& particles_;
-        const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces_;
+        const std::vector<SurfaceType*>& surfaces_;
         const ContactMatrix<ContactPointerType>& contacts_;
 
         ContactVector<CollisionPair, std::pair<std::size_t, std::size_t>> contacts_to_create_{};
@@ -53,6 +59,7 @@ namespace DEM {
         void update_bounding_boxes();
 
         void check_bounding_box_vector(std::vector<BoundingBoxProjectionType*>& vector);
+        void check_cylinder_boxes();
         bool check_other_axes(const BoundingBoxProjectionType* b1, const BoundingBoxProjectionType* b2) const;
     };
 
@@ -65,13 +72,16 @@ namespace DEM {
         check_bounding_box_vector(xproj_);
         check_bounding_box_vector(yproj_);
         check_bounding_box_vector(zproj_);
+        check_cylinder_boxes();
     }
 
     template<typename ForceModel, typename ParticleType>
     CollisionDetector<ForceModel, ParticleType>::CollisionDetector(const std::vector<ParticleType*>& particles,
-            const std::vector<PointSurface<ForceModel, ParticleType>*>& point_surfaces,
-            const ContactMatrix<ContactPointerType>& contacts) :
-            particles_(particles), point_surfaces_(point_surfaces), contacts_(contacts)
+                                                                   const std::vector<SurfaceType*>& surfaces,
+                                                                   const ContactMatrix<ContactPointerType>& contacts) :
+        particles_(particles),
+        surfaces_(surfaces),
+        contacts_(contacts)
     {
         //Empty constructor
     }
@@ -80,15 +90,23 @@ namespace DEM {
     void CollisionDetector<ForceModel, ParticleType>::setup()
     {
         std::size_t counter = 0;
-        // bounding_boxes_.reserve(particles_.size() + point_surfaces_.size());
+        std::size_t cylinder_counter = 0;
+        // bounding_boxes_.reserve(particles_.size() + surfaces_.size());
         for(const auto& p: particles_){
             bounding_boxes_.emplace_back(p, counter);
             ++counter;
         }
 
-        for(const auto& s: point_surfaces_){
-            bounding_boxes_.emplace_back(s, counter);
-            ++counter;
+        for(const auto& s: surfaces_){
+            auto cylinder_ptr = dynamic_cast<CylinderType*>(s);
+            if (cylinder_ptr != nullptr) {
+                bounding_boxes_for_cylinders_.emplace_back(cylinder_ptr, cylinder_counter);
+            }
+            else {
+                bounding_boxes_.emplace_back(s, counter);
+                ++counter;
+            }
+
         }
 
         for(auto& bounding_box: bounding_boxes_){
@@ -157,6 +175,14 @@ namespace DEM {
     }
 
     template<typename ForceModel, typename ParticleType>
+    void CollisionDetector<ForceModel, ParticleType>::check_cylinder_boxes()
+    {
+        for(const auto& c: bounding_boxes_for_cylinders_) {
+
+        }
+    }
+
+    template<typename ForceModel, typename ParticleType>
     bool
     CollisionDetector<ForceModel, ParticleType>::check_other_axes(const CollisionDetector::BoundingBoxProjectionType* b1,
             const CollisionDetector::BoundingBoxProjectionType* b2) const
@@ -174,8 +200,6 @@ namespace DEM {
         }
         return false;
     }
-
-
 }
 
 #endif //DEMSIM_COLLISION_DETECTOR_H

@@ -100,7 +100,8 @@ namespace DEM {
         if (!infinite_) {
             double position_on_axis = dot_product(point - point_, axis_);
             if (position_on_axis < 0 || position_on_axis > length_) {
-                Vec3 point_on_surface = point_+axis_*position_on_axis;
+                double d = position_on_axis < 0 ? 0. : length_;     // Should we be on the upper or lower plate
+                Vec3 point_on_surface = point_ + axis_*d - get_normal(point)*radius_;
                 return point - point_on_surface;
             }
         }
