@@ -16,7 +16,7 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     class Cylinder : public Surface<ForceModel, ParticleType> {
     public:
-        Cylinder(unsigned id, double radius, Vec3 axis, Vec3 center_point, double length,
+        Cylinder(unsigned id, double radius, Vec3 axis, Vec3 base_point, double length,
                 bool inward=true, bool infinite=false);
         ~Cylinder() override = default;
 
@@ -55,11 +55,11 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     Cylinder<ForceModel, ParticleType>::Cylinder(unsigned id, double radius, Vec3 axis,
-                                                 Vec3 center_point, double length, bool inward, bool infinite) :
+                                                 Vec3 base_point, double length, bool inward, bool infinite) :
         Surface<ForceModel, ParticleType>::Surface(id),
         radius_(radius),
         axis_(axis.normalize()),
-        point_(center_point),
+        point_(base_point),
         length_(length),
         inward_(inward),
         infinite_(infinite),
@@ -73,7 +73,9 @@ namespace DEM {
     {
         Vec3 n = (position-point_) - dot_product(axis_, position)*axis_;
         if (inward_)
-            return -n.normalize();
+            n*= -1;
+        if (n.is_zero())
+            return Vec3(1, 0, 0);  //Special case, we are on the central axis, any unit vector can be used as normal
         return n.normalize();
     }
 
@@ -88,7 +90,7 @@ namespace DEM {
                 return (point-point_on_surface).length();
             }
         }
-        return (radius_ + dot_product((point-point_), n))*n;
+        return (radius_ + dot_product((point-point_), n));
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -126,7 +128,7 @@ namespace DEM {
     {
         point_ += cross_product(rotation_vector, point_ - position);
         Vec3 p1 = cross_product(rotation_vector, point_ - position + axis_);
-        axis_ = (p1 + axis_).normalize();
+        axis_ = (p1 + axis_).normal();
 
         rotation_this_inc_ = rotation_vector;
         rotation_point_ = position;

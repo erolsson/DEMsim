@@ -37,6 +37,11 @@ int main(int, char**)
 
     PointSurface<ForceModel, ParticleType> surf(2, points, true);
 
+    // Testing the cylinder class
+    Cylinder<ForceModel, ParticleType> cylinder(3, 1., Vec3(0, 0, 1), Vec3(1, 0, 0), 2);
+    std::cout << "cylinder normal " << cylinder.get_normal(Vec3(0.5, 0.5, 0)) << std::endl;
+    std::cout << "vector to cylinder " << cylinder.vector_to_point(Vec3(1, 0, 0)) << std::endl;
+
     std::vector<ParticleType*> particles;
     std::vector<PointSurfaceType*> surfaces;
     std::cout << "Surface normal " << surf.get_normal() << std::endl;
@@ -52,12 +57,13 @@ int main(int, char**)
 
         auto contacts_to_create = collision_detector.contacts_to_create();
         auto contacts_to_destroy = collision_detector.contacts_to_destroy();
-        std::cout << "Contacts to create" << std::endl;
+
         for (const auto& contact : contacts_to_create) {
             SurfaceType* s1 = contact.first->get_surface();
             SurfaceType* s2 = contact.first->get_surface();
 
-            std::cout << "\t" << contact.first->get_id() << ", " << contact.second->get_id() << std::endl;
+            std::cout << "Creating contact: " << contact.first->get_id() << ", "
+                      << contact.second->get_id() << std::endl;
             ContactType* c = nullptr;
             if (s1 == nullptr && s2 == nullptr)
                 c = new ContactType(contact.first->get_particle(), contact.second->get_particle(), 0.);
@@ -68,10 +74,9 @@ int main(int, char**)
             matrix.insert(contact.second->get_id(), contact.first->get_id(), c);
         }
 
-
-        std::cout << "Contacts to destroy" << std::endl;
         for (const auto& contact : contacts_to_destroy) {
-            std::cout << "\t" << contact.first->get_id() << ", " << contact.second->get_id() << std::endl;
+            std::cout << "Destroying contact: " << contact.first->get_id() << ", "
+                      << contact.second->get_id() << std::endl;
             matrix.erase(contact.first->get_id(), contact.second->get_id());
         }
 
