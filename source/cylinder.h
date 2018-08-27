@@ -30,7 +30,7 @@ namespace DEM {
         void rotate(const Vec3& position, const Vec3& rotation_vector) override;
 
         std::string output_data() const override;
-        std::pair<Vec3, Vec3> bounding_box_values() const override;
+        const std::vector<double>& bounding_box_values() const override;
 
         void expand(double radius_increase) { radius_ += radius_increase; }
         double get_radius() const { return radius_; }
@@ -42,6 +42,8 @@ namespace DEM {
         using Surface<ForceModel, ParticleType>::rotation_point_;
         using Surface<ForceModel, ParticleType>::velocity_;
 
+        void update_bounding_box();
+
         double radius_;
         Vec3 axis_;
         Vec3 point_;
@@ -50,6 +52,8 @@ namespace DEM {
         bool infinite_;
         // To allow fast functions for a common case, currently only z-aligned is supported in the collision detector!!!
         bool z_aligned_;
+
+        std::vector<double> bbox_values_;
     };
 
 
@@ -145,8 +149,9 @@ namespace DEM {
     }
 
     template<typename ForceModel, typename ParticleType>
-    std::pair<Vec3, Vec3> Cylinder<ForceModel, ParticleType>::bounding_box_values() const
+    const std::vector<double>& Cylinder<ForceModel, ParticleType>::bounding_box_values() const
     {
+        /*
         //Cylinders not aligned with the z-axis not implemented but support exists
         double x_max = point_.x;
         double x_min = point_.x;
@@ -170,6 +175,8 @@ namespace DEM {
             z_max = point_.z + length_;
         }
         return std::make_pair(Vec3(x_min, y_min, z_min), Vec3(x_max, y_max, z_max));
+    */
+        return bbox_values_;
     }
 
 }

@@ -32,7 +32,7 @@ namespace DEM {
 
         std::string output_data() const override;
 
-        std::pair<Vec3, Vec3> bounding_box_values() const override;
+        const std::vector<double>& bounding_box_values() const override;
 
     private:
         std::vector<Vec3> points_;
@@ -45,7 +45,10 @@ namespace DEM {
         using Surface<ForceModel, ParticleType>::rotation_point_;
         using Surface<ForceModel, ParticleType>::velocity_;
 
+        std::vector<double> bbox_values_;
+
         Vec3 calculate_normal() const;
+        void update_bounding_box();
 
     };
 
@@ -54,9 +57,10 @@ namespace DEM {
         Surface<ForceModel, ParticleType>::Surface(id),
         points_(std::move(points)),
         infinite_(infinite),
-        normal_(calculate_normal())
+        normal_(calculate_normal()),
+        bbox_values_(6, 0)
     {
-            //Empty constructor
+            update_bounding_box();
     }
 
 
@@ -126,6 +130,7 @@ namespace DEM {
         displacement_this_inc_ = distance;
         velocity_ = velocity;
         normal_ = calculate_normal();
+        update_bounding_box();
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -137,6 +142,7 @@ namespace DEM {
         rotation_this_inc_ = rotation_vector;
         rotation_point_ = point;
         normal_ = calculate_normal();
+        update_bounding_box();
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -158,7 +164,13 @@ namespace DEM {
     }
 
     template<typename ForceModel, typename ParticleType>
-    std::pair<Vec3, Vec3> PointSurface<ForceModel, ParticleType>::bounding_box_values() const
+    const std::vector<double>& PointSurface<ForceModel, ParticleType>::bounding_box_values() const
+    {
+        return bbox_values_;
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    void PointSurface<ForceModel, ParticleType>::update_bounding_box()
     {
         auto x_cmp = [](const Vec3& v1, const Vec3& v2) -> bool {
             return v1.x < v2.x;
@@ -172,16 +184,14 @@ namespace DEM {
             return v1.z < v2.z;
         };
 
-        double x_min = std::min_element(points_.begin(), points_.end(), x_cmp)->x;
-        double x_max = std::max_element(points_.begin(), points_.end(), x_cmp)->x;
+        bbox_values_[0] = std::min_element(points_.begin(), points_.end(), x_cmp)->x;
+        bbox_values_[1] = std::max_element(points_.begin(), points_.end(), x_cmp)->x;
 
-        double y_min = std::min_element(points_.begin(), points_.end(), y_cmp)->y;
-        double y_max = std::max_element(points_.begin(), points_.end(), y_cmp)->y;
+        bbox_values_[2] = std::min_element(points_.begin(), points_.end(), y_cmp)->y;
+        bbox_values_[3] = std::max_element(points_.begin(), points_.end(), y_cmp)->y;
 
-        double z_min = std::min_element(points_.begin(), points_.end(), z_cmp)->z;
-        double z_max = std::max_element(points_.begin(), points_.end(), z_cmp)->z;
-
-        return std::make_pair(Vec3(x_min, y_min, z_min), Vec3(x_max, y_max, z_max));
+        bbox_values_[4] = std::min_element(points_.begin(), points_.end(), z_cmp)->z;
+        bbox_values_[5] = std::max_element(points_.begin(), points_.end(), z_cmp)->z;
     }
 }
 

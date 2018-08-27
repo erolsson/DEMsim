@@ -9,18 +9,19 @@
 
 #include "bounding_box_projection.h"
 #include "cylinder.h"
+#include "point_surface.h"
 #include "surface.h"
 
 namespace DEM {
     template <typename ForceModel, typename ParticleType>
     class BoundingBox {
     using BProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
+    using PointSurfaceType = PointSurface<ForceModel, ParticleType>;
     using SurfaceType = Surface<ForceModel, ParticleType>;
     using CylinderType = Cylinder<ForceModel, ParticleType>;
     public:
         explicit BoundingBox(ParticleType* particle, std::size_t index);
         explicit BoundingBox(SurfaceType* surface,  std::size_t index);
-        explicit BoundingBox(CylinderType* surface,  std::size_t index);
 
         // Copy constructor and assignment operator needed due to pointers between different projection vectors
         // which becomes invalid when different boundingboxes are re-allocated due to vector-over-capacity
@@ -115,26 +116,6 @@ namespace DEM {
     }
 
     template<typename ForceModel, typename ParticleType>
-    BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderType* surface, std::size_t index) :
-        bx(this, 2*index,   'b', 'x'),
-        ex(this, 2*index+1, 'e', 'x'),
-        by(this, 2*index,   'b', 'y'),
-        ey(this, 2*index+1, 'e', 'y'),
-        bz(this, 2*index,   'b', 'z'),
-        ez(this, 2*index+1, 'e', 'z'),
-        particle_(nullptr),
-        surface_(surface),
-        update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
-    {
-        bx.setup();
-        by.setup();
-        bz.setup();
-        ex.setup();
-        ey.setup();
-        ez.setup();
-    }
-
-    template<typename ForceModel, typename ParticleType>
     BoundingBox<ForceModel, ParticleType>& BoundingBox<ForceModel, ParticleType>::operator=(const BoundingBox& rhs)
     {
         if (*this != rhs) {  // Avoiding x=x
@@ -187,14 +168,14 @@ namespace DEM {
     void BoundingBox<ForceModel, ParticleType>::surface_update()
     {
         auto bbox = surface_->bounding_box_values();
-        bx.value = bbox.first.x - stretch_;
-        ex.value = bbox.second.x +  stretch_;
+        bx.value = bbox[0] - stretch_;
+        ex.value = bbox[1] +  stretch_;
 
-        by.value = bbox.first.y - stretch_;
-        ey.value = bbox.second.y +  stretch_;
+        by.value = bbox[2] - stretch_;
+        ey.value = bbox[3] +  stretch_;
 
-        bz.value = bbox.first.z - stretch_;
-        ez.value = bbox.second.z +  stretch_;
+        bz.value = bbox[4] - stretch_;
+        ez.value = bbox[5] +  stretch_;
     }
 
     template<typename ForceModel, typename ParticleType>

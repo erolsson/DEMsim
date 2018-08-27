@@ -106,7 +106,6 @@ namespace DEM {
                 bounding_boxes_.emplace_back(s, counter);
                 ++counter;
             }
-
         }
 
         for(auto& bounding_box: bounding_boxes_){
@@ -125,7 +124,7 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     void CollisionDetector<ForceModel, ParticleType>::update_bounding_boxes()
     {
-        // #pragma omp parallel for
+        #pragma omp parallel for
         for(std::size_t i = 0; i < bounding_boxes_.size(); ++i){
             bounding_boxes_[i].update();
         }
@@ -152,7 +151,7 @@ namespace DEM {
                      if (!contacts_to_create_.erase(id_pair)) {
                          if (contacts_.exist(id_pair.first, id_pair.second)) {
                              contacts_to_destroy_.push_back(std::make_pair(BBm->get_bounding_box(),
-                                     BBn->get_bounding_box()));
+                                                                           BBn->get_bounding_box()));
                          }
                      }
                  }
@@ -163,13 +162,11 @@ namespace DEM {
                      }
                  }
 
-                 BoundingBoxProjectionType* temp = vector[j];
-                 vector[j] = vector[j-1];
-                 vector[j-1] = temp;
-                 --j;
+                 std::swap(vector[j], vector[j-1]);
 
                  BBn->increase_index();
                  BBm->decrease_index();
+                 --j;
              }
         }
     }
@@ -177,7 +174,7 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     void CollisionDetector<ForceModel, ParticleType>::check_cylinder_boxes()
     {
-        for(const auto& c: bounding_boxes_for_cylinders_) {
+        for (const auto& c: bounding_boxes_for_cylinders_) {
 
         }
     }
@@ -190,9 +187,9 @@ namespace DEM {
         auto idx1 = b1->get_indices_on_other_axes();
         auto idx2 = b2->get_indices_on_other_axes();
 
-        //checking the first of the axes
+        // checking the first of the axes
         if ( (*idx1[0] < *idx2[0] && *idx2[0] < *idx1[1]) || (*idx2[0] < *idx1[0] && *idx1[0] < *idx2[1]) ) {
-
+            // Check the second axis
             if ( (*idx1[2] < *idx2[2] && *idx2[2] < *idx1[3]) || (*idx2[2] < *idx1[2] && *idx1[2] < *idx2[3]) ) {
                 return true;
             }
