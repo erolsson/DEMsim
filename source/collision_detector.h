@@ -216,7 +216,9 @@ namespace DEM {
         // ToDo Only collision between z_aligned cylinders are implemented presently,
         // arbitrary aligned cylinders remains to be implemented
         for (const auto& c: cylinders_) {
-
+            auto cylinder_bounding_values = c->get_bounding_box_
+            auto xmin = [](const auto& bbp) { return bbp.value > c.get_point; }
+            auto& neg_x_boxes = std::find_if(xproj_.begin(), xproj_.end(), )
         }
     }
 

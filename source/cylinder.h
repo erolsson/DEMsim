@@ -30,10 +30,11 @@ namespace DEM {
         void rotate(const Vec3& position, const Vec3& rotation_vector) override;
 
         std::string output_data() const override;
-        const std::vector<double>& bounding_box_values() const override;
+        const std::vector<double>& bounding_box_values() const override { return bbox_values_;}
 
-        void expand(double radius_increase) { radius_ += radius_increase; }
+        void expand(double radius_increase);
         double get_radius() const { return radius_; }
+        bool is_infinite() const { return infinite_; }
 
     private:
         using Surface<ForceModel, ParticleType>::id_;
@@ -52,6 +53,8 @@ namespace DEM {
         bool z_aligned_;
 
         std::vector<double> bbox_values_;
+
+        void update_bounding_box();
     };
 
 
@@ -65,10 +68,15 @@ namespace DEM {
         length_(length),
         inward_(inward),
         infinite_(infinite),
-        z_aligned_(axis_ == Vec3(0, 0, 1)),
-        bbox_values_()
+        z_aligned_(axis_ == Vec3(0, 0, 1))
     {
-        // Empty constructor
+       if (infinite) {
+           bbox_values_ = std::vector<double>(8, 0.);
+       }
+       else {
+           bbox_values_= std::vector<double>(10, 0.);
+       }
+       update_bounding_box();
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -125,6 +133,7 @@ namespace DEM {
         point_ += distance;
         velocity_ = velocity;
         displacement_this_inc_ = distance;
+        update_bounding_box();
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -137,6 +146,7 @@ namespace DEM {
         rotation_this_inc_ = rotation_vector;
         rotation_point_ = position;
         z_aligned_ = rotation_vector == Vec3(0, 0, 0);
+        update_bounding_box();
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -148,9 +158,29 @@ namespace DEM {
     }
 
     template<typename ForceModel, typename ParticleType>
-    const std::vector<double>& Cylinder<ForceModel, ParticleType>::bounding_box_values() const
+    void Cylinder<ForceModel, ParticleType>::update_bounding_box()
     {
-        return bbox_values_;
+        bbox_values_[0] = point_.x - radius_;
+        bbox_values_[1] = point_.x - radius_/sqrt(2);
+        bbox_values_[2] = point_.x + radius_;
+        bbox_values_[3] = point_.x + radius_/sqrt(2);
+
+        bbox_values_[4] = point_.y - radius_;
+        bbox_values_[5] = point_.y - radius_/sqrt(2);
+        bbox_values_[6] = point_.y + radius_;
+        bbox_values_[7] = point_.y + radius_/sqrt(2);
+
+        if (!infinite_) {
+            bbox_values_[8] = point_.z;
+            bbox_values_[9] = point_.z + length_;
+        }
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    void Cylinder<ForceModel, ParticleType>::expand(double radius_increase)
+    {
+        radius_ += radius_increase;
+        update_bounding_box();
     }
 
 }
