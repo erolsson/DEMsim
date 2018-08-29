@@ -23,10 +23,36 @@ namespace DEM {
     public:
 
         using BoundingBoxType = BoundingBox<ForceModel, ParticleType>;
-        using CollisionPair = std::pair<const BoundingBoxType*, const BoundingBoxType*>;
+        // using CollisionPair = std::pair<const BoundingBoxType*, const BoundingBoxType*>;
         using BoundingBoxProjectionType = BoundingBoxProjection<ForceModel, ParticleType>;
         using SurfaceType = Surface<ForceModel, ParticleType>;
         using CylinderType = Cylinder<ForceModel, ParticleType>;
+
+        class CollisionPair {
+        public:
+            ParticleType* particle1;
+            ParticleType* particle2;
+            SurfaceType* surface;
+
+            CollisionPair(ParticleType* p1, ParticleType* p2) :
+                particle1(p1), particle2(p2), surface(nullptr)
+            {
+                // Empty constructor
+            }
+
+            CollisionPair(ParticleType* p1, SurfaceType* surf) :
+                    particle1(p1), particle2(nullptr), surface(surf)
+            {
+                // Empty constructor
+            }
+
+            std::pair<std::size_t, size_t> get_id_pair() const {
+                if (surface == nullptr)
+                    return std::make_pair(particle1->get_id(), particle2->get_id());
+                else
+                    return std::make_pair(particle1->get_id(), surface->get_id());
+            }
+        };
 
         CollisionDetector(const std::vector<ParticleType*>& particles,
                           const std::vector<SurfaceType*>& surfaces,
@@ -39,12 +65,13 @@ namespace DEM {
 
     private:
         std::vector<BoundingBox<ForceModel, ParticleType> > bounding_boxes_{};
+
         std::vector<BoundingBoxProjectionType*> xproj_{};
         std::vector<BoundingBoxProjectionType*> yproj_{};
         std::vector<BoundingBoxProjectionType*> zproj_{};
 
         // Requires special treatment
-        std::vector<BoundingBox<ForceModel, ParticleType> > bounding_boxes_for_cylinders_;
+        std::vector<CylinderType*> cylinders_;
 
         std::size_t n_ = 0;
 
@@ -61,6 +88,7 @@ namespace DEM {
         void check_bounding_box_vector(std::vector<BoundingBoxProjectionType*>& vector);
         void check_cylinder_boxes();
         bool check_other_axes(const BoundingBoxProjectionType* b1, const BoundingBoxProjectionType* b2) const;
+
     };
 
     template<typename ForceModel, typename ParticleType>
@@ -90,7 +118,6 @@ namespace DEM {
     void CollisionDetector<ForceModel, ParticleType>::setup()
     {
         std::size_t counter = 0;
-        std::size_t cylinder_counter = 0;
         // bounding_boxes_.reserve(particles_.size() + surfaces_.size());
         for(const auto& p: particles_){
             bounding_boxes_.emplace_back(p, counter);
@@ -100,7 +127,7 @@ namespace DEM {
         for(const auto& s: surfaces_){
             auto cylinder_ptr = dynamic_cast<CylinderType*>(s);
             if (cylinder_ptr != nullptr) {
-                bounding_boxes_for_cylinders_.emplace_back(cylinder_ptr, cylinder_counter);
+                cylinders_.push_back(cylinder_ptr);
             }
             else {
                 bounding_boxes_.emplace_back(s, counter);
@@ -138,34 +165,46 @@ namespace DEM {
              unsigned j = i;
              while (j != 0 && vector[j-1]->get_value() > vector[j]->get_value()){
 
-                 BoundingBoxProjectionType* BBm = vector[j];
-                 BoundingBoxProjectionType* BBn = vector[j-1];
+                 BoundingBoxProjectionType* bbm = vector[j];
+                 BoundingBoxProjectionType* bbn = vector[j-1];
 
                  //depending on de beginnings and endings of the swapping
                  // remove or add contact
-                 char c1 = BBm->get_position_char();
-                 char c2 = BBn->get_position_char();
+                 char c1 = bbm->get_position_char();
+                 char c2 = bbn->get_position_char();
 
                  if (c1 == 'e' && c2 == 'b') {
-                     auto id_pair = std::make_pair(BBm->get_id(), BBn->get_id());
+                     auto id_pair = std::make_pair(bbm->get_id(), bbn->get_id());
                      if (!contacts_to_create_.erase(id_pair)) {
                          if (contacts_.exist(id_pair.first, id_pair.second)) {
-                             contacts_to_destroy_.push_back(std::make_pair(BBm->get_bounding_box(),
-                                                                           BBn->get_bounding_box()));
+                             // There is actually a contact to destroy
+                             if (bbm->get_particle() != nullptr && bbn->get_particle() !=nullptr)
+                                 contacts_to_destroy_.push_back(CollisionPair(bbm->get_particle() ,bbn->get_particle()));
+                             else if (bbn->get_surface() != nullptr)
+                                 contacts_to_destroy_.push_back(CollisionPair(bbm->get_particle() ,bbn->get_surface()));
+                             else if (bbm->get_surface() != nullptr)
+                                 contacts_to_destroy_.push_back(CollisionPair(bbn->get_particle() ,bbm->get_surface()));
                          }
                      }
                  }
                  else if (c1 == 'b' && c2 == 'e') {
-                     if (check_other_axes(BBm, BBn)) {
-                         contacts_to_create_.insert(std::make_pair(BBm->get_id(), BBn->get_id()),
-                                                    std::make_pair(BBm->get_bounding_box(), BBn->get_bounding_box()));
+                     if (check_other_axes(bbm, bbn)) {
+                         if (bbm->get_particle() != nullptr && bbn->get_particle() !=nullptr)
+                             contacts_to_create_.insert(std::make_pair(bbm->get_id(), bbn->get_id()),
+                                     CollisionPair(bbm->get_particle(), bbn->get_particle()));
+                         else if (bbn->get_surface() != nullptr)
+                             contacts_to_create_.insert(std::make_pair(bbm->get_id(), bbn->get_id()),
+                                     CollisionPair(bbm->get_particle(), bbn->get_surface()));
+                         else if (bbm->get_surface() != nullptr)
+                             contacts_to_create_.insert(std::make_pair(bbn->get_id(), bbm->get_id()),
+                                     CollisionPair(bbn->get_particle(), bbm->get_surface()));
                      }
                  }
 
                  std::swap(vector[j], vector[j-1]);
 
-                 BBn->increase_index();
-                 BBm->decrease_index();
+                 bbn->increase_index();
+                 bbm->decrease_index();
                  --j;
              }
         }
@@ -174,7 +213,9 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     void CollisionDetector<ForceModel, ParticleType>::check_cylinder_boxes()
     {
-        for (const auto& c: bounding_boxes_for_cylinders_) {
+        // ToDo Only collision between z_aligned cylinders are implemented presently,
+        // arbitrary aligned cylinders remains to be implemented
+        for (const auto& c: cylinders_) {
 
         }
     }
@@ -197,6 +238,7 @@ namespace DEM {
         }
         return false;
     }
+
 }
 
 #endif //DEMSIM_COLLISION_DETECTOR_H

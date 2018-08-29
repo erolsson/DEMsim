@@ -31,6 +31,9 @@ namespace DEM {
         std::size_t get_id() const {return bbox_->get_id(); }
         std::size_t get_index() const { return index_; };
 
+        ParticleType* get_particle() const { return bbox_->get_particle(); }
+        SurfaceType* get_surface() const { return bbox_->get_surface(); }
+
     private:
         double value = 0;
         const char position_char_;

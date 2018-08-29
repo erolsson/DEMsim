@@ -62,25 +62,23 @@ int main(int, char**)
         auto contacts_to_destroy = collision_detector.contacts_to_destroy();
 
         for (const auto& contact : contacts_to_create) {
-            SurfaceType* s1 = contact.first->get_surface();
-            SurfaceType* s2 = contact.first->get_surface();
 
-            std::cout << "Creating contact: " << contact.first->get_id() << ", "
-                      << contact.second->get_id() << std::endl;
+            std::cout << "Creating contact: " << contact.get_id_pair().first << ", "
+                      << contact.get_id_pair().second << std::endl;
             ContactType* c = nullptr;
-            if (s1 == nullptr && s2 == nullptr)
-                c = new ContactType(contact.first->get_particle(), contact.second->get_particle(), 0.);
-            else if (contact.second->get_particle() == nullptr)
-                c = new ContactType(contact.first->get_particle(), contact.second->get_surface(), 0.);
-            else if (contact.first->get_particle() == nullptr)
-                c = new ContactType(contact.second->get_particle(), contact.first->get_surface(), 0.);
-            matrix.insert(contact.second->get_id(), contact.first->get_id(), c);
+            if (contact.surface == nullptr) {
+                c = new ContactType(contact.particle1, contact.particle2, 0.);
+            }
+            else {
+                c = new ContactType(contact.particle1, contact.surface, 0.);
+            }
+            matrix.insert(contact.get_id_pair().first, contact.get_id_pair().second, c);
         }
 
         for (const auto& contact : contacts_to_destroy) {
-            std::cout << "Destroying contact: " << contact.first->get_id() << ", "
-                      << contact.second->get_id() << std::endl;
-            matrix.erase(contact.first->get_id(), contact.second->get_id());
+            std::cout << "Destroying contact: " << contact.get_id_pair().first << ", "
+                      << contact.get_id_pair().second << std::endl;
+            matrix.erase(contact.get_id_pair().first, contact.get_id_pair().second);
         }
 
         particle1.move(Vec3(0.05, 0., 0.05));

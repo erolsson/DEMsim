@@ -42,8 +42,6 @@ namespace DEM {
         using Surface<ForceModel, ParticleType>::rotation_point_;
         using Surface<ForceModel, ParticleType>::velocity_;
 
-        void update_bounding_box();
-
         double radius_;
         Vec3 axis_;
         Vec3 point_;
@@ -67,7 +65,8 @@ namespace DEM {
         length_(length),
         inward_(inward),
         infinite_(infinite),
-        z_aligned_(axis_ == Vec3(0, 0, 1))
+        z_aligned_(axis_ == Vec3(0, 0, 1)),
+        bbox_values_()
     {
         // Empty constructor
     }
@@ -151,31 +150,6 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     const std::vector<double>& Cylinder<ForceModel, ParticleType>::bounding_box_values() const
     {
-        /*
-        //Cylinders not aligned with the z-axis not implemented but support exists
-        double x_max = point_.x;
-        double x_min = point_.x;
-        double y_min = point_.y;
-        double y_max = point_.y;
-        double z_min = -1e99;
-        double z_max = 1e99;
-        if (inward_){
-            x_min -= radius_/sqrt(2);
-            x_max += radius_/sqrt(2);
-            y_min -= radius_/sqrt(2);
-            y_max += radius_/sqrt(2);
-        } else {
-            x_min -= radius_;
-            x_max += radius_;
-            y_min -= radius_;
-            y_max += radius_;
-        }
-        if ( !infinite_ ) {
-            z_min = point_.z;
-            z_max = point_.z + length_;
-        }
-        return std::make_pair(Vec3(x_min, y_min, z_min), Vec3(x_max, y_max, z_max));
-    */
         return bbox_values_;
     }
 
