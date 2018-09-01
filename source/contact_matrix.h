@@ -30,6 +30,9 @@ namespace DEM {
     template<typename T>
     class ContactMatrix {
     public:
+        // Pointer class to be able to do in-place storage of objects instead of pointers
+        using PointerType = T*;
+
         ContactMatrix() = default;
         explicit ContactMatrix(size_t);
         std::vector<T>& get_objects() {return data_;};
@@ -37,6 +40,7 @@ namespace DEM {
         void insert(size_t idx1, size_t idx2, const T&);
         void erase(size_t idx1, size_t idx2);
         bool exist(size_t idx1, size_t idx2) const;
+        PointerType get(size_t idx1, size_t idx2) const;
 
     private:
         std::vector<std::map<std::size_t, std::size_t> > data_indices_;
