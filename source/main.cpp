@@ -5,6 +5,7 @@
 #include "contact.h"
 #include "contact_matrix.h"
 #include "cylinder.h"
+#include "engine.h"
 #include "linear_stick_slip_model.h"
 #include "linear_contact_material.h"
 #include "point_surface.h"
@@ -20,8 +21,12 @@ int main(int, char**)
     using SurfaceType = Surface<ForceModel, ParticleType>;
     using CylinderType = Cylinder<ForceModel, ParticleType>;
 
+    DEM::Engine<ForceModel, ParticleType> simulator;
+
+
     DEM::ContactMatrix<ContactType*> matrix = DEM::ContactMatrix<ContactType*>(4);
     DEM::LinearContactMaterial m = DEM::LinearContactMaterial(0, 1000);
+    simulator.create_particle(1., Vec3(0,0,0), Vec3(0,0,0), &m);
     m.density = 1;
     m.k = 10;
 

@@ -46,10 +46,12 @@ namespace DEM {
     public:
 
         // No assignment of particles and no plain copies
+
+        SphericalParticle(double radius, const Vec3& position, const Vec3& velocity, MaterialBase* material,
+                          unsigned id);
+
         SphericalParticle(const SphericalParticle&) = delete;
         SphericalParticle& operator=(const SphericalParticle&) = delete;
-        SphericalParticle(double, const Vec3&, const Vec3&, MaterialBase*, unsigned );
-        virtual ~SphericalParticle() = default;
 
         double get_radius() const { return radius_; }
         double get_inertia() const { return inertia_; }
@@ -82,8 +84,8 @@ namespace DEM {
         std::vector<SphericalParticle*> get_neighbours() const;
         std::size_t number_of_contacts() const;
 
-        void add_contact(ContactPointerType, std::size_t, int);
-        void remove_contact(std::size_t);
+        void add_contact(ContactPointerType contact, std::size_t index, int direction);
+        void remove_contact(std::size_t index);
 
         std::string get_output_string() const;
     private:
@@ -98,9 +100,9 @@ namespace DEM {
     };
 
     template<typename ForceModel>
-    SphericalParticle<ForceModel>::SphericalParticle(double radius, const Vec3& pos, const Vec3& v, MaterialBase* mat,
-                                                     unsigned id):
-            ParticleBase<ForceModel>(4.*pi*radius*radius*radius/3*mat->density, pos, v, mat, id),
+    SphericalParticle<ForceModel>::SphericalParticle(double radius, const Vec3& position, const Vec3& velocity,
+                                                     MaterialBase* material, unsigned id):
+            ParticleBase<ForceModel>(4.*pi*radius*radius*radius/3*material->density, position, velocity, material, id),
             radius_(radius),
             inertia_(2*mass_*radius_*radius_/5),
             contacts_(ContactVector<std::pair<ContactPointerType, int> >())
@@ -110,16 +112,16 @@ namespace DEM {
 
     template<typename ForceModel>
     void
-    SphericalParticle<ForceModel>::add_contact(SphericalParticle::ContactPointerType c, std::size_t pos,
+    SphericalParticle<ForceModel>::add_contact(SphericalParticle::ContactPointerType contact, std::size_t index,
                                                int direction)
     {
-        contacts_.insert(pos, std::make_pair(c, direction));
+        contacts_.insert(index, std::make_pair(contact, direction));
     }
 
     template<typename ForceModel>
-    void SphericalParticle<ForceModel>::remove_contact(std::size_t pos)
+    void SphericalParticle<ForceModel>::remove_contact(std::size_t index)
     {
-        contacts_.erase(pos);
+        contacts_.erase(index);
     }
 
     template<typename ForceModel>

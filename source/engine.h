@@ -20,12 +20,48 @@ namespace DEM {
     public:
         Engine();
 
-        template <typename Predicate>
-        void run(Predicate predicate);
+        template<typename MaterialType>
+        MaterialType* create_material();
+
+        ParticleType* create_particle(double radius, const Vec3& position, const Vec3& velocity,
+                                      MaterialBase* material);
+
 
     private:
+        std::size_t number_of_objects_;
+        std::vector<MaterialBase*> materials_;
+        std::vector<ParticleType*> particles_;
 
     };
+
+    template<typename ForceModel, typename ParticleType>
+    Engine<ForceModel, ParticleType>::Engine() :
+        number_of_objects_(0),
+        particles_()
+    {
+        // Empty constructor
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    template<typename MaterialType>
+    MaterialType* Engine<ForceModel, ParticleType>::create_material()
+    {
+        auto* mat = new MaterialType();
+        materials_.push_back(mat);
+        return mat;
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    ParticleType* Engine<ForceModel, ParticleType>::create_particle(double radius, const Vec3& position,
+                                                                    const Vec3& velocity, MaterialBase* material)
+    {
+        auto p = new ParticleType(radius, position, velocity, material, number_of_objects_);
+        particles_.push_back(p);
+        ++number_of_objects_;
+        return p;
+    }
+
+
 
 
 }
