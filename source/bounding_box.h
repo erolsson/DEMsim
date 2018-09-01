@@ -98,23 +98,12 @@ namespace DEM {
     }
 
     template<typename ForceModel, typename ParticleType>
-    BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderType* surface, std::size_t index):
-        bx(this, 2*index,   'b', 'x'),
-        ex(this, 2*index+1, 'e', 'x'),
-        by(this, 2*index,   'b', 'y'),
-        ey(this, 2*index+1, 'e', 'y'),
-        bz(this, 2*index,   'b', 'z'),
-        ez(this, 2*index+1, 'e', 'z'),
+    BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderType* surface, std::size_t index) :
         particle_(nullptr),
         surface_(surface),
-        update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
-    {
-        bx.setup();
-        by.setup();
-        bz.setup();
-        ex.setup();
-        ey.setup();
-        ez.setup();
+        update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)    {
+
+        std::cout << "Cylinder bounding box constructed " << std::endl;
     }
 
     //==================================================================================================================

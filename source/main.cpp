@@ -20,7 +20,7 @@ int main(int, char**)
     using SurfaceType = Surface<ForceModel, ParticleType>;
     using CylinderType = Cylinder<ForceModel, ParticleType>;
 
-    DEM::ContactMatrix<ContactType*> matrix = DEM::ContactMatrix<ContactType*>(3);
+    DEM::ContactMatrix<ContactType*> matrix = DEM::ContactMatrix<ContactType*>(4);
     DEM::LinearContactMaterial m = DEM::LinearContactMaterial(0, 1000);
     m.density = 1;
     m.k = 10;

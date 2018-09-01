@@ -5,6 +5,7 @@
 #ifndef DEMSIM_SURFACE_H
 #define DEMSIM_SURFACE_H
 
+#include <array>
 #include <map>
 #include <memory>
 #include <vector>
@@ -39,7 +40,7 @@ namespace DEM {
         virtual void rotate(const Vec3& position, const Vec3& rotation_vector) = 0;
 
         virtual std::string output_data() const = 0;
-        virtual const std::vector<double>& bounding_box_values() const = 0;
+        virtual const std::array<double, 6>& bounding_box_values() const { return bbox_values_; };
         const Vec3& get_velocity() const { return velocity_; }
         const Vec3& get_acceleration() const { return acceleration_; }
 
@@ -76,7 +77,9 @@ namespace DEM {
         Vec3 rotation_this_inc_{ Vec3(0, 0, 0) };
         Vec3 rotation_point_{ Vec3(0, 0, 0) };
         std::size_t id_;
+        std::array<double, 6> bbox_values_{0, 0, 0, 0, 0, 0};
 
+        virtual void update_bounding_box() = 0;
     private:
 
         ContactVector<ContactPointerType> contacts_{ContactVector<ContactPointerType>()};

@@ -5,6 +5,7 @@
 #ifndef DEMSIM_CYLINDER_H
 #define DEMSIM_CYLINDER_H
 
+#include <array>
 #include <sstream>
 
 #include "surface.h"
@@ -30,7 +31,7 @@ namespace DEM {
         void rotate(const Vec3& position, const Vec3& rotation_vector) override;
 
         std::string output_data() const override;
-        const std::vector<double>& bounding_box_values() const override { return bbox_values_;}
+        const std::array<double, 6>& bounding_box_values() const override { return bbox_values_;}
 
         void expand(double radius_increase);
         double get_radius() const { return radius_; }
@@ -42,6 +43,7 @@ namespace DEM {
         using Surface<ForceModel, ParticleType>::rotation_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_point_;
         using Surface<ForceModel, ParticleType>::velocity_;
+        using Surface<ForceModel, ParticleType>::bbox_values_;
 
         double radius_;
         Vec3 axis_;
@@ -51,8 +53,6 @@ namespace DEM {
         bool infinite_;
         // To allow fast functions for a common case, currently only z-aligned is supported in the collision detector!!!
         bool z_aligned_;
-
-        std::vector<double> bbox_values_;
 
         void update_bounding_box();
     };
@@ -68,8 +68,7 @@ namespace DEM {
         length_(length),
         inward_(inward),
         infinite_(infinite),
-        z_aligned_(axis_ == Vec3(0, 0, 1)),
-        bbox_values_(8, 0.)
+        z_aligned_(axis_ == Vec3(0, 0, 1))
     {
         update_bounding_box();
     }

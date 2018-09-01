@@ -6,6 +6,7 @@
 #define DEMSIM_POINT_SURFACE_H
 
 #include <algorithm>
+#include <array>
 #include <sstream>
 #include <vector>
 #include <utility>
@@ -32,8 +33,6 @@ namespace DEM {
 
         std::string output_data() const override;
 
-        const std::vector<double>& bounding_box_values() const override;
-
     private:
         std::vector<Vec3> points_;
         bool infinite_;
@@ -44,12 +43,10 @@ namespace DEM {
         using Surface<ForceModel, ParticleType>::rotation_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_point_;
         using Surface<ForceModel, ParticleType>::velocity_;
-
-        std::vector<double> bbox_values_;
+        using Surface<ForceModel, ParticleType>::bbox_values_;
 
         Vec3 calculate_normal() const;
-        void update_bounding_box();
-
+        void update_bounding_box() override;
     };
 
     template<typename ForceModel, typename ParticleType>
@@ -57,8 +54,7 @@ namespace DEM {
         Surface<ForceModel, ParticleType>::Surface(id),
         points_(std::move(points)),
         infinite_(infinite),
-        normal_(calculate_normal()),
-        bbox_values_(6, 0)
+        normal_(calculate_normal())
     {
             update_bounding_box();
     }
@@ -161,12 +157,6 @@ namespace DEM {
     {
         Vec3 normal = cross_product(points_[1]-points_[0], points_[2]-points_[1]);
         return normal.normalize();
-    }
-
-    template<typename ForceModel, typename ParticleType>
-    const std::vector<double>& PointSurface<ForceModel, ParticleType>::bounding_box_values() const
-    {
-        return bbox_values_;
     }
 
     template<typename ForceModel, typename ParticleType>
