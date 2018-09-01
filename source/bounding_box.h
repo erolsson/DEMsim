@@ -22,12 +22,14 @@ namespace DEM {
     public:
         explicit BoundingBox(ParticleType* particle, std::size_t index);
         explicit BoundingBox(SurfaceType* surface,  std::size_t index);
+        explicit BoundingBox(CylinderType* surface,  std::size_t index);
 
         // Copy constructor and assignment operator needed due to pointers between different projection vectors
         // which becomes invalid when different boundingboxes are re-allocated due to vector-over-capacity
         // These constructors repairs the pointers
         BoundingBox(const BoundingBox& rhs);
         BoundingBox& operator=(const BoundingBox& rhs);
+
 
         std::size_t get_id() const;
         void update();
@@ -96,6 +98,30 @@ namespace DEM {
     }
 
     template<typename ForceModel, typename ParticleType>
+    BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderType* surface, std::size_t index):
+        bx(this, 2*index,   'b', 'x'),
+        ex(this, 2*index+1, 'e', 'x'),
+        by(this, 2*index,   'b', 'y'),
+        ey(this, 2*index+1, 'e', 'y'),
+        bz(this, 2*index,   'b', 'z'),
+        ez(this, 2*index+1, 'e', 'z'),
+        particle_(nullptr),
+        surface_(surface),
+        update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
+    {
+        bx.setup();
+        by.setup();
+        bz.setup();
+        ex.setup();
+        ey.setup();
+        ez.setup();
+    }
+
+    //==================================================================================================================
+    //                                  Copy constructor and assignment operator
+    //==================================================================================================================
+
+    template<typename ForceModel, typename ParticleType>
     BoundingBox<ForceModel, ParticleType>::BoundingBox(const BoundingBox& rhs) :
         bx(this, rhs.bx.get_index(), 'b', 'x'),
         ex(this, rhs.ex.get_index(), 'e', 'x'),
@@ -138,6 +164,10 @@ namespace DEM {
         return *this;
     }
 
+    //==================================================================================================================
+    //                                        Public member functions
+    //==================================================================================================================
+
 
     template<typename ForceModel, typename ParticleType>
     std::size_t BoundingBox<ForceModel, ParticleType>::get_id() const
@@ -147,6 +177,16 @@ namespace DEM {
         }
         return surface_->get_id();
     }
+
+    template<typename ForceModel, typename ParticleType>
+    void BoundingBox<ForceModel, ParticleType>::update()
+    {
+        (this->*update_function)();
+    }
+
+    //==================================================================================================================
+    //                                        Private member functions
+    //==================================================================================================================
 
 
     template<typename ForceModel, typename ParticleType>
@@ -177,16 +217,6 @@ namespace DEM {
         bz.value = bbox[4] - stretch_;
         ez.value = bbox[5] +  stretch_;
     }
-
-    template<typename ForceModel, typename ParticleType>
-    void BoundingBox<ForceModel, ParticleType>::update()
-    {
-        (this->*update_function)();
-    }
-
-
-
-
 
 
 }

@@ -68,15 +68,10 @@ namespace DEM {
         length_(length),
         inward_(inward),
         infinite_(infinite),
-        z_aligned_(axis_ == Vec3(0, 0, 1))
+        z_aligned_(axis_ == Vec3(0, 0, 1)),
+        bbox_values_(8, 0.)
     {
-       if (infinite) {
-           bbox_values_ = std::vector<double>(8, 0.);
-       }
-       else {
-           bbox_values_= std::vector<double>(10, 0.);
-       }
-       update_bounding_box();
+        update_bounding_box();
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -173,6 +168,9 @@ namespace DEM {
         if (!infinite_) {
             bbox_values_[8] = point_.z;
             bbox_values_[9] = point_.z + length_;
+        } else {
+            bbox_values_[8] = -1e99;
+            bbox_values_[9] = 1e99;
         }
     }
 

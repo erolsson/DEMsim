@@ -86,7 +86,6 @@ namespace DEM {
         void update_bounding_boxes();
 
         void check_bounding_box_vector(std::vector<BoundingBoxProjectionType*>& vector);
-        void check_cylinder_boxes();
         bool check_other_axes(const BoundingBoxProjectionType* b1, const BoundingBoxProjectionType* b2) const;
 
     };
@@ -100,7 +99,6 @@ namespace DEM {
         check_bounding_box_vector(xproj_);
         check_bounding_box_vector(yproj_);
         check_bounding_box_vector(zproj_);
-        check_cylinder_boxes();
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -127,12 +125,12 @@ namespace DEM {
         for(const auto& s: surfaces_){
             auto cylinder_ptr = dynamic_cast<CylinderType*>(s);
             if (cylinder_ptr != nullptr) {
-                cylinders_.push_back(cylinder_ptr);
+                bounding_boxes_.emplace_back(cylinder_ptr, counter);
             }
             else {
                 bounding_boxes_.emplace_back(s, counter);
-                ++counter;
             }
+            ++counter;
         }
 
         for(auto& bounding_box: bounding_boxes_){
@@ -210,17 +208,6 @@ namespace DEM {
         }
     }
 
-    template<typename ForceModel, typename ParticleType>
-    void CollisionDetector<ForceModel, ParticleType>::check_cylinder_boxes()
-    {
-        // ToDo Only collision between z_aligned cylinders are implemented presently,
-        // arbitrary aligned cylinders remains to be implemented
-        for (const auto& c: cylinders_) {
-            auto cylinder_bounding_values = c->get_bounding_box_
-            auto xmin = [](const auto& bbp) { return bbp.value > c.get_point; }
-            auto& neg_x_boxes = std::find_if(xproj_.begin(), xproj_.end(), )
-        }
-    }
 
     template<typename ForceModel, typename ParticleType>
     bool
