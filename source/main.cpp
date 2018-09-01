@@ -38,7 +38,7 @@ int main(int, char**)
     PointSurface<ForceModel, ParticleType> surf(2, points, true);
 
     // Testing the cylinder class
-    CylinderType cylinder(3, 1., Vec3(0, 0, 1), Vec3(1, 0, 0), 2);
+    CylinderType cylinder(3, 1., Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true);
     std::cout << "cylinder normal " << cylinder.get_normal(Vec3(0.5, 0.5, 0)) << std::endl;
     std::cout << "vector to cylinder " << cylinder.vector_to_point(Vec3(3, 0, 3)) << std::endl;
 
@@ -64,7 +64,8 @@ int main(int, char**)
         for (const auto& contact : contacts_to_create) {
 
             std::cout << "Creating contact: " << contact.get_id_pair().first << ", "
-                      << contact.get_id_pair().second << std::endl;
+                      << contact.get_id_pair().second << " Particle 0 position "
+                      << particle1.get_position() << std::endl;
             ContactType* c = nullptr;
             if (contact.surface == nullptr) {
                 c = new ContactType(contact.particle1, contact.particle2, 0.);
@@ -77,11 +78,12 @@ int main(int, char**)
 
         for (const auto& contact : contacts_to_destroy) {
             std::cout << "Destroying contact: " << contact.get_id_pair().first << ", "
-                      << contact.get_id_pair().second << std::endl;
+                      << contact.get_id_pair().second << " Particle 0 position "
+                      << particle1.get_position() << std::endl;
             matrix.erase(contact.get_id_pair().first, contact.get_id_pair().second);
         }
 
-        particle1.move(Vec3(0.05, 0., 0.05));
+        particle1.move(Vec3(0.05, 0., 0.0));
     }
 
     return 0;

@@ -31,7 +31,6 @@ namespace DEM {
         void rotate(const Vec3& position, const Vec3& rotation_vector) override;
 
         std::string output_data() const override;
-        const std::array<double, 6>& bounding_box_values() const override { return bbox_values_;}
 
         void expand(double radius_increase);
         double get_radius() const { return radius_; }
@@ -154,22 +153,24 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     void Cylinder<ForceModel, ParticleType>::update_bounding_box()
     {
-        bbox_values_[0] = point_.x - radius_;
-        bbox_values_[1] = point_.x - radius_/sqrt(2);
-        bbox_values_[2] = point_.x + radius_;
-        bbox_values_[3] = point_.x + radius_/sqrt(2);
-
-        bbox_values_[4] = point_.y - radius_;
-        bbox_values_[5] = point_.y - radius_/sqrt(2);
-        bbox_values_[6] = point_.y + radius_;
-        bbox_values_[7] = point_.y + radius_/sqrt(2);
-
+        if (inward_){
+            bbox_values_[0] = point_.x - radius_/sqrt(2);
+            bbox_values_[1] = point_.x + radius_/sqrt(2);
+            bbox_values_[2] = point_.y - radius_/sqrt(2);
+            bbox_values_[3] = point_.y + radius_/sqrt(2);
+        }
+        else {
+            bbox_values_[0] = point_.x - radius_;
+            bbox_values_[1] = point_.x + radius_;
+            bbox_values_[2] = point_.y - radius_;
+            bbox_values_[3] = point_.y + radius_;
+        }
         if (!infinite_) {
-            bbox_values_[8] = point_.z;
-            bbox_values_[9] = point_.z + length_;
+            bbox_values_[4] = point_.z;
+            bbox_values_[5] = point_.z + length_;
         } else {
-            bbox_values_[8] = -1e99;
-            bbox_values_[9] = 1e99;
+            bbox_values_[4] = -1e99;
+            bbox_values_[5] = 1e99;
         }
     }
 

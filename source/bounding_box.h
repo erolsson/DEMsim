@@ -5,7 +5,7 @@
 #ifndef DEMSIM_BOUNDING_BOX_H
 #define DEMSIM_BOUNDING_BOX_H
 
-#include <algorithm>
+#include <cmath>
 
 #include "bounding_box_projection.h"
 #include "cylinder.h"
@@ -20,9 +20,9 @@ namespace DEM {
     using SurfaceType = Surface<ForceModel, ParticleType>;
     using CylinderType = Cylinder<ForceModel, ParticleType>;
     public:
-        explicit BoundingBox(ParticleType* particle, std::size_t index);
-        explicit BoundingBox(SurfaceType* surface,  std::size_t index);
-        explicit BoundingBox(CylinderType* surface,  std::size_t index);
+        BoundingBox(ParticleType* particle, std::size_t index);
+        BoundingBox(SurfaceType* surface,  std::size_t index);
+        BoundingBox(CylinderType* cylinder,  std::size_t index, bool);  //Special bounding box for inward cylinders
 
         // Copy constructor and assignment operator needed due to pointers between different projection vectors
         // which becomes invalid when different boundingboxes are re-allocated due to vector-over-capacity
@@ -55,6 +55,7 @@ namespace DEM {
         void (BoundingBox<ForceModel, ParticleType>::*update_function)();
         void particle_update();
         void surface_update();
+        void setup_projections();
     };
 
     template<typename ForceModel, typename ParticleType>
@@ -69,12 +70,7 @@ namespace DEM {
         surface_(nullptr),
         update_function(&BoundingBox<ForceModel, ParticleType>::particle_update)
     {
-        bx.setup();
-        by.setup();
-        bz.setup();
-        ex.setup();
-        ey.setup();
-        ez.setup();
+        setup_projections();
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -89,21 +85,22 @@ namespace DEM {
         surface_(surface),
         update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
     {
-        bx.setup();
-        by.setup();
-        bz.setup();
-        ex.setup();
-        ey.setup();
-        ez.setup();
+        setup_projections();
     }
 
     template<typename ForceModel, typename ParticleType>
-    BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderType* surface, std::size_t index) :
-        particle_(nullptr),
-        surface_(surface),
-        update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)    {
-
-        std::cout << "Cylinder bounding box constructed " << std::endl;
+    BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderType* cylinder, std::size_t index, bool) :
+            bx(this, 2*index,   'e', 'x'),  //Note the reversed ordering of b e for x and y axis, for inward cylinders
+            ex(this, 2*index+1, 'b', 'x'),
+            by(this, 2*index,   'e', 'y'),
+            ey(this, 2*index+1, 'b', 'y'),
+            bz(this, 2*index,   'b', 'z'),
+            ez(this, 2*index+1, 'e', 'z'),
+            particle_(nullptr),
+            surface_(cylinder),
+            update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
+    {
+        setup_projections();
     }
 
     //==================================================================================================================
@@ -122,12 +119,7 @@ namespace DEM {
         surface_(rhs.surface_),
         update_function(rhs.update_function)
     {
-        bx.setup();
-        by.setup();
-        bz.setup();
-        ex.setup();
-        ey.setup();
-        ez.setup();
+        setup_projections();
     }
 
     template<typename ForceModel, typename ParticleType>
@@ -143,12 +135,7 @@ namespace DEM {
             particle_(rhs.particle_);
             surface_(rhs.surface_);
             update_function(rhs.update_function);
-            bx.setup();
-            by.setup();
-            bz.setup();
-            ex.setup();
-            ey.setup();
-            ez.setup();
+            setup_projections();
         }
         return *this;
     }
@@ -196,7 +183,7 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     void BoundingBox<ForceModel, ParticleType>::surface_update()
     {
-        auto bbox = surface_->bounding_box_values();
+        auto bbox = surface_->get_bounding_box_values();
         bx.value = bbox[0] - stretch_;
         ex.value = bbox[1] +  stretch_;
 
@@ -205,6 +192,17 @@ namespace DEM {
 
         bz.value = bbox[4] - stretch_;
         ez.value = bbox[5] +  stretch_;
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    void BoundingBox<ForceModel, ParticleType>::setup_projections()
+    {
+        bx.setup();
+        by.setup();
+        bz.setup();
+        ex.setup();
+        ey.setup();
+        ez.setup();
     }
 
 

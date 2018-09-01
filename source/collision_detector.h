@@ -70,9 +70,6 @@ namespace DEM {
         std::vector<BoundingBoxProjectionType*> yproj_{};
         std::vector<BoundingBoxProjectionType*> zproj_{};
 
-        // Requires special treatment
-        std::vector<CylinderType*> cylinders_;
-
         std::size_t n_ = 0;
 
         const std::vector<ParticleType*>& particles_;
@@ -125,7 +122,12 @@ namespace DEM {
         for(const auto& s: surfaces_){
             auto cylinder_ptr = dynamic_cast<CylinderType*>(s);
             if (cylinder_ptr != nullptr) {
-                bounding_boxes_.emplace_back(cylinder_ptr, counter);
+                // Inspect the cylinder bounding box to figure out if it is inward or not
+                const auto& cyl_bounding_box = cylinder_ptr->get_bounding_box_values();
+                if (std::abs(cyl_bounding_box[1]-cyl_bounding_box[0]) < 2*cylinder_ptr->get_radius())
+                    bounding_boxes_.emplace_back(cylinder_ptr, counter, true);
+                else
+                    bounding_boxes_.emplace_back(s, counter);
             }
             else {
                 bounding_boxes_.emplace_back(s, counter);
@@ -178,9 +180,9 @@ namespace DEM {
                              // There is actually a contact to destroy
                              if (bbm->get_particle() != nullptr && bbn->get_particle() !=nullptr)
                                  contacts_to_destroy_.push_back(CollisionPair(bbm->get_particle() ,bbn->get_particle()));
-                             else if (bbn->get_surface() != nullptr)
+                             else if (bbm->get_particle() != nullptr && bbn->get_surface() != nullptr)
                                  contacts_to_destroy_.push_back(CollisionPair(bbm->get_particle() ,bbn->get_surface()));
-                             else if (bbm->get_surface() != nullptr)
+                             else if (bbn->get_particle() != nullptr && bbm->get_surface() != nullptr)
                                  contacts_to_destroy_.push_back(CollisionPair(bbn->get_particle() ,bbm->get_surface()));
                          }
                      }
@@ -190,10 +192,10 @@ namespace DEM {
                          if (bbm->get_particle() != nullptr && bbn->get_particle() !=nullptr)
                              contacts_to_create_.insert(std::make_pair(bbm->get_id(), bbn->get_id()),
                                      CollisionPair(bbm->get_particle(), bbn->get_particle()));
-                         else if (bbn->get_surface() != nullptr)
+                         else if (bbm->get_particle() != nullptr && bbn->get_surface() != nullptr)
                              contacts_to_create_.insert(std::make_pair(bbm->get_id(), bbn->get_id()),
                                      CollisionPair(bbm->get_particle(), bbn->get_surface()));
-                         else if (bbm->get_surface() != nullptr)
+                         else if (bbn->get_particle() != nullptr && bbm->get_surface() != nullptr)
                              contacts_to_create_.insert(std::make_pair(bbn->get_id(), bbm->get_id()),
                                      CollisionPair(bbn->get_particle(), bbm->get_surface()));
                      }
