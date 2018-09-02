@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "contact_vector.h"
+#include "contact_matrix.h"
 #include "vec3.h"
 
 
@@ -20,7 +21,8 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     class Surface {
-        using ContactPointerType = Contact<ForceModel, ParticleType>*;
+        using ContactType = Contact<ForceModel, ParticleType>;
+        using ContactPointerType = typename ContactMatrix<ContactType>::PointerType;
 
     public:
         double mass{0.};

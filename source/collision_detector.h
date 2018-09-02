@@ -202,7 +202,6 @@ namespace DEM {
                  }
 
                  std::swap(vector[j], vector[j-1]);
-
                  bbn->increase_index();
                  bbm->decrease_index();
                  --j;

@@ -15,6 +15,7 @@
 
 #include "material_base.h"
 #include "vec3.h"
+#include "contact_matrix.h"
 #include "contact_vector.h"
 #include "contact.h"
 #include "particle_base.h"
@@ -27,7 +28,8 @@ namespace DEM {
 
     template<typename ForceModel>
     class SphericalParticle : public ParticleBase<ForceModel> {
-        using ContactPointerType = Contact<ForceModel, SphericalParticle<ForceModel>>*;
+        using ContactType = Contact<ForceModel, SphericalParticle<ForceModel>>;
+        using ContactPointerType = typename ContactMatrix<ContactType>::PointerType;
 
         using ParticleBase<ForceModel>::id_;
         using ParticleBase<ForceModel>::material_;
