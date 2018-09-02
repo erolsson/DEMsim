@@ -24,7 +24,7 @@ int main(int, char**)
     DEM::Engine<ForceModel, ParticleType> simulator;
 
 
-    DEM::ContactMatrix<ContactType*> matrix = DEM::ContactMatrix<ContactType*>(4);
+    DEM::ContactMatrix<ContactType> matrix = DEM::ContactMatrix<ContactType>(4);
     DEM::LinearContactMaterial m = DEM::LinearContactMaterial(0, 1000);
     simulator.create_particle(1., Vec3(0,0,0), Vec3(0,0,0), &m);
     m.density = 1;
@@ -71,14 +71,15 @@ int main(int, char**)
             std::cout << "Creating contact: " << contact.get_id_pair().first << ", "
                       << contact.get_id_pair().second << " Particle 0 position "
                       << particle1.get_position() << std::endl;
-            ContactType* c = nullptr;
             if (contact.surface == nullptr) {
-                c = new ContactType(contact.particle1, contact.particle2, 0.);
+                matrix.create_item_inplace(contact.get_id_pair().first, contact.get_id_pair().second,
+                        contact.particle1, contact.particle2, 0.);
             }
             else {
-                c = new ContactType(contact.particle1, contact.surface, 0.);
+                matrix.create_item_inplace(contact.get_id_pair().first, contact.get_id_pair().second,
+                        contact.particle1, contact.surface, 0.);
             }
-            matrix.insert(contact.get_id_pair().first, contact.get_id_pair().second, c);
+
         }
 
         for (const auto& contact : contacts_to_destroy) {

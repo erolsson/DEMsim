@@ -19,7 +19,7 @@ namespace DEM {
     template <typename ForceModel, typename ParticleType> class Contact;
     template <typename ForceModel, typename ParticleType>
     class CollisionDetector {
-        using ContactPointerType = Contact<ForceModel, ParticleType>*;
+        using ContactType = Contact<ForceModel, ParticleType>;
     public:
 
         using BoundingBoxType = BoundingBox<ForceModel, ParticleType>;
@@ -56,7 +56,7 @@ namespace DEM {
 
         CollisionDetector(const std::vector<ParticleType*>& particles,
                           const std::vector<SurfaceType*>& surfaces,
-                          const ContactMatrix<ContactPointerType>& contacts);
+                          const ContactMatrix<ContactType>& contacts);
 
         void setup();
         void do_check();  //Not const due to re-ordering of the proj vectors
@@ -74,7 +74,7 @@ namespace DEM {
 
         const std::vector<ParticleType*>& particles_;
         const std::vector<SurfaceType*>& surfaces_;
-        const ContactMatrix<ContactPointerType>& contacts_;
+        const ContactMatrix<ContactType>& contacts_;
 
         ContactVector<CollisionPair, std::pair<std::size_t, std::size_t>> contacts_to_create_{};
         std::vector<CollisionPair> contacts_to_destroy_ {};
@@ -101,7 +101,7 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     CollisionDetector<ForceModel, ParticleType>::CollisionDetector(const std::vector<ParticleType*>& particles,
                                                                    const std::vector<SurfaceType*>& surfaces,
-                                                                   const ContactMatrix<ContactPointerType>& contacts) :
+                                                                   const ContactMatrix<ContactType>& contacts) :
         particles_(particles),
         surfaces_(surfaces),
         contacts_(contacts)
