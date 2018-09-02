@@ -3,6 +3,7 @@
 //
 
 #include "contact.h"
+#include "vec3.h"
 
 template<typename ForceModel, typename ParticleType>
 DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* p1, ParticleType* p2, double increment) :
@@ -36,7 +37,7 @@ DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* p, SurfaceType* s,
 
 
 template<typename ForceModel, typename ParticleType>
-DEM::void Contact<ForceModel, ParticleType>::update()
+void DEM::Contact<ForceModel, ParticleType>::update()
 {
     auto distance_vector = calculate_distance_vector();
     double h = r2_ - distance_vector.length();
@@ -46,19 +47,19 @@ DEM::void Contact<ForceModel, ParticleType>::update()
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 Contact<ForceModel, ParticleType>::calculate_distance_vector_particle() const
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_distance_vector_particle() const
 {
     return p1_->get_position() - p2_->get_position();
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 Contact<ForceModel, ParticleType>::calculate_distance_vector_surface() const
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_distance_vector_surface() const
 {
     return surface_->vector_to_point(p1_->get_position());
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 Contact<ForceModel, ParticleType>::calculate_tangential_vector_particle() const
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_tangential_vector_particle() const
 {
     Vec3 r1 = -normal_*(p1_->get_radius() - get_overlap()/2);
     Vec3 u1 = p1_->get_displacement_this_increment() + cross_product(p1_->get_rotation_this_increment(), r1);
@@ -69,7 +70,7 @@ DEM::Vec3 Contact<ForceModel, ParticleType>::calculate_tangential_vector_particl
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 Contact<ForceModel, ParticleType>::calculate_tangential_vector_surface() const
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_tangential_vector_surface() const
 {
     Vec3 r1 = -normal_*(p1_->get_radius() - get_overlap()/2);
     Vec3 u1 = p1_->get_displacement_this_increment() + cross_product(p1_->get_rotation_this_increment(), r1);
@@ -78,7 +79,7 @@ DEM::Vec3 Contact<ForceModel, ParticleType>::calculate_tangential_vector_surface
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 Contact<ForceModel, ParticleType>::position() const
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::position() const
 {
     return p1_->get_position - normal_*(p1_->get_radius() - get_overlap()/position_divider_);
 }
