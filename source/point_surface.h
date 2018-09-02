@@ -18,7 +18,7 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     class PointSurface : public Surface<ForceModel, ParticleType> {
     public:
-        PointSurface(unsigned id, std::vector<Vec3> points, bool infinite);
+        PointSurface(std::size_t id, std::vector<Vec3> points, bool infinite);
         ~PointSurface() override = default;
 
         Vec3 get_normal(const Vec3&) const override { return normal_; }
@@ -50,7 +50,7 @@ namespace DEM {
     };
 
     template<typename ForceModel, typename ParticleType>
-    PointSurface<ForceModel, ParticleType>::PointSurface(unsigned id, std::vector<Vec3> points, bool infinite) :
+    PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::vector<Vec3> points, bool infinite) :
         Surface<ForceModel, ParticleType>::Surface(id),
         points_(std::move(points)),
         infinite_(infinite),

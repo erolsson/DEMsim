@@ -17,7 +17,7 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     class Cylinder : public Surface<ForceModel, ParticleType> {
     public:
-        Cylinder(unsigned id, double radius, Vec3 axis, Vec3 base_point, double length,
+        Cylinder(std::size_t id, double radius, const Vec3& axis, const Vec3& base_point, double length,
                 bool inward=true, bool infinite=false);
         ~Cylinder() override = default;
 
@@ -57,11 +57,11 @@ namespace DEM {
 
 
     template<typename ForceModel, typename ParticleType>
-    Cylinder<ForceModel, ParticleType>::Cylinder(unsigned id, double radius, Vec3 axis,
-                                                 Vec3 base_point, double length, bool inward, bool infinite) :
+    Cylinder<ForceModel, ParticleType>::Cylinder(std::size_t id, double radius, const Vec3& axis,
+                                                 const Vec3& base_point, double length, bool inward, bool infinite) :
         Surface<ForceModel, ParticleType>::Surface(id),
         radius_(radius),
-        axis_(axis.normalize()),
+        axis_(axis.normal()),
         point_(base_point),
         length_(length),
         inward_(inward),
