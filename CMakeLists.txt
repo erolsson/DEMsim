@@ -26,6 +26,6 @@ add_executable(DEMsim
         source/bounding_box.h
         source/bounding_box_projection.h
         source/point_surface.h
-        source/cylinder.h)
+        source/cylinder.h source/engine.tpp source/collition_detector.tpp source/bounding_box.tpp)
 
 target_link_libraries (DEMsim Eigen3::Eigen)
