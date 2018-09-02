@@ -60,9 +60,9 @@ namespace DEM {
     template<typename MaterialType>
     MaterialType* Engine<ForceModel, ParticleType>::create_material(double density)
     {
-        auto* mat = new MaterialType(materials_.size(), density);
-        materials_.push_back(mat);
-        return mat;
+        auto m = new MaterialType(materials_.size(), density);
+        materials_.push_back(m);
+        return m;
     }
 
     template<typename ForceModel, typename ParticleType>

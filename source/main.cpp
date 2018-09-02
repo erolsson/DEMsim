@@ -1,14 +1,9 @@
 #include <iostream>
 #include <vector>
 
-#include "collision_detector.h"
-#include "contact.h"
-#include "contact_matrix.h"
-#include "cylinder.h"
 #include "engine.h"
 #include "linear_stick_slip_model.h"
 #include "linear_contact_material.h"
-#include "point_surface.h"
 #include "spherical_particle.h"
 #include "vec3.h"
 
