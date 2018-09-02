@@ -5,14 +5,15 @@
 #ifndef DEMSIM_PARTICLE_BASE_NEW_H
 #define DEMSIM_PARTICLE_BASE_NEW_H
 
-#include <vector>
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "vec3.h"
 #include "material_base.h"
+#include "vec3.h"
 
 namespace DEM {
+
     template<typename ForceModel>
     class ParticleBase {
     public:
@@ -63,21 +64,8 @@ namespace DEM {
         std::vector<Vec3> contact_forces_ { std::vector<Vec3>() };
         unsigned number_of_contacts_ { 0 };
     };
-
-
-    template<typename ForceModel>
-    ParticleBase<ForceModel>::ParticleBase(double mass, const Vec3& pos, const Vec3& velocity, MaterialBase* m,
-                                           unsigned id) :
-          id_(id),
-          mass_(mass),
-          material_(m),
-          position_(pos),
-          velocity_(velocity)
-    {
-
-    }
-
 }
 
+#include "particle_base.tpp"
 
 #endif //DEMSIM_PARTICLE_BASE_NEW_H
