@@ -34,7 +34,6 @@ namespace DEM {
 
         void expand(double radius_increase);
         double get_radius() const { return radius_; }
-        bool is_infinite() const { return infinite_; }
 
     private:
         using Surface<ForceModel, ParticleType>::id_;
