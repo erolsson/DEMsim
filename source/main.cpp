@@ -17,21 +17,14 @@ int main(int, char**)
     using namespace DEM;
     using ForceModel = LinearStickSlipModel;
     using ParticleType = SphericalParticle<ForceModel>;
-    using ContactType = Contact<ForceModel, ParticleType>;
-    using SurfaceType = Surface<ForceModel, ParticleType>;
-    using CylinderType = Cylinder<ForceModel, ParticleType>;
 
     DEM::Engine<ForceModel, ParticleType> simulator;
+    auto m = simulator.create_material<LinearContactMaterial>(1000.);
 
+    auto particle1 = simulator.create_particle(1., Vec3(0,0,0), Vec3(0,0,0), m);
+    auto particle2 = simulator.create_particle(2., Vec3(0,0,0), Vec3(0,0,0), m);
+    m->k = 10;
 
-    DEM::ContactMatrix<ContactType> matrix = DEM::ContactMatrix<ContactType>(4);
-    DEM::LinearContactMaterial m = DEM::LinearContactMaterial(0, 1000);
-    simulator.create_particle(1., Vec3(0,0,0), Vec3(0,0,0), &m);
-    m.density = 1;
-    m.k = 10;
-
-    ParticleType particle1(1, Vec3(-0.9, 0, 0), Vec3(0, 0, 0), &m, 0);
-    ParticleType particle2(1, Vec3(0.9, 0, 0), Vec3(0, 0, 0), &m, 1);
 
     // Creating a surface
     Vec3 p1(-1, -1, 2);
@@ -40,18 +33,15 @@ int main(int, char**)
     Vec3 p4(1, -1, 2);
     std::vector<Vec3> points{p1, p2, p3, p4};
 
-    PointSurface<ForceModel, ParticleType> surf(2, points, true);
-
+    auto surf = simulator.create_point_surface(points, true);
+    auto cylinder = simulator.create_cylinder(1., Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true);
     // Testing the cylinder class
-    CylinderType cylinder(3, 1., Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true);
-    std::cout << "cylinder normal " << cylinder.get_normal(Vec3(0.5, 0.5, 0)) << std::endl;
-    std::cout << "vector to cylinder " << cylinder.vector_to_point(Vec3(3, 0, 3)) << std::endl;
 
-    std::vector<ParticleType*> particles;
-    std::vector<SurfaceType*> surfaces;
+    std::cout << "cylinder normal " << cylinder->get_normal(Vec3(0.5, 0.5, 0)) << std::endl;
+    std::cout << "vector to cylinder " << cylinder->vector_to_point(Vec3(3, 0, 3)) << std::endl;
 
-    std::cout << "Surface normal " << surf.get_normal() << std::endl;
-
+    std::cout << "Surface normal " << surf->get_normal() << std::endl;
+    /*
     particles.push_back(&particle1);
     particles.push_back(&particle2);
     surfaces.push_back(&surf);
@@ -91,6 +81,6 @@ int main(int, char**)
 
         particle1.move(Vec3(0.05, 0., 0.0));
     }
-
+    */
     return 0;
 }

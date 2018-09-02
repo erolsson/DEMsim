@@ -27,12 +27,11 @@ namespace DEM {
         using CylinderPointer = Cylinder<ForceModel, ParticleType>*;
         Engine();
 
+        //Object creation functions
         template<typename MaterialType>
-        MaterialType* create_material();
-
+        MaterialType* create_material(double density);
         ParticlePointer create_particle(double radius, const Vec3& position, const Vec3& velocity,
                                       MaterialBase* material);
-
         PointSurfacePointer create_point_surface(const std::vector<Vec3>& points, bool infinite);
         CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
                                         bool inward=true, bool infinite=false);
@@ -59,9 +58,9 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     template<typename MaterialType>
-    MaterialType* Engine<ForceModel, ParticleType>::create_material()
+    MaterialType* Engine<ForceModel, ParticleType>::create_material(double density)
     {
-        auto* mat = new MaterialType();
+        auto* mat = new MaterialType(materials_.size(), density);
         materials_.push_back(mat);
         return mat;
     }
