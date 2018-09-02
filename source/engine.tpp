@@ -4,10 +4,8 @@
 
 #include "engine.h"
 
-using namespace DEM;
-
 template<typename ForceModel, typename ParticleType>
-Engine<ForceModel, ParticleType>::Engine() :
+DEM::Engine<ForceModel, ParticleType>::Engine() :
         collision_detector_(particles_, surfaces_, contacts_)
 {
     // Empty constructor
@@ -15,7 +13,7 @@ Engine<ForceModel, ParticleType>::Engine() :
 
 template<typename ForceModel, typename ParticleType>
 template<typename MaterialType>
-MaterialType* Engine<ForceModel, ParticleType>::create_material(double density)
+MaterialType* DEM::Engine<ForceModel, ParticleType>::create_material(double density)
 {
     auto m = new MaterialType(materials_.size(), density);
     materials_.push_back(m);
@@ -23,8 +21,8 @@ MaterialType* Engine<ForceModel, ParticleType>::create_material(double density)
 }
 
 template<typename ForceModel, typename ParticleType>
-typename Engine<ForceModel, ParticleType>::ParticlePointer
-Engine<ForceModel, ParticleType>::create_particle(double radius, const Vec3& position,
+typename DEM::Engine<ForceModel, ParticleType>::ParticlePointer
+DEM::Engine<ForceModel, ParticleType>::create_particle(double radius, const Vec3& position,
                                                   const Vec3& velocity, MaterialBase* material)
 {
     auto p = new ParticleType(radius, position, velocity, material, number_of_objects_);
@@ -34,8 +32,8 @@ Engine<ForceModel, ParticleType>::create_particle(double radius, const Vec3& pos
 }
 
 template<typename ForceModel, typename ParticleType>
-typename Engine<ForceModel, ParticleType>::PointSurfacePointer
-Engine<ForceModel, ParticleType>::create_point_surface(const std::vector<Vec3>& points, bool infinite)
+typename DEM::Engine<ForceModel, ParticleType>::PointSurfacePointer
+DEM::Engine<ForceModel, ParticleType>::create_point_surface(const std::vector<Vec3>& points, bool infinite)
 {
     auto ps = new PointSurface<ForceModel, ParticleType>(number_of_objects_, points, infinite);
     surfaces_.push_back(ps);
@@ -44,8 +42,8 @@ Engine<ForceModel, ParticleType>::create_point_surface(const std::vector<Vec3>& 
 }
 
 template<typename ForceModel, typename ParticleType>
-typename Engine<ForceModel, ParticleType>::CylinderPointer
-Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3& axis, const Vec3& base_point,
+typename DEM::Engine<ForceModel, ParticleType>::CylinderPointer
+DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3& axis, const Vec3& base_point,
                                                   double length, bool inward, bool infinite)
 {
     auto c = new Cylinder<ForceModel, ParticleType>(number_of_objects_, radius, axis, base_point, length,
