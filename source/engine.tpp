@@ -47,7 +47,7 @@ DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3
                                                   double length, bool inward, bool infinite)
 {
     auto c = new Cylinder<ForceModel, ParticleType>(number_of_objects_, radius, axis, base_point, length,
-            inward, infinite);
+                                                    inward, infinite);
     surfaces_.push_back(c);
     ++number_of_objects_;
     return c;

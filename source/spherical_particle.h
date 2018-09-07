@@ -9,10 +9,6 @@
 #include <memory>
 #include <sstream>
 
-#include <Eigen/Dense>
-#include <Eigen/Eigenvalues>
-#include <Eigen/LU>
-
 #include "material_base.h"
 #include "vec3.h"
 #include "contact_matrix.h"
@@ -58,29 +54,10 @@ namespace DEM {
         double get_radius() const { return radius_; }
         double get_inertia() const { return inertia_; }
 
-        void move(const Vec3& new_disp_this_inc)
-        {
-            position_ += new_disp_this_inc;
-            displacement_this_inc_ = new_disp_this_inc;
-        }
+        void move(const Vec3& new_disp_this_inc);
+        void rotate(const Vec3& new_rot_this_inc);
 
-        void rotate(const Vec3& new_rot)
-        {
-            rot_this_inc_ = new_rot;
-            rot_ += new_rot;
-        }
-
-        double kinetic_energy() const
-        {
-            return mass_*dot_product(velocity_, velocity_)/2 + inertia_*dot_product(ang_vel_, ang_vel_)/2;
-        }
-
-        void reset_contacts() {
-            number_of_contacts_ = 0;
-            fn_ = 0*fn_;
-            ft_ = 0*ft_;
-            torque_ = 0*torque_;
-        }
+        double kinetic_energy() const;
 
         void sum_contact_forces();
         std::vector<SphericalParticle*> get_neighbours() const;
@@ -88,6 +65,7 @@ namespace DEM {
 
         void add_contact(ContactPointerType contact, std::size_t index, int direction);
         void remove_contact(std::size_t index);
+        void reset_contacts();
 
         std::string get_output_string() const;
     private:
@@ -101,43 +79,11 @@ namespace DEM {
         ContactVector<std::pair<ContactPointerType, int> >  contacts_;
     };
 
-    template<typename ForceModel>
-    SphericalParticle<ForceModel>::SphericalParticle(double radius, const Vec3& position, const Vec3& velocity,
-                                                     MaterialBase* material, unsigned id):
-            ParticleBase<ForceModel>(4.*pi*radius*radius*radius/3*material->density, position, velocity, material, id),
-            radius_(radius),
-            inertia_(2*mass_*radius_*radius_/5),
-            contacts_(ContactVector<std::pair<ContactPointerType, int> >())
-    {
-        // Empty constructor
-    }
 
-    template<typename ForceModel>
-    void
-    SphericalParticle<ForceModel>::add_contact(SphericalParticle::ContactPointerType contact, std::size_t index,
-                                               int direction)
-    {
-        contacts_.insert(index, std::make_pair(contact, direction));
-    }
-
-    template<typename ForceModel>
-    void SphericalParticle<ForceModel>::remove_contact(std::size_t index)
-    {
-        contacts_.erase(index);
-    }
-
-    template<typename ForceModel>
-    std::string SphericalParticle<ForceModel>::get_output_string() const
-    {
-        std::stringstream ss;
-        ss << id_ << ", " << position_.x << ", " << position_.y << ", " << position_.z << ", ";
-        ss << rot_.x << ", " << rot_.y << ", " << rot_.z << ", " << radius_<< ", ";
-        ss << kinetic_energy() << ", " << material_->id;
-        return ss.str();
-    }
 
 
 }
 
+#include "spherical_particle.tpp"
 
 #endif //DEMSIM_SPHERICAL_PARTICLE_H
