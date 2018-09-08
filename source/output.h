@@ -77,6 +77,6 @@ namespace DEM {
 
 }
 
-
+#include "output.tpp"
 
 #endif //DEMSIM_OUTPUT_H
