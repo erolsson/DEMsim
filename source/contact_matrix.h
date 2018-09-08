@@ -35,6 +35,7 @@ namespace DEM {
 
         ContactMatrix() = default;
         explicit ContactMatrix(std::size_t);
+        void resize(size_t new_size);
         std::vector<T*>& get_objects() {return data_;};
         const std::vector<T*>& get_objects() const {return data_;}
         bool erase(std::size_t idx1, std::size_t idx2);

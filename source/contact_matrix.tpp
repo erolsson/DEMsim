@@ -4,7 +4,8 @@
 
 #include "contact_matrix.h"
 
-
+#include <map>
+#include <vector>
 
 template<typename T>
 DEM::ContactMatrix<T>::ContactMatrix(size_t N):
@@ -16,11 +17,21 @@ DEM::ContactMatrix<T>::ContactMatrix(size_t N):
 }
 
 template<typename T>
+void DEM::ContactMatrix<T>::resize(size_t new_size)
+{
+    if (new_size > data_.size()) {
+        data_indices_.resize(new_size);
+        matrix_indices_.resize(new_size);
+        data_.resize(new_size);
+    }
+}
+
+template<typename T>
 bool DEM::ContactMatrix<T>::erase(size_t idx1, size_t idx2)
 {
     //Finding the index
     auto pos = data_indices_[idx1].find(idx2);
-    if(pos != data_indices_[idx1].end()) {
+    if (pos != data_indices_[idx1].end()) {
         data_indices_[idx1].erase(pos);
     }
     else {
@@ -36,7 +47,7 @@ bool DEM::ContactMatrix<T>::erase(size_t idx1, size_t idx2)
     delete data_[i];
 
     // Tidying up the data vector by swapping elements and placing the removed element last and then pop it
-    if(i != data_.size() - 1) {
+    if (i != data_.size() - 1) {
         data_[i] = data_[data_.size() - 1];
         matrix_indices_[i] = matrix_indices_[matrix_indices_.size() -1];
         std::pair<std::size_t, std::size_t> ind = matrix_indices_[i];
@@ -62,7 +73,7 @@ template<typename... Args>
 typename DEM::ContactMatrix<T>::PointerType
 DEM::ContactMatrix<T>::create_item_inplace(std::size_t idx1, std::size_t idx2, Args&& ... args)
 {
-    if(!exist(idx1, idx2) && !exist(idx2, idx1)){
+    if (!exist(idx1, idx2) && !exist(idx2, idx1)){
         data_indices_[idx1].insert(std::pair<std::size_t, std::size_t>(idx2, data_.size()));
         matrix_indices_.push_back(std::pair<std::size_t, std::size_t>(idx1, idx2));
         T* obj = new T(std::forward<Args>(args)...);
@@ -88,3 +99,4 @@ typename DEM::ContactMatrix<T>::PointerType DEM::ContactMatrix<T>::get(size_t id
         return nullptr;
     }
 }
+

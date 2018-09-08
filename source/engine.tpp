@@ -4,12 +4,31 @@
 
 #include "engine.h"
 
+//=====================================================================================================================
+//                        *** *** *** *** Constructors *** *** *** ***
+//=====================================================================================================================
+
 template<typename ForceModel, typename ParticleType>
 DEM::Engine<ForceModel, ParticleType>::Engine() :
         collision_detector_(particles_, surfaces_, contacts_)
 {
     // Empty constructor
 }
+
+//=====================================================================================================================
+//                        *** *** *** *** Setup and run *** *** *** ***
+//=====================================================================================================================
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::setup()
+{
+    contacts_ = ContactMatrix<ForceModel>(number_of_objects_);
+    collision_detector_.setup();
+}
+
+//=====================================================================================================================
+//                        *** *** *** *** Object creation functions *** *** *** ***
+//=====================================================================================================================
 
 template<typename ForceModel, typename ParticleType>
 template<typename MaterialType>
@@ -52,4 +71,6 @@ DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3
     ++number_of_objects_;
     return c;
 }
+
+
 

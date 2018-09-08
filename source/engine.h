@@ -29,6 +29,7 @@ namespace DEM {
 
         Engine();
 
+        void setup();
         //Object creation functions
         template<typename MaterialType>
         MaterialType* create_material(double density);
