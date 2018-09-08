@@ -2,7 +2,7 @@
 // Created by erolsson on 2018-09-02.
 //
 
-#include "bounding_box.h
+#include "bounding_box.h"
 
 template<typename ForceModel, typename ParticleType>
 DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(ParticleType* particle, std::size_t index) :

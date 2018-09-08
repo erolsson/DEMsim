@@ -5,7 +5,7 @@
 #ifndef DEMSIM_ENGINE_H
 #define DEMSIM_ENGINE_H
 
-#include <cstddef>
+#include <chrono>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -30,6 +30,9 @@ namespace DEM {
         Engine();
 
         void setup();
+        template<typename Condition>
+        void run(const Condition& condition);
+
         //Object creation functions
         template<typename MaterialType>
         MaterialType* create_material(double density);
@@ -41,17 +44,38 @@ namespace DEM {
 
         CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
                                         bool inward=true, bool infinite=false);
+
+        struct Settings {
+            std::chrono::duration<double> increment { 0. };
+            Vec3 gravity { Vec3(0,0,0) };
+            double mass_scale_factor { 1. };
+        };
+
+        // Getters
+        Settings* get_settings() { return  &settings_; }
+        std::chrono::duration<double> get_time() const { return time_; }
+
+
     private:
         using ContactType = Contact<ForceModel, ParticleType>;
         using SurfaceType = Surface<ForceModel, ParticleType>;
 
         std::size_t number_of_objects_{ 0 };
+        std::chrono::duration<double> time_ { 0. };
+        Settings settings_ {};
+
         std::vector<MaterialBase*> materials_{};
         std::vector<ParticleType*> particles_{};
         std::vector<SurfaceType*> surfaces_{};
         ContactMatrix<ContactType> contacts_{};
 
         CollisionDetector<ForceModel, ParticleType> collision_detector_;
+
+        void do_step();
+
+        // Helper functions
+        void move_particles();
+        void update_contacts();
     };
 }
 

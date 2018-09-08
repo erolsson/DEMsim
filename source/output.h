@@ -11,7 +11,6 @@
 #include <memory>
 #include <fstream>
 
-#include "settings.h"
 #include "contact_matrix.h"
 #include "spherical_particle.h"
 #include "contact.h"

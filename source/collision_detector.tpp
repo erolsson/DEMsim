@@ -2,6 +2,10 @@
 // Created by erolsson on 2018-09-02.
 //
 
+#include "collision_detector.h"
+
+#include <vector>
+
 template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::do_check()
 {

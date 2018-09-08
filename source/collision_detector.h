@@ -89,6 +89,6 @@ namespace DEM {
 
 }
 
-#include "collition_detector.tpp"
+#include "collision_detector.tpp"
 
 #endif //DEMSIM_COLLISION_DETECTOR_H

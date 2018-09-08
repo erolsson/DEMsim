@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <vector>
 
@@ -10,16 +11,19 @@
 int main(int, char**)
 {
     using namespace DEM;
+    using namespace std::chrono_literals;
     using ForceModel = LinearStickSlipModel;
     using ParticleType = SphericalParticle<ForceModel>;
 
     DEM::Engine<ForceModel, ParticleType> simulator;
-    auto m = simulator.create_material<LinearContactMaterial>(1000.);
+    auto settings = simulator.get_settings();
+    settings->increment = 1us;
 
-    auto particle1 = simulator.create_particle(1., Vec3(0,0,0), Vec3(0,0,0), m);
-    auto particle2 = simulator.create_particle(2., Vec3(0,0,0), Vec3(0,0,0), m);
+    auto m = simulator.create_material<LinearContactMaterial>(1000.);
     m->k = 10;
 
+    simulator.create_particle(1., Vec3(0,0,0), Vec3(0,0,0), m);
+    simulator.create_particle(2., Vec3(0,0,0), Vec3(0,0,0), m);
 
     // Creating a surface
     Vec3 p1(-1, -1, 2);
@@ -36,46 +40,8 @@ int main(int, char**)
     std::cout << "vector to cylinder " << cylinder->vector_to_point(Vec3(3, 0, 3)) << std::endl;
 
     std::cout << "Surface normal " << surf->get_normal() << std::endl;
-    /*
-    particles.push_back(&particle1);
-    particles.push_back(&particle2);
-    surfaces.push_back(&surf);
-    surfaces.push_back(&cylinder);
 
-    CollisionDetector<ForceModel, ParticleType> collision_detector(particles, surfaces, matrix);
-    collision_detector.setup();
+    simulator.setup();
 
-    for (unsigned i = 0; i!= 100; ++i) {
-        collision_detector.do_check();
-
-        auto contacts_to_create = collision_detector.contacts_to_create();
-        auto contacts_to_destroy = collision_detector.contacts_to_destroy();
-
-        for (const auto& contact : contacts_to_create) {
-
-            std::cout << "Creating contact: " << contact.get_id_pair().first << ", "
-                      << contact.get_id_pair().second << " Particle 0 position "
-                      << particle1.get_position() << std::endl;
-            if (contact.surface == nullptr) {
-                matrix.create_item_inplace(contact.get_id_pair().first, contact.get_id_pair().second,
-                        contact.particle1, contact.particle2, 0.);
-            }
-            else {
-                matrix.create_item_inplace(contact.get_id_pair().first, contact.get_id_pair().second,
-                        contact.particle1, contact.surface, 0.);
-            }
-
-        }
-
-        for (const auto& contact : contacts_to_destroy) {
-            std::cout << "Destroying contact: " << contact.get_id_pair().first << ", "
-                      << contact.get_id_pair().second << " Particle 0 position "
-                      << particle1.get_position() << std::endl;
-            matrix.erase(contact.get_id_pair().first, contact.get_id_pair().second);
-        }
-
-        particle1.move(Vec3(0.05, 0., 0.0));
-    }
-    */
     return 0;
 }

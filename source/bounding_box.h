@@ -59,5 +59,5 @@ namespace DEM {
     };
 }
 
-#include "bounding_box.h"
+#include "bounding_box.tpp"
 #endif //DEMSIM_BOUNDING_BOX_H

@@ -22,8 +22,18 @@ DEM::Engine<ForceModel, ParticleType>::Engine() :
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::setup()
 {
-    contacts_ = ContactMatrix<ForceModel>(number_of_objects_);
+    contacts_.resize(number_of_objects_);
     collision_detector_.setup();
+}
+
+
+template<typename ForceModel, typename ParticleType>
+template<typename Condition>
+void DEM::Engine<ForceModel, ParticleType>::run(const Condition& condition)
+{
+    while (condition()) {
+        do_step();
+    }
 }
 
 //=====================================================================================================================
@@ -72,5 +82,23 @@ DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3
     return c;
 }
 
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::do_step()
+{
+    move_particles();
+    collision_detector_.do_check();
+    update_contacts();
+}
 
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::move_particles()
+{
+
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::update_contacts()
+{
+
+}
 
