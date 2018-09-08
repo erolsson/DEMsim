@@ -5,9 +5,7 @@
 #ifndef DEMSIM_ENGINE_H
 #define DEMSIM_ENGINE_H
 
-#include <chrono>
 #include <iostream>
-#include <map>
 #include <vector>
 
 #include "collision_detector.h"
@@ -46,14 +44,14 @@ namespace DEM {
                                         bool inward=true, bool infinite=false);
 
         struct Settings {
-            std::chrono::duration<double> increment { 0. };
+            double increment { 0. };
             Vec3 gravity { Vec3(0,0,0) };
             double mass_scale_factor { 1. };
         };
 
         // Getters
         Settings* get_settings() { return  &settings_; }
-        std::chrono::duration<double> get_time() const { return time_; }
+        double get_time() const { return time_; }
 
 
     private:
@@ -61,7 +59,7 @@ namespace DEM {
         using SurfaceType = Surface<ForceModel, ParticleType>;
 
         std::size_t number_of_objects_{ 0 };
-        std::chrono::duration<double> time_ { 0. };
+        double time_ { 0. };
         Settings settings_ {};
 
         std::vector<MaterialBase*> materials_{};

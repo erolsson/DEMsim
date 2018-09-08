@@ -1,4 +1,3 @@
-#include <chrono>
 #include <iostream>
 #include <vector>
 
@@ -11,13 +10,12 @@
 int main(int, char**)
 {
     using namespace DEM;
-    using namespace std::chrono_literals;
     using ForceModel = LinearStickSlipModel;
     using ParticleType = SphericalParticle<ForceModel>;
 
     DEM::Engine<ForceModel, ParticleType> simulator;
     auto settings = simulator.get_settings();
-    settings->increment = 1us;
+    settings->increment = 1e-6;
 
     auto m = simulator.create_material<LinearContactMaterial>(1000.);
     m->k = 10;
