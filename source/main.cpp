@@ -12,8 +12,9 @@ int main(int, char**)
     using namespace DEM;
     using ForceModel = LinearStickSlipModel;
     using ParticleType = SphericalParticle<ForceModel>;
+    using EngineType = Engine<ForceModel, ParticleType>;
 
-    DEM::Engine<ForceModel, ParticleType> simulator;
+    EngineType simulator;
     auto settings = simulator.get_settings();
     settings->increment = 1e-6;
 
@@ -40,6 +41,8 @@ int main(int, char**)
     std::cout << "Surface normal " << surf->get_normal() << std::endl;
 
     simulator.setup();
+    EngineType::RunForTime run_for_time {simulator, 1.};
+    simulator.run(run_for_time);
 
     return 0;
 }

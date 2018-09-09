@@ -14,6 +14,7 @@
 #include "cylinder.h"
 #include "material_base.h"
 #include "point_surface.h"
+#include "settings.h"
 #include "surface.h"
 #include "vec3.h"
 
@@ -42,16 +43,27 @@ namespace DEM {
 
         CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
                                         bool inward=true, bool infinite=false);
-
-        struct Settings {
-            double increment { 0. };
-            Vec3 gravity { Vec3(0,0,0) };
-            double mass_scale_factor { 1. };
-        };
-
         // Getters
         Settings* get_settings() { return  &settings_; }
         double get_time() const { return time_; }
+
+        // Functors for running a simulation until a condition is fulfilled
+        class RunForTime {
+        public:
+            RunForTime(const Engine& e, double time) :
+                engine_{e}, start_time_{engine_.get_time()}, time_to_run_{time} {}
+
+            void reset(double new_run_time) {
+                start_time_ = engine_.get_time();
+                time_to_run_ = new_run_time;
+            }
+            bool operator()() const { return (engine_.get_time() - start_time_) < (time_to_run_); }
+        private:
+
+            const Engine& engine_;
+            double start_time_ ;
+            double time_to_run_;
+        };
 
 
     private:
@@ -75,6 +87,9 @@ namespace DEM {
         void move_particles();
         void update_contacts();
     };
+
+    // Functors for different running conditions
+
 }
 
 #include "engine.tpp"

@@ -32,7 +32,7 @@ template<typename Condition>
 void DEM::Engine<ForceModel, ParticleType>::run(const Condition& condition)
 {
     while (condition()) {
-        time += settings_.increment;
+        time_ += settings_.increment;
         do_step();
     }
 }

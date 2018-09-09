@@ -28,6 +28,6 @@ add_executable(DEMsim
         source/cylinder.h
         source/engine.tpp
         source/collision_detector.tpp
-        source/bounding_box.tpp source/bounding_box_projection.tpp source/contact.tpp source/surface.tpp source/contact_matrix.tpp source/contact_vector.tpp source/cylinder.tpp source/particle_base.tpp source/point_surface.tpp source/spherical_particle.tpp source/output.tpp)
+        source/bounding_box.tpp source/bounding_box_projection.tpp source/contact.tpp source/surface.tpp source/contact_matrix.tpp source/contact_vector.tpp source/cylinder.tpp source/particle_base.tpp source/point_surface.tpp source/spherical_particle.tpp source/output.tpp source/settings.h)
 
 target_link_libraries (DEMsim Eigen3::Eigen)
