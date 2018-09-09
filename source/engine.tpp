@@ -189,6 +189,11 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::update_contacts()
 {
-
+    auto& contact_vector = contacts_.get_objects();
+    std::cout << contact_vector.size() << "\n";
+    //#pragma omp parallel for
+    for(unsigned i = 0; i < contact_vector.size(); ++i){
+        contact_vector[i]->update();
+    }
 }
 

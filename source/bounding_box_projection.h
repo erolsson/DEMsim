@@ -43,7 +43,6 @@ namespace DEM {
         std::size_t index_;
     };
 
-
 }
 
 #include "bounding_box_projection.tpp"
