@@ -24,15 +24,14 @@ namespace DEM {
         unsigned get_id() const { return id_; }
         const MaterialBase* get_material() const { return material_; }
 
-        const Vec3& get_normal_force() const { return fn_; }
-        const Vec3& get_tangential_force() const { return ft_; }
+        const Vec3& get_force() const { return f_; }
         const Vec3& get_torque() const { return torque_; }
 
         double get_mass() const { return mass_; }
 
 
         const Vec3& get_position() const { return position_; }
-        const Vec3& get_velocity_() const { return velocity_; }
+        const Vec3& get_velocity() const { return velocity_; }
         void set_velocity(const Vec3& new_velocity) { velocity_ = new_velocity; }
 
         const Vec3& get_rotation() const { return rot_; }
@@ -53,8 +52,7 @@ namespace DEM {
         Vec3 ang_vel_{ Vec3(0., 0., 0.) };
 
         // Forces
-        Vec3 fn_{ Vec3(0., 0., 0.) };
-        Vec3 ft_{ Vec3(0., 0., 0.) };
+        Vec3 f_{ Vec3(0., 0., 0.) };
         Vec3 torque_{ Vec3(0., 0., 0.) };
 
         // Needed for sticking friction model

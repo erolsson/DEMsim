@@ -43,9 +43,8 @@ double DEM::SphericalParticle<ForceModel>::kinetic_energy() const
 template<typename ForceModel>
 void DEM::SphericalParticle<ForceModel>::reset_contacts() {
     number_of_contacts_ = 0;
-    fn_ = 0*fn_;
-    ft_ = 0*ft_;
-    torque_ = 0*torque_;
+    f_.set_zero();
+    torque_.set_zero();
 }
 
 template<typename ForceModel>

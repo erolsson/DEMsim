@@ -48,6 +48,9 @@ namespace DEM {
         Settings* get_settings() { return  &settings_; }
         std::chrono::duration<double> get_time() const { return time_; }
 
+        // Setters
+        void set_gravity(const Vec3& g) { gravity_ = g; }
+
         // Functors for running a simulation until a condition is fulfilled
         class RunForTime {
         public:
@@ -84,6 +87,8 @@ namespace DEM {
         std::vector<ParticleType*> particles_{};
         std::vector<SurfaceType*> surfaces_{};
         ContactMatrix<ContactType> contacts_{};
+
+        Vec3 gravity_;
 
         CollisionDetector<ForceModel, ParticleType> collision_detector_;
 

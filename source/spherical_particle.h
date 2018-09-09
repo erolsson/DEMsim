@@ -38,8 +38,7 @@ namespace DEM {
         using ParticleBase<ForceModel>::ang_vel_;
 
         using ParticleBase<ForceModel>::number_of_contacts_;
-        using ParticleBase<ForceModel>::fn_;
-        using ParticleBase<ForceModel>::ft_;
+        using ParticleBase<ForceModel>::f_;
         using ParticleBase<ForceModel>::torque_;
     public:
 

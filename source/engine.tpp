@@ -83,6 +83,11 @@ DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3
     return c;
 }
 
+//=====================================================================================================================
+//                        *** *** *** *** Private functions *** *** *** ***
+//=====================================================================================================================
+
+
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::do_step()
 {
@@ -94,7 +99,39 @@ void DEM::Engine<ForceModel, ParticleType>::do_step()
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::move_particles()
 {
+    Vec3 F;
+    Vec3 M;
+    Vec3 new_a;
+    Vec3 new_v;
+    Vec3 new_ang_a;
+    Vec3 new_ang_v;
+    Vec3 new_disp;
+    Vec3 new_rot;
+    double dt = settings_.increment.count();
+    #pragma omp parallel for private(F, M, new_a, new_v, new_ang_a,  new_ang_v, new_disp, new_rot)
+    for(unsigned i=0; i < particles_.size(); ++i){
+        ParticleType* p = particles_[i];
+        F = p->get_force();
+        M = p->get_torque();
 
+        double m = p->get_mass()*settings_.mass_scale_factor;
+        double I = p->get_inertia()*settings_.mass_scale_factor;
+
+        new_a = F/m + gravity_;
+        new_ang_a = M/I;
+
+        new_v = p->get_velocity()+ new_a*dt;
+        new_ang_v = p->get_angular_velocity()+ new_ang_a*dt;
+
+        new_disp = new_v*dt;
+        new_rot = new_ang_v*dt;
+
+        p->set_velocity(new_v);
+        p->set_angular_velocity(new_ang_v);
+
+        p->move(new_disp);
+        p->rotate(new_rot);
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
