@@ -5,6 +5,7 @@
 #ifndef DEMSIM_CONTACT_H
 #define DEMSIM_CONTACT_H
 
+#include <chrono>
 #include <memory>
 
 #include "surface.h"
@@ -20,9 +21,8 @@ namespace DEM{
 
     public:
         //Constructors
-        Contact(ParticleType*, ParticleType*, double);
-        Contact(ParticleType*, SurfaceType*,  double);
-        ~Contact() = default;                        //No dynamic allocated memory
+        Contact(ParticleType* particle1, ParticleType* particle2, std::chrono::duration<double> increment);
+        Contact(ParticleType* particle1, SurfaceType* surface,  std::chrono::duration<double> increment);
 
         void update();
         Vec3 position() const;
@@ -38,6 +38,8 @@ namespace DEM{
         double get_overlap() const { return force_model_.get_overlap(); }
         double get_contact_radius() const { return force_model_.get_contact_area();}
         const Vec3& get_normal() const { return normal_; }
+
+        void set_increment(std::chrono::duration<double> increment) {force_model_.set_increment(increment); }
 
     private:
         ParticleType* const p1_;

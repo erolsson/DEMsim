@@ -17,15 +17,13 @@ int main(int, char**)
 
     using namespace std::chrono_literals;
 
-    EngineType simulator;
-    auto settings = simulator.get_settings();
-    settings->increment = 1us;
+    EngineType simulator{1us};
 
     auto m = simulator.create_material<LinearContactMaterial>(1000.);
     m->k = 10;
 
-    simulator.create_particle(1., Vec3(0,0,0), Vec3(0,0,0), m);
-    simulator.create_particle(2., Vec3(0,0,0), Vec3(0,0,0), m);
+    auto particle_1 = simulator.create_particle(1., Vec3(-1.1,0,0), Vec3(1.,0,0), m);
+    simulator.create_particle(2., Vec3(1,0,0), Vec3(0,0,0), m);
 
     // Creating a surface
     Vec3 p1(-1, -1, 2);
@@ -48,5 +46,6 @@ int main(int, char**)
     simulator.run(run_for_time);
 
     std::cout << simulator.get_time().count() << std::endl;
+    std::cout << particle_1->get_position() << "\n";
     return 0;
 }

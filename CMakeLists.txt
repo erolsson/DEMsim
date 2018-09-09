@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(DEMsim)
 
 set(CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fopenmp -g -Ofast")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -Ofast")
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
@@ -28,6 +28,16 @@ add_executable(DEMsim
         source/cylinder.h
         source/engine.tpp
         source/collision_detector.tpp
-        source/bounding_box.tpp source/bounding_box_projection.tpp source/contact.tpp source/surface.tpp source/contact_matrix.tpp source/contact_vector.tpp source/cylinder.tpp source/particle_base.tpp source/point_surface.tpp source/spherical_particle.tpp source/output.tpp source/settings.h)
+        source/bounding_box.tpp
+        source/bounding_box_projection.tpp
+        source/contact.tpp source/surface.tpp
+        source/contact_matrix.tpp
+        source/contact_vector.tpp
+        source/cylinder.tpp
+        source/particle_base.tpp
+        source/point_surface.tpp
+        source/spherical_particle.tpp
+        source/output.tpp
+        source/settings.h)
 
 target_link_libraries (DEMsim Eigen3::Eigen)

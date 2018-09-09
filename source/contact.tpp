@@ -6,13 +6,14 @@
 #include "vec3.h"
 
 template<typename ForceModel, typename ParticleType>
-DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* p1, ParticleType* p2, double increment) :
-        p1_(p1),
-        p2_(p2),
+DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, ParticleType* particle2,
+                                                std::chrono::duration<double> increment) :
+        p1_(particle1),
+        p2_(particle2),
         surface_(nullptr),
-        r2_(p1->get_radius() + p2->get_radius()),
+        r2_(particle1->get_radius() + particle1->get_radius()),
         position_divider_(2),
-        force_model_(p1, p2, increment),
+        force_model_(particle1, particle1, increment),
         distance_function(&Contact::calculate_distance_vector_particle),
         tangential_function(&Contact::calculate_tangential_vector_particle)
 {
@@ -21,13 +22,14 @@ DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* p1, ParticleType* 
 
 
 template<typename ForceModel, typename ParticleType>
-DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* p, SurfaceType* s,  double increment) :
-        p1_(p),
+DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, SurfaceType* surface,
+                                                std::chrono::duration<double> increment) :
+        p1_(particle1),
         p2_(nullptr),
-        surface_(s),
-        r2_(p->get_radius()),
+        surface_(surface),
+        r2_(particle1->get_radius()),
         position_divider_(1),
-        force_model_(p, s, increment),
+        force_model_(particle1, surface, increment),
         distance_function(&Contact::calculate_distance_vector_surface),
         tangential_function(&Contact::calculate_tangential_vector_surface)
 

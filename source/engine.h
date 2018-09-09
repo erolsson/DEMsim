@@ -15,7 +15,6 @@
 #include "cylinder.h"
 #include "material_base.h"
 #include "point_surface.h"
-#include "settings.h"
 #include "surface.h"
 #include "vec3.h"
 
@@ -27,7 +26,7 @@ namespace DEM {
         using PointSurfacePointer = PointSurface<ForceModel, ParticleType>*;
         using CylinderPointer = Cylinder<ForceModel, ParticleType>*;
 
-        Engine();
+        explicit Engine(std::chrono::duration<double> dt);
 
         void setup();
         template<typename Condition>
@@ -45,11 +44,11 @@ namespace DEM {
         CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
                                         bool inward=true, bool infinite=false);
         // Getters
-        Settings* get_settings() { return  &settings_; }
         std::chrono::duration<double> get_time() const { return time_; }
 
         // Setters
         void set_gravity(const Vec3& g) { gravity_ = g; }
+        void set_mass_scale_factor(double factor) {mass_scale_factor_ = factor; }
 
         // Functors for running a simulation until a condition is fulfilled
         class RunForTime {
@@ -81,22 +80,28 @@ namespace DEM {
 
         std::size_t number_of_objects_{ 0 };
         std::chrono::duration<double> time_ { 0. };
-        Settings settings_ {};
 
         std::vector<MaterialBase*> materials_{};
         std::vector<ParticleType*> particles_{};
         std::vector<SurfaceType*> surfaces_{};
         ContactMatrix<ContactType> contacts_{};
 
-        Vec3 gravity_;
-
         CollisionDetector<ForceModel, ParticleType> collision_detector_;
+
+        // Settings type of private data
+        Vec3 gravity_ {Vec3{0,0,0}};
+        std::chrono::duration<double> increment_;
+        double mass_scale_factor_ { 1. };
+
 
         void do_step();
 
         // Helper functions
         void move_particles();
+        void create_contacts();
+        void destroy_contacts();
         void update_contacts();
+        void update_particle_forces();
     };
 
     // Functors for different running conditions

@@ -10,7 +10,7 @@
 
 
 DEM::LinearStickSlipModel::LinearStickSlipModel(DEM::LinearStickSlipModel::ParticleType* p1,
-        DEM::LinearStickSlipModel::ParticleType* p2, double)
+        DEM::LinearStickSlipModel::ParticleType* p2, std::chrono::duration<double>)
 {
     auto mat1 = dynamic_cast<const LinearContactMaterial*>(p1->get_material());
     auto mat2 = dynamic_cast<const LinearContactMaterial*>(p2->get_material());
@@ -21,7 +21,7 @@ DEM::LinearStickSlipModel::LinearStickSlipModel(DEM::LinearStickSlipModel::Parti
 }
 
 DEM::LinearStickSlipModel::LinearStickSlipModel(DEM::LinearStickSlipModel::ParticleType* p1,
-        DEM::LinearStickSlipModel::SurfaceType*, double)
+        DEM::LinearStickSlipModel::SurfaceType*, std::chrono::duration<double>)
 {
     auto mat1 = dynamic_cast<const LinearContactMaterial*>(p1->get_material());
     double R0 = p1->get_radius();

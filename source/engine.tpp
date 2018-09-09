@@ -9,8 +9,8 @@
 //=====================================================================================================================
 
 template<typename ForceModel, typename ParticleType>
-DEM::Engine<ForceModel, ParticleType>::Engine() :
-        collision_detector_(particles_, surfaces_, contacts_)
+DEM::Engine<ForceModel, ParticleType>::Engine(std::chrono::duration<double> dt) :
+        collision_detector_(particles_, surfaces_, contacts_), increment_{dt}
 {
     // Empty constructor
 }
@@ -32,7 +32,7 @@ template<typename Condition>
 void DEM::Engine<ForceModel, ParticleType>::run(const Condition& condition)
 {
     while (condition()) {
-        time_ += settings_.increment;
+        time_ += increment_;
         do_step();
     }
 }
@@ -93,7 +93,35 @@ void DEM::Engine<ForceModel, ParticleType>::do_step()
 {
     move_particles();
     collision_detector_.do_check();
+    create_contacts();
     update_contacts();
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::create_contacts()
+{
+    const auto& contacts_to_create = collision_detector_.contacts_to_create();
+    for (const auto& c: contacts_to_create) {
+        auto ids = c.get_id_pair();
+        if(c.surface == nullptr) {
+            contacts_.create_item_inplace(ids.first, ids.second, c.particle1, c.particle2, increment_);
+        }
+        else {
+            contacts_.create_item_inplace(ids.first, ids.second, c.particle1, c.surface, increment_);
+        }
+    }
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
+{
+
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::update_particle_forces()
+{
+
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -107,15 +135,15 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
     Vec3 new_ang_v;
     Vec3 new_disp;
     Vec3 new_rot;
-    double dt = settings_.increment.count();
-    #pragma omp parallel for private(F, M, new_a, new_v, new_ang_a,  new_ang_v, new_disp, new_rot)
+    double dt = increment_.count();
+    //#pragma omp parallel for private(F, M, new_a, new_v, new_ang_a,  new_ang_v, new_disp, new_rot)
     for(unsigned i=0; i < particles_.size(); ++i){
         ParticleType* p = particles_[i];
         F = p->get_force();
         M = p->get_torque();
 
-        double m = p->get_mass()*settings_.mass_scale_factor;
-        double I = p->get_inertia()*settings_.mass_scale_factor;
+        double m = p->get_mass()*mass_scale_factor_;
+        double I = p->get_inertia()*mass_scale_factor_;
 
         new_a = F/m + gravity_;
         new_ang_a = M/I;

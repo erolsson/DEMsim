@@ -5,17 +5,20 @@
 #ifndef DEMSIM_LINEAR_STICK_SLIP_MODEL_H
 #define DEMSIM_LINEAR_STICK_SLIP_MODEL_H
 
+#include <chrono>
+
 #include "vec3.h"
 #include "spherical_particle.h"
 #include "surface.h"
+
 namespace DEM {
     class LinearStickSlipModel {
         using ParticleType = SphericalParticle<LinearStickSlipModel>;
         using SurfaceType = Surface<LinearStickSlipModel, ParticleType>;
 
     public:
-        LinearStickSlipModel(ParticleType*, ParticleType*, double);
-        LinearStickSlipModel(ParticleType*, SurfaceType*, double);
+        LinearStickSlipModel(ParticleType*, ParticleType*, std::chrono::duration<double>);
+        LinearStickSlipModel(ParticleType*, SurfaceType*, std::chrono::duration<double>);
 
         void update(double h, const Vec3& dt);
 
@@ -24,6 +27,8 @@ namespace DEM {
         const Vec3& get_tangential_force() const { return FT_; }
         double get_contact_area() const {return sqrt(h_*R0_); }
         double active() const {return h_>0; }
+
+        void set_increment(std::chrono::duration<double>) {}
 
     private:
         double h_{ 0. };

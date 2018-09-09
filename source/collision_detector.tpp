@@ -70,7 +70,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::setup()
 template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::update_bounding_boxes()
 {
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for(std::size_t i = 0; i < bounding_boxes_.size(); ++i){
         bounding_boxes_[i].update();
     }
@@ -87,7 +87,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::check_bounding_box_vector
             BoundingBoxProjectionType* bbm = vector[j];
             BoundingBoxProjectionType* bbn = vector[j-1];
 
-            //depending on de beginnings and endings of the swapping
+            // depending on de beginnings and endings of the swapping
             // remove or add contact
             char c1 = bbm->get_position_char();
             char c2 = bbn->get_position_char();
