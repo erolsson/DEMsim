@@ -130,7 +130,7 @@ void DEM::BoundingBox<ForceModel, ParticleType>::particle_update()
 template<typename ForceModel, typename ParticleType>
 void DEM::BoundingBox<ForceModel, ParticleType>::surface_update()
 {
-    const auto& bbox = surface_->get_bounding_box_values();
+    auto bbox = surface_->get_bounding_box_values();
     bx.value = bbox[0] - stretch_;
     ex.value = bbox[1] +  stretch_;
 
