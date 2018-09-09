@@ -91,6 +91,7 @@ DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::do_step()
 {
+    sum_contact_forces();
     move_particles();
     collision_detector_.do_check();
     destroy_contacts();
@@ -143,9 +144,12 @@ void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
 }
 
 template<typename ForceModel, typename ParticleType>
-void DEM::Engine<ForceModel, ParticleType>::update_particle_forces()
+void DEM::Engine<ForceModel, ParticleType>::sum_contact_forces()
 {
-
+    // #pragma omp parallel for
+    for (unsigned i =0; i < particles_.size(); ++i){
+        particles_[i]->sum_contact_forces();
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -190,10 +194,10 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::update_contacts()
 {
     auto& contact_vector = contacts_.get_objects();
-    std::cout << contact_vector.size() << "\n";
     //#pragma omp parallel for
     for(unsigned i = 0; i < contact_vector.size(); ++i){
-        contact_vector[i]->update();
+        auto c = contact_vector[i];
+        c->update();
     }
 }
 

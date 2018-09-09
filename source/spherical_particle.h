@@ -59,7 +59,6 @@ namespace DEM {
         double kinetic_energy() const;
 
         void sum_contact_forces();
-        std::vector<SphericalParticle*> get_neighbours() const;
         std::size_t number_of_contacts() const;
 
         void add_contact(ContactPointerType contact, std::size_t index, int direction);

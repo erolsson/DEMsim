@@ -48,6 +48,24 @@ void DEM::SphericalParticle<ForceModel>::reset_contacts() {
 }
 
 template<typename ForceModel>
+void DEM::SphericalParticle<ForceModel>::sum_contact_forces()
+{
+    reset_contacts();
+    for (const auto c_data : contacts_.get_objects()){
+        const auto c = c_data.first;
+        const auto dir = c_data.second;
+        f_ += (c->get_normal_force() + c->get_tangential_force())*dir;
+        torque_ += (c->get_torque(position_))*dir;
+    }
+}
+
+template<typename ForceModel>
+std::size_t DEM::SphericalParticle<ForceModel>::number_of_contacts() const
+{
+    return 0;
+}
+
+template<typename ForceModel>
 void DEM::SphericalParticle<ForceModel>::add_contact(DEM::SphericalParticle<ForceModel>::ContactPointerType contact,
                                                      std::size_t index, int direction)
 {
@@ -69,3 +87,5 @@ std::string DEM::SphericalParticle<ForceModel>::get_output_string() const
     ss << kinetic_energy() << ", " << material_->id;
     return ss.str();
 }
+
+

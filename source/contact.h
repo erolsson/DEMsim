@@ -34,7 +34,7 @@ namespace DEM{
         std::pair<ParticleType*, ParticleType*> get_particles() const  { return std::make_pair(p1_, p2_); }
         const SurfaceType* get_surface() const { return surface_; }
 
-        bool active() const { return force_model_.acitve();  }
+        bool active() const { return force_model_.active();  }
         double get_overlap() const { return force_model_.get_overlap(); }
         double get_contact_radius() const { return force_model_.get_contact_area();}
         const Vec3& get_normal() const { return normal_; }

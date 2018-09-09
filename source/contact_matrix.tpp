@@ -21,8 +21,6 @@ void DEM::ContactMatrix<T>::resize(size_t new_size)
 {
     if (new_size > data_.size()) {
         data_indices_.resize(new_size);
-        matrix_indices_.resize(new_size);
-        data_.resize(new_size);
     }
 }
 

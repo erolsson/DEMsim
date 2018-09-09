@@ -83,5 +83,5 @@ DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_tangential_vector_su
 template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::position() const
 {
-    return p1_->get_position - normal_*(p1_->get_radius() - get_overlap()/position_divider_);
+    return p1_->get_position() - normal_*(p1_->get_radius() - get_overlap()/position_divider_);
 }

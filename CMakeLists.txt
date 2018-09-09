@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(DEMsim)
 
 set(CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -Ofast")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -msse4 -Ofast")
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 

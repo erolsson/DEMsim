@@ -101,7 +101,7 @@ namespace DEM {
         void create_contacts();
         void destroy_contacts();
         void update_contacts();
-        void update_particle_forces();
+        void sum_contact_forces();
     };
 
     // Functors for different running conditions
