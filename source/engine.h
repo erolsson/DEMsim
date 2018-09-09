@@ -5,6 +5,7 @@
 #ifndef DEMSIM_ENGINE_H
 #define DEMSIM_ENGINE_H
 
+#include <chrono>
 #include <iostream>
 #include <vector>
 
@@ -45,24 +46,29 @@ namespace DEM {
                                         bool inward=true, bool infinite=false);
         // Getters
         Settings* get_settings() { return  &settings_; }
-        double get_time() const { return time_; }
+        std::chrono::duration<double> get_time() const { return time_; }
 
         // Functors for running a simulation until a condition is fulfilled
         class RunForTime {
         public:
-            RunForTime(const Engine& e, double time) :
+            RunForTime(const Engine& e, std::chrono::duration<double> time) :
                 engine_{e}, start_time_{engine_.get_time()}, time_to_run_{time} {}
 
-            void reset(double new_run_time) {
+            void reset(std::chrono::duration<double> new_run_time) {
                 start_time_ = engine_.get_time();
                 time_to_run_ = new_run_time;
             }
-            bool operator()() const { return (engine_.get_time() - start_time_) < (time_to_run_); }
+
+            bool operator()() const
+            {
+                return (engine_.get_time() - start_time_) < (time_to_run_);
+            }
+
         private:
 
             const Engine& engine_;
-            double start_time_ ;
-            double time_to_run_;
+            std::chrono::duration<double> start_time_ ;
+            std::chrono::duration<double> time_to_run_;
         };
 
 
@@ -71,7 +77,7 @@ namespace DEM {
         using SurfaceType = Surface<ForceModel, ParticleType>;
 
         std::size_t number_of_objects_{ 0 };
-        double time_ { 0. };
+        std::chrono::duration<double> time_ { 0. };
         Settings settings_ {};
 
         std::vector<MaterialBase*> materials_{};

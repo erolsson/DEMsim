@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <vector>
 
@@ -14,9 +15,11 @@ int main(int, char**)
     using ParticleType = SphericalParticle<ForceModel>;
     using EngineType = Engine<ForceModel, ParticleType>;
 
+    using namespace std::chrono_literals;
+
     EngineType simulator;
     auto settings = simulator.get_settings();
-    settings->increment = 1e-6;
+    settings->increment = 1us;
 
     auto m = simulator.create_material<LinearContactMaterial>(1000.);
     m->k = 10;
@@ -41,8 +44,9 @@ int main(int, char**)
     std::cout << "Surface normal " << surf->get_normal() << std::endl;
 
     simulator.setup();
-    EngineType::RunForTime run_for_time {simulator, 1.};
+    EngineType::RunForTime run_for_time {simulator, 0.5s};
     simulator.run(run_for_time);
 
+    std::cout << simulator.get_time().count() << std::endl;
     return 0;
 }
