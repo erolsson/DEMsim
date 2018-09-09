@@ -75,11 +75,11 @@ DEM::BoundingBox<ForceModel, ParticleType>&
     if (*this != rhs) {  // Avoiding x=x
         bx(this, rhs.bx.get_index(), 'b', 'x');
         ex(this, rhs.ex.get_index(), 'e', 'x'),
-                by(this, rhs.by.get_index(), 'b', 'y'),
-                ey(this, rhs.ey.get_index(), 'e', 'y'),
-                bz(this, rhs.bz.get_index(), 'b', 'z'),
-                ez(this, rhs.ez.get_index(), 'e', 'z'),
-                particle_(rhs.particle_);
+        by(this, rhs.by.get_index(), 'b', 'y'),
+        ey(this, rhs.ey.get_index(), 'e', 'y'),
+        bz(this, rhs.bz.get_index(), 'b', 'z'),
+        ez(this, rhs.ez.get_index(), 'e', 'z'),
+        particle_(rhs.particle_);
         surface_(rhs.surface_);
         update_function(rhs.update_function);
         setup_projections();
@@ -130,7 +130,7 @@ void DEM::BoundingBox<ForceModel, ParticleType>::particle_update()
 template<typename ForceModel, typename ParticleType>
 void DEM::BoundingBox<ForceModel, ParticleType>::surface_update()
 {
-    auto bbox = surface_->get_bounding_box_values();
+    const auto& bbox = surface_->get_bounding_box_values();
     bx.value = bbox[0] - stretch_;
     ex.value = bbox[1] +  stretch_;
 

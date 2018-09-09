@@ -93,6 +93,7 @@ void DEM::Engine<ForceModel, ParticleType>::do_step()
 {
     move_particles();
     collision_detector_.do_check();
+    destroy_contacts();
     create_contacts();
     update_contacts();
 }
@@ -101,21 +102,44 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::create_contacts()
 {
     const auto& contacts_to_create = collision_detector_.contacts_to_create();
-    for (const auto& c: contacts_to_create) {
-        auto ids = c.get_id_pair();
-        if(c.surface == nullptr) {
-            contacts_.create_item_inplace(ids.first, ids.second, c.particle1, c.particle2, increment_);
+    for (const auto& c_data : contacts_to_create) {
+        typename ContactMatrix<Contact<ForceModel, ParticleType>>::PointerType c = nullptr;
+        auto id1 = c_data.get_id_pair().first;
+        auto id2 = c_data.get_id_pair().second;
+        auto p1 = c_data.particle1;
+        auto p2 = c_data.particle2;
+        auto s = c_data.surface;
+        if(s == nullptr) {
+            c = contacts_.create_item_inplace(id1, id2, p1, p2, increment_);
+            p2->add_contact(c, id1, -1.);
         }
         else {
-            contacts_.create_item_inplace(ids.first, ids.second, c.particle1, c.surface, increment_);
+            c = contacts_.create_item_inplace(id1, id2, p1, s, increment_);
+            s->add_contact(c, id1);
         }
+        p1->add_contact(c, id2, 1.);
     }
 }
 
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
 {
-
+    const auto& contacts_to_destroy = collision_detector_.contacts_to_destroy();
+    for (const auto& c_data : contacts_to_destroy){
+        auto id1 = c_data.get_id_pair().first;
+        auto id2 = c_data.get_id_pair().second;
+        auto p1 = c_data.particle1;
+        auto p2 = c_data.particle2;
+        auto s = c_data.surface;
+        p1->remove_contact(id2);
+        if(s == nullptr) {
+            p2->remove_contact(id1);
+        }
+        else {
+            p1->remove_contact(id1);
+        }
+        contacts_.erase(id1, id2);
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
