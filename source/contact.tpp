@@ -8,14 +8,14 @@
 template<typename ForceModel, typename ParticleType>
 DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, ParticleType* particle2,
                                                 std::chrono::duration<double> increment) :
-        p1_(particle1),
-        p2_(particle2),
-        surface_(nullptr),
-        r2_(particle1->get_radius() + particle1->get_radius()),
-        position_divider_(2),
-        force_model_(particle1, particle1, increment),
-        distance_function(&Contact::calculate_distance_vector_particle),
-        tangential_function(&Contact::calculate_tangential_vector_particle)
+    p1_(particle1),
+    p2_(particle2),
+    surface_(nullptr),
+    r2_(particle1->get_radius() + particle1->get_radius()),
+    position_divider_(2),
+    force_model_(particle1, particle1, increment),
+    distance_function(&Contact::calculate_distance_vector_particle),
+    tangential_function(&Contact::calculate_tangential_vector_particle)
 {
     normal_ = calculate_distance_vector().normal();
 }
@@ -24,14 +24,14 @@ DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, Particl
 template<typename ForceModel, typename ParticleType>
 DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, SurfaceType* surface,
                                                 std::chrono::duration<double> increment) :
-        p1_(particle1),
-        p2_(nullptr),
-        surface_(surface),
-        r2_(particle1->get_radius()),
-        position_divider_(1),
-        force_model_(particle1, surface, increment),
-        distance_function(&Contact::calculate_distance_vector_surface),
-        tangential_function(&Contact::calculate_tangential_vector_surface)
+    p1_(particle1),
+    p2_(nullptr),
+    surface_(surface),
+    r2_(particle1->get_radius()),
+    position_divider_(1),
+    force_model_(particle1, surface, increment),
+    distance_function(&Contact::calculate_distance_vector_surface),
+    tangential_function(&Contact::calculate_tangential_vector_surface)
 
 {
     normal_ = calculate_distance_vector().normal();
