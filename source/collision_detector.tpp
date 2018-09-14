@@ -19,8 +19,8 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::do_check()
 
 template<typename ForceModel, typename ParticleType>
 DEM::CollisionDetector<ForceModel, ParticleType>::CollisionDetector(const std::vector<ParticleType*>& particles,
-                                                               const std::vector<SurfaceType*>& surfaces,
-                                                               const ContactMatrix<ContactType>& contacts) :
+                                                                    const std::vector<SurfaceType*>& surfaces,
+                                                                    const ContactMatrix<ContactType>& contacts) :
         particles_(particles),
         surfaces_(surfaces),
         contacts_(contacts)
@@ -132,7 +132,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::check_bounding_box_vector
 template<typename ForceModel, typename ParticleType>
 bool
 DEM::CollisionDetector<ForceModel, ParticleType>::check_other_axes(const CollisionDetector::BoundingBoxProjectionType* b1,
-                                                              const CollisionDetector::BoundingBoxProjectionType* b2) const
+        const CollisionDetector::BoundingBoxProjectionType* b2) const
 {
     auto idx1 = b1->get_indices_on_other_axes();
     auto idx2 = b2->get_indices_on_other_axes();

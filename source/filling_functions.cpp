@@ -16,7 +16,7 @@ std::vector<DEM::Vec3> DEM::random_fill_cylinder(double z0, double z1, double R,
     for (auto particle_radius : radii) {
         bool overlapping = true;
         Vec3 position {};
-        while(overlapping){
+        while(overlapping) {
             position.x = dist_r(rand_endine);
             position.y = dist_r(rand_endine);
             position.z = dist_z(rand_endine);
