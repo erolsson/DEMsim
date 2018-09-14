@@ -38,6 +38,6 @@ add_executable(DEMsim
         source/point_surface.tpp
         source/spherical_particle.tpp
         source/output.tpp
-        source/settings.h source/utilities.h source/utilities.cpp)
+        source/settings.h source/filling_functions.h source/filling_functions.cpp)
 
 target_link_libraries (DEMsim Eigen3::Eigen)
