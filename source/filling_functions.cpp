@@ -33,8 +33,14 @@ std::vector<DEM::Vec3> DEM::random_fill_cylinder(double z0, double z1, double R,
     return particle_positions;
 }
 
-bool DEM::check_overlaps(const DEM::Vec3& point, double radius, const std::vector<DEM::Vec3>& pos,
+bool DEM::check_overlaps(const DEM::Vec3& point, double radius, const std::vector<DEM::Vec3>& particle_positions,
                         const std::vector<double>& radii)
 {
+    for (unsigned i = 0; i != particle_positions.size(); ++i) {
+        Vec3 position_i = particle_positions[i];
+        if ((point-position_i).length() < radii[i] + radius) {
+            return true;
+        }
+    }
     return false;
 }
