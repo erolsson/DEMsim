@@ -15,7 +15,8 @@ std::set<std::string> DEM::valid_simulations() {
     return std::set<std::string>{"gyratory_compaction"};
 }
 
-DEM::SimulationParameters::SimulationParameters(const std::string& settings_file_name)
+DEM::SimulationParameters::SimulationParameters(const std::string& settings_file_name) :
+    filename_(settings_file_name)
 {
     std::ifstream settings_file(settings_file_name);
     std::string data_string;
