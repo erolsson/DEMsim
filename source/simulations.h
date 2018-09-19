@@ -5,6 +5,7 @@
 #ifndef SIMULATIONS_H
 #define SIMULATIONS_H
 
+#include <exception>
 #include <fstream>
 #include <map>
 #include <set>
@@ -22,6 +23,7 @@ namespace DEM {
         template<typename DataType>
         DataType get(const std::string& name) const;
     private:
+        std::string filename_;
         std::map<std::string, std::string> data_;
     };
 
@@ -30,8 +32,15 @@ namespace DEM {
     DataType SimulationParameters::get(const std::string& name) const
     {
         auto data_position = data_.find(name);
+        if (data_position == data_.end()) {
+            std::stringstream error_ss;
+            error_ss << "Parameter " << name << " is not defined in file " << filename_;
+            throw std::invalid_argument(error_ss.str());
+        }
+
+        // Read data back and forth to convert it to the requested data type
         std::stringstream ss;
-        ss << (*data_position).second;
+        ss << data_position->second;
         DataType data;
         ss >> data;
         return data;
