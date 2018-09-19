@@ -10,7 +10,7 @@
 #include "vec3.h"
 
 
-void DEM::gyratory_compaction(const std::ifstream& settings_file){
+void DEM::gyratory_compaction(const std::string& settings_file_name){
     using namespace DEM;
     using ForceModel = LinearStickSlipModel;
     using ParticleType = SphericalParticle<ForceModel>;
@@ -18,7 +18,12 @@ void DEM::gyratory_compaction(const std::ifstream& settings_file){
 
     using namespace std::chrono_literals;
 
-    EngineType simulator{1us};
+    SimulationParameters parameters(settings_file_name);
+
+    auto N = parameters.get<double>("N");
+    auto output_directory = parameters.get<std::string>("output_dir");
+
+    EngineType simulator(1us);
 
     auto m = simulator.create_material<LinearContactMaterial>(1000.);
     m->k = 10;
@@ -43,7 +48,7 @@ void DEM::gyratory_compaction(const std::ifstream& settings_file){
     std::cout << "Surface normal " << surf->get_normal() << std::endl;
 
     simulator.setup();
-    EngineType::RunForTime run_for_time {simulator, 0.5s};
+    EngineType::RunForTime run_for_time(simulator, 0.5s);
     simulator.run(run_for_time);
 
     std::cout << simulator.get_time().count() << std::endl;

@@ -14,6 +14,7 @@ int main(int argc, char** argv)
 
     std::vector<std::string> arguments(argv+1, argv+argc);
     std::string program_name = arguments[0];
+    std::string settings_file_name = arguments[1];
 
     if (argc < 3) {
         std::cerr << "Please provide a path to a simulation settings file as second argument" << '\n';
@@ -27,7 +28,7 @@ int main(int argc, char** argv)
     }
 
     if (program_name == "gyratory_compaction") {
-        DEM::gyratory_compaction(settings_file);
+        DEM::gyratory_compaction(settings_file_name);
     }
 
     return 0;
