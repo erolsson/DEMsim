@@ -31,7 +31,7 @@ DEM::SimulationParameters::SimulationParameters(const std::string& settings_file
             throw std::invalid_argument("Settings parameters has to be on the form x=data");
         }
 
-        //Split string in identifier, value pair
+        // Split string in identifier, value pair
         std::string key = data_string.substr(0, del_position);
         std::string data = data_string.substr(del_position+1, data_string.size() - 1 - del_position);
 
