@@ -19,8 +19,6 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     using namespace std::chrono_literals;
 
-    constexpr double pi = 3.14159265358979323846;
-
     SimulationParameters parameters(settings_file_name);
 
     auto N = parameters.get<double>("N");

@@ -19,7 +19,6 @@
 namespace DEM {
     // Please don't change this one
     constexpr double pi = 3.1415;
-
     template<typename ForceModel, typename SphericalParticle> class Contact;
 
     template<typename ForceModel>
@@ -40,6 +39,7 @@ namespace DEM {
         using ParticleBase<ForceModel>::number_of_contacts_;
         using ParticleBase<ForceModel>::f_;
         using ParticleBase<ForceModel>::torque_;
+
     public:
 
         // No assignment of particles and no plain copies
