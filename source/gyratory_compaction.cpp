@@ -19,6 +19,8 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     using namespace std::chrono_literals;
 
+    constexpr double pi = 3.14159265358979323846;
+
     SimulationParameters parameters(settings_file_name);
 
     auto N = parameters.get<double>("N");
@@ -32,7 +34,15 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     // Read particle radii from file
     auto particle_radii = read_vector_from_file<double>(particle_file);
+    particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);
+    auto aspect_ratio_at_dense = 1.;
+    double particle_volume = 0.;
+    for(auto& r: particle_radii) {
+        particle_volume += 4.*pi*r*r*r/3.;
+    }
 
+    std::cout << "Volume of simulated particles is " << particle_volume << "\n";
+    auto cylinder_radius = pow(4*particle_volume/pi/aspect_ratio_at_dense, 1./3)/2;
     auto particle_1 = simulator.create_particle(1., Vec3(-1.1,0,0), Vec3(1.,0,0), m);
     simulator.create_particle(2., Vec3(1,0,0), Vec3(0,0,0), m);
 
@@ -44,7 +54,7 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     std::vector<Vec3> points{p1, p2, p3, p4};
 
     auto surf = simulator.create_point_surface(points, true);
-    auto cylinder = simulator.create_cylinder(1., Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true);
+    auto cylinder = simulator.create_cylinder(cylinder_radius, Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true, true);
     // Testing the cylinder class
 
     std::cout << "cylinder normal " << cylinder->get_normal(Vec3(0.5, 0.5, 0)) << std::endl;

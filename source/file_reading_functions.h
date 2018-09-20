@@ -6,6 +6,7 @@
 #define DEMSIM_FILE_READING_FUNCTIONS_H
 
 #include <fstream>
+#include <iostream>
 #include <map>
 #include <string>
 #include <sstream>
@@ -44,11 +45,11 @@ namespace DEM {
 
     template<typename DataType>
     std::vector<DataType> read_vector_from_file(const std::string& filename) {
-        std::ifstream settings_file(filename);
+        std::ifstream data_file(filename);
         std::string data_string;
         std::vector<DataType> data;
 
-        while(getline(settings_file, data_string)){
+        while (getline(data_file, data_string)) {
             std::stringstream ss;
             ss << data_string;
             DataType data_point;
