@@ -20,7 +20,7 @@ DEM::SimulationParameters::SimulationParameters(const std::string& settings_file
 
     // Read all lines in the file
     auto line_count(1);
-    while(getline(settings_file, data_string)){
+    while (getline(settings_file, data_string)) {
         auto del_position = data_string.find('=');
 
         // If format is not identifier=value, throw exception
