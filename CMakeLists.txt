@@ -38,6 +38,6 @@ add_executable(DEMsim
         source/point_surface.tpp
         source/spherical_particle.tpp
         source/output.tpp
-        source/settings.h source/filling_functions.h source/filling_functions.cpp source/gyratory_compaction.cpp source/simulations.h source/simulations.cpp)
+        source/settings.h source/filling_functions.h source/filling_functions.cpp source/gyratory_compaction.cpp source/simulations.h source/simulations.cpp source/file_reading_functions.h source/file_reading_functions.cpp)
 
 target_link_libraries (DEMsim Eigen3::Eigen)

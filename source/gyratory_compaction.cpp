@@ -5,6 +5,7 @@
 #include "simulations.h"
 
 #include "engine.h"
+#include "file_reading_functions.h"
 #include "linear_contact_material.h"
 #include "linear_stick_slip_model.h"
 #include "vec3.h"
@@ -22,11 +23,15 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     auto N = parameters.get<double>("N");
     auto output_directory = parameters.get<std::string>("output_dir");
+    auto particle_file = parameters.get<std::string>("radius_file");
 
     EngineType simulator(1us);
 
     auto m = simulator.create_material<LinearContactMaterial>(1000.);
     m->k = 10;
+
+    // Read particle radii from file
+    auto particle_radii = read_vector_from_file<double>(particle_file);
 
     auto particle_1 = simulator.create_particle(1., Vec3(-1.1,0,0), Vec3(1.,0,0), m);
     simulator.create_particle(2., Vec3(1,0,0), Vec3(0,0,0), m);
