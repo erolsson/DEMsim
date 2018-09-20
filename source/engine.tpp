@@ -177,7 +177,7 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
         new_ang_a = M/I;
 
         new_v = p->get_velocity()+ new_a*dt;
-        new_ang_v = p->get_angular_velocity()+ new_ang_a*dt;
+        new_ang_v = p->get_angular_velocity() + new_ang_a*dt;
 
         new_disp = new_v*dt;
         new_rot = new_ang_v*dt;
