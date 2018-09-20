@@ -8,8 +8,8 @@
 #include <fstream>
 #include <map>
 #include <set>
-#include <string>
 #include <sstream>
+#include <string>
 
 
 DEM::SimulationParameters::SimulationParameters(const std::string& settings_file_name) :
@@ -42,7 +42,6 @@ DEM::SimulationParameters::SimulationParameters(const std::string& settings_file
         }
 
         data_.insert(std::pair<std::string, std::string>(key, data));
-
         ++line_count;
     }
 }
