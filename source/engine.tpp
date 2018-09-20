@@ -165,7 +165,7 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
     Vec3 new_rot;
     double dt = increment_.count();
     //#pragma omp parallel for private(F, M, new_a, new_v, new_ang_a,  new_ang_v, new_disp, new_rot)
-    for(unsigned i=0; i < particles_.size(); ++i){
+    for (unsigned i=0; i < particles_.size(); ++i) {
         ParticleType* p = particles_[i];
         F = p->get_force();
         M = p->get_torque();
