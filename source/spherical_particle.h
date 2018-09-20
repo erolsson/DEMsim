@@ -5,16 +5,14 @@
 #ifndef DEMSIM_SPHERICAL_PARTICLE_H
 #define DEMSIM_SPHERICAL_PARTICLE_H
 
-#include <vector>
-#include <memory>
 #include <sstream>
+#include <vector>
 
-#include "material_base.h"
-#include "vec3.h"
-#include "contact_matrix.h"
-#include "contact_vector.h"
 #include "contact.h"
+#include "contact_vector.h"
+#include "material_base.h"
 #include "particle_base.h"
+#include "vec3.h"
 
 namespace DEM {
     // Please don't change this one

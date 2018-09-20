@@ -10,9 +10,8 @@
 #ifndef DEMSIM_CONTACT_MATRIX_H
 #define DEMSIM_CONTACT_MATRIX_H
 
-#include <vector>
 #include <map>
-
+#include <vector>
 
 /*
 
