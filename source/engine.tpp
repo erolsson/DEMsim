@@ -110,7 +110,7 @@ void DEM::Engine<ForceModel, ParticleType>::create_contacts()
         auto p1 = c_data.particle1;
         auto p2 = c_data.particle2;
         auto s = c_data.surface;
-        if(s == nullptr) {
+        if (s == nullptr) {
             c = contacts_.create_item_inplace(id1, id2, p1, p2, increment_);
             p2->add_contact(c, id1, -1.);
         }
@@ -126,14 +126,14 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
 {
     const auto& contacts_to_destroy = collision_detector_.contacts_to_destroy();
-    for (const auto& c_data : contacts_to_destroy){
+    for (const auto& c_data : contacts_to_destroy) {
         auto id1 = c_data.get_id_pair().first;
         auto id2 = c_data.get_id_pair().second;
         auto p1 = c_data.particle1;
         auto p2 = c_data.particle2;
         auto s = c_data.surface;
         p1->remove_contact(id2);
-        if(s == nullptr) {
+        if (s == nullptr) {
             p2->remove_contact(id1);
         }
         else {
@@ -147,7 +147,7 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::sum_contact_forces()
 {
     // #pragma omp parallel for
-    for (unsigned i =0; i < particles_.size(); ++i){
+    for (unsigned i =0; i < particles_.size(); ++i) {
         particles_[i]->sum_contact_forces();
     }
 }
@@ -195,7 +195,7 @@ void DEM::Engine<ForceModel, ParticleType>::update_contacts()
 {
     auto& contact_vector = contacts_.get_objects();
     //#pragma omp parallel for
-    for(unsigned i = 0; i < contact_vector.size(); ++i){
+    for (unsigned i = 0; i < contact_vector.size(); ++i) {
         auto c = contact_vector[i];
         c->update();
     }
