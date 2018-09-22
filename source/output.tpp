@@ -23,18 +23,6 @@ void DEM::Output<ForceModel, ParticleType>::run_output(const std::chrono::durati
 }
 
 template<typename ForceModel, typename ParticleType>
-void DEM::Output<ForceModel, ParticleType>::activate(const std::string& name)
-{
-
-}
-
-template<typename ForceModel, typename ParticleType>
-void DEM::Output<ForceModel, ParticleType>::deactivate(const std::string& name)
-{
-
-}
-
-template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_particles() const
 {
 
