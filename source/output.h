@@ -5,18 +5,17 @@
 #ifndef DEMSIM_OUTPUT_H
 #define DEMSIM_OUTPUT_H
 
-
-#include <vector>
+#include <chrono>
+#include <map>
 #include <string>
-#include <memory>
-#include <fstream>
+#include <vector>
 
-#include "contact_matrix.h"
-#include "spherical_particle.h"
 #include "contact.h"
 #include "surface_base.h"
+#include "spherical_particle.h"
 
 namespace DEM {
+
     template<typename ForceModel, typename ParticleType>
     class Engine;
 
@@ -26,56 +25,43 @@ namespace DEM {
         using ContactPointerType = std::shared_ptr<Contact<ForceModel, ParticleType>>;
 
     public:
-        double interval; //Frequency for the output;
-        std::string name;
-        bool active;
-        bool activated;
         bool print_particles;
-        bool print_surfaces;
-        bool print_surface_forces;
-        bool print_friction_forces;
         bool print_kinetic_energy;
-        bool print_average_contacts;
-        bool print_velocity_info;
-        bool print_wall_positions;
-        bool print_contacts;
-        bool print_tangential_displacement;
-        bool print_track_particles;
-        bool print_fractured_particles;
         std::vector<ParticleType*> particles_to_track;
 
-        Output(Engine<ForceModel, ParticleType>, double);
+        Output(std::chrono::duration<double> interval, std::string directory,
+               const Engine<ForceModel, ParticleType>& engine);
 
-        void run_output(); //Prints info
+        void run_output(const std::chrono::duration<double>& increment); //Prints info
+        void activate(const std::string& name);
+        void deactivate(const std::string& name);
 
     private:
-        std::vector<ParticleType*>& particles_;
-        std::vector<SurfaceType*>& surfaces_;
-        ContactMatrix<ContactPointerType>& contacts_;
-        std::vector<bool> fractured_particles_;
-        const Engine<ForceModel, ParticleType>& engine_;
-        Settings*& settings_;
-        unsigned counter_;
-        double start_time_;
-        double end_time_;
+        using OutputFunPtr = void (Output<ForceModel, ParticleType>::*)();
+        using FuncMap = std::map<std::string, std::pair<bool, OutputFunPtr>>;
+
+        const std::vector<ParticleType*>& particles_;
+        const std::vector<SurfaceType*>& surfaces_;
+        const ContactMatrix<ContactPointerType>& contacts_;
+        std::string directory_;
+
+        FuncMap output_functions_ {{"particles",      {false, &Output::write_particles}},
+                                   {"kinetic_energy", {false, &Output::write_kinetic_energy}}};
+
+        std::chrono::duration<double> current_time_;
+        std::chrono::duration<double> time_until_output_;
+        std::chrono::duration<double> interval_;
 
         void write_particles() const;
-        //void Surfaces() const;  //broken!
-        void write_surface_forces() const;
-        void write_friction_forces() const;
         void write_kinetic_energy() const;
-        void write_average_contacts() const;
-        void write_velocity_info() const;
-        void write_tangential_displacement() const;
-        void write_wall_positions() const;
-        void write_track_particles() const;
-        void write_contacts() const;
-        void write_fractured_particles();
+
     };
 
 
 }
 
 #include "output.tpp"
+
+
 
 #endif //DEMSIM_OUTPUT_H

@@ -51,7 +51,8 @@ template<typename ForceModel>
 void DEM::SphericalParticle<ForceModel>::sum_contact_forces()
 {
     reset_contacts();
-    for (const auto c_data : contacts_.get_objects()){
+    auto contacts = contacts_.get_objects();
+    for (const auto c_data : contacts){
         const auto c = c_data.first;
         const auto dir = c_data.second;
         f_ += (c->get_normal_force() + c->get_tangential_force())*dir;

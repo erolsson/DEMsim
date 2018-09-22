@@ -31,9 +31,17 @@ template<typename ForceModel, typename ParticleType>
 template<typename Condition>
 void DEM::Engine<ForceModel, ParticleType>::run(const Condition& condition)
 {
+    using namespace std::chrono_literals;
+    std::chrono::duration<double> logging_interval = 0.01s;
+    std::chrono::duration<double> time_to_log = 0.01s;
     while (condition()) {
         time_ += increment_;
         do_step();
+        time_to_log -= increment_;
+        if (time_to_log <= increment_){
+            time_to_log = logging_interval;
+            std::cout << "Simulation time is " << get_time().count() << "\n";
+        }
     }
 }
 

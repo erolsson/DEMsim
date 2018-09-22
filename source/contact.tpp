@@ -44,8 +44,12 @@ void DEM::Contact<ForceModel, ParticleType>::update()
     auto distance_vector = calculate_distance_vector();
     double h = r2_ - distance_vector.length();
     normal_ = distance_vector.normalize();
-    Vec3 dt = calculate_tangential_displacement_this_inc();
+    Vec3 dt(0, 0, 0);
+    if (h > 0) {
+        dt = calculate_tangential_displacement_this_inc();
+    }
     force_model_.update(h, dt);
+
 }
 
 template<typename ForceModel, typename ParticleType>

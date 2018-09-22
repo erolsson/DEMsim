@@ -29,8 +29,8 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     EngineType simulator(1us);
 
-    auto m = simulator.create_material<LinearContactMaterial>(1000.);
-    m->k = 10;
+    auto material = simulator.create_material<LinearContactMaterial>(1000.);
+    material->k = 10;
 
     // Read particle radii from file
     auto particle_radii = read_vector_from_file<double>(particle_file);
@@ -43,25 +43,35 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
     auto cylinder_radius = pow(4*particle_volume/pi/aspect_ratio_at_dense, 1./3)/2;
-    auto cylinder_height = cylinder_radius*aspect_ratio_at_dense/filling_density;
-
-    std::cout << "Volume of initial cylinder is " << cylinder_radius*cylinder_radius*cylinder_height*pi << "\n";
-
+    auto cylinder_height = 2*cylinder_radius*aspect_ratio_at_dense/filling_density;
+    simulator.create_cylinder(cylinder_radius, Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true, true);
+    std::cout << "The simulated cylinder has a radius of " << cylinder_radius << " and a height of "
+              << cylinder_height << "\n";
     auto particle_positions = random_fill_cylinder(0, cylinder_height, cylinder_radius, particle_radii);
 
-    /*
-    // Creating a surface
-    Vec3 p1(-1, -1, 2);
-    Vec3 p2(-1, 1, 2);
-    Vec3 p3(1, 1, 2);
-    Vec3 p4(1, -1, 2);
-    std::vector<Vec3> points{p1, p2, p3, p4};
+    for (std::size_t i=0; i != particle_positions.size(); ++i) {
+        simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), material);
+    }
 
-    auto surf = simulator.create_point_surface(points, true);
-    auto cylinder = simulator.create_cylinder(cylinder_radius, Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true, true);
+
+    // Creating The bottom plate surface
+    Vec3 p1(-1, -1, 0);
+    Vec3 p2(-1, 1, 0);
+    Vec3 p3(1, 1, 0);
+    Vec3 p4(1, -1, 0);
+    std::vector<Vec3> bottom_points{p1, p2, p3, p4};
+    simulator.create_point_surface(bottom_points, true);
+
+    // Creating The bottom plate surface
+    Vec3 p5(-1, -1, cylinder_height);
+    Vec3 p6(-1, 1, cylinder_height);
+    Vec3 p7(1, 1, cylinder_height);
+    Vec3 p8(1, -1, cylinder_height);
+    std::vector<Vec3> top_points{p1, p2, p3, p4};
+    simulator.create_point_surface(top_points, true);
 
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.5s);
     simulator.run(run_for_time);
-    */
+
 }

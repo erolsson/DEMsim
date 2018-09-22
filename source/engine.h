@@ -14,6 +14,7 @@
 #include "contact_matrix.h"
 #include "cylinder.h"
 #include "material_base.h"
+#include "output.h"
 #include "point_surface.h"
 #include "surface_base.h"
 #include "vec3.h"
@@ -67,7 +68,6 @@ namespace DEM {
             }
 
         private:
-
             const Engine& engine_;
             std::chrono::duration<double> start_time_ ;
             std::chrono::duration<double> time_to_run_;
@@ -102,6 +102,8 @@ namespace DEM {
         void destroy_contacts();
         void update_contacts();
         void sum_contact_forces();
+
+        friend class Output<ForceModel, ParticleType>;
     };
 
     // Functors for different running conditions
