@@ -78,5 +78,5 @@ namespace DEM {
     };
 }
 
-#include "surface.tpp"
+#include "surface_base.tpp"
 #endif //DEMSIM_SURFACE_H

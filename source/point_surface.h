@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "vec3.h"
-#include "surface.h"
+#include "surface_base.h"
 
 namespace DEM {
     template<typename ForceModel, typename ParticleType>

@@ -15,7 +15,7 @@
 #include "cylinder.h"
 #include "material_base.h"
 #include "point_surface.h"
-#include "surface.h"
+#include "surface_base.h"
 #include "vec3.h"
 
 namespace DEM {

@@ -15,7 +15,7 @@ add_executable(DEMsim
         source/spherical_particle.h
         source/vec3.h
         source/contact.h
-        source/surface.h
+        source/surface_base.h
         source/contact_vector.h
         source/particle_base.h
         source/linear_stick_slip_model.cpp
@@ -30,7 +30,7 @@ add_executable(DEMsim
         source/collision_detector.tpp
         source/bounding_box.tpp
         source/bounding_box_projection.tpp
-        source/contact.tpp source/surface.tpp
+        source/contact.tpp source/surface_base.tpp
         source/contact_matrix.tpp
         source/contact_vector.tpp
         source/cylinder.tpp

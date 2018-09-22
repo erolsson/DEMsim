@@ -10,7 +10,7 @@
 #include "bounding_box_projection.h"
 #include "cylinder.h"
 #include "point_surface.h"
-#include "surface.h"
+#include "surface_base.h"
 
 namespace DEM {
     template <typename ForceModel, typename ParticleType>

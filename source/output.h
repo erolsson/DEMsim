@@ -14,7 +14,7 @@
 #include "contact_matrix.h"
 #include "spherical_particle.h"
 #include "contact.h"
-#include "surface.h"
+#include "surface_base.h"
 
 namespace DEM {
     template<typename ForceModel, typename ParticleType>

@@ -7,7 +7,7 @@
 
 #include <array>
 
-#include "surface.h"
+#include "surface_base.h"
 
 namespace DEM {
     template<typename ForceModel, typename particleType> class BoundingBox;

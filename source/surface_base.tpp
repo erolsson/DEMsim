@@ -2,7 +2,7 @@
 // Created by erolsson on 2018-09-02.
 //
 
-#include "surface.h"
+#include "surface_base.h"
 
 template<typename ForceModel, typename ParticleType>
 DEM::Surface<ForceModel, ParticleType>::Surface(std::size_t id) :

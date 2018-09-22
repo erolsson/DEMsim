@@ -8,7 +8,7 @@
 #include <array>
 #include <sstream>
 
-#include "surface.h"
+#include "surface_base.h"
 #include "vec3.h"
 
 namespace DEM {

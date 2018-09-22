@@ -9,7 +9,7 @@
 
 #include "vec3.h"
 #include "spherical_particle.h"
-#include "surface.h"
+#include "surface_base.h"
 
 namespace DEM {
     class LinearStickSlipModel {
