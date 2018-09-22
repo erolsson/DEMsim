@@ -6,11 +6,11 @@
 #define DEMSIM_OUTPUT_H
 
 #include <chrono>
-#include <map>
 #include <string>
 #include <vector>
 
 #include "contact.h"
+#include "contact_matrix.h"
 #include "surface_base.h"
 #include "spherical_particle.h"
 
@@ -52,12 +52,8 @@ namespace DEM {
         void write_kinetic_energy() const;
 
     };
-
-
 }
 
 #include "output.tpp"
-
-
 
 #endif //DEMSIM_OUTPUT_H
