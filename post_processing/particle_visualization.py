@@ -10,7 +10,7 @@ class SpheresPlotter:
         x = data[:, 1]
         y = data[:, 2]
         z = data[:, 3]
-        R = data[:, 4]
+        R = data[:, 7]
         if self.ms is None:
             self.ms = mlab.points3d(x, y, z, 2 * R,
                                     color=color,
@@ -26,6 +26,8 @@ if __name__ == '__main__':
     
     mlab.figure(size=(1920, 1200))
     plotter = SpheresPlotter()
-    particle_file_name = 'particles_' + str(time) + '.dat'
+    particle_file_name = simulation_directory + 'particles_' + str(time) + '.dat'
     
     particle_data = np.genfromtxt(particle_file_name, delimiter=',')
+    plotter.plot(particle_data)
+    mlab.show()
