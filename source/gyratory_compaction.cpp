@@ -29,8 +29,11 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     EngineType simulator(1us);
 
-    auto material = simulator.create_material<LinearContactMaterial>(1000.);
-    material->k = 10;
+    auto material = simulator.create_material<LinearContactMaterial>(10e-9);
+    material->k = 1000;
+    material->mu=0.3;
+    material->kT = 1000;
+    material->mu_wall=0.3;
 
     // Read particle radii from file
     auto particle_radii = read_vector_from_file<double>(particle_file);
@@ -55,25 +58,28 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
 
     // Creating The bottom plate surface
-    Vec3 p1(-1, -1, 0);
-    Vec3 p2(-1, 1, 0);
-    Vec3 p3(1, 1, 0);
-    Vec3 p4(1, -1, 0);
-    std::vector<Vec3> bottom_points{p1, p2, p3, p4};
-    simulator.create_point_surface(bottom_points, true);
+    Vec3 p1(-cylinder_radius, -cylinder_radius, 0.);
+    Vec3 p2(-cylinder_radius,  cylinder_radius, 0.);
+    Vec3 p3(cylinder_radius,   cylinder_radius, 0.);
+    Vec3 p4(cylinder_radius,  -cylinder_radius, 0.);
+    std::vector<Vec3> bottom_points{p4, p3, p2, p1};
+    auto bottom_surface = simulator.create_point_surface(bottom_points, true);
+    std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;
 
-    // Creating The bottom plate surface
-    Vec3 p5(-1, -1, cylinder_height);
-    Vec3 p6(-1, 1, cylinder_height);
-    Vec3 p7(1, 1, cylinder_height);
-    Vec3 p8(1, -1, cylinder_height);
-    std::vector<Vec3> top_points{p1, p2, p3, p4};
-    simulator.create_point_surface(top_points, true);
+    // Creating The top plate surface
+    Vec3 p5(-cylinder_radius, -cylinder_radius, cylinder_height);
+    Vec3 p6(-cylinder_radius,  cylinder_radius, cylinder_height);
+    Vec3 p7(cylinder_radius,   cylinder_radius, cylinder_height);
+    Vec3 p8(cylinder_radius,  -cylinder_radius, cylinder_height);
+    std::vector<Vec3> top_points{p5, p6, p7, p8};
+    auto top_surface = simulator.create_point_surface(top_points, true);
+    std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
 
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;
     output1->print_kinetic_energy = true;
 
+    simulator.set_gravity(Vec3(0, 0, -9820));
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.05s);
     simulator.run(run_for_time);

@@ -49,7 +49,6 @@ void DEM::Contact<ForceModel, ParticleType>::update()
         dt = calculate_tangential_displacement_this_inc();
     }
     force_model_.update(h, dt);
-
 }
 
 template<typename ForceModel, typename ParticleType>
