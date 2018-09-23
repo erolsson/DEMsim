@@ -4,6 +4,15 @@
 
 #include "engine.h"
 
+#include <algorithm>
+#include <chrono>
+#include <memory>
+#include <vector>
+
+#include "contact_matrix.h"
+#include "collision_detector.h"
+#include "output.h"
+
 //=====================================================================================================================
 //                        *** *** *** *** Constructors *** *** *** ***
 //=====================================================================================================================
@@ -43,6 +52,7 @@ void DEM::Engine<ForceModel, ParticleType>::run(const Condition& condition)
             std::cout << "Simulation time is " << get_time().count() << "\n";
         }
     }
+    std::cout << "Simulation finalized at " << get_time().count() << std::endl;
 }
 
 //=====================================================================================================================
@@ -91,6 +101,24 @@ DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3
     return c;
 }
 
+template<typename ForceModel, typename ParticleType>
+typename DEM::Engine<ForceModel, ParticleType>::OutputPointerType
+DEM::Engine<ForceModel, ParticleType>::create_output(std::string directory, std::chrono::duration<double> interval)
+{
+    using OutputType = DEM::Output<ForceModel, ParticleType>;
+    auto output_ptr = std::make_shared<OutputType>(directory, interval, *this);
+    outputs_.push_back(output_ptr);
+    return output_ptr;
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::
+        remove_output(const DEM::Engine<ForceModel, ParticleType>::OutputPointerType& output_to_remove)
+{
+    outputs_.erase(std::remove(outputs_.begin(), outputs_.end(), output_to_remove), outputs_.end());
+}
+
+
 //=====================================================================================================================
 //                        *** *** *** *** Private functions *** *** *** ***
 //=====================================================================================================================
@@ -105,6 +133,7 @@ void DEM::Engine<ForceModel, ParticleType>::do_step()
     destroy_contacts();
     create_contacts();
     update_contacts();
+    run_output();
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -208,4 +237,15 @@ void DEM::Engine<ForceModel, ParticleType>::update_contacts()
         c->update();
     }
 }
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::run_output()
+{
+    for (auto& o : outputs_) {
+        o->run_output(increment_);
+    }
+}
+
+
+
 

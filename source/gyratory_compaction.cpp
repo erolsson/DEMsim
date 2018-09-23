@@ -70,8 +70,14 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     std::vector<Vec3> top_points{p1, p2, p3, p4};
     simulator.create_point_surface(top_points, true);
 
+    auto output1 = simulator.create_output(output_directory, 0.01s);
+    output1->print_particles = true;
+
     simulator.setup();
-    EngineType::RunForTime run_for_time(simulator, 0.5s);
+    EngineType::RunForTime run_for_time(simulator, 0.02s);
     simulator.run(run_for_time);
 
+    simulator.remove_output(output1);
+    run_for_time.reset(0.03s);
+    simulator.run(run_for_time);
 }

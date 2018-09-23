@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include "collision_detector.h"
@@ -26,6 +27,7 @@ namespace DEM {
         using ParticlePointer = ParticleType*;
         using PointSurfacePointer = PointSurface<ForceModel, ParticleType>*;
         using CylinderPointer = Cylinder<ForceModel, ParticleType>*;
+        using OutputPointerType = std::shared_ptr<Output<ForceModel, ParticleType>>;
 
         explicit Engine(std::chrono::duration<double> dt);
 
@@ -44,12 +46,16 @@ namespace DEM {
 
         CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
                                         bool inward=true, bool infinite=false);
+
+        OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval);
+        void remove_output(const OutputPointerType& output_to_remove);
+
         // Getters
         std::chrono::duration<double> get_time() const { return time_; }
 
         // Setters
         void set_gravity(const Vec3& g) { gravity_ = g; }
-        void set_mass_scale_factor(double factor) {mass_scale_factor_ = factor; }
+        void set_mass_scale_factor(double factor) { mass_scale_factor_ = factor; }
 
         // Functors for running a simulation until a condition is fulfilled
         class RunForTime {
@@ -64,7 +70,7 @@ namespace DEM {
 
             bool operator()() const
             {
-                return (engine_.get_time() - start_time_) < (time_to_run_);
+                return (engine_.get_time() - start_time_) <= (time_to_run_);
             }
 
         private:
@@ -85,6 +91,7 @@ namespace DEM {
         std::vector<ParticleType*> particles_{};
         std::vector<SurfaceType*> surfaces_{};
         ContactMatrix<ContactType> contacts_{};
+        std::vector<OutputPointerType> outputs_{};
 
         CollisionDetector<ForceModel, ParticleType> collision_detector_;
 
@@ -102,6 +109,7 @@ namespace DEM {
         void destroy_contacts();
         void update_contacts();
         void sum_contact_forces();
+        void run_output();
 
         friend class Output<ForceModel, ParticleType>;
     };

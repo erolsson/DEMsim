@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 project(DEMsim)
 
-set(CMAKE_CXX_STANDARD 17)
+set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -msse4 -Ofast")
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
@@ -38,6 +38,13 @@ add_executable(DEMsim
         source/point_surface.tpp
         source/spherical_particle.tpp
         source/output.tpp
-        source/settings.h source/filling_functions.h source/filling_functions.cpp source/gyratory_compaction.cpp source/simulations.h source/simulations.cpp source/file_reading_functions.h source/file_reading_functions.cpp)
+        source/settings.h
+        source/filling_functions.h
+        source/filling_functions.cpp
+        source/gyratory_compaction.cpp
+        source/simulations.h
+        source/simulations.cpp
+        source/file_reading_functions.h
+        source/file_reading_functions.cpp)
 
-target_link_libraries (DEMsim Eigen3::Eigen)
+target_link_libraries (DEMsim Eigen3::Eigen stdc++fs)

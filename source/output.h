@@ -22,10 +22,10 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     class Output {
         using SurfaceType = Surface<ForceModel, ParticleType>;
-        using ContactPointerType = std::shared_ptr<Contact<ForceModel, ParticleType>>;
+        using ContactType = Contact<ForceModel, ParticleType>;;
 
     public:
-        Output(std::chrono::duration<double> interval, std::string directory,
+        Output(std::string directory, std::chrono::duration<double> interval,
                const Engine<ForceModel, ParticleType>& engine);
 
         void run_output(const std::chrono::duration<double>& increment); //Prints info
@@ -33,15 +33,15 @@ namespace DEM {
         bool print_kinetic_energy = false;
 
     private:
-        using OutputFunPtr = void (Output<ForceModel, ParticleType>::*)();
-        using FuncVec = std::vector<std::pair<const bool&, OutputFunPtr>>;
+        using OutputFunPtr = void (Output<ForceModel, ParticleType>::*)() const;
+        using FuncVec = std::vector<std::pair<bool&, OutputFunPtr>>;
 
         const std::vector<ParticleType*>& particles_;
         const std::vector<SurfaceType*>& surfaces_;
-        const ContactMatrix<ContactPointerType>& contacts_;
+        const ContactMatrix<ContactType>& contacts_;
         std::string directory_;
 
-        FuncVec output_functions_ {{Output::print_particles, &Output::write_particles},
+        FuncVec output_functions_ {{Output::print_particles,      &Output::write_particles},
                                    {Output::print_kinetic_energy, &Output::write_kinetic_energy}};
 
         std::chrono::duration<double> current_time_;
@@ -50,7 +50,6 @@ namespace DEM {
 
         void write_particles() const;
         void write_kinetic_energy() const;
-
     };
 }
 
