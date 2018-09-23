@@ -55,6 +55,8 @@ namespace DEM {
         void rotate(const Vec3& new_rot_this_inc);
 
         double kinetic_energy() const;
+        double translational_energy() const;
+        double rotational_energy() const;
 
         void sum_contact_forces();
         std::size_t number_of_contacts() const;

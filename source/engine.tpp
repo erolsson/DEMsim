@@ -246,6 +246,16 @@ void DEM::Engine<ForceModel, ParticleType>::run_output()
     }
 }
 
+template<typename ForceModel, typename ParticleType>
+double DEM::Engine<ForceModel, ParticleType>::get_kinetic_energy() const
+{
+    double energy = 0.;
+    for(const auto& p: particles_){
+        energy += p->kinetic_energy();
+    }
+    return energy;
+}
+
 
 
 

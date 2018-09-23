@@ -52,6 +52,7 @@ namespace DEM {
 
         // Getters
         std::chrono::duration<double> get_time() const { return time_; }
+        double get_kinetic_energy() const;
 
         // Setters
         void set_gravity(const Vec3& g) { gravity_ = g; }
@@ -70,7 +71,8 @@ namespace DEM {
 
             bool operator()() const
             {
-                return (engine_.get_time() - start_time_) <= (time_to_run_);
+                using namespace std::chrono_literals;
+                return std::chrono::abs(time_to_run_  - (engine_.get_time() - start_time_ )) > 0.1ns;
             }
 
         private:

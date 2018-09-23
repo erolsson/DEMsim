@@ -37,7 +37,19 @@ void DEM::SphericalParticle<ForceModel>::rotate(const DEM::Vec3& new_rot_this_in
 template<typename ForceModel>
 double DEM::SphericalParticle<ForceModel>::kinetic_energy() const
 {
-    return mass_*dot_product(velocity_, velocity_)/2 + inertia_*dot_product(ang_vel_, ang_vel_)/2;
+    return translational_energy() + rotational_energy();
+}
+
+template<typename ForceModel>
+double DEM::SphericalParticle<ForceModel>::translational_energy() const
+{
+    return mass_*dot_product(velocity_, velocity_)/2;
+}
+
+template<typename ForceModel>
+double DEM::SphericalParticle<ForceModel>::rotational_energy() const
+{
+    return inertia_*dot_product(ang_vel_, ang_vel_)/2;
 }
 
 template<typename ForceModel>
@@ -88,5 +100,7 @@ std::string DEM::SphericalParticle<ForceModel>::get_output_string() const
     ss << kinetic_energy() << ", " << material_->id;
     return ss.str();
 }
+
+
 
 

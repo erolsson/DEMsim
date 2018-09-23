@@ -72,12 +72,9 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;
+    output1->print_kinetic_energy = true;
 
     simulator.setup();
-    EngineType::RunForTime run_for_time(simulator, 0.02s);
-    simulator.run(run_for_time);
-
-    simulator.remove_output(output1);
-    run_for_time.reset(0.03s);
+    EngineType::RunForTime run_for_time(simulator, 0.05s);
     simulator.run(run_for_time);
 }

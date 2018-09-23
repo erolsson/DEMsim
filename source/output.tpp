@@ -5,6 +5,9 @@
 #include "output.h"
 
 #include <experimental/filesystem>
+#include <fstream>
+#include <sstream>
+
 namespace fs = std::experimental::filesystem;
 
 template<typename ForceModel, typename ParticleType>
@@ -13,7 +16,8 @@ DEM::Output<ForceModel, ParticleType>::Output(std::string directory, std::chrono
     particles_(engine.particles_), surfaces_(engine.surfaces_), contacts_(engine.contacts_),
     directory_(directory), current_time_(engine.get_time()), time_until_output_(interval), interval_(interval)
 {
-    fs::create_directories(directory);
+    fs::remove_all(directory_);
+    fs::create_directories(directory_);
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -21,8 +25,11 @@ void DEM::Output<ForceModel, ParticleType>::run_output(const std::chrono::durati
 {
     current_time_ += increment;
     time_until_output_ -= increment;
+
     if (time_until_output_ < increment) {
         time_until_output_ = interval_;
+
+        // Looping over all output functions and checking if they are enabled, if so call it
         for (const auto& func_pair: output_functions_) {
             if (func_pair.first) {    // Output-function is activated
                 (this->*(func_pair.second))();
@@ -34,13 +41,32 @@ void DEM::Output<ForceModel, ParticleType>::run_output(const std::chrono::durati
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_particles() const
 {
-    std::cout << "writing particle data" << std::endl;
+    std::ostringstream filename_stream;
+    filename_stream << directory_ << "/" << "particles_" << current_time_.count() << ".dat";
+    std::ofstream output_file;
+    output_file.open(filename_stream.str());
+    for (const auto& p: particles_) {
+        output_file << p->get_output_string() << "\n";
+    }
+    output_file.close();
 }
 
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_kinetic_energy() const
 {
-    std::cout << "writing kinetic energy" << std::endl;
+    // Sum energies of all particles
+    auto transl_e = 0.;
+    auto rot_e = 0.;
+    for (const auto& p : particles_){
+        transl_e += p->translational_energy();
+        rot_e += p->rotational_energy();
+    }
+
+    std::string filename = directory_ + "/kinetic_energy.dat";
+    std::ofstream output_file;
+    output_file.open(filename, std::fstream::app);
+    output_file << transl_e << ", " << rot_e << ", " << transl_e + rot_e << "\n";
+    output_file.close();
 }
 
 
