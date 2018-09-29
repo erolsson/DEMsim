@@ -29,10 +29,10 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     EngineType simulator(1us);
 
-    auto material = simulator.create_material<LinearContactMaterial>(10e-9);
-    material->k = 1000;
+    auto material = simulator.create_material<LinearContactMaterial>(2630.);
+    material->k = 1e3;
     material->mu=0.3;
-    material->kT = 1000;
+    material->kT = 1e3;
     material->mu_wall=0.3;
 
     // Read particle radii from file
@@ -53,7 +53,7 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     auto particle_positions = random_fill_cylinder(0, cylinder_height, cylinder_radius, particle_radii);
 
     for (std::size_t i=0; i != particle_positions.size(); ++i) {
-        simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), material);
+        simulator.create_particle(particle_radii[i]/1000, particle_positions[i]/1000, Vec3(0,0,0), material);
     }
 
 
@@ -79,8 +79,8 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     output1->print_particles = true;
     output1->print_kinetic_energy = true;
 
-    simulator.set_gravity(Vec3(0, 0, -9820));
+    simulator.set_gravity(Vec3(0, 0, -9.820));
     simulator.setup();
-    EngineType::RunForTime run_for_time(simulator, 0.05s);
+    EngineType::RunForTime run_for_time(simulator, 1.0s);
     simulator.run(run_for_time);
 }
