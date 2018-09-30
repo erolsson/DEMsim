@@ -47,7 +47,7 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
     auto cylinder_radius = pow(4*particle_volume/pi/aspect_ratio_at_dense, 1./3)/2;
     auto cylinder_height = 2*cylinder_radius*aspect_ratio_at_dense/filling_density;
-    simulator.create_cylinder(cylinder_radius, Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true, true);
+    // simulator.create_cylinder(cylinder_radius, Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true, true);
     std::cout << "The simulated cylinder has a radius of " << cylinder_radius << " and a height of "
               << cylinder_height << "\n";
     auto particle_positions = random_fill_cylinder(0, cylinder_height, cylinder_radius, particle_radii);
@@ -62,18 +62,37 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     Vec3 p2(-cylinder_radius,  cylinder_radius, 0.);
     Vec3 p3(cylinder_radius,   cylinder_radius, 0.);
     Vec3 p4(cylinder_radius,  -cylinder_radius, 0.);
-    std::vector<Vec3> bottom_points{p4, p3, p2, p1};
-    auto bottom_surface = simulator.create_point_surface(bottom_points, true);
-    std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;
 
     // Creating The top plate surface
     Vec3 p5(-cylinder_radius, -cylinder_radius, cylinder_height);
     Vec3 p6(-cylinder_radius,  cylinder_radius, cylinder_height);
     Vec3 p7(cylinder_radius,   cylinder_radius, cylinder_height);
     Vec3 p8(cylinder_radius,  -cylinder_radius, cylinder_height);
+
+    std::vector<Vec3> bottom_points{p4, p3, p2, p1};
     std::vector<Vec3> top_points{p5, p6, p7, p8};
+    std::vector<Vec3> left_points{p2, p6, p5, p4};
+    std::vector<Vec3> right_points{p4, p8, p7, p3};
+    std::vector<Vec3> front_points{p2, p3, p7, p6};
+    std::vector<Vec3> back_points{p5, p8, p4, p1};
+
+    auto bottom_surface = simulator.create_point_surface(bottom_points, true);
+    std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;
+
     auto top_surface = simulator.create_point_surface(top_points, true);
     std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
+
+    auto left_surface = simulator.create_point_surface(left_points, true);
+    std::cout << "Normal of left surface is " << left_surface->get_normal() << std::endl;
+
+    auto right_surface = simulator.create_point_surface(right_points, true);
+    std::cout << "Normal of right surface is " << right_surface->get_normal() << std::endl;
+
+    auto front_surface = simulator.create_point_surface(front_points, true);
+    std::cout << "Normal of front surface is " << front_surface->get_normal() << std::endl;
+
+    auto back_surface = simulator.create_point_surface(back_points, true);
+    std::cout << "Normal of back surface is " << back_surface->get_normal() << std::endl;
 
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;

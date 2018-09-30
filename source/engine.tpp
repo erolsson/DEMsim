@@ -174,7 +174,7 @@ void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
             p2->remove_contact(id1);
         }
         else {
-            p1->remove_contact(id1);
+            s->remove_contact(id1);
         }
         contacts_.erase(id1, id2);
     }

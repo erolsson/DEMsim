@@ -22,7 +22,7 @@ class SpheresPlotter:
 
 if __name__ == '__main__':
     simulation_directory = '../results/gyratory_compaction/1/'
-    time = 0.2
+    time = 0.4
     
     mlab.figure(size=(1920, 1200))
     plotter = SpheresPlotter()
