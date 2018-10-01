@@ -6,29 +6,30 @@
 
 #include <random>
 
-std::vector<DEM::Vec3> DEM::random_fill_cylinder(double z0, double z1, double R, std::vector<double> radii)
+std::vector<DEM::Vec3> DEM::random_fill_cylinder(double z0, double z1, double cylinder_radius, std::vector<double> radii)
 {
     std::vector<Vec3> particle_positions;
     std::random_device random_device;
-    std::default_random_engine rand_endine(random_device());
-    std::uniform_real_distribution<double> dist_r(-R, R);
-    std::uniform_real_distribution<double> dist_z(z0, z1);
+    std::default_random_engine rand_engine(random_device());
     for (auto particle_radius : radii) {
+        std::uniform_real_distribution<double> dist_r(-cylinder_radius+particle_radius,
+                                                      cylinder_radius-particle_radius);
+        std::uniform_real_distribution<double> dist_z(z0+particle_radius, z1-particle_radius);
         bool overlapping = true;
         Vec3 position {};
         while(overlapping) {
-            position.x = dist_r(rand_endine);
-            position.y = dist_r(rand_endine);
-            position.z = dist_z(rand_endine);
+            position.x = dist_r(rand_engine);
+            position.y = dist_r(rand_engine);
+            position.z = dist_z(rand_engine);
 
             //Check if a particle at the chosen position overlaps with an other
-            if (position.x*position.x+position.y*position.y < (R-particle_radius)*(R-particle_radius)) {
+            if (position.x*position.x+position.y*position.y <
+                   (cylinder_radius-particle_radius)*(cylinder_radius-particle_radius)) {
                 overlapping = check_overlaps(position, particle_radius, particle_positions, radii);
             }
         }
 
         particle_positions.push_back(position);
-
     }
     return particle_positions;
 }

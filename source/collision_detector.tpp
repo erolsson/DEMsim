@@ -147,3 +147,4 @@ DEM::CollisionDetector<ForceModel, ParticleType>::check_other_axes(const Collisi
     }
     return false;
 }
+

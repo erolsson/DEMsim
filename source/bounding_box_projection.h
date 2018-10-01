@@ -26,6 +26,7 @@ namespace DEM {
 
         double get_value() const { return value; }
         char get_position_char() const { return position_char_; };
+        char get_axis() const { return axis_; }
         std::array<const std::size_t*, 4> get_indices_on_other_axes() const { return other_indices_; }
         const BoundingBox<ForceModel, ParticleType>* get_bounding_box() const { return bbox_;}
         std::size_t get_id() const {return bbox_->get_id(); }

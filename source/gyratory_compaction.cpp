@@ -6,11 +6,8 @@
 
 #include "engine.h"
 #include "file_reading_functions.h"
-#include "filling_functions.h"
 #include "linear_contact_material.h"
 #include "linear_stick_slip_model.h"
-#include "vec3.h"
-
 
 void DEM::gyratory_compaction(const std::string& settings_file_name){
     using namespace DEM;
@@ -30,9 +27,9 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     EngineType simulator(1us);
 
     auto material = simulator.create_material<LinearContactMaterial>(2630.);
-    material->k = 1e3;
+    material->k = 1e9;
     material->mu=0.3;
-    material->kT = 1e3;
+    material->kT = 1e9;
     material->mu_wall=0.3;
 
     // Read particle radii from file
@@ -47,13 +44,13 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
     auto cylinder_radius = pow(4*particle_volume/pi/aspect_ratio_at_dense, 1./3)/2;
     auto cylinder_height = 2*cylinder_radius*aspect_ratio_at_dense/filling_density;
-    // simulator.create_cylinder(cylinder_radius, Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true, true);
+    simulator.create_cylinder(cylinder_radius, Vec3(0, 0, 1), Vec3(1, 0, 0), 2, true, true);
     std::cout << "The simulated cylinder has a radius of " << cylinder_radius << " and a height of "
               << cylinder_height << "\n";
     auto particle_positions = random_fill_cylinder(0, cylinder_height, cylinder_radius, particle_radii);
 
     for (std::size_t i=0; i != particle_positions.size(); ++i) {
-        simulator.create_particle(particle_radii[i]/1000, particle_positions[i]/1000, Vec3(0,0,0), material);
+        simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), material);
     }
 
 
@@ -82,6 +79,7 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     auto top_surface = simulator.create_point_surface(top_points, true);
     std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
 
+    /*
     auto left_surface = simulator.create_point_surface(left_points, true);
     std::cout << "Normal of left surface is " << left_surface->get_normal() << std::endl;
 
@@ -93,13 +91,13 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     auto back_surface = simulator.create_point_surface(back_points, true);
     std::cout << "Normal of back surface is " << back_surface->get_normal() << std::endl;
-
+    */
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;
     output1->print_kinetic_energy = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
     simulator.setup();
-    EngineType::RunForTime run_for_time(simulator, 1.0s);
+    EngineType::RunForTime run_for_time(simulator, 0.5s);
     simulator.run(run_for_time);
 }
