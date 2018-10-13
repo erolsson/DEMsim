@@ -6,6 +6,7 @@
 
 #include "engine.h"
 #include "file_reading_functions.h"
+#include "filling_functions.h"
 #include "linear_contact_material.h"
 #include "linear_stick_slip_model.h"
 

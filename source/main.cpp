@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 #include "simulations.h"
