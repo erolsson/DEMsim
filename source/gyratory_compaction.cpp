@@ -79,19 +79,6 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     auto top_surface = simulator.create_point_surface(top_points, true);
     std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
 
-    /*
-    auto left_surface = simulator.create_point_surface(left_points, true);
-    std::cout << "Normal of left surface is " << left_surface->get_normal() << std::endl;
-
-    auto right_surface = simulator.create_point_surface(right_points, true);
-    std::cout << "Normal of right surface is " << right_surface->get_normal() << std::endl;
-
-    auto front_surface = simulator.create_point_surface(front_points, true);
-    std::cout << "Normal of front surface is " << front_surface->get_normal() << std::endl;
-
-    auto back_surface = simulator.create_point_surface(back_points, true);
-    std::cout << "Normal of back surface is " << back_surface->get_normal() << std::endl;
-    */
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;
     output1->print_kinetic_energy = true;
