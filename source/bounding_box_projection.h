@@ -19,7 +19,7 @@ namespace DEM {
 
     public:
         BoundingBoxProjection(BoundingBox<ForceModel, ParticleType>* bbox, std::size_t idx, char position,
-                char axis);
+                char axis, bool inward_cylinder=false);
         void setup();
         void increase_index() { ++index_; }
         void decrease_index() { --index_; }
@@ -32,6 +32,8 @@ namespace DEM {
         std::size_t get_id() const {return bbox_->get_id(); }
         std::size_t get_index() const { return index_; };
 
+        bool inward_cylinder() const { return  inward_cylinder_; }
+
         ParticleType* get_particle() const { return bbox_->get_particle(); }
         SurfaceType* get_surface() const { return bbox_->get_surface(); }
 
@@ -42,6 +44,7 @@ namespace DEM {
         const BoundingBox<ForceModel, ParticleType>* bbox_;
         std::array<const std::size_t*, 4> other_indices_ = { nullptr, nullptr, nullptr, nullptr };
         std::size_t index_;
+        bool inward_cylinder_;
     };
 
 }

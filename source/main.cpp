@@ -1,6 +1,4 @@
 #include <fstream>
-#include <iostream>
-#include <string>
 #include <vector>
 
 #include "simulations.h"
@@ -14,6 +12,7 @@ int main(int argc, char** argv)
 
     std::vector<std::string> arguments(argv+1, argv+argc);
     std::string program_name = arguments[0];
+
     std::string settings_file_name = arguments[1];
 
     if (argc < 3) {

@@ -45,6 +45,6 @@ add_executable(DEMsim
         source/simulations.h
         source/simulations.cpp
         source/file_reading_functions.h
-        source/file_reading_functions.cpp)
+        source/file_reading_functions.cpp source/cylinder_tester.cpp)
 
 target_link_libraries (DEMsim Eigen3::Eigen stdc++fs)

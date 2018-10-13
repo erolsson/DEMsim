@@ -36,12 +36,12 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::SurfaceType
 
 template<typename ForceModel, typename ParticleType>
 DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderType* cylinder, std::size_t index, bool) :
-        bx(this, 2*index,   'e', 'x'),  //Note the reversed ordering of b e for x and y axis, for inward cylinders
-        ex(this, 2*index+1, 'b', 'x'),
-        by(this, 2*index,   'e', 'y'),
-        ey(this, 2*index+1, 'b', 'y'),
-        bz(this, 2*index,   'b', 'z'),
-        ez(this, 2*index+1, 'e', 'z'),
+        bx(this, 2*index,   'e', 'x', true),
+        ex(this, 2*index+1, 'b', 'x', true),
+        by(this, 2*index,   'e', 'y', true),
+        ey(this, 2*index+1, 'b', 'y', true),
+        bz(this, 2*index,   'b', 'z', true),
+        ez(this, 2*index+1, 'e', 'z', true),
         particle_(nullptr),
         surface_(cylinder),
         update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
@@ -55,12 +55,12 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderTyp
 
 template<typename ForceModel, typename ParticleType>
 DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(const BoundingBox& rhs) :
-        bx(this, rhs.bx.get_index(), 'b', 'x'),
-        ex(this, rhs.ex.get_index(), 'e', 'x'),
-        by(this, rhs.by.get_index(), 'b', 'y'),
-        ey(this, rhs.ey.get_index(), 'e', 'y'),
-        bz(this, rhs.bz.get_index(), 'b', 'z'),
-        ez(this, rhs.ez.get_index(), 'e', 'z'),
+        bx(this, rhs.bx.get_index(), rhs.bx.get_position_char(), 'x', rhs.bx.inward_cylinder()),
+        ex(this, rhs.ex.get_index(), rhs.ex.get_position_char(), 'x', rhs.ex.inward_cylinder()),
+        by(this, rhs.by.get_index(), rhs.by.get_position_char(), 'y', rhs.by.inward_cylinder()),
+        ey(this, rhs.ey.get_index(), rhs.ey.get_position_char(), 'y', rhs.ey.inward_cylinder()),
+        bz(this, rhs.bz.get_index(), rhs.bz.get_position_char(), 'z', rhs.bz.inward_cylinder()),
+        ez(this, rhs.ez.get_index(), rhs.ez.get_position_char(), 'z', rhs.ez.inward_cylinder()),
         particle_(rhs.particle_),
         surface_(rhs.surface_),
         update_function(rhs.update_function)
@@ -73,12 +73,12 @@ DEM::BoundingBox<ForceModel, ParticleType>&
         DEM::BoundingBox<ForceModel, ParticleType>::operator=(const BoundingBox& rhs)
 {
     if (*this != rhs) {  // Avoiding x=x
-        bx(this, rhs.bx.get_index(), 'b', 'x');
-        ex(this, rhs.ex.get_index(), 'e', 'x'),
-        by(this, rhs.by.get_index(), 'b', 'y'),
-        ey(this, rhs.ey.get_index(), 'e', 'y'),
-        bz(this, rhs.bz.get_index(), 'b', 'z'),
-        ez(this, rhs.ez.get_index(), 'e', 'z'),
+        bx(this, rhs.bx.get_index(), rhs.bx.get_position_char(), 'x', rhs.bx.inward_cylinder());
+        ex(this, rhs.ex.get_index(), rhs.ex.get_position_char(), 'x', rhs.ex.inward_cylinder());
+        by(this, rhs.by.get_index(), rhs.by.get_position_char(), 'y', rhs.by.inward_cylinder());
+        ey(this, rhs.ey.get_index(), rhs.ey.get_position_char(), 'y', rhs.ey.inward_cylinder());
+        bz(this, rhs.bz.get_index(), rhs.bz.get_position_char(), 'z', rhs.bz.inward_cylinder());
+        ez(this, rhs.ez.get_index(), rhs.ez.get_position_char(), 'z', rhs.ez.inward_cylinder());
         particle_(rhs.particle_);
         surface_(rhs.surface_);
         update_function(rhs.update_function);

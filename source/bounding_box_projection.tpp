@@ -6,8 +6,9 @@
 
 template<typename ForceModel, typename ParticleType>
 DEM::BoundingBoxProjection<ForceModel, ParticleType>::BoundingBoxProjection(BoundingBox<ForceModel, ParticleType>* bbox,
-                                                                       std::size_t idx, char position, char axis) :
-        position_char_(position), axis_(axis), bbox_(bbox), index_(idx)
+                                                                       std::size_t idx, char position, char axis,
+                                                                       bool inward_cylinder) :
+        position_char_(position), axis_(axis), bbox_(bbox), index_(idx), inward_cylinder_(inward_cylinder)
 {
     // Empty constructor
 }

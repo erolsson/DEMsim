@@ -85,6 +85,12 @@ namespace DEM {
 
         void check_bounding_box_vector(std::vector<BoundingBoxProjectionType*>& vector);
         bool check_other_axes(const BoundingBoxProjectionType* b1, const BoundingBoxProjectionType* b2) const;
+
+        bool cylinder_overlap(const BoundingBoxProjectionType* b1,
+                const BoundingBoxProjectionType* b2) const;
+
+        void create_contact_pair(const BoundingBoxProjectionType* b1, const BoundingBoxProjectionType* b2);
+        void destroy_contact_pair(const BoundingBoxProjectionType* b1, const BoundingBoxProjectionType* b2);
     };
 
 }

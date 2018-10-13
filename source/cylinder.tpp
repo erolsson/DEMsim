@@ -24,11 +24,12 @@ DEM::Cylinder<ForceModel, ParticleType>::Cylinder(std::size_t id, double radius,
 template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::get_normal(const Vec3& position) const
 {
-    Vec3 n = (position-point_) - dot_product(axis_, position)*axis_;
+    Vec3 n = (position-point_) - dot_product(axis_, position-point_)*axis_;
     if (inward_)
         n*= -1;
-    if (n.is_zero())
+    if (n.is_zero()) {
         return Vec3(1, 0, 0);  //Special case, we are on the central axis, any unit vector can be used as normal
+    }
     return n.normalize();
 }
 
