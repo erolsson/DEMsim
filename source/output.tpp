@@ -65,8 +65,22 @@ void DEM::Output<ForceModel, ParticleType>::write_kinetic_energy() const
     std::string filename = directory_ + "/kinetic_energy.dat";
     std::ofstream output_file;
     output_file.open(filename, std::fstream::app);
-    output_file << transl_e << ", " << rot_e << ", " << transl_e + rot_e << "\n";
+    output_file << transl_e << ", " << rot_e << ", " << transl_e + rot_e << ", " << current_time_.count() << "\n";
     output_file.close();
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::write_surface_positions() const
+{
+    std::string filename = directory_ + "/surface_positions.dat";
+    std::ofstream output_file;
+    output_file.open(filename, std::fstream::app);
+    for (auto& surface : surfaces_) {
+        output_file << surface->get_output_string() << ", ";
+    }
+    output_file << current_time_.count() << "\n";
+    output_file.close();
+
 }
 
 

@@ -30,7 +30,7 @@ namespace DEM {
         void move(const Vec3& distance, const Vec3& velocity) override;
         void rotate(const Vec3& position, const Vec3& rotation_vector) override;
 
-        std::string output_data() const override;
+        std::string get_output_string() const override;
 
         void expand(double radius_increase);
         double get_radius() const { return radius_; }

@@ -29,9 +29,9 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     auto material = simulator.create_material<LinearContactMaterial>(2630.);
     material->k = 1e9;
-    material->mu=0.3;
+    material->mu = 0.3;
     material->kT = 1e9;
-    material->mu_wall=0.3;
+    material->mu_wall = 0.3;
 
     // Read particle radii from file
     auto particle_radii = read_vector_from_file<double>(particle_file);
@@ -45,7 +45,7 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
     auto cylinder_radius = pow(4*particle_volume/pi/aspect_ratio_at_dense, 1./3)/2;
     auto cylinder_height = 2*cylinder_radius*aspect_ratio_at_dense/filling_density;
-    simulator.create_cylinder(cylinder_radius, Vec3(0, 0, 1), Vec3(0, 0, -1), 2, true, true);
+    simulator.create_cylinder(cylinder_radius, Vec3(0, 0, 1), Vec3(0, 0, 0), cylinder_height, true, true);
     std::cout << "The simulated inward_cylinder has a radius of " << cylinder_radius << " and a height of "
               << cylinder_height << "\n";
     auto particle_positions = random_fill_cylinder(0, cylinder_height, cylinder_radius, particle_radii);
@@ -69,10 +69,6 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     std::vector<Vec3> bottom_points{p4, p3, p2, p1};
     std::vector<Vec3> top_points{p5, p6, p7, p8};
-    std::vector<Vec3> left_points{p2, p6, p5, p4};
-    std::vector<Vec3> right_points{p4, p8, p7, p3};
-    std::vector<Vec3> front_points{p2, p3, p7, p6};
-    std::vector<Vec3> back_points{p5, p8, p4, p1};
 
     auto bottom_surface = simulator.create_point_surface(bottom_points, true);
     std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;
@@ -83,9 +79,10 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;
     output1->print_kinetic_energy = true;
+    output1->print_surface_positions = true;
 
     simulator.set_gravity(Vec3(0, 0, -10));
     simulator.setup();
-    EngineType::RunForTime run_for_time(simulator, 0.5s);
+    EngineType::RunForTime run_for_time(simulator, 0.2s);
     simulator.run(run_for_time);
 }

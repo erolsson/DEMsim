@@ -101,12 +101,12 @@ void DEM::PointSurface<ForceModel, ParticleType>::rotate(const Vec3& point, cons
 }
 
 template<typename ForceModel, typename ParticleType>
-std::string DEM::PointSurface<ForceModel, ParticleType>::output_data() const
+std::string DEM::PointSurface<ForceModel, ParticleType>::get_output_string() const
 {
     std::ostringstream stream;
-    stream << id_;
+    stream << "ID=" << id_ << ", TYPE=PointSurface, " << points_.size();
     for(auto& p: points_) {
-        stream << "," << p.x << "," << p.y << "," << p.z;
+        stream << ", " << p.x << ", " << p.y << ", " << p.z;
     }
     return stream.str();
 }

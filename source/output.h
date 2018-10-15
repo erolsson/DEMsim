@@ -31,6 +31,7 @@ namespace DEM {
         void run_output(const std::chrono::duration<double>& increment); //Prints info
         bool print_particles = false;
         bool print_kinetic_energy = false;
+        bool print_surface_positions= false;
 
     private:
         using OutputFunPtr = void (Output<ForceModel, ParticleType>::*)() const;
@@ -41,8 +42,9 @@ namespace DEM {
         const ContactMatrix<ContactType>& contacts_;
         std::string directory_;
 
-        FuncVec output_functions_ {{Output::print_particles,      &Output::write_particles},
-                                   {Output::print_kinetic_energy, &Output::write_kinetic_energy}};
+        FuncVec output_functions_ {{Output::print_particles,         &Output::write_particles},
+                                   {Output::print_kinetic_energy,    &Output::write_kinetic_energy},
+                                   {Output::print_surface_positions, &Output::write_surface_positions}};
 
         std::chrono::duration<double> current_time_;
         std::chrono::duration<double> time_until_output_;
@@ -50,6 +52,7 @@ namespace DEM {
 
         void write_particles() const;
         void write_kinetic_energy() const;
+        void write_surface_positions() const;
     };
 }
 

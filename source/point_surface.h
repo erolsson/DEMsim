@@ -31,7 +31,7 @@ namespace DEM {
         void move(const Vec3& distance, const Vec3& velocity) override;
         void rotate(const Vec3& point, const Vec3& rotation_vector) override;
 
-        std::string output_data() const override;
+        std::string get_output_string() const override;
 
     private:
         std::vector<Vec3> points_;
