@@ -83,6 +83,6 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     simulator.set_gravity(Vec3(0, 0, -10));
     simulator.setup();
-    EngineType::RunForTime run_for_time(simulator, 0.2s);
+    EngineType::RunForTime run_for_time(simulator, 0.5s);
     simulator.run(run_for_time);
 }

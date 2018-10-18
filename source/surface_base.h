@@ -68,6 +68,7 @@ namespace DEM {
         // to allow for multiple rotations
         Vec3 rotation_this_inc_{ Vec3(0, 0, 0) };
         Vec3 rotation_point_{ Vec3(0, 0, 0) };
+
         std::size_t id_;
         std::array<double, 6> bbox_values_{0, 0, 0, 0, 0, 0};
 

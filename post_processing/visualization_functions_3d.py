@@ -25,6 +25,7 @@ class SpheresPlotter:
         self.ms = None
         self.color = color
         self.color = color
+        del opacity
 
     def plot(self, data, ):
         x = data[:, 1]
@@ -65,7 +66,7 @@ class PointSurfacePlotter:
         z = data[2:3*n:3]
         fulfill_bounding_box(self.bounding_box, x, y, z)
 
-        pts = mlab.points3d(x, y,z ,z)
+        pts = mlab.points3d(x, y, z, z)
         mesh = mlab.pipeline.delaunay2d(pts)
 
         pts.remove()
@@ -85,7 +86,7 @@ class CylinderPlotter:
 
     def plot(self, data):
         r = data[0]
-        axis = data[1:4]   # Todo use axis parameter
+        # axis = data[1:4]   # Todo use axis parameter
         point = data[4:7]
         length = data[7]
 
@@ -158,7 +159,6 @@ class SurfacesPlotter:
 
 
 if __name__ == '__main__':
-    print np.meshgrid([-1, 1], [-1, 1] , [-1, 1])
     simulation_directory = '../results/gyratory_compaction/1/'
     surfaces_plotter = SurfacesPlotter(simulation_directory + 'surface_positions.dat')
     bbox = BoundingBox()
@@ -167,4 +167,4 @@ if __name__ == '__main__':
     surfaces_plotter.set_bounding_box(bbox)
     surfaces_plotter.plot()
 
-    mlab.show()
+    # mlab.show()

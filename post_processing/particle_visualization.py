@@ -1,10 +1,15 @@
 from mayavi import mlab
 
-from animation_functions import animate_simulation
+from animation import Animation
+
 
 if __name__ == '__main__':
     simulation_directory = '../results/gyratory_compaction/1/'
     mlab.figure(size=(1920, 1200))
-    animate_simulation(simulation_directory, delay=10, save_frames=True, save_directory=simulation_directory+'figures')
+    animation = Animation(simulation_directory)
+    animation.save_directory = 'figures'
+    animation.save_frames = True
+    animation.delay = 0.01
+    animation.run()
 
     mlab.show()
