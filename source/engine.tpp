@@ -122,11 +122,10 @@ void DEM::Engine<ForceModel, ParticleType>::
 template<typename ForceModel, typename ParticleType>
 typename DEM::Engine<ForceModel, ParticleType>::AmplitudePtrType
 DEM::Engine<ForceModel, ParticleType>::set_force_control_on_surface(DEM::Surface<ForceModel, ParticleType>* surface,
-                                                                    char direction)
+                                                                    char direction, bool global_time)
 {
     if (direction == 'x' || direction == 'y' || direction == 'z') {
-        auto amp = std::make_shared<Amplitude<Engine>>
-        (*this);
+        auto amp = std::make_shared<Amplitude<Engine>>(*this, global_time);
         surface->set_force_amplitude(amp, direction);
         return amp;
     }
@@ -143,7 +142,6 @@ DEM::Engine<ForceModel, ParticleType>::remove_force_control_on_surface(DEM::Surf
     if (direction == 'x' || direction == 'y' || direction == 'z') {
         surface->set_force_amplitude(nullptr, direction);
     }
-
     else {
         throw std::invalid_argument("Axis must be x, y or z");
     }

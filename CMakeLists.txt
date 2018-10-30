@@ -45,6 +45,8 @@ add_executable(DEMsim
         source/simulations.h
         source/simulations.cpp
         source/file_reading_functions.h
-        source/file_reading_functions.cpp source/amplitude.h source/amplitude.tpp)
+        source/file_reading_functions.cpp
+        source/amplitude.h
+        source/amplitude.tpp)
 
 target_link_libraries (DEMsim Eigen3::Eigen stdc++fs)

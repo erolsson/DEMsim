@@ -52,7 +52,8 @@ namespace DEM {
         OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval);
         void remove_output(const OutputPointerType& output_to_remove);
 
-        AmplitudePtrType set_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction);
+        AmplitudePtrType set_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction,
+                bool global_time=false);
         void remove_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction);
 
         // Getters

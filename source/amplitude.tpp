@@ -7,8 +7,8 @@
 #include <cmath>
 
 template<class EngineType>
-DEM::Amplitude<EngineType>::Amplitude(const EngineType& engine, bool global_time=false) :
-    engine_(engine),
+DEM::Amplitude<EngineType>::Amplitude(const EngineType& engine, bool global_time) :
+    engine_(engine)
 {
     using namespace std::chrono_literals;
     if (global_time) {
@@ -23,10 +23,10 @@ template<class EngineType>
 double DEM::Amplitude<EngineType>::value() const
 {
     double f = constant;
-    double t = engine_.get_time().count();
-    f += (t - t0)*dfdt_;
+    double t = engine_.get_time().count() - - t0_.count();
+    f += (t )*dfdt_;
     for (const auto& term : sine_terms_) {
-        f += term.amplitude_*(sin(2*3.1415*term.frequency_-term.phase));
+        f += term.amplitude*(sin(2*3.1415*term.frequency*t-term.phase));
     }
     return f*factor_;
 }

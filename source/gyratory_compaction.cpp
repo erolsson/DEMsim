@@ -52,7 +52,7 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     auto particle_positions = random_fill_cylinder(0, cylinder_height, cylinder_radius, particle_radii);
 
     for (std::size_t i=0; i != particle_positions.size(); ++i) {
-        simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), material);
+        // simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), material);
     }
     // simulator.create_particle(0.005, Vec3(0, 0.0, 0.005), Vec3(0,0,0), material);
 
@@ -77,6 +77,11 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     auto top_surface = simulator.create_point_surface(top_points, true);
     std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
 
+    top_surface->mass = cylinder_radius*cylinder_radius*0.005*7200; // Steel plate 5 mm thick
+    auto fz = simulator.set_force_control_on_surface(top_surface, 'z');
+    fz->constant_term(1.0);
+
+    std::cout << "Value of fz: " << fz->value() << "\n";
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;
     output1->print_kinetic_energy = true;
