@@ -79,3 +79,18 @@ void DEM::Surface<ForceModel, ParticleType>::remove_contact(size_t index_of_othe
 {
     contacts_.erase(index_of_other_object);
 }
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Surface<ForceModel, ParticleType>::set_force_amplitude(DEM::Surface<ForceModel, ParticleType>::ForceAmpPtr
+    amplitude, char direction)
+{
+    if( direction == 'x') {
+        force_control_amplitudes_[0] == amplitude;
+    }
+    if( direction == 'y') {
+        force_control_amplitudes_[1] == amplitude;
+    }
+    if( direction == 'z') {
+        force_control_amplitudes_[2] == amplitude;
+    }
+}

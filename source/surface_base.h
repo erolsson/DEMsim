@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "amplitude.h"
 #include "contact_vector.h"
 #include "contact_matrix.h"
 #include "vec3.h"
@@ -20,9 +21,13 @@ namespace DEM {
     class Contact;
 
     template<typename ForceModel, typename ParticleType>
+    class Engine;
+
+    template<typename ForceModel, typename ParticleType>
     class Surface {
         using ContactType = Contact<ForceModel, ParticleType>;
         using ContactPointerType = typename ContactMatrix<ContactType>::PointerType;
+        using ForceAmpPtr = std::shared_ptr<Amplitude<Engine<ForceModel, ParticleType>>>;
 
     public:
         double mass{0.};
@@ -59,6 +64,8 @@ namespace DEM {
         void add_contact(ContactPointerType contact, std::size_t index_of_other_object);
         void remove_contact(std::size_t index_of_other_object);
 
+        const std::array<ForceAmpPtr, 3>& get_applied_forces() const { return force_control_amplitudes_; }
+        void set_force_amplitude(ForceAmpPtr amplitude, char direction);
     protected:
         Vec3 velocity_{ Vec3(0, 0, 0) };
         Vec3 acceleration_{ Vec3(0, 0, 0) };
@@ -70,11 +77,14 @@ namespace DEM {
         Vec3 rotation_point_{ Vec3(0, 0, 0) };
 
         std::size_t id_;
+
         std::array<double, 6> bbox_values_{0, 0, 0, 0, 0, 0};
 
-        virtual void update_bounding_box() = 0;
-    private:
+        std::array<ForceAmpPtr, 3> force_control_amplitudes_ = {nullptr, nullptr, nullptr};
 
+        virtual void update_bounding_box() = 0;
+
+    private:
         ContactVector<ContactPointerType> contacts_{ContactVector<ContactPointerType>()};
     };
 }

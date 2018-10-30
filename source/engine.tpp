@@ -119,6 +119,37 @@ void DEM::Engine<ForceModel, ParticleType>::
 }
 
 
+template<typename ForceModel, typename ParticleType>
+typename DEM::Engine<ForceModel, ParticleType>::AmplitudePtrType
+DEM::Engine<ForceModel, ParticleType>::set_force_control_on_surface(DEM::Surface<ForceModel, ParticleType>* surface,
+                                                                    char direction)
+{
+    if (direction == 'x' || direction == 'y' || direction == 'z') {
+        auto amp = std::make_shared<Amplitude<Engine>>
+        (*this);
+        surface->set_force_amplitude(amp, direction);
+        return amp;
+    }
+    else {
+        throw std::invalid_argument("Axis must be x, y or z");
+    }
+}
+
+template<typename ForceModel, typename ParticleType>
+void
+DEM::Engine<ForceModel, ParticleType>::remove_force_control_on_surface(DEM::Surface<ForceModel, ParticleType>* surface,
+                                                                       char direction)
+{
+    if (direction == 'x' || direction == 'y' || direction == 'z') {
+        surface->set_force_amplitude(nullptr, direction);
+    }
+
+    else {
+        throw std::invalid_argument("Axis must be x, y or z");
+    }
+}
+
+
 //=====================================================================================================================
 //                        *** *** *** *** Private functions *** *** *** ***
 //=====================================================================================================================
@@ -255,7 +286,3 @@ double DEM::Engine<ForceModel, ParticleType>::get_kinetic_energy() const
     }
     return energy;
 }
-
-
-
-

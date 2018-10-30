@@ -49,6 +49,7 @@ namespace DEM {
         double length_;
         bool inward_;
         bool infinite_;
+
         // To allow fast functions for a common case, currently only z-aligned is supported in the collision detector!!!
         bool z_aligned_;
 

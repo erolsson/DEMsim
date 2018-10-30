@@ -4,6 +4,7 @@
 
 #include "simulations.h"
 
+#include "amplitude.h"
 #include "engine.h"
 #include "file_reading_functions.h"
 #include "filling_functions.h"

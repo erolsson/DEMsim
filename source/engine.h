@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "amplitude.h"
 #include "collision_detector.h"
 #include "contact.h"
 #include "contact_matrix.h"
@@ -28,6 +29,7 @@ namespace DEM {
         using PointSurfacePointer = PointSurface<ForceModel, ParticleType>*;
         using CylinderPointer = Cylinder<ForceModel, ParticleType>*;
         using OutputPointerType = std::shared_ptr<Output<ForceModel, ParticleType>>;
+        using AmplitudePtrType = std::shared_ptr<Amplitude<Engine>>;
 
         explicit Engine(std::chrono::duration<double> dt);
 
@@ -49,6 +51,9 @@ namespace DEM {
 
         OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval);
         void remove_output(const OutputPointerType& output_to_remove);
+
+        AmplitudePtrType set_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction);
+        void remove_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction);
 
         // Getters
         std::chrono::duration<double> get_time() const { return time_; }
