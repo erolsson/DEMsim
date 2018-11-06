@@ -18,12 +18,12 @@ std::vector<DEM::Vec3> DEM::random_fill_cylinder(double z0, double z1, double cy
         bool overlapping = true;
         Vec3 position {};
         while(overlapping) {
-            position.x = dist_r(rand_engine);
-            position.y = dist_r(rand_engine);
-            position.z = dist_z(rand_engine);
+            position.x() = dist_r(rand_engine);
+            position.y() = dist_r(rand_engine);
+            position.z() = dist_z(rand_engine);
 
             //Check if a particle at the chosen position overlaps with an other
-            if (position.x*position.x+position.y*position.y <
+            if (position.x()*position.x()+position.y()*position.y() <
                    (cylinder_radius-particle_radius)*(cylinder_radius-particle_radius)) {
                 overlapping = check_overlaps(position, particle_radius, particle_positions, radii);
             }

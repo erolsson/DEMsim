@@ -117,14 +117,14 @@ void DEM::BoundingBox<ForceModel, ParticleType>::particle_update()
 {
     Vec3 particle_position = particle_->get_position();
     double R = particle_->get_radius();
-    bx.value = particle_position.x - R - stretch_;
-    ex.value = particle_position.x + R + stretch_;
+    bx.value = particle_position.x() - R - stretch_;
+    ex.value = particle_position.x() + R + stretch_;
 
-    by.value = particle_position.y - R - stretch_;
-    ey.value = particle_position.y + R + stretch_;
+    by.value = particle_position.y() - R - stretch_;
+    ey.value = particle_position.y() + R + stretch_;
 
-    bz.value = particle_position.z - R - stretch_;
-    ez.value = particle_position.z + R + stretch_;
+    bz.value = particle_position.z() - R - stretch_;
+    ez.value = particle_position.z() + R + stretch_;
 }
 
 template<typename ForceModel, typename ParticleType>

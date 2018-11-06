@@ -78,10 +78,10 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
 
     top_surface->mass = cylinder_radius*cylinder_radius*0.005*7200; // Steel plate 5 mm thick
-    auto fz = simulator.set_force_control_on_surface(top_surface, 'z');
-    fz->constant_term(1.0);
+    auto fx = simulator.set_force_control_on_surface(top_surface, 'x');
+    fx->constant_term(1.0);
 
-    std::cout << "Value of fz: " << fz->value() << "\n";
+    std::cout << "Value of fz: " << fx->value() << "\n";
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;
     output1->print_kinetic_energy = true;

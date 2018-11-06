@@ -29,7 +29,6 @@ namespace DEM {
         using PointSurfacePointer = PointSurface<ForceModel, ParticleType>*;
         using CylinderPointer = Cylinder<ForceModel, ParticleType>*;
         using OutputPointerType = std::shared_ptr<Output<ForceModel, ParticleType>>;
-        using AmplitudePtrType = std::shared_ptr<Amplitude<Engine>>;
 
         explicit Engine(std::chrono::duration<double> dt);
 
@@ -52,8 +51,8 @@ namespace DEM {
         OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval);
         void remove_output(const OutputPointerType& output_to_remove);
 
-        AmplitudePtrType set_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction,
-                bool global_time=false);
+        std::shared_ptr<Amplitude> set_force_control_on_surface(Surface<ForceModel, ParticleType>* surface,
+                char direction,  bool global_time=false);
         void remove_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction);
 
         // Getters
@@ -113,11 +112,14 @@ namespace DEM {
 
         // Helper functions
         void move_particles();
+        void move_surfaces();
         void create_contacts();
         void destroy_contacts();
         void update_contacts();
         void sum_contact_forces();
         void run_output();
+
+        void move_surface_in_direction(char direction);
 
         friend class Output<ForceModel, ParticleType>;
     };

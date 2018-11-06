@@ -106,7 +106,7 @@ std::string DEM::PointSurface<ForceModel, ParticleType>::get_output_string() con
     std::ostringstream stream;
     stream << "ID=" << id_ << ", TYPE=PointSurface, " << points_.size();
     for(auto& p: points_) {
-        stream << ", " << p.x << ", " << p.y << ", " << p.z;
+        stream << ", " << p.x() << ", " << p.y() << ", " << p.z();
     }
     return stream.str();
 }
@@ -122,23 +122,23 @@ template<typename ForceModel, typename ParticleType>
 void DEM::PointSurface<ForceModel, ParticleType>::update_bounding_box()
 {
     auto x_cmp = [](const DEM::Vec3& v1, const DEM::Vec3& v2) -> bool {
-        return v1.x < v2.x;
+        return v1.x() < v2.x();
     };
 
     auto y_cmp = [](const DEM::Vec3& v1, const DEM::Vec3& v2) -> bool {
-        return v1.y < v2.y;
+        return v1.y() < v2.y();
     };
 
     auto z_cmp = [](const DEM::Vec3& v1, const DEM::Vec3& v2) -> bool {
-        return v1.z < v2.z;
+        return v1.z() < v2.z();
     };
 
-    bbox_values_[0] = std::min_element(points_.begin(), points_.end(), x_cmp)->x;
-    bbox_values_[1] = std::max_element(points_.begin(), points_.end(), x_cmp)->x;
+    bbox_values_[0] = std::min_element(points_.begin(), points_.end(), x_cmp)->x();
+    bbox_values_[1] = std::max_element(points_.begin(), points_.end(), x_cmp)->x();
 
-    bbox_values_[2] = std::min_element(points_.begin(), points_.end(), y_cmp)->y;
-    bbox_values_[3] = std::max_element(points_.begin(), points_.end(), y_cmp)->y;
+    bbox_values_[2] = std::min_element(points_.begin(), points_.end(), y_cmp)->y();
+    bbox_values_[3] = std::max_element(points_.begin(), points_.end(), y_cmp)->y();
 
-    bbox_values_[4] = std::min_element(points_.begin(), points_.end(), z_cmp)->z;
-    bbox_values_[5] = std::max_element(points_.begin(), points_.end(), z_cmp)->z;
+    bbox_values_[4] = std::min_element(points_.begin(), points_.end(), z_cmp)->z();
+    bbox_values_[5] = std::max_element(points_.begin(), points_.end(), z_cmp)->z();
 }

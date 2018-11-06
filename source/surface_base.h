@@ -27,7 +27,7 @@ namespace DEM {
     class Surface {
         using ContactType = Contact<ForceModel, ParticleType>;
         using ContactPointerType = typename ContactMatrix<ContactType>::PointerType;
-        using ForceAmpPtr = std::shared_ptr<Amplitude<Engine<ForceModel, ParticleType>>>;
+        using ForceAmpPtr = std::shared_ptr<Amplitude>;
 
     public:
         double mass{0.};

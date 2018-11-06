@@ -96,8 +96,8 @@ template<typename ForceModel, typename ParticleType>
 std::string DEM::Cylinder<ForceModel, ParticleType>::get_output_string() const
 {
     std::ostringstream stream;
-    stream << "ID=" << id_ << ", TYPE=Cylinder, " << radius_  << ", " << axis_.x << ", " << axis_.y << ", "
-           << axis_.z << ", " << point_.x << ", " << point_.y << ", " << point_.z << ", " << length_;
+    stream << "ID=" << id_ << ", TYPE=Cylinder, " << radius_  << ", " << axis_.x() << ", " << axis_.y() << ", "
+           << axis_.z() << ", " << point_.x() << ", " << point_.y() << ", " << point_.z() << ", " << length_;
     return stream.str();
 }
 
@@ -105,22 +105,22 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Cylinder<ForceModel, ParticleType>::update_bounding_box()
 {
     if (inward_) {
-        bbox_values_[0] = point_.x - radius_/sqrt(2);
-        bbox_values_[1] = point_.x + radius_/sqrt(2);
-        bbox_values_[2] = point_.y - radius_/sqrt(2);
-        bbox_values_[3] = point_.y + radius_/sqrt(2);
+        bbox_values_[0] = point_.x() - radius_/sqrt(2);
+        bbox_values_[1] = point_.x() + radius_/sqrt(2);
+        bbox_values_[2] = point_.y() - radius_/sqrt(2);
+        bbox_values_[3] = point_.y() + radius_/sqrt(2);
     }
 
     else {
-        bbox_values_[0] = point_.x - radius_;
-        bbox_values_[1] = point_.x + radius_;
-        bbox_values_[2] = point_.y - radius_;
-        bbox_values_[3] = point_.y + radius_;
+        bbox_values_[0] = point_.x() - radius_;
+        bbox_values_[1] = point_.x() + radius_;
+        bbox_values_[2] = point_.y() - radius_;
+        bbox_values_[3] = point_.y() + radius_;
     }
 
     if (!infinite_) {
-        bbox_values_[4] = point_.z;
-        bbox_values_[5] = point_.z + length_;
+        bbox_values_[4] = point_.z();
+        bbox_values_[5] = point_.z() + length_;
     }
 
     else {

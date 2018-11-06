@@ -30,7 +30,8 @@ add_executable(DEMsim
         source/collision_detector.tpp
         source/bounding_box.tpp
         source/bounding_box_projection.tpp
-        source/contact.tpp source/surface_base.tpp
+        source/contact.tpp
+        source/surface_base.tpp
         source/contact_matrix.tpp
         source/contact_vector.tpp
         source/cylinder.tpp
@@ -47,6 +48,6 @@ add_executable(DEMsim
         source/file_reading_functions.h
         source/file_reading_functions.cpp
         source/amplitude.h
-        source/amplitude.tpp)
+        source/amplitude.cpp)
 
 target_link_libraries (DEMsim Eigen3::Eigen stdc++fs)

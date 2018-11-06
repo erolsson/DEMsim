@@ -95,8 +95,8 @@ template<typename ForceModel>
 std::string DEM::SphericalParticle<ForceModel>::get_output_string() const
 {
     std::stringstream ss;
-    ss << id_ << ", " << position_.x << ", " << position_.y << ", " << position_.z << ", ";
-    ss << rot_.x << ", " << rot_.y << ", " << rot_.z << ", " << radius_<< ", ";
+    ss << id_ << ", " << position_.x() << ", " << position_.y() << ", " << position_.z() << ", ";
+    ss << rot_.x() << ", " << rot_.y() << ", " << rot_.z() << ", " << radius_<< ", ";
     ss << kinetic_energy() << ", " << material_->id;
     return ss.str();
 }

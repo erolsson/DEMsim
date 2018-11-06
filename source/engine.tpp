@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "amplitude.h"
 #include "contact_matrix.h"
 #include "collision_detector.h"
 #include "output.h"
@@ -47,7 +48,7 @@ void DEM::Engine<ForceModel, ParticleType>::run(const Condition& condition)
         time_ += increment_;
         do_step();
         time_to_log -= increment_;
-        if (time_to_log <= increment_){
+        if (time_to_log <= increment_) {
             time_to_log = logging_interval;
             std::cout << "Simulation time is " << get_time().count() << "\n";
         }
@@ -120,12 +121,12 @@ void DEM::Engine<ForceModel, ParticleType>::
 
 
 template<typename ForceModel, typename ParticleType>
-typename DEM::Engine<ForceModel, ParticleType>::AmplitudePtrType
+std::shared_ptr<DEM::Amplitude>
 DEM::Engine<ForceModel, ParticleType>::set_force_control_on_surface(DEM::Surface<ForceModel, ParticleType>* surface,
                                                                     char direction, bool global_time)
 {
     if (direction == 'x' || direction == 'y' || direction == 'z') {
-        auto amp = std::make_shared<Amplitude<Engine>>(*this, global_time);
+        auto amp = std::make_shared<DEM::Amplitude>(std::bind(&Engine::get_time, this), global_time);
         surface->set_force_amplitude(amp, direction);
         return amp;
     }
@@ -158,6 +159,7 @@ void DEM::Engine<ForceModel, ParticleType>::do_step()
 {
     sum_contact_forces();
     move_particles();
+    move_surfaces();
     collision_detector_.do_check();
     destroy_contacts();
     create_contacts();
@@ -257,6 +259,19 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
 }
 
 template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::move_surfaces()
+{
+    for (auto& surface: surfaces_) {
+        auto surface_forces = surface->get_applied_forces();
+
+        if (surface_forces[0] != nullptr) {
+
+        }
+    }
+}
+
+
+template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::update_contacts()
 {
     auto& contact_vector = contacts_.get_objects();
@@ -284,3 +299,5 @@ double DEM::Engine<ForceModel, ParticleType>::get_kinetic_energy() const
     }
     return energy;
 }
+
+

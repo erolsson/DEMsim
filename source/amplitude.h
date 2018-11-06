@@ -11,19 +11,18 @@
 #include <functional>
 
 namespace DEM {
-    template<class EngineType>
     class Amplitude {
     public:
-        Amplitude(const EngineType& engine, bool global_time);
+        Amplitude(std::function<std::chrono::duration<double>()> time_function, bool global_time);
 
         double value() const;
-        void constant_term(double value) { constant = value; }
+        void constant_term(double value) { constant_ = value; }
         void linear_term(double dfdt) { dfdt_ = dfdt; }
         void add_sine_term(double amp, double frequency, double phase_shift = 0);
         void multiplying_factor(double multiplying_factor) {factor_ = multiplying_factor;};
 
     private:
-        double constant = 0;
+        double constant_ = 0;
         double dfdt_ = 0;
         std::chrono::duration<double> t0_;
         struct Sine_term {
@@ -32,13 +31,9 @@ namespace DEM {
             double phase;
         };
         std::vector<Sine_term> sine_terms_ {};
-        double factor_;
-
-
-        const EngineType& engine_;
+        double factor_ = 1.;
+        std::function<std::chrono::duration<double>()> time_func_;
     };
 }
-
-#include "amplitude.tpp"
 
 #endif //DEMSIM_AMPLITUDE_H
