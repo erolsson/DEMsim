@@ -117,28 +117,28 @@ void DEM::BoundingBox<ForceModel, ParticleType>::particle_update()
 {
     Vec3 particle_position = particle_->get_position();
     double R = particle_->get_radius();
-    bx.value = particle_position.x() - R - stretch_;
-    ex.value = particle_position.x() + R + stretch_;
+    bx.value_ = particle_position.x() - R - stretch_;
+    ex.value_ = particle_position.x() + R + stretch_;
 
-    by.value = particle_position.y() - R - stretch_;
-    ey.value = particle_position.y() + R + stretch_;
+    by.value_ = particle_position.y() - R - stretch_;
+    ey.value_ = particle_position.y() + R + stretch_;
 
-    bz.value = particle_position.z() - R - stretch_;
-    ez.value = particle_position.z() + R + stretch_;
+    bz.value_ = particle_position.z() - R - stretch_;
+    ez.value_ = particle_position.z() + R + stretch_;
 }
 
 template<typename ForceModel, typename ParticleType>
 void DEM::BoundingBox<ForceModel, ParticleType>::surface_update()
 {
     auto bbox = surface_->get_bounding_box_values();
-    bx.value = bbox[0] - stretch_;
-    ex.value = bbox[1] +  stretch_;
+    bx.value_ = bbox[0] - stretch_;
+    ex.value_ = bbox[1] +  stretch_;
 
-    by.value = bbox[2] - stretch_;
-    ey.value = bbox[3] +  stretch_;
+    by.value_ = bbox[2] - stretch_;
+    ey.value_ = bbox[3] +  stretch_;
 
-    bz.value = bbox[4] - stretch_;
-    ez.value = bbox[5] +  stretch_;
+    bz.value_ = bbox[4] - stretch_;
+    ez.value_ = bbox[5] +  stretch_;
 }
 
 template<typename ForceModel, typename ParticleType>

@@ -64,17 +64,20 @@ class PointSurfacePlotter:
         x = data[0:3*n-2:3]
         y = data[1:3*n-1:3]
         z = data[2:3*n:3]
+
         fulfill_bounding_box(self.bounding_box, x, y, z)
 
+        # This orders the points so that a rectange is plotted
         pts = mlab.points3d(x, y, z, z)
         mesh = mlab.pipeline.delaunay2d(pts)
 
         pts.remove()
-
         if self.ms is None:
             self.ms = mlab.pipeline.surface(mesh, color=self.color, opacity=self.opacity, transparent=True).mlab_source
         else:
-            self.ms.set(x=x, y=y, z=z)
+            # Updating the pipeline with the new set of points
+            # There is probably a cuter way to do this
+            self.ms.points = mesh.mlab_source.points
 
 
 class CylinderPlotter:
@@ -167,4 +170,4 @@ if __name__ == '__main__':
     surfaces_plotter.set_bounding_box(bbox)
     surfaces_plotter.plot()
 
-    # mlab.show()
+    mlab.show()

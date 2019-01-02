@@ -60,8 +60,8 @@ namespace DEM {
 
         void setup();
         void do_check();  //Not const due to re-ordering of the proj vectors
-        std::vector<CollisionPair> contacts_to_create() const { return contacts_to_create_.get_objects(); }
-        std::vector<CollisionPair> contacts_to_destroy() const { return contacts_to_destroy_;}
+        const std::vector<CollisionPair>& contacts_to_create() const { return contacts_to_create_.get_objects(); }
+        const std::vector<CollisionPair>& contacts_to_destroy() const { return contacts_to_destroy_;}
 
     private:
         std::vector<BoundingBox<ForceModel, ParticleType> > bounding_boxes_{};

@@ -4,7 +4,7 @@ from animation import Animation
 
 
 if __name__ == '__main__':
-    simulation_directory = '../results/gyratory_compaction/1/'
+    simulation_directory = '../results/gyratory_compaction/2/'
     mlab.figure(size=(1920, 1200))
     animation = Animation(simulation_directory)
     animation.save_directory = 'figures'

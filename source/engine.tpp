@@ -261,12 +261,24 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::move_surfaces()
 {
+    double dt = increment_.count();
     for (auto& surface: surfaces_) {
         auto surface_forces = surface->get_applied_forces();
-
-        if (surface_forces[0] != nullptr) {
-
+        Vec3 velocity;
+        Vec3 distance;
+        for(unsigned axis = 0; axis != 3; ++axis) {
+            auto force_amp = surface_forces[axis];
+            if (force_amp != nullptr) {
+                double f = force_amp->value() + surface->get_total_force()[axis];
+                double a = f/surface->get_mass() + gravity_[axis];
+                velocity[axis] = surface->get_velocity()[axis] + a*dt;
+                distance[axis] = velocity[axis]*dt;
+            }
+            else {
+                distance[axis] = surface->get_velocity()[axis]*dt;
+            }
         }
+        surface->move(distance, velocity);
     }
 }
 

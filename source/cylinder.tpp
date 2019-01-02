@@ -39,7 +39,7 @@ double DEM::Cylinder<ForceModel, ParticleType>::distance_to_point(const Vec3& po
     Vec3 n = get_normal(point);
     if (!infinite_) {
         double position_on_axis = dot_product(point-point_, axis_);
-        if (position_on_axis<0 || position_on_axis>length_) {
+        if (position_on_axis < 0 || position_on_axis > length_) {
             Vec3 point_on_surface = point_+axis_*position_on_axis;
             return (point-point_on_surface).length();
         }
@@ -59,6 +59,7 @@ DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::vector_to_point(const Vec3& p
             return point - point_on_surface;
         }
     }
+
     return (radius_ + dot_product((point-point_), n))*n;
 }
 

@@ -43,7 +43,7 @@ class Animation:
             print t
             particle_data = np.genfromtxt(self.directory + 'particles_' + str(t) + '.dat', delimiter=',')
             spheres_plotter.plot(particle_data)
-            surfaces_plotter.plot()
+            surfaces_plotter.plot(t)
             if self.save_frames:
                 if self.figure_directory is None:
                     self.figure_directory = self.directory

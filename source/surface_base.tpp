@@ -62,10 +62,10 @@ template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Surface<ForceModel, ParticleType>::get_total_force() const
 {
     Vec3 force = Vec3(0, 0, 0);
-    for (auto const& c : contacts_) {
-        force += c->get_normal_force()+c->get_tangential_force();
+    for (auto const& c : contacts_.get_objects()) {
+        force = c->get_normal_force()+c->get_tangential_force();
     }
-    return force;
+    return -force;
 }
 
 template<typename ForceModel, typename ParticleType>

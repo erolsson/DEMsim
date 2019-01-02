@@ -24,9 +24,9 @@ namespace DEM {
         void increase_index() { ++index_; }
         void decrease_index() { --index_; }
 
-        double get_value() const { return value; }
+        double get_value() const { return value_; }
         char get_position_char() const { return position_char_; };
-        char get_axis() const { return axis_; }
+        // char get_axis() const { return axis_; }
         std::array<const std::size_t*, 4> get_indices_on_other_axes() const { return other_indices_; }
         const BoundingBox<ForceModel, ParticleType>* get_bounding_box() const { return bbox_;}
         std::size_t get_id() const {return bbox_->get_id(); }
@@ -38,7 +38,7 @@ namespace DEM {
         SurfaceType* get_surface() const { return bbox_->get_surface(); }
 
     private:
-        double value = 0;
+        double value_ = 0;
         const char position_char_;
         const char axis_;
         const BoundingBox<ForceModel, ParticleType>* bbox_;

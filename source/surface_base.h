@@ -30,7 +30,7 @@ namespace DEM {
         using ForceAmpPtr = std::shared_ptr<Amplitude>;
 
     public:
-        double mass{0.};
+
         double max_velocity{0.};
         bool force_control{ false };
 
@@ -46,6 +46,8 @@ namespace DEM {
         virtual void move(const Vec3& distance, const Vec3& velocity) = 0;
         virtual void rotate(const Vec3& position, const Vec3& rotation_vector) = 0;
 
+        double get_mass() const { return mass_; }
+        void set_mass(double mass) {mass_ = mass; }
         virtual std::string get_output_string() const = 0;
         virtual const std::array<double, 6>& get_bounding_box_values() const { return bbox_values_; };
         const Vec3& get_velocity() const { return velocity_; }
@@ -85,6 +87,7 @@ namespace DEM {
         virtual void update_bounding_box() = 0;
 
     private:
+        double mass_ = 0;
         ContactVector<ContactPointerType> contacts_{ContactVector<ContactPointerType>()};
     };
 }
