@@ -27,9 +27,10 @@ int main(int argc, char** argv)
                      "second argument having extension .sim" << '\n';
     }
 
-    if (program_name == "gyratory_compaction") {
-        DEM::gyratory_compaction(settings_file_name);
-    }
+    // Find the simulation program in the map of available simulations and execute it.
+    std::cout << "Running simulation program " << program_name << "\n";
+    DEM::valid_simulations()[program_name](settings_file_name);
+
 
     return 0;
 }

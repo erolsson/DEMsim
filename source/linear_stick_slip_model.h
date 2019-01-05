@@ -26,7 +26,7 @@ namespace DEM {
         double get_normal_force() const { return F_; }
         const Vec3& get_tangential_force() const { return FT_; }
         double get_contact_area() const {return sqrt(h_*R0_); }
-        double active() const {return h_>0; }
+        bool active() const {return h_>0; }
 
         void set_increment(std::chrono::duration<double>) {}
 

@@ -48,6 +48,6 @@ add_executable(DEMsim
         source/file_reading_functions.h
         source/file_reading_functions.cpp
         source/amplitude.h
-        source/amplitude.cpp)
+        source/amplitude.cpp source/closed_die_compaction.cpp source/storakers_mesarovic_johnson.cpp source/storakers_mesarovic_johnson.h source/elastic_ideal_plastic_material.h)
 
 target_link_libraries (DEMsim Eigen3::Eigen stdc++fs)

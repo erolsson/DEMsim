@@ -2,10 +2,14 @@
 // Created by erolsson on 2018-09-18.
 //
 
+#include <map>
+
 #include "simulations.h"
 
-std::set<std::string> DEM::valid_simulations() {
+std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
     // Add all valid simulation routines here
-    return std::set<std::string>{"gyratory_compaction", "cylinder_tester"};
+    return std::map<std::string, SimulationFunctionPtr> {
+            {"gyratory_compaction",   DEM::gyratory_compaction},
+            {"closed_die_compaction", DEM::closed_die_compaction}};
 }
 

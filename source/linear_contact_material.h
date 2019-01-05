@@ -5,8 +5,6 @@
 #ifndef DEMSIM_MATERIAL_H
 #define DEMSIM_MATERIAL_H
 
-#include <vector>
-
 #include "material_base.h"
 
 namespace DEM {
