@@ -71,7 +71,7 @@ void DEM::StorakersMesarovicJohnson::update_normal_force(double h)
     else { // Elastic unloading
         double hu = h_max_ - h;
         if (hu < hu_max_) {
-           double x = sqrt(1-hu*hu/hu_max_/hu_max_);   // x = a / a_max_
+           double x = sqrt(1 - hu*hu/hu_max_/hu_max_);   // x = a / a_max_
            F_ = k_*h_max_*2/pi*(asin(x) - x*sqrt(1-x));
         } else {
             F_ = 0;
