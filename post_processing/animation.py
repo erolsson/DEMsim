@@ -30,20 +30,23 @@ class Animation:
     def _animation(self):
         particle_files = glob.glob(self.directory + '/particles_*.dat')
         particle_files = [os.path.basename(particle_file) for particle_file in particle_files]
-        frame_times = [float(re.findall('\d+.\d+', particle_file)[0]) for particle_file in particle_files]
-        frame_times = np.array(sorted(frame_times))
-        frame_times = frame_times[frame_times >= self.start_time]
+        frame_times = []
+        for p_file in particle_files:
+            frame_times.append(re.findall(r"[-+]?\d*\.\d+|\d+", p_file)[0])
+        frame_times = np.array(sorted(frame_times, key=lambda x: float(x)), dtype=str)
+        frame_times_np = np.array([float(t) for t in frame_times])
+        frame_times = frame_times[frame_times_np >= self.start_time]
         if self.end_time:
-            frame_times = frame_times[frame_times < self.end_time]
+            frame_times = frame_times[frame_times_np < self.end_time]
 
         spheres_plotter = SpheresPlotter()
         surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dat')
         n = len(frame_times)
         for i, t in enumerate(frame_times):
             print t
-            particle_data = np.genfromtxt(self.directory + 'particles_' + str(t) + '.dat', delimiter=',')
+            particle_data = np.genfromtxt(self.directory + 'particles_' + t + '.dat', delimiter=',')
             spheres_plotter.plot(particle_data)
-            surfaces_plotter.plot(t)
+            surfaces_plotter.plot(float(t))
             if self.save_frames:
                 if self.figure_directory is None:
                     self.figure_directory = self.directory

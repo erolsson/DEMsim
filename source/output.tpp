@@ -83,4 +83,19 @@ void DEM::Output<ForceModel, ParticleType>::write_surface_positions() const
 
 }
 
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::write_surface_forces() const
+{
+    std::string filename = directory_ + "/surface_forces.dat";
+    std::ofstream output_file;
+    output_file.open(filename, std::fstream::app);
+    for (auto& surface : surfaces_) {
+        auto F = surface->get_total_force();
+        output_file << "ID=" << surface->get_id() << ", " << surface->get_normal_force() << ", "
+                    << F.x() << ", " << F.y() << ", " << F.z() << ", ";
+    }
+    output_file << current_time_.count() << "\n";
+    output_file.close();
+}
+
 

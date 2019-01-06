@@ -39,7 +39,7 @@ void DEM::Engine<ForceModel, ParticleType>::setup()
 
 template<typename ForceModel, typename ParticleType>
 template<typename Condition>
-void DEM::Engine<ForceModel, ParticleType>::run(const Condition& condition)
+void DEM::Engine<ForceModel, ParticleType>::run(Condition& condition)
 {
     using namespace std::chrono_literals;
     std::chrono::duration<double> logging_interval = 0.01s;
@@ -51,6 +51,9 @@ void DEM::Engine<ForceModel, ParticleType>::run(const Condition& condition)
         if (time_to_log <= increment_) {
             time_to_log = logging_interval;
             std::cout << "Simulation time is " << get_time().count() << "\n";
+            auto velocity_pair = max_particle_velocity();
+            std::cout << "Fastest particle is " <<  velocity_pair.first << " with a speed of "
+                      <<  velocity_pair.second <<  "\n";
         }
     }
     std::cout << "Simulation finalized at " << get_time().count() << std::endl;
@@ -148,6 +151,88 @@ DEM::Engine<ForceModel, ParticleType>::remove_force_control_on_surface(DEM::Surf
     }
 }
 
+template<typename ForceModel, typename ParticleType>
+std::pair<double, std::size_t> DEM::Engine<ForceModel, ParticleType>::set_viscocity_parameters(double viscosity,
+                                                                                               size_t order)
+{
+    std::pair<double, std::size_t> parameters {viscosity, order};
+    viscocity_parameters_.push_back(parameters);
+    return parameters;
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::remove_viscosity_parameters(std::pair<double, std::size_t> parameter_pair)
+{
+    viscocity_parameters_.erase(std::remove(viscocity_parameters_.begin(), viscocity_parameters_.end(), parameter_pair),
+            viscocity_parameters_.end());
+}
+
+//=====================================================================================================================
+//                        *** *** *** *** Get simulation data *** *** *** ***
+//=====================================================================================================================
+
+
+template<typename ForceModel, typename ParticleType>
+double DEM::Engine<ForceModel, ParticleType>::get_kinetic_energy() const
+{
+    double energy = 0.;
+    for(const auto& p: particles_){
+        energy += p->kinetic_energy();
+    }
+    return energy;
+}
+
+template<typename ForceModel, typename ParticleType>
+std::pair<size_t, double> DEM::Engine<ForceModel, ParticleType>::max_particle_velocity() const
+{
+    auto particle_velocity = [](const ParticlePointer p1, const ParticlePointer p2) -> bool
+    { return p1->get_velocity().length() < p2->get_velocity().length(); };
+
+    auto p = *std::max_element(particles_.begin(), particles_.end(), particle_velocity);
+    return std::make_pair(p->get_id(), p->get_velocity().length());
+}
+
+template<typename ForceModel, typename ParticleType>
+std::array<double, 6> DEM::Engine<ForceModel, ParticleType>::get_bounding_box() const
+{
+    auto x_min = [](const ParticlePointer p1, const ParticlePointer p2) -> bool {
+        return p1->get_position().x() - p1->get_radius() < p2->get_position().x() - p2->get_radius();
+    };
+
+    auto x_max = [](const ParticlePointer p1, const ParticlePointer p2) -> bool {
+        return p1->get_position().x() + p1->get_radius() < p2->get_position().x() + p2->get_radius();
+    };
+
+    auto y_min = [](const ParticlePointer p1, const ParticlePointer p2) -> bool {
+        return p1->get_position().y() - p1->get_radius() < p2->get_position().y() - p2->get_radius();
+    };
+
+    auto y_max = [](const ParticlePointer p1, const ParticlePointer p2) -> bool {
+        return p1->get_position().y() + p1->get_radius() < p2->get_position().y() + p2->get_radius();
+    };
+
+    auto z_min = [](const ParticlePointer p1, const ParticlePointer p2) -> bool {
+        return p1->get_position().z() - p1->get_radius() < p2->get_position().z() - p2->get_radius();
+    };
+
+    auto z_max = [](const ParticlePointer p1, const ParticlePointer p2) -> bool {
+        return p1->get_position().z() + p1->get_radius() < p2->get_position().z() + p2->get_radius();
+    };
+
+    auto px_min = *std::min_element(particles_.begin(), particles_.end(), x_min);
+    auto px_max = *std::max_element(particles_.begin(), particles_.end(), x_max);
+    auto py_min = *std::min_element(particles_.begin(), particles_.end(), y_min);
+    auto py_max = *std::max_element(particles_.begin(), particles_.end(), y_max);
+    auto pz_min = *std::min_element(particles_.begin(), particles_.end(), z_min);
+    auto pz_max = *std::max_element(particles_.begin(), particles_.end(), z_max);
+
+    return std::array<double, 6> {px_min->get_position().x() - px_min->get_radius(),
+                                  px_max->get_position().x() + px_max->get_radius(),
+                                  py_min->get_position().y() - py_min->get_radius(),
+                                  py_max->get_position().y() + py_max->get_radius(),
+                                  pz_min->get_position().z() - pz_min->get_radius(),
+                                  pz_max->get_position().z() + pz_max->get_radius()};
+}
 
 //=====================================================================================================================
 //                        *** *** *** *** Private functions *** *** *** ***
@@ -214,7 +299,7 @@ void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::sum_contact_forces()
 {
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for (unsigned i =0; i < particles_.size(); ++i) {
         particles_[i]->sum_contact_forces();
     }
@@ -231,12 +316,20 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
     Vec3 new_ang_v;
     Vec3 new_disp;
     Vec3 new_rot;
+    Vec3 v;
     double dt = increment_.count();
-    //#pragma omp parallel for private(F, M, new_a, new_v, new_ang_a,  new_ang_v, new_disp, new_rot)
+    #pragma omp parallel for private(F, M, new_a, new_v, new_ang_a,  new_ang_v, new_disp, new_rot, v)
     for (unsigned i=0; i < particles_.size(); ++i) {
         ParticleType* p = particles_[i];
         F = p->get_force();
         M = p->get_torque();
+        v = p->get_velocity();
+
+        if (!viscocity_parameters_.empty() && !v.is_zero()) {
+            for (const auto& v_par: viscocity_parameters_) {
+                F -= pow(v.length(), v_par.second)*v.normal()*v_par.first*p->get_radius()*p->get_radius();
+            }
+        }
 
         double m = p->get_mass()*mass_scale_factor_;
         double I = p->get_inertia()*mass_scale_factor_;
@@ -244,7 +337,7 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
         new_a = F/m + gravity_;
         new_ang_a = M/I;
 
-        new_v = p->get_velocity()+ new_a*dt;
+        new_v = v+ new_a*dt;
         new_ang_v = p->get_angular_velocity() + new_ang_a*dt;
 
         new_disp = new_v*dt;
@@ -262,20 +355,20 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::move_surfaces()
 {
     double dt = increment_.count();
-    for (auto& surface: surfaces_) {
+    for (auto& surface : surfaces_) {
         auto surface_forces = surface->get_applied_forces();
-        Vec3 velocity;
+        Vec3 velocity = surface->get_velocity();
         Vec3 distance;
         for(unsigned axis = 0; axis != 3; ++axis) {
             auto force_amp = surface_forces[axis];
             if (force_amp != nullptr) {
                 double f = force_amp->value() + surface->get_total_force()[axis];
                 double a = f/surface->get_mass() + gravity_[axis];
-                velocity[axis] = surface->get_velocity()[axis] + a*dt;
+                velocity[axis] +=  a*dt;
                 distance[axis] = velocity[axis]*dt;
             }
             else {
-                distance[axis] = surface->get_velocity()[axis]*dt;
+                distance[axis] = velocity[axis]*dt;
             }
         }
         surface->move(distance, velocity);
@@ -287,7 +380,7 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::update_contacts()
 {
     auto& contact_vector = contacts_.get_objects();
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for (unsigned i = 0; i < contact_vector.size(); ++i) {
         auto c = contact_vector[i];
         c->update();
@@ -302,14 +395,5 @@ void DEM::Engine<ForceModel, ParticleType>::run_output()
     }
 }
 
-template<typename ForceModel, typename ParticleType>
-double DEM::Engine<ForceModel, ParticleType>::get_kinetic_energy() const
-{
-    double energy = 0.;
-    for(const auto& p: particles_){
-        energy += p->kinetic_energy();
-    }
-    return energy;
-}
 
 

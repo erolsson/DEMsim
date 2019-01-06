@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(DEMsim)
 
 set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -msse4 -Ofast")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -msse4 -Ofast -fopenmp")
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
@@ -48,6 +48,10 @@ add_executable(DEMsim
         source/file_reading_functions.h
         source/file_reading_functions.cpp
         source/amplitude.h
-        source/amplitude.cpp source/closed_die_compaction.cpp source/storakers_mesarovic_johnson.cpp source/storakers_mesarovic_johnson.h source/elastic_ideal_plastic_material.h)
+        source/amplitude.cpp
+        source/closed_die_compaction.cpp
+        source/storakers_mesarovic_johnson.cpp
+        source/storakers_mesarovic_johnson.h
+        source/elastic_ideal_plastic_material.h)
 
 target_link_libraries (DEMsim Eigen3::Eigen stdc++fs)

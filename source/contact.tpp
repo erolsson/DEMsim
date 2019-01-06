@@ -11,7 +11,7 @@ DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, Particl
     p1_(particle1),
     p2_(particle2),
     surface_(nullptr),
-    r2_(particle1->get_radius() + particle1->get_radius()),
+    r2_(particle1->get_radius() + particle2->get_radius()),
     position_divider_(2),
     force_model_(particle1, particle1, increment),
     distance_function(&Contact::calculate_distance_vector_particle),
@@ -84,7 +84,7 @@ DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_tangential_vector_su
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::position() const
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::get_position() const
 {
     return p1_->get_position() - normal_*(p1_->get_radius() - get_overlap()/position_divider_);
 }

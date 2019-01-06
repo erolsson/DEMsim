@@ -6,15 +6,16 @@
 
 #include <random>
 
-std::vector<DEM::Vec3> DEM::random_fill_cylinder(double z0, double z1, double cylinder_radius, std::vector<double> radii)
+std::vector<DEM::Vec3> DEM::random_fill_cylinder(double z0, double z1, double cylinder_radius,
+        std::vector<double> radii)
 {
     std::vector<Vec3> particle_positions;
     std::random_device random_device;
     std::default_random_engine rand_engine(random_device());
-    for (auto particle_radius : radii) {
-        std::uniform_real_distribution<double> dist_r(-cylinder_radius+particle_radius,
-                                                      cylinder_radius-particle_radius);
-        std::uniform_real_distribution<double> dist_z(z0+particle_radius, z1-particle_radius);
+    for (auto r : radii) {
+        std::uniform_real_distribution<double> dist_r(-cylinder_radius+r,
+                                                      cylinder_radius-r);
+        std::uniform_real_distribution<double> dist_z(z0+r, z1-r);
         bool overlapping = true;
         Vec3 position {};
         while(overlapping) {
@@ -24,8 +25,8 @@ std::vector<DEM::Vec3> DEM::random_fill_cylinder(double z0, double z1, double cy
 
             //Check if a particle at the chosen position overlaps with an other
             if (position.x()*position.x()+position.y()*position.y() <
-                   (cylinder_radius-particle_radius)*(cylinder_radius-particle_radius)) {
-                overlapping = check_overlaps(position, particle_radius, particle_positions, radii);
+                   (cylinder_radius-r)*(cylinder_radius-r)) {
+                overlapping = check_overlaps(position, r, particle_positions, radii);
             }
         }
 
@@ -39,7 +40,7 @@ bool DEM::check_overlaps(const DEM::Vec3& point, double radius, const std::vecto
 {
     for (unsigned i = 0; i != particle_positions.size(); ++i) {
         Vec3 position_i = particle_positions[i];
-        if ((point-position_i).length() < radii[i] + radius) {
+        if ((radii[i] + radius - (point-position_i).length()) > 0.) {
             return true;
         }
     }

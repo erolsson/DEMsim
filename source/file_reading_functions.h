@@ -5,6 +5,7 @@
 #ifndef DEMSIM_FILE_READING_FUNCTIONS_H
 #define DEMSIM_FILE_READING_FUNCTIONS_H
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -34,7 +35,7 @@ namespace DEM {
             error_ss << "Parameter " << name << " is not defined in file " << filename_;
             throw std::invalid_argument(error_ss.str());
         }
-
+        using namespace std::chrono_literals;
         // Read data back and forth to convert it to the requested data type
         std::stringstream ss;
         ss << data_position->second;

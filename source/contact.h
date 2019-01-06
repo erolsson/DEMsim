@@ -25,11 +25,13 @@ namespace DEM{
         Contact(ParticleType* particle1, SurfaceType* surface,  std::chrono::duration<double> increment);
 
         void update();
-        Vec3 position() const;
+        Vec3 get_position() const;
 
         Vec3 get_normal_force() const { return force_model_.get_normal_force()*get_normal(); }
         Vec3 get_tangential_force() const { return force_model_.get_tangential_force(); }
-        Vec3 get_torque(const Vec3& point) const { return cross_product(position() - point, get_tangential_force()); }
+        Vec3 get_torque(const Vec3& point) const {
+            return cross_product(get_position() - point, get_tangential_force());
+        }
 
         std::pair<ParticleType*, ParticleType*> get_particles() const  { return std::make_pair(p1_, p2_); }
         const SurfaceType* get_surface() const { return surface_; }

@@ -33,10 +33,6 @@ namespace DEM {
 
         std::string get_output_string() const override;
 
-        void set_velocity(const Vec3& velocity);
-        void set_angular_velocity(const Vec3& velocity);
-
-
     private:
         std::vector<Vec3> points_;
         bool infinite_;

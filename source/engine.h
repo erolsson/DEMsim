@@ -34,7 +34,7 @@ namespace DEM {
 
         void setup();
         template<typename Condition>
-        void run(const Condition& condition);
+        void run(Condition& condition);
 
         //Object creation functions
         template<typename MaterialType>
@@ -55,12 +55,18 @@ namespace DEM {
                 char direction,  bool global_time=false);
         void remove_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction);
 
+        std::pair<double, std::size_t> set_viscocity_parameters(double viscosity, size_t order=1);
+        void remove_viscosity_parameters(std::pair<double, std::size_t> parameter_pair);
+
         // Getters
         std::chrono::duration<double> get_time() const { return time_; }
         double get_kinetic_energy() const;
+        std::pair<size_t, double> max_particle_velocity() const;
+        std::array<double, 6> get_bounding_box() const;
 
         // Setters
         void set_gravity(const Vec3& g) { gravity_ = g; }
+
         void set_mass_scale_factor(double factor) { mass_scale_factor_ = factor; }
 
         // Functors for running a simulation until a condition is fulfilled
@@ -86,6 +92,51 @@ namespace DEM {
             std::chrono::duration<double> time_to_run_;
         };
 
+        class KineticEnergyLess {
+        public:
+            KineticEnergyLess(const Engine& e, double kinetic_energy, std::chrono::duration<double> update_time) :
+                    engine_{e}, kinetic_energy_{kinetic_energy}, start_time_(engine_.get_time()),
+                    update_time_{update_time} {}
+
+            void set_new_value(double new_kinetic_energy) { kinetic_energy_ = new_kinetic_energy; }
+            bool operator()() {
+                if (engine_.get_time() - start_time_ < update_time_) {
+                    return true;
+                }
+                start_time_ += update_time_;
+                return engine_.get_kinetic_energy() > kinetic_energy_;
+            }
+
+        private:
+            const Engine& engine_;
+            double kinetic_energy_;
+
+            std::chrono::duration<double> start_time_ ;
+            std::chrono::duration<double> update_time_;
+        };
+
+        class ParticleVelocityLess {
+        public:
+            ParticleVelocityLess(const Engine& e, double max_velocity, std::chrono::duration<double> update_time) :
+                    engine_{e}, max_velocity_{max_velocity}, start_time_(engine_.get_time()),
+                    update_time_{update_time} {}
+
+            void set_new_value(double new_max_velocity) { max_velocity_ = new_max_velocity; }
+            bool operator()() {
+                if (engine_.get_time() - start_time_ < update_time_) {
+                    return true;
+                }
+                start_time_ += update_time_;
+                return engine_.max_particle_velocity().second > max_velocity_;
+            }
+
+        private:
+            const Engine& engine_;
+            double max_velocity_;
+
+            std::chrono::duration<double> start_time_ ;
+            std::chrono::duration<double> update_time_;
+        };
 
     private:
         using ContactType = Contact<ForceModel, ParticleType>;
@@ -104,6 +155,7 @@ namespace DEM {
 
         // Settings type of private data
         Vec3 gravity_ {Vec3{0,0,0}};
+        std::vector<std::pair<double, std::size_t>> viscocity_parameters_;
         std::chrono::duration<double> increment_;
         double mass_scale_factor_ { 1. };
 
@@ -118,8 +170,6 @@ namespace DEM {
         void update_contacts();
         void sum_contact_forces();
         void run_output();
-
-        void move_surface_in_direction(char direction);
 
         friend class Output<ForceModel, ParticleType>;
     };
