@@ -1,3 +1,4 @@
+from collections import defaultdict
 import glob
 import os
 import re
@@ -8,6 +9,7 @@ from mayavi import mlab
 
 from visualization_functions_3d import SpheresPlotter
 from visualization_functions_3d import SurfacesPlotter
+from visualization_functions_3d import BoundingBox
 
 
 class Animation:
@@ -19,8 +21,14 @@ class Animation:
         self.save_frames = False
         self.save_directory = None
         self.image_file_prefix = 'frame'
-        self.image_file_extension = '.png'
+        self.image_file_extension = 'png'
         self.figure_directory = None
+        self.surfaces_colors = {}
+        self.surfaces_opacities = {}
+        self.plot_order = None
+        self.bounding_boxes = defaultdict(BoundingBox)
+        self.visible_functions = defaultdict(lambda t: True)
+        self.dpi = 500, 800
 
     def run(self):
         a = self._animation()
@@ -40,7 +48,10 @@ class Animation:
             frame_times = frame_times[frame_times_np < self.end_time]
 
         spheres_plotter = SpheresPlotter()
-        surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dat')
+        surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dat', self.surfaces_colors,
+                                           self.surfaces_opacities, self.plot_order, self.bounding_boxes,
+                                           self.visible_functions)
+
         n = len(frame_times)
         for i, t in enumerate(frame_times):
             print t
@@ -56,6 +67,6 @@ class Animation:
 
                 name = '/' + self.image_file_prefix + '0'*(len(str(n))-len(str(i+1))) + str(i+1) + '.' \
                        + self.image_file_extension
-                mlab.savefig(filename=self.figure_directory + name)
+                mlab.savefig(filename=self.figure_directory + name, size=self.dpi)
             time.sleep(self.delay)
             yield
