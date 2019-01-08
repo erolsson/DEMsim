@@ -5,6 +5,7 @@
 #ifndef DEMSIM_ENGINE_H
 #define DEMSIM_ENGINE_H
 
+#include <atomic>
 #include <chrono>
 #include <iostream>
 #include <memory>
@@ -22,6 +23,7 @@
 #include "vec3.h"
 
 namespace DEM {
+
     template<typename ForceModel, typename ParticleType>
     class Engine {
     public:

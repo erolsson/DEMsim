@@ -13,6 +13,7 @@
 #include "contact_matrix.h"
 #include "collision_detector.h"
 #include "output.h"
+#include "simulations.h"
 
 //=====================================================================================================================
 //                        *** *** *** *** Constructors *** *** *** ***

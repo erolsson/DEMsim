@@ -5,6 +5,7 @@
 #ifndef SIMULATIONS_H
 #define SIMULATIONS_H
 
+#include <atomic>
 #include <map>
 #include <string>
 

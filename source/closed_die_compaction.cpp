@@ -2,6 +2,7 @@
 // Created by erolsson on 2019-01-05.
 //
 
+#include <atomic>
 #include <string>
 
 #include "engine.h"
@@ -87,7 +88,7 @@ void DEM::closed_die_compaction(const std::string& settings_file_name){
     auto top_surface = simulator.create_point_surface(top_points, true);
     std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
 
-    auto output1 = simulator.create_output(output_directory, 0.01s);
+    auto output1 = simulator.create_output(output_directory, 0.001s);
     output1->print_particles = true;
     output1->print_kinetic_energy = true;
     output1->print_surface_positions = true;

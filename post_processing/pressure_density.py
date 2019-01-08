@@ -83,11 +83,11 @@ def pressures_cylinder(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../results/closed_die_compaction/3'
+    simulation_directory = '../results/closed_die_compaction/4'
     v_particles = particle_volume(simulation_directory)
 
     v_cylinder = volume_cylinder(simulation_directory)
     pressures = pressures_cylinder(simulation_directory)
     relative_density = v_particles/v_cylinder
-    plt.plot(relative_density, pressures)
+    plt.plot(relative_density[:, 1], pressures[:, 1:])
     plt.show()

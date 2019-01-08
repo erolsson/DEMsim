@@ -4,7 +4,7 @@ from animation import Animation
 from pressure_density import dimensions_cylinder
 
 if __name__ == '__main__':
-    simulation_directory = '../results/closed_die_compaction/3/'
+    simulation_directory = '../results/closed_die_compaction/4/'
 
     # Doing some inspection to contruct a good bounding_box figure
     dimension_data = dimensions_cylinder(simulation_directory)
@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)
-    animation.save_directory = 'figures'
+    animation.save_directory = 'storakers_seminar/animation/particle_figures/'
     animation.save_frames = True
     animation.delay = 0.01
 

@@ -4,6 +4,7 @@
 
 #include "output.h"
 
+#include <chrono>
 #include <experimental/filesystem>
 #include <fstream>
 #include <sstream>
@@ -25,8 +26,8 @@ void DEM::Output<ForceModel, ParticleType>::run_output(const std::chrono::durati
 {
     current_time_ += increment;
     time_until_output_ -= increment;
-
-    if (time_until_output_ < increment) {
+    using namespace std::chrono_literals;
+    if (time_until_output_ - increment < -1ns) {
         time_until_output_ = interval_;
 
         // Looping over all output functions and checking if they are enabled, if so call it

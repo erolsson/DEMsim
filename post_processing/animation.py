@@ -19,7 +19,7 @@ class Animation:
         self.start_time = 0,
         self.end_time = None
         self.save_frames = False
-        self.save_directory = None
+        self.save_directory = ''
         self.image_file_prefix = 'frame'
         self.image_file_extension = 'png'
         self.figure_directory = None
@@ -53,6 +53,9 @@ class Animation:
                                            self.visible_functions)
 
         n = len(frame_times)
+        if self.save_frames and not os.path.isdir(self.save_directory):
+            os.makedirs(self.save_directory)
+
         for i, t in enumerate(frame_times):
             print t
             particle_data = np.genfromtxt(self.directory + 'particles_' + t + '.dat', delimiter=',')
@@ -67,6 +70,6 @@ class Animation:
 
                 name = '/' + self.image_file_prefix + '0'*(len(str(n))-len(str(i+1))) + str(i+1) + '.' \
                        + self.image_file_extension
-                mlab.savefig(filename=self.figure_directory + name, size=self.dpi)
+                mlab.savefig(filename=self.save_directory + name, size=self.dpi)
             time.sleep(self.delay)
             yield

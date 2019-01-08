@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "elastic_ideal_plastic_material.h"
+#include "engine.h"
 
 DEM::StorakersMesarovicJohnson::StorakersMesarovicJohnson(DEM::StorakersMesarovicJohnson::ParticleType* particle1,
                                                           DEM::StorakersMesarovicJohnson::ParticleType* particle2,
