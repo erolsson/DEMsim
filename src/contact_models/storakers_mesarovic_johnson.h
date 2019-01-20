@@ -7,9 +7,9 @@
 
 #include <chrono>
 
-#include "spherical_particle.h"
-#include "surface_base.h"
-#include "vec3.h"
+#include "../particles/spherical_particle.h"
+#include "../surfaces/surface_base.h"
+#include "../utilities/vec3.h"
 
 
 namespace DEM {

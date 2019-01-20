@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "material_base.h"
-#include "vec3.h"
+#include "../materials/material_base.h"
+#include "../utilities/vec3.h"
 
 namespace DEM {
 

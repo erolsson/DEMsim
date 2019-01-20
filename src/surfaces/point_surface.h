@@ -11,7 +11,7 @@
 #include <vector>
 #include <utility>
 
-#include "vec3.h"
+#include "../utilities/vec3.h"
 #include "surface_base.h"
 
 namespace DEM {

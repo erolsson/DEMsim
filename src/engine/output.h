@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "contact.h"
-#include "contact_matrix.h"
-#include "surface_base.h"
-#include "spherical_particle.h"
+#include "../utilities/contact_matrix.h"
+#include "../surfaces/surface_base.h"
+#include "../particles/spherical_particle.h"
 
 namespace DEM {
 

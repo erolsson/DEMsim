@@ -10,10 +10,10 @@
 
 #include "bounding_box.h"
 #include "bounding_box_projection.h"
-#include "contact_matrix.h"
-#include "contact_vector.h"
-#include "cylinder.h"
-#include "point_surface.h"
+#include "../../utilities/contact_matrix.h"
+#include "../../utilities/contact_vector.h"
+#include "../../surfaces/cylinder.h"
+#include "../../surfaces/point_surface.h"
 
 namespace DEM {
     template <typename ForceModel, typename ParticleType> class Contact;

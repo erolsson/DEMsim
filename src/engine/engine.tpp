@@ -9,11 +9,11 @@
 #include <memory>
 #include <vector>
 
-#include "amplitude.h"
-#include "contact_matrix.h"
-#include "collision_detector.h"
+#include "../utilities/amplitude.h"
+#include "../utilities/contact_matrix.h"
+#include "collision_detection/collision_detector.h"
 #include "output.h"
-#include "simulations.h"
+#include "../simulations/simulations.h"
 
 //=====================================================================================================================
 //                        *** *** *** *** Constructors *** *** *** ***

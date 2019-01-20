@@ -6,7 +6,7 @@
 
 #include <sstream>
 
-#include "vec3.h"
+#include "../utilities/vec3.h"
 
 template<typename ForceModel, typename ParticleType>
 DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::vector<Vec3> points, bool infinite) :

@@ -8,7 +8,7 @@
 #include <chrono>
 #include <memory>
 
-#include "surface_base.h"
+#include "../surfaces/surface_base.h"
 
 
 namespace DEM{

@@ -8,9 +8,9 @@
 #include <cmath>
 
 #include "bounding_box_projection.h"
-#include "cylinder.h"
-#include "point_surface.h"
-#include "surface_base.h"
+#include "../../surfaces/cylinder.h"
+#include "../../surfaces/point_surface.h"
+#include "../../surfaces/surface_base.h"
 
 namespace DEM {
     template <typename ForceModel, typename ParticleType>

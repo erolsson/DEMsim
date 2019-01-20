@@ -11,16 +11,16 @@
 #include <memory>
 #include <vector>
 
-#include "amplitude.h"
-#include "collision_detector.h"
+#include "../utilities/amplitude.h"
+#include "collision_detection/collision_detector.h"
 #include "contact.h"
-#include "contact_matrix.h"
-#include "cylinder.h"
-#include "material_base.h"
+#include "../utilities/contact_matrix.h"
+#include "../surfaces/cylinder.h"
+#include "../materials/material_base.h"
 #include "output.h"
-#include "point_surface.h"
-#include "surface_base.h"
-#include "vec3.h"
+#include "../surfaces/point_surface.h"
+#include "../surfaces/surface_base.h"
+#include "../utilities/vec3.h"
 
 namespace DEM {
 

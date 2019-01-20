@@ -5,8 +5,8 @@
 #include <iostream>
 
 #include "linear_stick_slip_model.h"
-#include "linear_contact_material.h"
-#include "spherical_particle.h"
+#include "../materials/linear_contact_material.h"
+#include "../particles/spherical_particle.h"
 
 
 DEM::LinearStickSlipModel::LinearStickSlipModel(DEM::LinearStickSlipModel::ParticleType* p1,

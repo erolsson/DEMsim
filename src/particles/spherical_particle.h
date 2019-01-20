@@ -8,11 +8,11 @@
 #include <sstream>
 #include <vector>
 
-#include "contact.h"
-#include "contact_vector.h"
-#include "material_base.h"
+#include "../engine/contact.h"
+#include "../utilities/contact_vector.h"
+#include "../materials/material_base.h"
 #include "particle_base.h"
-#include "vec3.h"
+#include "../utilities/vec3.h"
 
 namespace DEM {
     // Please don't change this one

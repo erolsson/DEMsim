@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "simulations.h"
+#include "simulations/simulations.h"
 
 int main(int argc, char** argv)
 {

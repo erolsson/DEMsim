@@ -3,7 +3,7 @@
 //
 
 #include "contact.h"
-#include "vec3.h"
+#include "../utilities/vec3.h"
 
 template<typename ForceModel, typename ParticleType>
 DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, ParticleType* particle2,

@@ -9,7 +9,7 @@
 #include <sstream>
 
 #include "surface_base.h"
-#include "vec3.h"
+#include "../utilities/vec3.h"
 
 namespace DEM {
     // ToDo: update this class to allow for cylinders with arbitrary orientation, currently cylinders aligned in the

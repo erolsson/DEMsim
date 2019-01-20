@@ -10,10 +10,10 @@
 #include <memory>
 #include <vector>
 
-#include "amplitude.h"
-#include "contact_vector.h"
-#include "contact_matrix.h"
-#include "vec3.h"
+#include "../utilities/amplitude.h"
+#include "../utilities/contact_vector.h"
+#include "../utilities/contact_matrix.h"
+#include "../utilities/vec3.h"
 
 
 namespace DEM {

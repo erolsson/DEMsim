@@ -7,7 +7,7 @@
 
 #include <chrono>
 
-#include "vec3.h"
+#include "../utilities/vec3.h"
 
 namespace DEM {
     struct Settings {

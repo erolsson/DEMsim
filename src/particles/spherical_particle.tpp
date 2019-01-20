@@ -6,7 +6,7 @@
 
 #include <sstream>
 
-#include "vec3.h"
+#include "../utilities/vec3.h"
 
 template<typename ForceModel>
 DEM::SphericalParticle<ForceModel>::SphericalParticle(double radius, const DEM::Vec3& position,
