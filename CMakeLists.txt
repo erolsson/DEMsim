@@ -52,6 +52,6 @@ add_executable(DEMsim
         source/closed_die_compaction.cpp
         source/storakers_mesarovic_johnson.cpp
         source/storakers_mesarovic_johnson.h
-        source/elastic_ideal_plastic_material.h)
+        source/elastic_ideal_plastic_material.h source/fractureable_spherical_particle.tpp source/fractureable_spherical_particle.h)
 
 target_link_libraries (DEMsim Eigen3::Eigen stdc++fs)
