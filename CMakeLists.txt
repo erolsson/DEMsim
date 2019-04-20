@@ -4,54 +4,56 @@ project(DEMsim)
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -msse4 -Ofast -fopenmp")
 
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
-
 add_executable(DEMsim
-        src/utilities/contact_matrix.h
-        src/engine/engine.h
-        src/main.cpp
-        src/materials/linear_contact_material.h
-        src/engine/output.h
-        src/particles/spherical_particle.h
-        src/utilities/vec3.h
-        src/engine/contact.h
-        src/surfaces/surface_base.h
-        src/utilities/contact_vector.h
-        src/particles/particle_base.h
-        src/contact_models/linear_stick_slip_model.cpp
-        src/contact_models/linear_stick_slip_model.h
-        src/materials/material_base.h
-        src/engine/collision_detection/collision_detector.h
-        src/engine/collision_detection/bounding_box.h
-        src/engine/collision_detection/bounding_box_projection.h
-        src/surfaces/point_surface.h
-        src/surfaces/cylinder.h
-        src/engine/engine.tpp
-        src/engine/collision_detection/collision_detector.tpp
-        src/engine/collision_detection/bounding_box.tpp
-        src/engine/collision_detection/bounding_box_projection.tpp
-        src/engine/contact.tpp
-        src/surfaces/surface_base.tpp
-        src/utilities/contact_matrix.tpp
-        src/utilities/contact_vector.tpp
-        src/surfaces/cylinder.tpp
-        src/particles/particle_base.tpp
-        src/surfaces/point_surface.tpp
-        src/particles/spherical_particle.tpp
-        src/engine/output.tpp
-        src/engine/settings.h
-        src/utilities/filling_functions.h
-        src/utilities/filling_functions.cpp
-        src/simulations/gyratory_compaction.cpp
-        src/simulations/simulations.h
-        src/simulations/simulations.cpp
-        src/utilities/file_reading_functions.h
-        src/utilities/file_reading_functions.cpp
-        src/utilities/amplitude.h
-        src/utilities/amplitude.cpp
-        src/simulations/closed_die_compaction.cpp
-        src/contact_models/storakers_mesarovic_johnson.cpp
-        src/contact_models/storakers_mesarovic_johnson.h
-        src/materials/elastic_ideal_plastic_material.h src/particles/fractureable_spherical_particle.tpp src/particles/fractureable_spherical_particle.h src/contact_models/stone_material_contact.cpp src/contact_models/stone_material_contact.h)
+               src/utilities/contact_matrix.h
+               src/engine/engine.h
+               src/main.cpp
+               src/materials/linear_contact_material.h
+               src/engine/output.h
+               src/particles/spherical_particle.h
+               src/utilities/vec3.h
+               src/engine/contact.h
+               src/surfaces/surface_base.h
+               src/utilities/contact_vector.h
+               src/particles/particle_base.h
+               src/contact_models/linear_stick_slip_model.cpp
+               src/contact_models/linear_stick_slip_model.h
+               src/materials/material_base.h
+               src/engine/collision_detection/collision_detector.h
+               src/engine/collision_detection/bounding_box.h
+               src/engine/collision_detection/bounding_box_projection.h
+               src/surfaces/point_surface.h
+               src/surfaces/cylinder.h
+               src/engine/engine.tpp
+               src/engine/collision_detection/collision_detector.tpp
+               src/engine/collision_detection/bounding_box.tpp
+               src/engine/collision_detection/bounding_box_projection.tpp
+               src/engine/contact.tpp
+               src/surfaces/surface_base.tpp
+               src/utilities/contact_matrix.tpp
+               src/utilities/contact_vector.tpp
+               src/surfaces/cylinder.tpp
+               src/particles/particle_base.tpp
+               src/surfaces/point_surface.tpp
+               src/particles/spherical_particle.tpp
+               src/engine/output.tpp
+               src/engine/settings.h
+               src/utilities/filling_functions.h
+               src/utilities/filling_functions.cpp
+               src/simulations/gyratory_compaction.cpp
+               src/simulations/simulations.h
+               src/simulations/simulations.cpp
+               src/utilities/file_reading_functions.h
+               src/utilities/file_reading_functions.cpp
+               src/utilities/amplitude.h
+               src/utilities/amplitude.cpp
+               src/simulations/closed_die_compaction.cpp
+               src/contact_models/storakers_mesarovic_johnson.cpp
+               src/contact_models/storakers_mesarovic_johnson.h
+               src/materials/elastic_ideal_plastic_material.h
+               src/particles/fractureable_spherical_particle.tpp
+               src/particles/fractureable_spherical_particle.h
+               src/contact_models/stone_material_contact.cpp
+               src/contact_models/stone_material_contact.h src/materials/stone_material.h src/simulations/contact_tester.cpp)
 
-target_link_libraries (DEMsim Eigen3::Eigen stdc++fs)
+target_link_libraries (DEMsim stdc++fs)

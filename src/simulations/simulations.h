@@ -14,6 +14,7 @@ namespace DEM {
 
     void gyratory_compaction(const std::string& settings_file_name);
     void closed_die_compaction(const std::string& settings_file_name);
+    void contact_tester(const std::string& settings_file_name);
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 }
 

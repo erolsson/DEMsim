@@ -65,7 +65,6 @@ void DEM::closed_die_compaction(const std::string& settings_file_name){
     for (std::size_t i=0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), material);
     }
-    // simulator.create_particle(0.005, Vec3(0, 0.0, 0.005), Vec3(0,0,0), material);
 
     // Creating The bottom plate surface
     Vec3 p1(-cylinder_radius, -cylinder_radius, 0.);

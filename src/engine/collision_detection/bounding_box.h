@@ -25,7 +25,7 @@ namespace DEM {
         BoundingBox(CylinderType* cylinder,  std::size_t index, bool);  //Special bounding box for inward cylinders
 
         // Copy constructor and assignment operator needed due to pointers between different projection vectors
-        // which becomes invalid when different boundingboxes are re-allocated due to vector-over-capacity
+        // which becomes invalid when different bounding boxes are re-allocated due to vector-over-capacity
         // These constructors repairs the pointers
         BoundingBox(const BoundingBox& rhs);
         BoundingBox& operator=(const BoundingBox& rhs);

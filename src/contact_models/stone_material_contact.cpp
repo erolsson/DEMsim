@@ -4,18 +4,52 @@
 
 #include "stone_material_contact.h"
 
+#include "../materials/stone_material.h"
+
 DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::ParticleType* particle1,
                                                 DEM::StoneMaterialContact::ParticleType* particle2,
                                                 std::chrono::duration<double>)
 {
+    auto mat1 = dynamic_cast<const StoneMaterial*>(particle1->get_material());
+    auto mat2 = dynamic_cast<const StoneMaterial*>(particle2->get_material());
 
+    double E1 = mat1->E;
+    double E2 = mat2->E;
+    double v1 = mat1->nu;
+    double v2 = mat2->nu;
+    double E0 = 1/((1 - v1*v1)/E1 + (1 - v2*v2)/E2);
+
+    double R1 = particle1->get_radius();
+    double R2 = particle2->get_radius();
+    R0_ = 1/(1/R1 + 1/R2);
+
+    kp_ = E0*4./3*sqrt(R0_);           //Loading stiffness
+    ke_ = E0*4./3*sqrt(R0_)/0.9;
+    kl_ = E0*4./3*sqrt(R0_)/0.9;
+    ku_ = E0*4./3*sqrt(R0_)/0.9;           //Unloading stiffness
+
+    unloading_exp_ = (mat1->unloading_exponent + mat2->unloading_exponent)/2;
 }
 
 DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::ParticleType* particle1,
-                                                DEM::StoneMaterialContact::SurfaceType* surface,
+                                                DEM::StoneMaterialContact::SurfaceType*,
                                                 std::chrono::duration<double>)
 {
+    auto mat1 = dynamic_cast<const StoneMaterial*>(particle1->get_material());
 
+    double E1 = mat1->E;
+    double v1 = mat1->nu;
+    double E0 = 1/((1 - v1*v1)/E1);
+
+    double R1 = particle1->get_radius();
+    R0_ = R1;
+
+    kp_ = E0*4./3*sqrt(R0_);           //Loading stiffness
+    ke_ = E0*4./3*sqrt(R0_)/0.9;
+    kl_ = E0*4./3*sqrt(R0_)/0.9;
+    ku_ = E0*4./3*sqrt(R0_)/0.9;           //Unloading stiffness
+
+    unloading_exp_ = mat1->unloading_exponent;
 }
 
 void DEM::StoneMaterialContact::update(double h, const DEM::Vec3& dt, const DEM::Vec3& normal)
@@ -27,13 +61,13 @@ void DEM::StoneMaterialContact::update(double h, const DEM::Vec3& dt, const DEM:
 void DEM::StoneMaterialContact::update_normal_force(double h)
 {
     if (h > 0) {
+        a_ = sqrt(h*R0_);
         if (h >= hmax_) {
             F_ = kp_*pow(h, 1.5);
             hmax_ = h;
             hp_ = (hmax_ - pow(F_/ke_, 1./1.5)); // Plastic indentation depth
             ku_ = F_/pow(h-hp_, unloading_exp_);
         }
-        a_ = sqrt(h*R0_);
         else if (h > hp_) {
             if (h > h_) {
                 F_ = kl_*pow(h-hl_, 1.5);

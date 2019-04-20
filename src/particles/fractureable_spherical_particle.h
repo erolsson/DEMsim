@@ -11,8 +11,12 @@ namespace DEM {
 
     template<typename ForceModel>
     class FractureableSphericalParticle : public SphericalParticle<ForceModel> {
-
+    public:
+        FractureableSphericalParticle(double radius, const Vec3& position, const Vec3& velocity, MaterialBase* material,
+                                      unsigned id);
     };
+
+
 }
 
 #include "fractureable_spherical_particle.tpp"

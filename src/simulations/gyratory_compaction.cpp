@@ -19,7 +19,7 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     using namespace std::chrono_literals;
 
-    SimulationParameters parameters(settings_file_name);
+    SimulationParameters parameters{settings_file_name};
 
     auto N = parameters.get<std::size_t>("N");
     auto output_directory = parameters.get<std::string>("output_dir");
@@ -57,16 +57,16 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     // simulator.create_particle(0.005, Vec3(0, 0.0, 0.005), Vec3(0,0,0), material);
 
     // Creating The bottom plate surface
-    Vec3 p1(-cylinder_radius, -cylinder_radius, 0.);
-    Vec3 p2(-cylinder_radius,  cylinder_radius, 0.);
-    Vec3 p3(cylinder_radius,   cylinder_radius, 0.);
-    Vec3 p4(cylinder_radius,  -cylinder_radius, 0.);
+    Vec3 p1{-cylinder_radius, -cylinder_radius, 0.};
+    Vec3 p2{-cylinder_radius,  cylinder_radius, 0.};
+    Vec3 p3{cylinder_radius,   cylinder_radius, 0.};
+    Vec3 p4{cylinder_radius,  -cylinder_radius, 0.};
 
     // Creating The top plate surface
-    Vec3 p5(-cylinder_radius, -cylinder_radius, cylinder_height);
-    Vec3 p6(-cylinder_radius,  cylinder_radius, cylinder_height);
-    Vec3 p7(cylinder_radius,   cylinder_radius, cylinder_height);
-    Vec3 p8(cylinder_radius,  -cylinder_radius, cylinder_height);
+    Vec3 p5{-cylinder_radius, -cylinder_radius, cylinder_height};
+    Vec3 p6{-cylinder_radius,  cylinder_radius, cylinder_height};
+    Vec3 p7{cylinder_radius,   cylinder_radius, cylinder_height};
+    Vec3 p8{cylinder_radius,  -cylinder_radius, cylinder_height};
 
     std::vector<Vec3> bottom_points{p4, p3, p2, p1};
     std::vector<Vec3> top_points{p5, p6, p7, p8};
