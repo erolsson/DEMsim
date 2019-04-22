@@ -20,7 +20,7 @@ namespace DEM {
         LinearStickSlipModel(ParticleType*, ParticleType*, std::chrono::duration<double>);
         LinearStickSlipModel(ParticleType*, SurfaceType*, std::chrono::duration<double>);
 
-        void update(double h, const Vec3& dt, const Vec3& normal);
+        void update(double dh, const Vec3& dt, const Vec3& normal);
 
         double get_overlap() const { return h_; }
         double get_normal_force() const { return F_; }

@@ -29,6 +29,8 @@ DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::Parti
     ku_ = E0*4./3*sqrt(R0_)/0.9;           //Unloading stiffness
 
     unloading_exp_ = (mat1->unloading_exponent + mat2->unloading_exponent)/2;
+
+    mu_ = (mat1->mu + mat2->mu)/2;    
 }
 
 DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::ParticleType* particle1,
@@ -50,33 +52,31 @@ DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::Parti
     ku_ = E0*4./3*sqrt(R0_)/0.9;           //Unloading stiffness
 
     unloading_exp_ = mat1->unloading_exponent;
+    
+    mu_ = mat1->mu_wall;
 }
 
-void DEM::StoneMaterialContact::update(double h, const DEM::Vec3& dt, const DEM::Vec3& normal)
+void DEM::StoneMaterialContact::update(double dh, const DEM::Vec3& dt, const DEM::Vec3& normal)
 {
-    update_normal_force(h);
-    update_tangential_force(dt, normal);
-}
-
-void DEM::StoneMaterialContact::update_normal_force(double h)
-{
-    if (h > 0) {
-        a_ = sqrt(h*R0_);
-        if (h >= hmax_) {
-            F_ = kp_*pow(h, 1.5);
-            hmax_ = h;
+    h_ += dh;
+    double old_F = F_;
+    if (h_ > 0) {
+        a_ = sqrt(h_*R0_);
+        if (h_ >= hmax_) {
+            F_ = kp_*pow(h_, 1.5);
+            hmax_ = h_;
             hp_ = (hmax_ - pow(F_/ke_, 1./1.5)); // Plastic indentation depth
-            ku_ = F_/pow(h-hp_, unloading_exp_);
+            ku_ = F_/pow(h_-hp_, unloading_exp_);
         }
-        else if (h > hp_) {
-            if (h > h_) {
-                F_ = kl_*pow(h-hl_, 1.5);
-                ku_ = F_/pow(h-hp_, unloading_exp_);
+        else if (h_ > hp_) {
+            if (h_ > h_) {
+                F_ = kl_*pow(h_-hl_, 1.5);
+                ku_ = F_/pow(h_-hp_, unloading_exp_);
             }
             else {
-                F_ = ku_*pow(h-hp_, unloading_exp_);
+                F_ = ku_*pow(h_-hp_, unloading_exp_);
                 double A = pow(F_/kp_, 1./1.5)/hmax_;
-                hl_ = (h - A*hmax_)/(1-A);
+                hl_ = (h_ - A*hmax_)/(1-A);
                 kl_ = kp_*pow(hmax_/(hmax_-hl_), 1.5);
             }
         }
@@ -93,11 +93,14 @@ void DEM::StoneMaterialContact::update_normal_force(double h)
         hl_ = hp_;
         kl_ = ke_;
     }
-    h_ = h;
-}
 
-void DEM::StoneMaterialContact::update_tangential_force(const DEM::Vec3& dt, const DEM::Vec3& normal)
-{
+    // Friction model according to simplified mindlin in
+    // "An investigation of the comparative behaviour of alternative contact force models during elastic collisions"
 
+    if (F_ > 0) {
+        // Project previous contact force on the contact plane
+        FT_ -= dot_product(FT_, normal)*normal;
+
+    }
 }
 

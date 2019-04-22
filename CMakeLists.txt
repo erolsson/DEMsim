@@ -54,6 +54,8 @@ add_executable(DEMsim
                src/particles/fractureable_spherical_particle.tpp
                src/particles/fractureable_spherical_particle.h
                src/contact_models/stone_material_contact.cpp
-               src/contact_models/stone_material_contact.h src/materials/stone_material.h src/simulations/contact_tester.cpp)
+               src/contact_models/stone_material_contact.h
+               src/materials/stone_material.h
+               src/simulations/contact_tester.cpp)
 
 target_link_libraries (DEMsim stdc++fs)

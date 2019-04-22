@@ -21,7 +21,7 @@ namespace DEM {
         StorakersMesarovicJohnson(ParticleType* particle1, ParticleType* particle2, std::chrono::duration<double>);
         StorakersMesarovicJohnson(ParticleType* particle1, SurfaceType* surface, std::chrono::duration<double>);
 
-        void update(double h, const Vec3& dt, const Vec3& normal);
+        void update(double dh, const Vec3& dt, const Vec3& normal);
 
         double get_overlap() const { return h_; }
         double get_normal_force() const { return F_; }
@@ -49,7 +49,7 @@ namespace DEM {
         Vec3 FT_{ Vec3(0., 0., 0.) };
         Vec3 uT_{ Vec3(0., 0., 0.) };
 
-        void update_normal_force(double h);
+        void update_normal_force(double dh);
         void update_tangential_force(const Vec3& dt, const Vec3& normal);
     };
 }
