@@ -12,9 +12,9 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::do_check()
     contacts_to_create_.clear();
     contacts_to_destroy_.clear();
     update_bounding_boxes();
-    check_bounding_box_vector(xproj_);
-    check_bounding_box_vector(yproj_);
-    check_bounding_box_vector(zproj_);
+    check_bounding_box_vector(xproj_, 'x');
+    check_bounding_box_vector(yproj_, 'y');
+    check_bounding_box_vector(zproj_, 'z');
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -58,14 +58,14 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::setup()
     }
 
     for(auto& bounding_box: bounding_boxes_){
-        xproj_.push_back(&bounding_box.bx);
-        xproj_.push_back(&bounding_box.ex);
+        xproj_.push_back(&bounding_box.bounding_box_projections[0]);
+        xproj_.push_back(&bounding_box.bounding_box_projections[1]);
 
-        yproj_.push_back(&bounding_box.by);
-        yproj_.push_back(&bounding_box.ey);
+        yproj_.push_back(&bounding_box.bounding_box_projections[2]);
+        yproj_.push_back(&bounding_box.bounding_box_projections[3]);
 
-        zproj_.push_back(&bounding_box.bz);
-        zproj_.push_back(&bounding_box.ez);
+        zproj_.push_back(&bounding_box.bounding_box_projections[4]);
+        zproj_.push_back(&bounding_box.bounding_box_projections[5]);
     }
     n_ = xproj_.size();
 }
@@ -81,7 +81,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::update_bounding_boxes()
 
 template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::check_bounding_box_vector(
-        std::vector<CollisionDetector::BoundingBoxProjectionType*>& vector)
+        std::vector<CollisionDetector::BoundingBoxProjectionType*>& vector, char axis)
 {
     //std::cout << "\n";
     for (unsigned i = 0; i != n_; ++i) {
@@ -106,7 +106,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::check_bounding_box_vector
             }
             else if (c1 == 'b' && c2 == 'e') {
                 if (((bbm->inward_cylinder() || bbn->inward_cylinder()) && cylinder_overlap(bbm, bbn)) ||
-                check_other_axes(bbm, bbn)) {
+                check_other_axes(bbm, bbn, axis)) {
                     create_contact_pair(bbm, bbn);
                 }
             }
@@ -124,20 +124,19 @@ template<typename ForceModel, typename ParticleType>
 bool
 DEM::CollisionDetector<ForceModel, ParticleType>::check_other_axes(
         const CollisionDetector::BoundingBoxProjectionType* b1,
-        const CollisionDetector::BoundingBoxProjectionType* b2) const
+        const CollisionDetector::BoundingBoxProjectionType* b2,
+        char axis) const
 {
-    auto idx1 = b1->get_indices_on_other_axes();
-    auto idx2 = b2->get_indices_on_other_axes();
+    auto idx1 = b1->get_indices_on_other_axes(axis);
+    auto idx2 = b2->get_indices_on_other_axes(axis);
 
     // checking the first of the axes
-    if ( (*idx1[0] < *idx2[0] && *idx2[0] < *idx1[1]) || (*idx2[0] < *idx1[0] && *idx1[0] < *idx2[1]) ) {
-        // Check the second axis
-        if ( (*idx1[2] < *idx2[2] && *idx2[2] < *idx1[3]) || (*idx2[2] < *idx1[2] && *idx1[2] < *idx2[3]) ) {
-            return true;
+    for (unsigned i=0; i!=2; ++i) {
+        if (!( (idx1[2*i]<idx2[2*i] && idx2[2*i]<idx1[2*i+1]) || (idx2[2*i]<idx1[2*i] && idx1[2*i]<idx2[2*i+1]) )) {
+            return false;
         }
-        return false;
     }
-    return false;
+    return true;
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -154,19 +153,16 @@ bool DEM::CollisionDetector<ForceModel, ParticleType>::cylinder_overlap(
         other = b1;
         cyl = b2;
     }
-    auto cyl_bbox = cyl->get_bounding_box();
-    auto other_bbox = other->get_bounding_box();
+    auto cyl_bbox_proj = cyl->get_bounding_box()->bounding_box_projections;
+    auto other_bbox_proj = other->get_bounding_box()->bounding_box_projections;
 
-    if(cyl_bbox->bx.get_value() < other_bbox->bx.get_value() && cyl_bbox->ex.get_value() > other_bbox->ex.get_value()){
-        if (cyl_bbox->by.get_value() < other_bbox->by.get_value() &&
-            cyl_bbox->ey.get_value() > other_bbox->ey.get_value()){
-            if (cyl_bbox->bz.get_value() < other_bbox->bz.get_value() &&
-                cyl_bbox->ez.get_value() > other_bbox->ez.get_value()){
-                return false;
-            }
+    for(unsigned i=0; i != 3; ++i) {
+        if(!( cyl_bbox_proj[2*i].get_value() < other_bbox_proj[2*i].get_value() &&
+            cyl_bbox_proj[2*i+1].get_value() > other_bbox_proj[2*i+1].get_value() )){
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 template<typename ForceModel, typename ParticleType>

@@ -89,7 +89,8 @@ class Contact3D:
         self.km = 8/((2 - particle1.v)/G1 + (2 - particle2.v)/G2)
         self.kh = 1./((1 - particle1.v**2)/particle1.E + (1 - particle2.v**2)/particle2.E)*4./3*np.sqrt(self.R0)
 
-        self.Q1 = np.zeros(3)
+        self.Q0 = [np.zeros(3), np.zeros(3)]
+        self.turning_point = -1
         self.Q = np.zeros(3)
         self.old_dt = np.zeros(3)
         self.delta = np.zeros(3)
@@ -105,18 +106,21 @@ class Contact3D:
         self.h += dh
 
         if np.dot(dt, self.old_dt) < 0:   # sign shift
-            self.Q1 = np.copy(self.Q)
-
+            self.Q0[(self.turning_point + 1)/2] = np.copy(self.Q)
+            self.turning_point *= -1
         sgn = 1
 
-        if np.linalg.norm(self.Q1):
-            self.Q1 += mu*df*self.Q1/np.linalg.norm(self.Q1)
+        for Q0 in self.Q0:
+            if np.linalg.norm(Q0):
+                Q0 += mu*df*Q0/np.linalg.norm(Q0)
 
         if dh <= 0 or np.linalg.norm(self.load_var_tan) - self.load_var_norm > 0:
-            if np.dot(dt, self.old_dt) > 0 and np.linalg.norm(self.Q1) == 0.:
+            if np.dot(dt, self.old_dt) > 0 and np.linalg.norm(self.Q0[0]) == 0.:
                 q = (1 - (np.linalg.norm(self.Q) + mu*df)/mu/self.F)
+            elif self.turning_point == 1:
+                q = (1 - (np.linalg.norm(self.Q0[0] - self.Q) + 2*mu*df)/(mu*self.F*2))
             else:
-                q = (1 - (np.linalg.norm(self.Q1 - self.Q) + 2*mu*df)/(mu*self.F*2))
+                q = (1 - (np.linalg.norm(self.Q - self.Q0[1]) + 2*mu*df)/(mu*self.F*2))
             if dh <= 0:
                 self.load_var_tan *= 0
                 self.load_var_norm = 0
@@ -136,6 +140,7 @@ class Contact3D:
         self.Q += kt*dt
         self.delta += dt
         print "3d", kt, sgn*mu*(1-q)*df/np.linalg.norm(dt), q
+        print self.Q0
 
 
 Particle = namedtuple('Particle', ['R', 'E', 'v'])
@@ -154,7 +159,7 @@ ft2d = np.zeros(5*N)
 delta3d = np.zeros((5*N, 3))
 ft3d = np.zeros((5*N, 3))
 
-inc = dmax/N
+inc = -dmax/N
 for i in range(0, N):
     c2d.calc_tangential_force(inc, dh=0, mu=0.3)
     c3d.calc_tangential_force(np.array([inc, 0, 0]), dh=0, mu=0.3)
@@ -166,7 +171,7 @@ for i in range(0, N):
 print "Unloading"
 for i in range(0, 2*N):
     dtx = -inc
-    dh = 1E-5
+    dh = -1e-5
     c2d.calc_tangential_force(dtx, dh=dh, mu=0.3)
     c3d.calc_tangential_force(np.array([dtx, 0, 0]), dh=dh, mu=0.3)
     delta2d[i + N] = c2d.delta
@@ -177,9 +182,9 @@ for i in range(0, 2*N):
 
 for i in range(0, 2*N):
     dtx = -inc
-    dh = 1E-5
+    dh = 1e-5
     c2d.calc_tangential_force(inc, dh=dh, mu=0.3)
-    c3d.calc_tangential_force(np.array([inc, 0, 0]), dh=0, mu=0.3)
+    c3d.calc_tangential_force(np.array([inc, 0, 0]), dh=dh, mu=0.3)
     delta2d[i + 3*N] = c2d.delta
     ft2d[i + 3*N] = c2d.Q
 

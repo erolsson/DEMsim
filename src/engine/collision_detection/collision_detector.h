@@ -83,8 +83,9 @@ namespace DEM {
         //BoolMatrix activeCollisions;
         void update_bounding_boxes();
 
-        void check_bounding_box_vector(std::vector<BoundingBoxProjectionType*>& vector);
-        bool check_other_axes(const BoundingBoxProjectionType* b1, const BoundingBoxProjectionType* b2) const;
+        void check_bounding_box_vector(std::vector<BoundingBoxProjectionType*>& vector, char axis);
+        bool check_other_axes(const BoundingBoxProjectionType* b1, const BoundingBoxProjectionType* b2,
+                char axis) const;
 
         bool cylinder_overlap(const BoundingBoxProjectionType* b1,
                 const BoundingBoxProjectionType* b2) const;

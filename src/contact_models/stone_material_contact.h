@@ -18,14 +18,17 @@ namespace DEM {
         StoneMaterialContact(ParticleType* particle1, SurfaceType* surface, std::chrono::duration<double>);
         void update(double dh, const Vec3& dt, const Vec3& normal);
         double get_overlap() const { return h_; }
-        double get_normal_force() const { return F_; }
+        double get_normal_force() const { return FN_; }
         const Vec3& get_tangential_force() const { return FT_; }
         double get_contact_area() const { return sqrt(a_); }
-        bool active() const { return F_!=0; }
+        bool active() const { return FN_!=0; }
         void set_increment(std::chrono::duration<double>) { }
 
     private:
-        double F_ { 0. };
+        double update_normal_force(double dh);
+        void update_tangential_force(const Vec3& dt, const Vec3& normal, double dFN);
+
+        double FN_ { 0. };
         double a_ { 0, };
         double R0_;
 
@@ -38,6 +41,10 @@ namespace DEM {
         // state parameters in the tangential direction
         Vec3 FT_ {Vec3{}};
         Vec3 uT_ {Vec3{}};
+        Vec3 old_dT_ {Vec3{}};    // Tangential displacement from previous increment
+
+        char turning_point_ { -1 };  //First sign shift -1, second 1
+        std::array<Vec3, 2> FT0 {Vec3{}, Vec3{}};
 
         // Material parameters for the stone contact model in normal direction
         double kp_;           //Loading stiffness
@@ -48,6 +55,7 @@ namespace DEM {
 
         // Material parameters for the stone contact model in the tangential direction
         double mu_;
+        double old_mu_;
         double kT_;
     };
 }

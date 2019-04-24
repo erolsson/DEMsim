@@ -3,35 +3,37 @@
 //
 
 #include "bounding_box_projection.h"
+#include "bounding_box.h"
 
 template<typename ForceModel, typename ParticleType>
 DEM::BoundingBoxProjection<ForceModel, ParticleType>::BoundingBoxProjection(BoundingBox<ForceModel, ParticleType>* bbox,
-                                                                       std::size_t idx, char position, char axis,
+                                                                       std::size_t idx, char position,
                                                                        bool inward_cylinder) :
-        position_char_(position), axis_(axis), bbox_(bbox), index_(idx), inward_cylinder_(inward_cylinder)
+        position_char_(position), bbox_(bbox), index_(idx), inward_cylinder_(inward_cylinder)
 {
     // Empty constructor
 }
 
 template<typename ForceModel, typename ParticleType>
-void DEM::BoundingBoxProjection<ForceModel, ParticleType>::setup()
-{
-    if (axis_ == 'x') {
-        other_indices_[0] = &(bbox_->by.index_);
-        other_indices_[1] = &(bbox_->ey.index_);
-        other_indices_[2] = &(bbox_->bz.index_);
-        other_indices_[3] = &(bbox_->ez.index_);
+std::array<std::size_t, 4>
+DEM::BoundingBoxProjection<ForceModel, ParticleType>::get_indices_on_other_axes(char axis) const {
+    if (axis == 'x') {
+        return std::array<std::size_t, 4>{ bbox_->bounding_box_projections[2].index_,
+                                           bbox_->bounding_box_projections[3].index_,
+                                           bbox_->bounding_box_projections[4].index_,
+                                           bbox_->bounding_box_projections[5].index_};
     }
-    else if (axis_ == 'y') {
-        other_indices_[0] = &(bbox_->bx.index_);
-        other_indices_[1] = &(bbox_->ex.index_);
-        other_indices_[2] = &(bbox_->bz.index_);
-        other_indices_[3] = &(bbox_->ez.index_);
+    else if (axis == 'y'){
+        return std::array<std::size_t, 4>{ bbox_->bounding_box_projections[0].index_,
+                                           bbox_->bounding_box_projections[1].index_,
+                                           bbox_->bounding_box_projections[4].index_,
+                                           bbox_->bounding_box_projections[5].index_};
     }
-    else if (axis_ == 'z') {
-        other_indices_[0] = &(bbox_->bx.index_);
-        other_indices_[1] = &(bbox_->ex.index_);
-        other_indices_[2] = &(bbox_->by.index_);
-        other_indices_[3] = &(bbox_->ey.index_);
+
+    else {
+        return std::array<std::size_t, 4>{ bbox_->bounding_box_projections[0].index_,
+                                           bbox_->bounding_box_projections[1].index_,
+                                           bbox_->bounding_box_projections[2].index_,
+                                           bbox_->bounding_box_projections[3].index_};
     }
 }

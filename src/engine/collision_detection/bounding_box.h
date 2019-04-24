@@ -22,14 +22,13 @@ namespace DEM {
     public:
         BoundingBox(ParticleType* particle, std::size_t index);
         BoundingBox(SurfaceType* surface,  std::size_t index);
-        BoundingBox(CylinderType* cylinder,  std::size_t index, bool);  //Special bounding box for inward cylinders
+        BoundingBox(CylinderType* cylinder, std::size_t index, bool); //Special bounding box for inward cylinders
 
         // Copy constructor and assignment operator needed due to pointers between different projection vectors
         // which becomes invalid when different bounding boxes are re-allocated due to vector-over-capacity
         // These constructors repairs the pointers
         BoundingBox(const BoundingBox& rhs);
         BoundingBox& operator=(const BoundingBox& rhs);
-
 
         std::size_t get_id() const;
         void update();
@@ -38,12 +37,7 @@ namespace DEM {
         ParticleType* get_particle() const { return particle_;}
         SurfaceType* get_surface() const { return surface_;}
 
-        BProjectionType bx;
-        BProjectionType ex;
-        BProjectionType by;
-        BProjectionType ey;
-        BProjectionType bz;
-        BProjectionType ez;
+        std::array<BProjectionType, 6> bounding_box_projections;
 
     private:
         ParticleType* particle_;
@@ -55,7 +49,6 @@ namespace DEM {
         void (BoundingBox<ForceModel, ParticleType>::*update_function)();
         void particle_update();
         void surface_update();
-        void setup_projections();
     };
 }
 
