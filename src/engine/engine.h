@@ -48,7 +48,7 @@ namespace DEM {
         PointSurfacePointer create_point_surface(const std::vector<Vec3>& points, bool infinite);
 
         CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
-                                        bool inward=true, bool infinite=false);
+                                        bool inward=true, bool infinite=false, bool closed_ends=false);
 
         OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval);
         void remove_output(const OutputPointerType& output_to_remove);

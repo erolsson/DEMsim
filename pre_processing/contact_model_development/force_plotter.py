@@ -11,16 +11,8 @@ plt.rcParams['text.latex.preamble'] = [r"\usepackage{amsmath}"]
 plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
-force_data = np.genfromtxt('../../results/contact_testing/stone_material_contact/contact_forces.dat',
-                           delimiter=',')
-
-plt.figure(1)
-h = (force_data[:, 0] - force_data[0, 0])/2
+force_data = np.genfromtxt('contact_forces.dat', delimiter=',')
+h = force_data[:, 0]
 plt.plot(h, force_data[:, 1])
-
-plt.figure(2)
-plt.plot(force_data[:, 2], -force_data[:, 3])
-
-plt.figure(3)
-plt.plot(-force_data[:, 3])
+plt.xlim(0, np.max(h))
 plt.show()

@@ -97,7 +97,7 @@ void DEM::closed_die_compaction(const std::string& settings_file_name){
     simulator.set_mass_scale_factor(10.);
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.1s);
-    /*
+
     simulator.run(run_for_time);
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
     simulator.run(max_velocity);
@@ -118,5 +118,4 @@ void DEM::closed_die_compaction(const std::string& settings_file_name){
     top_surface->set_velocity(Vec3(0, 0, unloading_velocity));
     run_for_time.reset(unloading_time);
     simulator.run(run_for_time);
-     */
 }

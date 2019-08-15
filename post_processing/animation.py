@@ -70,6 +70,9 @@ class Animation:
 
                 name = '/' + self.image_file_prefix + '0'*(len(str(n))-len(str(i+1))) + str(i+1) + '.' \
                        + self.image_file_extension
-                mlab.savefig(filename=self.save_directory + name, size=self.dpi)
+                f = mlab.gcf()
+                f.scene.render()
+                mlab.savefig(filename=self.save_directory + name)
+
             time.sleep(self.delay)
             yield

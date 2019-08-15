@@ -36,12 +36,13 @@ class SpheresPlotter:
         y = data[:, 2]
         z = data[:, 3]
         r = data[:, 7]
-        if self.ms is None:
+        if self.ms is None or self.ms.points.shape[0] != data.shape[0]:
             self.ms = mlab.points3d(x, y, z, 2 * r,
                                     color=self.color,
                                     resolution=32,
                                     scale_factor=1.,
                                     scale_mode='scalar').mlab_source
+            print "foo"
         else:
             self.ms.set(x=x, y=y, z=z)
 
@@ -190,7 +191,7 @@ class SurfacesPlotter:
 
 
 if __name__ == '__main__':
-    simulation_directory = '../results/gyratory_compaction/1/'
+    simulation_directory = '../results/cyclic_triaxial/test/'
     surfaces_plotter = SurfacesPlotter(simulation_directory + 'surface_positions.dat')
     bbox = BoundingBox()
     bbox.z_min = -0.01

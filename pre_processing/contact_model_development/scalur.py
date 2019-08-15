@@ -17,9 +17,9 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 class Contact2D:
     def __init__(self, particle1, particle2, overlap, mu):
         self.R0 = 1./(1/particle1.R + 1/particle2.R)
-        h = overlap*self.R0
+        self.h = overlap*self.R0
         self.mu = mu
-        self.a = np.sqrt(self.R0*h)
+        self.a = np.sqrt(self.R0*self.h)
         G1 = particle1.E/2/(1 + particle1.v)
         G2 = particle2.E/2/(1 + particle2.v)
         self.km = 8/((2 - particle1.v)/G1 + (2 - particle2.v)/G2)
@@ -30,8 +30,7 @@ class Contact2D:
         self.Q = 0
         self.old_dt = 0
         self.delta = 0
-        self.F = 4./3*self.kh*np.sqrt(R0)*overlap**1.5
-        self.h = overlap
+        self.F = self.kh*self.h**1.5
         self.load_var = 0
 
     def calc_tangential_force(self, dt, dh, mu):
@@ -75,27 +74,25 @@ class Contact2D:
         self.old_dt = dt
         self.Q += kt*dt
         self.delta += dt
-        print "2d", kt, sgn*mu*(1-q)*df/dt, q
 
 
 class Contact3D:
     def __init__(self, particle1, particle2, overlap, mu):
         self.R0 = 1./(1/particle1.R + 1/particle2.R)
-        h = overlap*self.R0
+        self.h = overlap*self.R0
         self.mu = mu
-        self.a = np.sqrt(self.R0*h)
+        self.a = np.sqrt(self.R0*self.h)
         G1 = particle1.E/2/(1 + particle1.v)
         G2 = particle2.E/2/(1 + particle2.v)
         self.km = 8/((2 - particle1.v)/G1 + (2 - particle2.v)/G2)
         self.kh = 1./((1 - particle1.v**2)/particle1.E + (1 - particle2.v**2)/particle2.E)*4./3*np.sqrt(self.R0)
-
+        print self.kh
         self.Q0 = [np.zeros(3), np.zeros(3)]
         self.turning_point = -1
         self.Q = np.zeros(3)
         self.old_dt = np.zeros(3)
         self.delta = np.zeros(3)
-        self.F = 4./3*self.kh*np.sqrt(R0)*overlap**1.5
-        self.h = overlap
+        self.F = self.kh*self.h**1.5
         self.load_var_tan = np.zeros(3)
         self.load_var_norm = 0
 
@@ -113,7 +110,7 @@ class Contact3D:
         for Q0 in self.Q0:
             if np.linalg.norm(Q0):
                 Q0 += mu*df*Q0/np.linalg.norm(Q0)
-
+        q = 0
         if dh <= 0 or np.linalg.norm(self.load_var_tan) - self.load_var_norm > 0:
             if np.dot(dt, self.old_dt) > 0 and np.linalg.norm(self.Q0[0]) == 0.:
                 q = (1 - (np.linalg.norm(self.Q) + mu*df)/mu/self.F)
@@ -124,14 +121,13 @@ class Contact3D:
             if dh <= 0:
                 self.load_var_tan *= 0
                 self.load_var_norm = 0
-            if q > 0:
-                q = q**(1./3)
-            else:
-                q = 0
         else:
             self.load_var_tan += self.km*np.sqrt(self.h*self.R0)*dt
             self.load_var_norm += mu*df
             q = 1
+
+        if q > 0:
+            q = q**(1./3)
 
         kt = self.km*np.sqrt(self.h*self.R0)*q
         if dh != 0.:
@@ -139,8 +135,6 @@ class Contact3D:
         self.old_dt = dt
         self.Q += kt*dt
         self.delta += dt
-        print "3d", kt, sgn*mu*(1-q)*df/np.linalg.norm(dt), q
-        print self.Q0
 
 
 Particle = namedtuple('Particle', ['R', 'E', 'v'])
@@ -159,7 +153,8 @@ ft2d = np.zeros(5*N)
 delta3d = np.zeros((5*N, 3))
 ft3d = np.zeros((5*N, 3))
 
-inc = -dmax/N
+inc = dmax/N
+print inc
 for i in range(0, N):
     c2d.calc_tangential_force(inc, dh=0, mu=0.3)
     c3d.calc_tangential_force(np.array([inc, 0, 0]), dh=0, mu=0.3)
@@ -168,6 +163,7 @@ for i in range(0, N):
 
     delta3d[i, :] = c3d.delta
     ft3d[i, :] = c3d.Q
+print c3d.F
 print "Unloading"
 for i in range(0, 2*N):
     dtx = -inc

@@ -3,6 +3,10 @@
 //
 
 #include "contact.h"
+
+#include <fstream>
+#include <sstream>
+
 #include "../utilities/vec3.h"
 
 template<typename ForceModel, typename ParticleType>
@@ -15,7 +19,8 @@ DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, Particl
     position_divider_(2),
     force_model_(particle1, particle1, increment),
     distance_function(&Contact::calculate_distance_vector_particle),
-    tangential_function(&Contact::calculate_tangential_vector_particle)
+    tangential_function(&Contact::calculate_tangential_vector_particle),
+    rotation_function(&Contact::calculate_rotation_vector_particle)
 {
     normal_ = calculate_distance_vector().normal();
 }
@@ -31,8 +36,8 @@ DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, Surface
     position_divider_(1),
     force_model_(particle1, surface, increment),
     distance_function(&Contact::calculate_distance_vector_surface),
-    tangential_function(&Contact::calculate_tangential_vector_surface)
-
+    tangential_function(&Contact::calculate_tangential_vector_surface),
+    rotation_function(&Contact::calculate_rotation_vector_surface)
 {
     normal_ = calculate_distance_vector().normal();
 }
@@ -45,11 +50,28 @@ void DEM::Contact<ForceModel, ParticleType>::update()
     double h = r2_ - distance_vector.length();
     normal_ = distance_vector.normalize();
     Vec3 dt(0, 0, 0);
+    Vec3 w(0, 0, 0);
     if (h > 0) {
         dt = calculate_tangential_displacement_this_inc();
+        w = calculate_rotation_this_inc();
     }
-    force_model_.update(h, dt, normal_);
+    force_model_.update(h, dt, w, normal_);
+    /*
+    if(surface_->get_id() == 2) {
+        std::string filename = "contact_forces.dat";
+        std::ofstream output_file;
+        output_file.open(filename, std::fstream::app);
+        output_file << h << ", " << get_normal_force().z() << "\n";
+        output_file.close();
+    }
+     */
 }
+
+template<typename ForceModel, typename ParticleType>
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::get_torque(const DEM::Vec3 &point) const {
+    return cross_product(get_position() - point, get_tangential_force()) + force_model_.get_rolling_resistance_torque();
+}
+
 
 template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_distance_vector_particle() const
@@ -88,3 +110,14 @@ DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::get_position() const
 {
     return p1_->get_position() - normal_*(p1_->get_radius() - get_overlap()/position_divider_);
 }
+
+template<typename ForceModel, typename ParticleType>
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_rotation_vector_particle() const {
+    return p1_->get_rotation_this_increment() - p2_->get_rotation_this_increment();
+}
+
+template<typename ForceModel, typename ParticleType>
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_rotation_vector_surface() const {
+    return p1_->get_rotation_this_increment();
+}
+

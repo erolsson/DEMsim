@@ -27,21 +27,23 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     SimulationParameters parameters{settings_file_name};
     auto radius = parameters.get<double>("R");
     auto increments = parameters.get<unsigned>("N");
-    auto h0 = parameters.get<double>("h0");
     auto h1 = parameters.get<double>("h1");
-    auto h2 = parameters.get<double>("h2");
+    auto dh = parameters.get<double>("dh");
+    auto dt = parameters.get<double>("dt");
     auto filename=parameters.get<std::string>("output_file");
     mat.E = parameters.get<double>("E");
     mat.nu = parameters.get<double>("nu");
     mat.unloading_exponent = parameters.get<double>("unloading_exponent");
+    mat.mu = parameters.get<double>("mu");
 
     auto p1 = FractureableSphericalParticle<ForceModel>(radius, Vec3{-radius, 0, 0}, Vec3{}, &mat, 0);
     auto p2 = FractureableSphericalParticle<ForceModel>(radius, Vec3{radius, 0, 0}, Vec3{}, &mat, 1);
 
     auto c = Contact<ForceModel, ParticleType>(&p2, &p1, 1s);
 
-    p1.move(Vec3{h0, 0, 0});
-    p2.move(Vec3{-h0, 0, 0});
+    p1.move(Vec3{h1, 0, 0});
+    p2.move(Vec3{-h1, 0, 0});
+    c.update();
     c.update();
 
     fs::path path_to_output_file {filename};
@@ -50,32 +52,29 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     output_file.open(filename);
 
     for(unsigned i = 0; i != increments; ++i) {
-        p1.move(Vec3{h1/increments, 0, 0});
-        p2.move(Vec3{-h1/increments, 0, 0});
+        p1.move(Vec3{0, dt/2, 0});
+        p2.move(Vec3{0, -dt/2, 0});
         c.update();
-        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << std::endl;
+        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
+                    << p1.get_position().y() - p2.get_position().y() << ", "
+                    << c.get_tangential_force().y() << std::endl;
+    }
+    dt *= 0;
+    for(unsigned i = 0; i != 2*increments; ++i) {
+        p1.move(Vec3{-dh/2, -dt/2, 0});
+        p2.move(Vec3{dh/2, dt/2, 0});
+        c.update();
+        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
+                    << p1.get_position().y() - p2.get_position().y() << ", "
+                    << c.get_tangential_force().y() << std::endl;
     }
 
-    for(unsigned i = 0; i != increments; ++i) {
-        p1.move(Vec3{-h2/increments, 0, 0});
-        p2.move(Vec3{h2/increments, 0, 0});
+    for(unsigned i = 0; i != 2*increments; ++i) {
+        p1.move(Vec3{dh/2, dt/2, 0});
+        p2.move(Vec3{-dh/2, -dt/2, 0});
         c.update();
-        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << std::endl;
-    }
-
-    for(unsigned j=0; j !=2 ; ++j) {
-        for(unsigned i = 0; i != increments; ++i) {
-            p1.move(Vec3{h2/increments, 0, 0});
-            p2.move(Vec3{-h2/increments, 0, 0});
-            c.update();
-            output_file << c.get_overlap() << ", " << c.get_normal_force().x() << std::endl;
-        }
-
-        for(unsigned i = 0; i != increments; ++i) {
-            p1.move(Vec3{-h2/increments, 0, 0});
-            p2.move(Vec3{h2/increments, 0, 0});
-            c.update();
-            output_file << c.get_overlap() << ", " << c.get_normal_force().x() << std::endl;
-        }
+        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
+                    << p1.get_position().y() - p2.get_position().y() << ", "
+                    << c.get_tangential_force().y() << std::endl;
     }
 }

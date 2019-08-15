@@ -31,9 +31,9 @@ DEM::LinearStickSlipModel::LinearStickSlipModel(DEM::LinearStickSlipModel::Parti
 }
 
 
-void DEM::LinearStickSlipModel::update(double dh, const Vec3& dt, const Vec3& normal)
+void DEM::LinearStickSlipModel::update(double h, const Vec3& dt, const Vec3&, const Vec3& normal)
 {
-    h_ += dh;
+    h_ = h;
 
     if (h_ > 0) {
         F_ = k_*h_;

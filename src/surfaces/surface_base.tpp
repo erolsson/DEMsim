@@ -43,7 +43,10 @@ double DEM::Surface<ForceModel, ParticleType>::get_normal_force() const
 {
     double normal_force = 0.0;
     for (auto const& c : contacts_.get_objects()) {
-        normal_force += dot_product(c->get_normal_force(), get_normal(c->get_position()));
+        Vec3 F = c-> get_normal_force();
+        if (!F.is_zero()) {
+            normal_force += dot_product(c->get_normal_force(), get_normal(c->get_position()));
+        }
     }
     return normal_force;
 }

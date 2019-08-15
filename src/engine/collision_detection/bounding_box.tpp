@@ -116,10 +116,10 @@ void DEM::BoundingBox<ForceModel, ParticleType>::particle_update()
     Vec3 particle_position = particle_->get_position();
     double R = particle_->get_radius();
     int sign = -1;
-    for(unsigned i = 0; i!= bounding_box_projections.size(); ++i) {
+    for(unsigned i = 0; i != bounding_box_projections.size(); ++i) {
         BProjectionType& b = bounding_box_projections[i];
         b.value_ = particle_position[i/2] + sign*(R + stretch_);
-        i *= -1;
+        sign *= -1;
     }
 }
 
@@ -128,9 +128,9 @@ void DEM::BoundingBox<ForceModel, ParticleType>::surface_update()
 {
     auto bbox = surface_->get_bounding_box_values();
     int sign = -1;
-    for(unsigned i = 0; i!= bounding_box_projections.size(); ++i) {
+    for(unsigned i = 0; i != bounding_box_projections.size(); ++i) {
         BProjectionType& b = bounding_box_projections[i];
         b.value_ = bbox[i] + sign*stretch_;
-        i *= -1;
+        sign *= -1;
     }
 }

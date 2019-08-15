@@ -31,6 +31,10 @@ DEM::CollisionDetector<ForceModel, ParticleType>::CollisionDetector(const std::v
 template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::setup()
 {
+    bounding_boxes_.clear();
+    xproj_.clear();
+    yproj_.clear();
+    zproj_.clear();
     std::size_t counter = 0;
     // bounding_boxes_.reserve(particles_.size() + surfaces_.size());
     for(const auto& p: particles_){

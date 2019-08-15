@@ -52,16 +52,16 @@ DEM::StorakersMesarovicJohnson::StorakersMesarovicJohnson(DEM::StorakersMesarovi
     mu_ = mat1->mu_wall;
 }
 
-void DEM::StorakersMesarovicJohnson::update(double dh, const DEM::Vec3& dt, const DEM::Vec3& normal)
+void DEM::StorakersMesarovicJohnson::update(double dh, const DEM::Vec3& dt, const Vec3&, const DEM::Vec3& normal)
 {
     update_normal_force(dh);
     update_tangential_force(dt, normal);
 
 }
 
-void DEM::StorakersMesarovicJohnson::update_normal_force(double dh)
+void DEM::StorakersMesarovicJohnson::update_normal_force(double h)
 {
-    h_ += dh;
+    h_ = h;
     if (h_ > h_max_) {  // Plastic loading
         F_ = k_*h_;
         a_ = sqrt(1.43*R0_*h_);

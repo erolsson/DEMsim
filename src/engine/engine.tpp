@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <chrono>
 #include <memory>
+#include <omp.h>
 #include <vector>
 
 #include "../utilities/amplitude.h"
@@ -33,6 +34,7 @@ DEM::Engine<ForceModel, ParticleType>::Engine(std::chrono::duration<double> dt) 
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::setup()
 {
+    std::cout << "Number of objects is " << number_of_objects_ << "\n";
     contacts_.resize(number_of_objects_);
     collision_detector_.setup();
 }
@@ -97,10 +99,10 @@ DEM::Engine<ForceModel, ParticleType>::create_point_surface(const std::vector<Ve
 template<typename ForceModel, typename ParticleType>
 typename DEM::Engine<ForceModel, ParticleType>::CylinderPointer
 DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3& axis, const Vec3& base_point,
-                                                  double length, bool inward, bool infinite)
+                                                  double length, bool inward, bool infinite, bool closed_ends)
 {
     auto c = new Cylinder<ForceModel, ParticleType>(number_of_objects_, radius, axis, base_point, length,
-                                                    inward, infinite);
+                                                    inward, infinite, closed_ends);
     surfaces_.push_back(c);
     ++number_of_objects_;
     return c;
@@ -336,6 +338,8 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
         double I = p->get_inertia()*mass_scale_factor_;
 
         new_a = F/m + gravity_;
+
+
         new_ang_a = M/I;
 
         new_v = v+ new_a*dt;

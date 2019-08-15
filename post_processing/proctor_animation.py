@@ -1,17 +1,9 @@
 from mayavi import mlab
 
 from animation import Animation
-from pressure_density import dimensions_cylinder
 
 if __name__ == '__main__':
     simulation_directory = '../results/proctor_test/test/'
-    # Doing some inspection to construct a good bounding_box figure
-    dimension_data = dimensions_cylinder(simulation_directory)
-    time = dimension_data[:, 0]
-    height = dimension_data[:, 3]
-
-    def plate_visible(t):
-        return t >= time[height < height[0]][0]
 
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)

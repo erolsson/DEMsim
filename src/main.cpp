@@ -2,10 +2,13 @@
 #include <iostream>
 #include <vector>
 
+#include <fenv.h>
+
 #include "simulations/simulations.h"
 
 int main(int argc, char** argv)
 {
+    feenableexcept(FE_INVALID | FE_OVERFLOW);
     if (argc < 2 || DEM::valid_simulations().count(argv[1]) == 0) {
         std::cerr << "Please provide a valid program name as first argument" << '\n';
         return 0;

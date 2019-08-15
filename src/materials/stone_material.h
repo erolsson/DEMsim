@@ -17,10 +17,11 @@ namespace DEM {
 
         // For implementing cyclic dissipation according to the results in Celma Cervera et al
         double unloading_exponent {1.5};
-        double sY { 0. };
-        double kT{ 0. };
         double mu { 0. };
         double mu_wall { 0. };
+
+        double hs { 20e-6 };      // Thickness of the surface layer
+        double Fs { 100. };        // Force at indentation depth hs
     };
 }
 

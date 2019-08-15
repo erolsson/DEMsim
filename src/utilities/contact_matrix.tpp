@@ -19,7 +19,7 @@ DEM::ContactMatrix<T>::ContactMatrix(size_t N):
 template<typename T>
 void DEM::ContactMatrix<T>::resize(size_t new_size)
 {
-    if (new_size > data_.size()) {
+    if (new_size > data_indices_.size()) {
         data_indices_.resize(new_size);
     }
 }

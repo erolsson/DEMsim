@@ -8,7 +8,8 @@
 
 template<typename ForceModel, typename ParticleType>
 DEM::Cylinder<ForceModel, ParticleType>::Cylinder(std::size_t id, double radius, const Vec3& axis,
-                                             const Vec3& base_point, double length, bool inward, bool infinite) :
+                                             const Vec3& base_point, double length, bool inward, bool infinite,
+                                             bool closed_ends) :
         Surface<ForceModel, ParticleType>::Surface(id),
         radius_(radius),
         axis_(axis.normal()),
@@ -16,6 +17,7 @@ DEM::Cylinder<ForceModel, ParticleType>::Cylinder(std::size_t id, double radius,
         length_(length),
         inward_(inward),
         infinite_(infinite),
+        closed_ends_(closed_ends),
         z_aligned_(axis_ == Vec3(0, 0, 1))
 {
     update_bounding_box();
@@ -24,13 +26,34 @@ DEM::Cylinder<ForceModel, ParticleType>::Cylinder(std::size_t id, double radius,
 template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::get_normal(const Vec3& position) const
 {
-    Vec3 n = (position-point_) - dot_product(axis_, position-point_)*axis_;
-    if (inward_)
-        n*= -1;
+    Vec3 n = (position - point_) - dot_product(axis_, position - point_)*axis_;
     if (n.is_zero()) {
-        return Vec3(1, 0, 0);  //Special case, we are on the central axis, any unit vector can be used as normal
+        // Special case, we are on the central axis, any unit vector can be used as normal
+        return Vec3(1, 0, 0);
     }
-    return n.normalize();
+    if (inward_)
+        n *= -1;
+
+    // Only cylinders aligned with the z-axis are currently implemented
+    if (closed_ends_ && !inward_) {
+        double position_on_axis = dot_product(position-point_, axis_);
+        if (position_on_axis <= 0 || position_on_axis >= length_) {
+            double r2 = pow(position.x() - point_.x(), 2) + pow(position.y() - point_.y(), 2);
+            if (r2 <= radius_*radius_) {
+                int sgn = position_on_axis > length_ ? -1 : 1;
+                return Vec3(0., 0., 1.)*sgn;
+            }
+            else {
+                double d = position_on_axis < point_.z() ? 0 : length_;
+                Vec3 point_on_surface = point_ + axis_*d +
+                        radius_*Vec3(position.x() - point_.x(), position.y() - point_.y(), 0.)/sqrt(r2);
+                n = position - point_on_surface;
+            }
+        }
+
+    }
+    n.normalize();
+    return n;
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -38,11 +61,7 @@ double DEM::Cylinder<ForceModel, ParticleType>::distance_to_point(const Vec3& po
 {
     Vec3 n = get_normal(point);
     if (!infinite_) {
-        double position_on_axis = dot_product(point-point_, axis_);
-        if (position_on_axis < 0 || position_on_axis > length_) {
-            Vec3 point_on_surface = point_+axis_*position_on_axis;
-            return (point-point_on_surface).length();
-        }
+        return vector_to_point(point).length();
     }
     return (radius_ + dot_product((point-point_), n));
 }
@@ -54,8 +73,19 @@ DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::vector_to_point(const Vec3& p
     if (!infinite_) {
         double position_on_axis = dot_product(point - point_, axis_);
         if (position_on_axis < 0 || position_on_axis > length_) {
-            double d = position_on_axis < 0 ? 0. : length_;     // Should we be on the upper or lower plate
-            Vec3 point_on_surface = point_ + axis_*d - get_normal(point)*radius_;
+            double d =  position_on_axis < point_.z() ? 0 : length_;
+            Vec3 point_on_surface;
+            if (!closed_ends_){
+                point_on_surface = point_ + axis_*d - get_normal(point)*radius_;
+            }
+            else {
+                double r2 = pow(point.x() - point_.x(), 2) + pow(point.y() - point_.y(), 2);
+                if (r2 <= radius_*radius_) {
+                    return Vec3(0., 0., position_on_axis);
+                }
+                point_on_surface = point_ + axis_*d +
+                        radius_*Vec3(point.x() - point_.x(), point.y() - point_.y(), 0.)/sqrt(r2);
+            }
             return point - point_on_surface;
         }
     }

@@ -21,11 +21,12 @@ namespace DEM {
         StorakersMesarovicJohnson(ParticleType* particle1, ParticleType* particle2, std::chrono::duration<double>);
         StorakersMesarovicJohnson(ParticleType* particle1, SurfaceType* surface, std::chrono::duration<double>);
 
-        void update(double dh, const Vec3& dt, const Vec3& normal);
+        void update(double dh, const Vec3& dt, const Vec3&, const Vec3& normal);
 
         double get_overlap() const { return h_; }
         double get_normal_force() const { return F_; }
         const Vec3& get_tangential_force() const { return FT_; }
+        const Vec3 get_rolling_resistance_torque() const { return Vec3{};};
         double get_contact_area() const {return sqrt(a_); }
         bool active() const {return F_ != 0; }
 

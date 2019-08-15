@@ -18,22 +18,26 @@ namespace DEM {
     class Cylinder : public Surface<ForceModel, ParticleType> {
     public:
         Cylinder(std::size_t id, double radius, const Vec3& axis, const Vec3& base_point, double length,
-                bool inward=true, bool infinite=false);
+                bool inward=true, bool infinite=false, bool closed_ends=false);
         ~Cylinder() override = default;
 
-        Vec3 get_normal(const Vec3& position) const override;
+        [[nodiscard]] Vec3 get_normal(const Vec3& position) const override;
 
-        double distance_to_point(const Vec3& point) const override;
-        Vec3 vector_to_point(const Vec3& point) const override;
-        Vec3 displacement_this_inc(const Vec3& position) const override;
+        [[nodiscard]] double distance_to_point(const Vec3& point) const override;
+        [[nodiscard]] Vec3 vector_to_point(const Vec3& point) const override;
+        [[nodiscard]] Vec3 displacement_this_inc(const Vec3& position) const override;
 
         void move(const Vec3& distance, const Vec3& velocity) override;
         void rotate(const Vec3& position, const Vec3& rotation_vector) override;
 
-        std::string get_output_string() const override;
+        [[nodiscard]] std::string get_output_string() const override;
 
         void expand(double radius_increase);
-        double get_radius() const { return radius_; }
+        [[nodiscard]] double get_radius() const { return radius_; }
+
+        [[nodiscard]] const Vec3& get_position() const {
+            return point_;
+        }
 
     private:
         using Surface<ForceModel, ParticleType>::id_;
@@ -49,6 +53,7 @@ namespace DEM {
         double length_;
         bool inward_;
         bool infinite_;
+        bool closed_ends_;
 
         // To allow fast functions for a common case, currently only z-aligned is supported in the collision detector!!!
         bool z_aligned_;

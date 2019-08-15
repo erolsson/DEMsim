@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(DEMsim)
 
 set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -msse4 -Ofast -fopenmp")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -g -msse4 -fopenmp")
 
 add_executable(DEMsim
                src/utilities/contact_matrix.h
@@ -56,6 +56,12 @@ add_executable(DEMsim
                src/contact_models/stone_material_contact.cpp
                src/contact_models/stone_material_contact.h
                src/materials/stone_material.h
-               src/simulations/contact_tester.cpp)
+               src/simulations/contact_tester.cpp
+               src/simulations/cyclic_triaxial.cpp
+               src/particles/spherical_particle_base.tpp
+               src/particles/spherical_particle_base.h
+               src/surfaces/circular_plate.tpp
+               src/surfaces/circular_plate.h
+               src/simulations/proctor_test.cpp)
 
-target_link_libraries (DEMsim stdc++fs)
+target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")
