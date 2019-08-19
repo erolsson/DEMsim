@@ -28,6 +28,8 @@ namespace DEM {
         double weibull_fracture_stress { 1e99 };
         double weibull_exponent {1. };
         double weibull_ref_volume {pow(0.00625, 3)};
+
+        double plastic_linear_depth = 0.08e-3;
     };
 }
 

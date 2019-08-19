@@ -44,9 +44,12 @@ namespace DEM {
         double Fs_;
         double hs_;
 
+        double hlinear_;
+
         // state parameters in the normal direction
         double h_ { 0. };
         double hmax_ { 0. };
+        double Fmax_ {0. };
         double hp_ { 0. };
         double hl_ {0. };
 

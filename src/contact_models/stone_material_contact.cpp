@@ -33,6 +33,9 @@ DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::Parti
 
     hs_ = (mat1->hs + mat2->hs)/2;
     Fs_ = (mat1->Fs + mat2->Fs)/2/sqrt(0.00625/R0_);
+
+    hlinear_ = (mat1->plastic_linear_depth + mat2->plastic_linear_depth)/2*R0_/6.25e-3 + hs_;
+
     h1_ = hs_ - pow(Fs_/kp_, 2./3);
 
     unloading_exp_ = (mat1->unloading_exponent + mat2->unloading_exponent)/2;
@@ -69,6 +72,8 @@ DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::Parti
     Fs_ = mat1->Fs/sqrt(0.00625/R0_);
     h1_ = hs_ - pow(Fs_/kp_, 2./3);
 
+    hlinear_ = mat1->plastic_linear_depth*R0_/6.25e-3 + hs_;
+
     unloading_exp_ = mat1->unloading_exponent;
     ku_ = E0*4./3*pow(R0_, 2-unloading_exp_)/0.95;           //Unloading stiffness
 
@@ -102,60 +107,42 @@ double DEM::StoneMaterialContact::update_normal_force(double dh) {
             if (h_ < hs_) {
                 F = Fs_/hs_*h_;
             }
-            else {
+            else if (h_ < hlinear_){
                 F = kp_*pow(h_ - h1_, 1.5);
             }
+            else {
+                double Flin = kp_*pow(hlinear_ - h1_, 1.5);
+                double klin = 1.5*kp_*sqrt(hlinear_ - h1_);
+                F = Flin + klin*(h_ - hlinear_);
+            }
+            Fmax_ = F;
             hp_ = (h_ - pow(F/ke_, 1./1.5)); // Plastic indentation depth
             ku_ = F/pow(h_-hp_, unloading_exp_);
         }
-        else if (h_ > 0) {
-            if (dh > 0) {
-                if (h_ > hl_){
-                    F = kl_*pow(h_-hl_, 1.5);
-                    ku_ = F/pow(h_-hp_, unloading_exp_);
-                }
+        else if (dh > 0) {
+            if (h_ > hl_){
+                F = kl_*pow(h_-hl_, 1.5);
+                ku_ = F/pow(h_-hp_, unloading_exp_);
             }
-            else if (h_ > hp_) {
-                double Fmax;
-                if (hmax_ > hs_) {
-                    Fmax = kp_*pow(hmax_ - h1_, 1.5);
-                } else {
-                    Fmax = Fs_/hs_*hmax_;
-                }
-                F = ku_*pow(h_ - hp_, unloading_exp_);
-                double A = pow(F/Fmax, 1./1.5);
-                if (A != 1.) {
-                    hl_ = (h_ - A*hmax_)/(1 - A);
-                    kl_ = Fmax/pow(hmax_ - hl_, 1.5);
-                } 
-                else {
-                    hl_ = hp_;
-                    ke_ = kl_;
-                }
-            }
-            else {
-                kl_ = ke_;
-            }
+        }
+        else if (h_ > hp_) {
+            F = ku_*pow(h_ - hp_, unloading_exp_);
+            double A = pow(F/Fmax_, 1./1.5);
+            hl_ = (h_ - A*hmax_)/(1 - A);
+            kl_ = Fmax_/pow(hmax_ - hl_, 1.5);
         }
         else {
-            a_ = 0;
-            hl_ = hp_;
             kl_ = ke_;
+            hl_ = hp_;
         }
-    }
-    else if (h_ < -R0_){
-        hmax_ = 0;
-        hp_ = 0;
-        F = 0;
-        hl_ = 0;
-        kl_ = ke_;
     }
     else {
         hmax_ = 0;
+        hp_ = 0;
+        Fmax_ = 0;
         a_ = 0;
         hl_ = hp_;
         kl_ = ke_;
-        F = 0;
     }
     return F;
 }
@@ -168,18 +155,18 @@ void DEM::StoneMaterialContact::update_tangential_force(const Vec3& dt, const Ve
     */
 
     if (mu_*FN_ > 0) {  // Only care about friction if we have a normal force
-        if (!dt.is_zero()) {
+        if (dt.length() > 1e-40) {
             // Project previous contact force on the contact plane
             FT_ -= dot_product(FT_, normal)*normal;
             // We have a change in loading direction, from "loading" to unloading
-            if (dot_product(dt, old_dT_) < 0) {
+            if (dot_product(dt, old_dT_) < 0.) {
                 turning_point_ *= -1;
                 FT0[(turning_point_ + 1)/2] = FT_;
             }
 
             // Update the turning points with changes in normal force
             for (auto &F0: FT0) {
-                if (!F0.is_zero()) {
+                if (F0.length() > 1e-40) {
                     // Equation (23) for the 2D case F** is negative and a - sign is used
                     // This is accounted by the normal instead of F0
                     F0 += d_mu_FN*F0.normal();
