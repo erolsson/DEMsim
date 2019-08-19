@@ -37,14 +37,14 @@ DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::get_normal(const Vec3& positi
     // Only cylinders aligned with the z-axis are currently implemented
     if (closed_ends_ && !inward_) {
         double position_on_axis = dot_product(position-point_, axis_);
-        if (position_on_axis <= 0 || position_on_axis >= length_) {
+        if (position_on_axis < 0 || position_on_axis > length_) {
             double r2 = pow(position.x() - point_.x(), 2) + pow(position.y() - point_.y(), 2);
             if (r2 <= radius_*radius_) {
                 int sgn = position_on_axis > length_ ? -1 : 1;
                 return Vec3(0., 0., 1.)*sgn;
             }
             else {
-                double d = position_on_axis < point_.z() ? 0 : length_;
+                double d = position_on_axis <= point_.z() ? 0 : length_;
                 Vec3 point_on_surface = point_ + axis_*d +
                         radius_*Vec3(position.x() - point_.x(), position.y() - point_.y(), 0.)/sqrt(r2);
                 n = position - point_on_surface;
@@ -59,17 +59,17 @@ DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::get_normal(const Vec3& positi
 template<typename ForceModel, typename ParticleType>
 double DEM::Cylinder<ForceModel, ParticleType>::distance_to_point(const Vec3& point) const
 {
-    Vec3 n = get_normal(point);
     if (!infinite_) {
         return vector_to_point(point).length();
     }
-    return (radius_ + dot_product((point-point_), n));
+    Vec3 n = get_normal(point);
+    int sgn = inward_? 1 : -1;
+    return (sgn*radius_ + dot_product((point-point_), n));
 }
 
 template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::vector_to_point(const Vec3& point) const
 {
-    Vec3 n = get_normal(point);
     if (!infinite_) {
         double position_on_axis = dot_product(point - point_, axis_);
         if (position_on_axis < 0 || position_on_axis > length_) {
@@ -89,8 +89,9 @@ DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::vector_to_point(const Vec3& p
             return point - point_on_surface;
         }
     }
-
-    return (radius_ + dot_product((point-point_), n))*n;
+    Vec3 n = get_normal(point);
+    int sgn = inward_? 1 : -1;
+    return (sgn*radius_ + dot_product((point-point_), n))*n;
 }
 
 template<typename ForceModel, typename ParticleType>

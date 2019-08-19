@@ -11,7 +11,7 @@ namespace DEM {
     template<typename ForceModel>
     class SphericalParticleBase : public ParticleBase<ForceModel> {
         using ParticleBase<ForceModel>::id_;
-        using ParticleBase<ForceModel>::material_;
+
         using ParticleBase<ForceModel>::position_;
         using ParticleBase<ForceModel>::displacement_this_inc_;
         using ParticleBase<ForceModel>::rot_this_inc_;
@@ -23,7 +23,8 @@ namespace DEM {
         using ParticleBase<ForceModel>::number_of_contacts_;
         using ParticleBase<ForceModel>::f_;
         using ParticleBase<ForceModel>::torque_;
-
+    protected:
+        using ParticleBase<ForceModel>::material_;
     public:
 
         // No assignment of particles and no plain copies
@@ -34,21 +35,21 @@ namespace DEM {
         SphericalParticleBase(const SphericalParticleBase&) = delete;
         SphericalParticleBase& operator=(const SphericalParticleBase&) = delete;
 
-        double get_radius() const { return radius_; }
-        double get_inertia() const { return inertia_; }
+        [[nodiscard]] double get_radius() const { return radius_; }
+        [[nodiscard]] double get_inertia() const { return inertia_; }
 
         void move(const Vec3& new_disp_this_inc);
         void rotate(const Vec3& new_rot_this_inc);
 
-        double kinetic_energy() const;
-        double translational_energy() const;
-        double rotational_energy() const;
+        [[nodiscard]] double kinetic_energy() const;
+        [[nodiscard]] double translational_energy() const;
+        [[nodiscard]] double rotational_energy() const;
 
-        std::size_t number_of_contacts() const;
+        [[nodiscard]] std::size_t number_of_contacts() const;
 
         void reset_contacts();
 
-        std::string get_output_string() const;
+        [[nodiscard]] virtual std::string get_output_string() const;
 
     protected:
         template<typename T>

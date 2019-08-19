@@ -22,6 +22,12 @@ namespace DEM {
 
         double hs { 20e-6 };      // Thickness of the surface layer
         double Fs { 100. };        // Force at indentation depth hs
+        double min_crack_distance { 3e-3 };   // Minimum distance between cracks to treat them as separate cracks
+
+        // Parameters for Weibull model for fracture strength
+        double weibull_fracture_stress { 1e99 };
+        double weibull_exponent {1. };
+        double weibull_ref_volume {pow(0.00625, 3)};
     };
 }
 

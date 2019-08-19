@@ -17,7 +17,7 @@ DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, Particl
     surface_(nullptr),
     r2_(particle1->get_radius() + particle2->get_radius()),
     position_divider_(2),
-    force_model_(particle1, particle1, increment),
+    force_model_(particle1, particle2, increment),
     distance_function(&Contact::calculate_distance_vector_particle),
     tangential_function(&Contact::calculate_tangential_vector_particle),
     rotation_function(&Contact::calculate_rotation_vector_particle)

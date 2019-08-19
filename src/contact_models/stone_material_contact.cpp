@@ -4,11 +4,14 @@
 
 #include "stone_material_contact.h"
 
+#include <random>
+
 #include "../materials/stone_material.h"
 
 DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::ParticleType* particle1,
                                                 DEM::StoneMaterialContact::ParticleType* particle2,
-                                                std::chrono::duration<double>)
+                                                std::chrono::duration<double>) :
+                                                p1_{particle1}, p2_{particle2}
 {
     auto mat1 = dynamic_cast<const StoneMaterial*>(particle1->get_material());
     auto mat2 = dynamic_cast<const StoneMaterial*>(particle2->get_material());
@@ -40,11 +43,14 @@ DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::Parti
     double G1 = E1/2/(1+v1);
     double G2 = E2/2/(1+v2);
     kT_ = 8/((2-v1)/G1 + (2-v2)/G2);
+
+    id2_ = p2_->get_id();
+    assign_fracture_strengths();
 }
 
 DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::ParticleType* particle1,
-                                                DEM::StoneMaterialContact::SurfaceType*,
-                                                std::chrono::duration<double>)
+                                                DEM::StoneMaterialContact::SurfaceType* surface,
+                                                std::chrono::duration<double>) : p1_{particle1}, p2_{nullptr}
 {
     auto mat1 = dynamic_cast<const StoneMaterial*>(particle1->get_material());
 
@@ -71,6 +77,9 @@ DEM::StoneMaterialContact::StoneMaterialContact(DEM::StoneMaterialContact::Parti
 
     double G1 = E1/2/(1+v1);
     kT_ = 8/((2-v1)/G1);
+    assign_fracture_strengths();
+
+    id2_ = surface->get_id();
 }
 
 void DEM::StoneMaterialContact::update(double h, const DEM::Vec3& dt, const Vec3& rot, const DEM::Vec3& normal)
@@ -80,7 +89,7 @@ void DEM::StoneMaterialContact::update(double h, const DEM::Vec3& dt, const Vec3
     FN_ = new_FN;
     update_tangential_force(dt, normal, d_mu_FN);
     update_tangential_resistance(rot);
-
+    check_fracture(normal);
 }
 
 double DEM::StoneMaterialContact::update_normal_force(double dh) {
@@ -110,14 +119,19 @@ double DEM::StoneMaterialContact::update_normal_force(double dh) {
                 double Fmax;
                 if (hmax_ > hs_) {
                     Fmax = kp_*pow(hmax_ - h1_, 1.5);
-                }
-                else {
+                } else {
                     Fmax = Fs_/hs_*hmax_;
                 }
-                F = ku_*pow(h_-hp_, unloading_exp_);
+                F = ku_*pow(h_ - hp_, unloading_exp_);
                 double A = pow(F/Fmax, 1./1.5);
-                hl_ = (h_ - A*hmax_)/(1-A);
-                kl_ = Fmax/pow(hmax_-hl_, 1.5);
+                if (A != 1.) {
+                    hl_ = (h_ - A*hmax_)/(1 - A);
+                    kl_ = Fmax/pow(hmax_ - hl_, 1.5);
+                } 
+                else {
+                    hl_ = hp_;
+                    ke_ = kl_;
+                }
             }
             else {
                 kl_ = ke_;
@@ -229,6 +243,31 @@ void DEM::StoneMaterialContact::update_tangential_force(const Vec3& dt, const Ve
 
 void DEM::StoneMaterialContact::update_tangential_resistance(const DEM::Vec3 &rot) {
     rot.length();
+}
+
+void DEM::StoneMaterialContact::assign_fracture_strengths() {
+    std::default_random_engine random_engine(std::chrono::system_clock::now().time_since_epoch().count());
+    auto mat1 = dynamic_cast<const StoneMaterial*>(p1_->get_material());
+    std::weibull_distribution distr1(mat1->weibull_exponent,
+                                             mat1->weibull_fracture_stress/pow(R0_, 3)*mat1->weibull_ref_volume);
+    fracture_strength_p1_ = distr1(random_engine)*R0_*R0_;
+    if(p2_ != nullptr) {
+        auto mat2 = dynamic_cast<const StoneMaterial *>(p2_->get_material());
+        std::weibull_distribution distr2(mat2->weibull_exponent,
+                                         mat2->weibull_fracture_stress/pow(R0_, 3)*mat2->weibull_ref_volume);
+        fracture_strength_p2_ = distr2(random_engine)*R0_*R0_;
+    }
+}
+
+void DEM::StoneMaterialContact::check_fracture(const Vec3& normal) {
+    if (FN_ > fracture_strength_p1_) {
+        Vec3 contact_position = p1_->get_position() - p1_->get_radius()*normal;
+        p1_->fracture_particle(contact_position, FN_, id2_, normal);
+    }
+    if (p2_ != nullptr && FN_ > fracture_strength_p2_) {
+        Vec3 contact_position = p2_->get_position() + p2_->get_radius()*normal;
+        p2_->fracture_particle(contact_position, FN_, p1_->get_id(), normal);
+    }
 }
 
 

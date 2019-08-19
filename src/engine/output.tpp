@@ -9,6 +9,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "../particles/fractureable_spherical_particle.h"
+
 namespace fs = std::experimental::filesystem;
 
 template<typename ForceModel, typename ParticleType>
@@ -17,8 +19,17 @@ DEM::Output<ForceModel, ParticleType>::Output(std::string directory, std::chrono
     particles_(engine.particles_), surfaces_(engine.surfaces_), contacts_(engine.contacts_),
     directory_(directory), current_time_(engine.get_time()), time_until_output_(interval), interval_(interval)
 {
-    fs::remove_all(directory_);
-    fs::create_directories(directory_);
+    if (!fs::exists(directory_)) {
+        fs::create_directories(directory_);
+    }
+    // Remove all output files in the directory
+    else {
+        for (auto& iter : fs::directory_iterator(directory_)) {
+            if (iter.path().extension() == ".dou") {
+                fs::remove(iter.path());
+            }
+        }
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -43,7 +54,7 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_particles() const
 {
     std::ostringstream filename_stream;
-    filename_stream << directory_ << "/" << "particles_" << current_time_.count() << ".dat";
+    filename_stream << directory_ << "/" << "particles_" << current_time_.count() << ".dou";
     std::ofstream output_file;
     output_file.open(filename_stream.str());
     for (const auto& p: particles_) {
@@ -63,7 +74,7 @@ void DEM::Output<ForceModel, ParticleType>::write_kinetic_energy() const
         rot_e += p->rotational_energy();
     }
 
-    std::string filename = directory_ + "/kinetic_energy.dat";
+    std::string filename = directory_ + "/kinetic_energy.dou";
     std::ofstream output_file;
     output_file.open(filename, std::fstream::app);
     output_file << transl_e << ", " << rot_e << ", " << transl_e + rot_e << ", " << current_time_.count() << "\n";
@@ -73,7 +84,7 @@ void DEM::Output<ForceModel, ParticleType>::write_kinetic_energy() const
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_surface_positions() const
 {
-    std::string filename = directory_ + "/surface_positions.dat";
+    std::string filename = directory_ + "/surface_positions.dou";
     std::ofstream output_file;
     output_file.open(filename, std::fstream::app);
     for (auto& surface : surfaces_) {
@@ -87,7 +98,7 @@ void DEM::Output<ForceModel, ParticleType>::write_surface_positions() const
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_surface_forces() const
 {
-    std::string filename = directory_ + "/surface_forces.dat";
+    std::string filename = directory_ + "/surface_forces.dou";
     std::ofstream output_file;
     output_file.open(filename, std::fstream::app);
     for (auto& surface : surfaces_) {
@@ -97,6 +108,25 @@ void DEM::Output<ForceModel, ParticleType>::write_surface_forces() const
     }
     output_file << current_time_.count() << "\n";
     output_file.close();
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::write_particle_cracks() const {
+    std::string filename = directory_ + "/particle_cracks.dou";
+    std::ofstream output_file;
+    output_file.open(filename, std::fstream::app);
+    for (const auto& particle: particles_) {
+        const auto p = dynamic_cast<const FractureableSphericalParticle<ForceModel>*>(particle);
+        const auto& cracks = p->get_particle_cracks();
+        for (const auto& crack : cracks) {
+            output_file << "ID=" << p->get_id() << ", ID_IMPACTER=" << crack.get_impacter_id() << ", "
+                        << crack.get_position().x() << ", " << crack.get_position().y()
+                        << ", " << crack.get_position().z() << ", " << crack.get_force() << ", "
+                        << crack.get_normal().x() << ", " << crack.get_normal().y() << ", "
+                        << crack.get_normal().z() << ", " << current_time_.count() << "\n";
+        }
+    }
+
 }
 
 

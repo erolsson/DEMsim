@@ -31,9 +31,8 @@ namespace DEM {
         using PointSurfacePointer = PointSurface<ForceModel, ParticleType>*;
         using CylinderPointer = Cylinder<ForceModel, ParticleType>*;
         using OutputPointerType = std::shared_ptr<Output<ForceModel, ParticleType>>;
-
+        using SurfaceType = Surface<ForceModel, ParticleType>;
         explicit Engine(std::chrono::duration<double> dt);
-
         void setup();
         template<typename Condition>
         void run(Condition& condition);
@@ -61,31 +60,39 @@ namespace DEM {
         void remove_viscosity_parameters(std::pair<double, std::size_t> parameter_pair);
 
         // Getters
-        std::chrono::duration<double> get_time() const { return time_; }
-        double get_kinetic_energy() const;
-        std::pair<size_t, double> max_particle_velocity() const;
-        std::array<double, 6> get_bounding_box() const;
+        [[nodiscard]] std::chrono::duration<double> get_time() const { return time_; }
+        [[nodiscard]] double get_kinetic_energy() const;
+        [[nodiscard]] std::pair<size_t, double> max_particle_velocity() const;
+        [[nodiscard]] std::pair<size_t, double> max_surface_velocity() const;
+        [[nodiscard]] std::array<double, 6> get_bounding_box() const;
 
         // Setters
         void set_gravity(const Vec3& g) { gravity_ = g; }
-
         void set_mass_scale_factor(double factor) { mass_scale_factor_ = factor; }
+        void set_rotation(bool particle_rotation) {rotation_ = particle_rotation; }
+
+        class RunFunctorBase {
+        public:
+            virtual ~RunFunctorBase() = default;
+            virtual bool operator()() = 0;
+        };
 
         // Functors for running a simulation until a condition is fulfilled
-        class RunForTime {
+        class RunForTime : public RunFunctorBase{
         public:
             RunForTime(const Engine& e, std::chrono::duration<double> time) :
-                engine_{e}, start_time_{engine_.get_time()}, time_to_run_{time} {}
-
+                engine_{e}, start_time_{engine_.get_time()}, time_to_run_{time}
+                {}
+            ~RunForTime() = default;
             void reset(std::chrono::duration<double> new_run_time) {
                 start_time_ = engine_.get_time();
                 time_to_run_ = new_run_time;
             }
 
-            bool operator()() const
+            bool operator()() override
             {
                 using namespace std::chrono_literals;
-                return std::chrono::abs(time_to_run_  - (engine_.get_time() - start_time_ )) > 0.1ns;
+                return time_to_run_  - (engine_.get_time() - start_time_ ) > 0.1ns;
             }
 
         private:
@@ -94,14 +101,14 @@ namespace DEM {
             std::chrono::duration<double> time_to_run_;
         };
 
-        class KineticEnergyLess {
+        class KineticEnergyLess : public RunFunctorBase{
         public:
             KineticEnergyLess(const Engine& e, double kinetic_energy, std::chrono::duration<double> update_time) :
                     engine_{e}, kinetic_energy_{kinetic_energy}, start_time_(engine_.get_time()),
                     update_time_{update_time} {}
-
+            ~KineticEnergyLess() = default;
             void set_new_value(double new_kinetic_energy) { kinetic_energy_ = new_kinetic_energy; }
-            bool operator()() {
+            bool operator()() override {
                 if (engine_.get_time() - start_time_ < update_time_) {
                     return true;
                 }
@@ -117,14 +124,14 @@ namespace DEM {
             std::chrono::duration<double> update_time_;
         };
 
-        class ParticleVelocityLess {
+        class ParticleVelocityLess : public RunFunctorBase{
         public:
             ParticleVelocityLess(const Engine& e, double max_velocity, std::chrono::duration<double> update_time) :
                     engine_{e}, max_velocity_{max_velocity}, start_time_(engine_.get_time()),
                     update_time_{update_time} {}
-
+            ~ParticleVelocityLess() = default;
             void set_new_value(double new_max_velocity) { max_velocity_ = new_max_velocity; }
-            bool operator()() {
+            bool operator()() override {
                 if (engine_.get_time() - start_time_ < update_time_) {
                     return true;
                 }
@@ -140,9 +147,109 @@ namespace DEM {
             std::chrono::duration<double> update_time_;
         };
 
+        class ObjectVelocityLess : public RunFunctorBase {
+        public:
+            ObjectVelocityLess(const Engine& e, double max_velocity, std::chrono::duration<double> update_time) :
+                    engine_{e}, max_velocity_{max_velocity}, start_time_(engine_.get_time()),
+                    update_time_{update_time} {}
+            ~ObjectVelocityLess() = default;
+            void set_new_value(double new_max_velocity) { max_velocity_ = new_max_velocity; }
+            bool operator()() override {
+                if (engine_.get_time() - start_time_ < update_time_) {
+                    return true;
+                }
+                start_time_ += update_time_;
+                double max_velocity = std::max(engine_.max_particle_velocity().second,
+                        engine_.max_surface_velocity().second);
+                return max_velocity > max_velocity_;
+            }
+
+        private:
+            const Engine& engine_;
+            double max_velocity_;
+
+            std::chrono::duration<double> start_time_ ;
+            std::chrono::duration<double> update_time_;
+        };
+
+        class SurfaceNormalForceGreater : public RunFunctorBase {
+        public:
+            SurfaceNormalForceGreater(Engine::SurfaceType * surface, double force):
+            surface_(surface), force_(force){}
+            bool operator()() override  {
+                return abs(surface_->get_normal_force()) < force_;
+            }
+
+        private:
+            Engine::SurfaceType* surface_;
+            double force_;
+        };
+
+        class SurfaceNormalForceLess : public RunFunctorBase {
+        public:
+            SurfaceNormalForceLess(Engine::SurfaceType * surface, double force):
+                    surface_(surface), force_(force){}
+            bool operator()() override  {
+                return abs(surface_->get_normal_force()) > force_;
+            }
+
+        private:
+            Engine::SurfaceType* surface_;
+            double force_;
+        };
+
+        class CombinedConditions {
+        public:
+            CombinedConditions(std::initializer_list<RunFunctorBase*> conditions) :
+            conditions_(conditions){}
+
+            bool operator()()  {
+                // std::cout << "Force condition: " << conditions_[1]->operator()() << " "
+                //           << "Velocity condition: " << conditions_[0]->operator()() << " "
+                //            << "Time condition: " << conditions_[2]->operator()() << "\n";
+                bool cond_value = false;
+                for(const auto& cond: conditions_){
+                    cond_value = cond_value || cond->operator()();
+                }
+                return cond_value;
+            }
+        private:
+            std::vector<RunFunctorBase*> conditions_;
+        };
+
+        class SurfaceNormalForceWithinInterval : public RunFunctorBase {
+        public:
+            SurfaceNormalForceWithinInterval(const Engine& engine, const SurfaceType* surface, double fmin, double fmax,
+                    std::chrono::duration<double> time_interval) :
+                    engine_(engine), surface_(surface), fmin_(fmin), fmax_(fmax), time_interval_(time_interval) ,
+                    start_time_(engine.get_time()){}
+            ~SurfaceNormalForceWithinInterval() = default;
+            bool operator()() override {
+                using namespace std::chrono_literals;
+                double fn = abs(surface_->get_normal_force());
+                if (fn > fmin_ && fn < fmax_) {
+                    time_count_ = engine_.get_time() - start_time_;
+                }
+                else {
+                    time_count_ = 0s;
+                    start_time_ = engine_.get_time();
+                }
+                return time_count_ < time_interval_;
+            }
+
+        private:
+            const Engine& engine_;
+            const SurfaceType * surface_;
+            double fmin_;
+            double fmax_;
+            std::chrono::duration<double> time_interval_;
+            std::chrono::duration<double> start_time_;
+            std::chrono::duration<double> time_count_ { 0. };
+        };
+
     private:
         using ContactType = Contact<ForceModel, ParticleType>;
-        using SurfaceType = Surface<ForceModel, ParticleType>;
+
 
         std::size_t number_of_objects_{ 0 };
         std::chrono::duration<double> time_ { 0. };
@@ -160,7 +267,7 @@ namespace DEM {
         std::vector<std::pair<double, std::size_t>> viscocity_parameters_;
         std::chrono::duration<double> increment_;
         double mass_scale_factor_ { 1. };
-
+        bool rotation_;
 
         void do_step();
 

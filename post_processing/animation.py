@@ -36,8 +36,9 @@ class Animation:
             pass
 
     def _animation(self):
-        particle_files = glob.glob(self.directory + '/particles_*.dat')
+        particle_files = glob.glob(self.directory + '/particles_*.dou')
         particle_files = [os.path.basename(particle_file) for particle_file in particle_files]
+        print particle_files
         frame_times = []
         for p_file in particle_files:
             frame_times.append(re.findall(r"[-+]?\d*\.\d+|\d+", p_file)[0])
@@ -48,17 +49,16 @@ class Animation:
             frame_times = frame_times[frame_times_np < self.end_time]
 
         spheres_plotter = SpheresPlotter()
-        surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dat', self.surfaces_colors,
+        surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dou', self.surfaces_colors,
                                            self.surfaces_opacities, self.plot_order, self.bounding_boxes,
                                            self.visible_functions)
 
         n = len(frame_times)
         if self.save_frames and not os.path.isdir(self.save_directory):
             os.makedirs(self.save_directory)
-
         for i, t in enumerate(frame_times):
             print t
-            particle_data = np.genfromtxt(self.directory + 'particles_' + t + '.dat', delimiter=',')
+            particle_data = np.genfromtxt(self.directory + '/particles_' + t + '.dou', delimiter=',')
             spheres_plotter.plot(particle_data)
             surfaces_plotter.plot(float(t))
             if self.save_frames:

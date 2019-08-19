@@ -3,7 +3,7 @@ from mayavi import mlab
 from animation import Animation
 
 if __name__ == '__main__':
-    simulation_directory = '../results/proctor_test/test/'
+    simulation_directory = '../results/proctor_test/test/animation/'
 
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)

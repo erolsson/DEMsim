@@ -14,6 +14,7 @@ namespace DEM {
         std::chrono::duration<double> increment { 0. };
         Vec3 gravity { Vec3(0,0,0) };
         double mass_scale_factor { 1. };
+        bool rotation {true};
     };
 }
 

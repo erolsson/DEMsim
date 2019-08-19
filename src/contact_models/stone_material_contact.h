@@ -5,6 +5,7 @@
 #ifndef DEMSIM_STONE_MATERIAL_CONTACT_H
 #define DEMSIM_STONE_MATERIAL_CONTACT_H
 
+#include <random>
 #include "../particles/fractureable_spherical_particle.h"
 #include "../utilities/vec3.h"
 
@@ -23,12 +24,18 @@ namespace DEM {
         [[nodiscard]] const Vec3& get_rolling_resistance_torque() const { return Tr_; };
         [[nodiscard]] double get_contact_area() const { return sqrt(a_); }
         [[nodiscard]] bool active() const { return FN_!=0; }
-        void set_increment(std::chrono::duration<double>) {}
+        static void set_increment(std::chrono::duration<double>) {}
 
     private:
         double update_normal_force(double dh);
         void update_tangential_force(const Vec3& dt, const Vec3& normal, double dFN);
         void update_tangential_resistance(const Vec3& rot);
+
+        void assign_fracture_strengths();
+        void check_fracture(const Vec3& normal);
+
+        ParticleType* p1_;
+        ParticleType* p2_;
 
         double FN_ { 0. };
         double a_ { 0, };
@@ -70,6 +77,10 @@ namespace DEM {
         double mu_r_;
         double kr_;
         Vec3 Tr_ {Vec3{}};
+
+        double fracture_strength_p1_;
+        double fracture_strength_p2_;
+        std::size_t id2_;
     };
 }
 

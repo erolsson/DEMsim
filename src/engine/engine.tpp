@@ -196,6 +196,14 @@ std::pair<size_t, double> DEM::Engine<ForceModel, ParticleType>::max_particle_ve
 }
 
 template<typename ForceModel, typename ParticleType>
+std::pair<size_t, double> DEM::Engine<ForceModel, ParticleType>::max_surface_velocity() const {
+    auto surface_velocity = [](const SurfaceType* s1, const SurfaceType* s2) -> bool
+    { return s1->get_velocity().length() < s2->get_velocity().length(); };
+    auto s = *std::max_element(surfaces_.begin(), surfaces_.end(), surface_velocity);
+    return std::make_pair(s->get_id(), s->get_velocity().length());
+}
+
+template<typename ForceModel, typename ParticleType>
 std::array<double, 6> DEM::Engine<ForceModel, ParticleType>::get_bounding_box() const
 {
     auto x_min = [](const ParticlePointer p1, const ParticlePointer p2) -> bool {
@@ -302,7 +310,7 @@ void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::sum_contact_forces()
 {
-    #pragma omp parallel for
+    #pragma omp parallel for default(none)
     for (unsigned i =0; i < particles_.size(); ++i) {
         particles_[i]->sum_contact_forces();
     }
@@ -325,7 +333,6 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
     for (unsigned i=0; i < particles_.size(); ++i) {
         ParticleType* p = particles_[i];
         F = p->get_force();
-        M = p->get_torque();
         v = p->get_velocity();
 
         if (!viscocity_parameters_.empty() && !v.is_zero()) {
@@ -335,24 +342,24 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
         }
 
         double m = p->get_mass()*mass_scale_factor_;
-        double I = p->get_inertia()*mass_scale_factor_;
 
         new_a = F/m + gravity_;
-
-
-        new_ang_a = M/I;
-
         new_v = v+ new_a*dt;
-        new_ang_v = p->get_angular_velocity() + new_ang_a*dt;
-
         new_disp = new_v*dt;
-        new_rot = new_ang_v*dt;
-
         p->set_velocity(new_v);
-        p->set_angular_velocity(new_ang_v);
-
         p->move(new_disp);
-        p->rotate(new_rot);
+
+        if (rotation_) {
+            M = p->get_torque();
+            double I = p->get_inertia()*mass_scale_factor_;
+            new_ang_a = M/I;
+            new_ang_v = p->get_angular_velocity() + new_ang_a*dt;
+            new_rot = new_ang_v*dt;
+            p->set_angular_velocity(new_ang_v);
+            p->rotate(new_rot);
+        }
+
+
     }
 }
 
@@ -399,6 +406,8 @@ void DEM::Engine<ForceModel, ParticleType>::run_output()
         o->run_output(increment_);
     }
 }
+
+
 
 
 
