@@ -107,9 +107,6 @@ void DEM::proctor_test(const std::string& settings_file_name) {
             particles.push_back(p);
         }
 
-        // ParticleType* p = simulator.create_particle(0.00625, Vec3(0, 0, 0.1),
-        //                                            Vec3(0, 0, 0), mat);
-        // particles.push_back(p);
         std::stringstream directory_name;
         directory_name << output_directory << "/layer_" << layer << "/filling";
         auto output_filling = simulator.create_output(directory_name.str(), 0.001s);
@@ -160,16 +157,27 @@ void DEM::proctor_test(const std::string& settings_file_name) {
             output_stroke->print_surface_forces = true;
             output_stroke->print_particle_cracks = true;
 
-
-
             EngineType::RunForTime run_for_time_falling(simulator, falling_time);
+            EngineType::SurfaceVelocityLessThan max_velocity_surface(0.01, hammer);
+
+            EngineType::CombinedConditions run_condition({&max_velocity_surface,
+                                                          &run_for_time_falling});
+            simulator.run(run_condition);
+
+            hammer->move(Vec3(0, 0, -1.01*hammer_height) - hammer->get_position(), Vec3(0, 0, 0));
+            simulator.remove_force_control_on_surface(hammer, 'z');
+
+            simulator.run(max_velocity);
+            /*
             EngineType::ObjectVelocityLess max_velocity_object(simulator, 0.1, 0.01s);
             EngineType::SurfaceNormalForceWithinInterval surface_force(simulator, hammer, 10., 100., 0.1s);
             EngineType::CombinedConditions run_condition({&max_velocity_object,
                                                           &surface_force,
                                                           &run_for_time_falling});
             simulator.run(run_condition);
+             */
             simulator.remove_output(output_stroke);
         }
+
     }
 }
