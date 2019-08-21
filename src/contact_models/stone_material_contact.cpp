@@ -102,7 +102,7 @@ double DEM::StoneMaterialContact::update_normal_force(double dh) {
     double F = 0;
     if (h_ > 0) {
         a_ = sqrt(h_*R0_);
-        if (h_ > hmax_) {
+        if (h_ >= hmax_) {
             hmax_ = h_;
             if (h_ < hs_) {
                 F = Fs_/hs_*h_;

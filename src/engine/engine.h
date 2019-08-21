@@ -226,7 +226,8 @@ namespace DEM {
             ~SurfaceNormalForceWithinInterval() = default;
             bool operator()() override {
                 using namespace std::chrono_literals;
-                double fn = abs(surface_->get_normal_force());
+                // ToDo Fix that it is just force in z that is studied!!!
+                double fn = abs(surface_->get_total_force().z());
                 if (fn > fmin_ && fn < fmax_) {
                     time_count_ = engine_.get_time() - start_time_;
                 }
@@ -245,6 +246,19 @@ namespace DEM {
             std::chrono::duration<double> time_interval_;
             std::chrono::duration<double> start_time_;
             std::chrono::duration<double> time_count_ { 0. };
+        };
+
+        class SurfaceVelocityLessThan : public RunFunctorBase {
+        public:
+            SurfaceVelocityLessThan(double max_velocity, SurfaceType* surface) :
+            velocity_(max_velocity), surface_(surface) {}
+            ~SurfaceVelocityLessThan() = default;
+            bool operator()() override {
+                return surface_->get_velocity().length() > velocity_;
+            }
+        private:
+            double velocity_;
+            SurfaceType* surface_;
         };
 
     private:
