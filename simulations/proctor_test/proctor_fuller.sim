@@ -1,9 +1,9 @@
 N=1000
-gas_density=0.2
-filling_density=0.6
+gas_density=0.35
+filling_density=0.7
 aspect_ratio_after_filling=1.
-output_dir=../results/proctor_test/test/
-radius_file=../simulations/cyclic_triaxial/size_distribution.dat
+output_dir=../results/proctor_test/fuller/
+radius_file=../simulations/proctor_test/fuller.dat
 E=65E9
 nu=0.15
 mu=0.7

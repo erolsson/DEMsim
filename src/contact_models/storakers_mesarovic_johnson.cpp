@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 
 #include "../materials/elastic_ideal_plastic_material.h"
 #include "../engine/engine.h"
@@ -98,4 +99,10 @@ void DEM::StorakersMesarovicJohnson::update_tangential_force(const DEM::Vec3& dt
         FT_.set_zero();
         uT_.set_zero();
     }
+}
+
+std::string DEM::StorakersMesarovicJohnson::get_output_string() const {
+    std::stringstream ss;
+    ss << h_max_ << ", " << F_;
+    return ss.str();
 }

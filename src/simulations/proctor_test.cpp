@@ -41,13 +41,6 @@ void DEM::proctor_test(const std::string& settings_file_name) {
 
     auto particle_radii = read_vector_from_file<double>(particle_file);
 
-    double particle_volume = 0.;
-    for(auto& r: particle_radii) {
-        particle_volume += 4.*pi*r*r*r/3.;
-    }
-
-    auto mean_particle_volume = particle_volume/particle_radii.size();
-
     double main_cylinder_height = 0.11643;
     double main_cylinder_radius = 0.0254*2;
 
@@ -55,8 +48,7 @@ void DEM::proctor_test(const std::string& settings_file_name) {
             main_cylinder_height, true, true, false);
 
     auto cylinder_volume = main_cylinder_height*main_cylinder_radius*main_cylinder_radius*3.1415;
-    int particles_per_layer = int(cylinder_volume/5*filling_density/mean_particle_volume);
-    std::cout << "Particles per layer: " << particles_per_layer << "\n";
+    auto layer_volume = cylinder_volume/5*filling_density;
     double hammer_radius = 0.025;
     double hammer_height = 0.08;
     Vec3 hammer_resting_position = Vec3(0., 0., -1.01*hammer_height);
@@ -83,22 +75,30 @@ void DEM::proctor_test(const std::string& settings_file_name) {
     std::vector<ParticleType*> particles;
     simulator.set_rotation(false);
 
-
+    auto start_particle_radii_iter = particle_radii.begin();
+    auto end_particle_radii_iter = particle_radii.begin();
+    double max_particle_height = 0;
     for (unsigned layer = 0; layer != 5; ++layer) {
         std::vector<double> layer_particles;
-        layer_particles.assign(particle_radii.begin() + layer*particles_per_layer,
-                               particle_radii.begin() + (layer + 1)*particles_per_layer);
-        std::sort(layer_particles.begin(), layer_particles.end());
-        double layer_volume = 0.;
-        for (auto r: layer_particles) {
-            layer_volume += 4*3.1415*r*r*r/3;
+        double particle_volume = 0;
+        while (particle_volume < layer_volume) {
+            double r = *end_particle_radii_iter;
+            particle_volume += 4*3.1415*r*r*r/3;
+            ++end_particle_radii_iter;
         }
+
+        layer_particles.assign(start_particle_radii_iter, end_particle_radii_iter);
+
+        std::sort(layer_particles.begin(), layer_particles.end(), std::greater<>());
+
+        std::cout << "Particles in this layer: " << end_particle_radii_iter -  start_particle_radii_iter << "\n";
+        start_particle_radii_iter = end_particle_radii_iter;
         std::cout << "Stone volume of layer: " << layer_volume << "\n";
         auto particle_bead_height = layer_volume/gas_density/
                                     main_cylinder_radius/main_cylinder_radius/3.1415;
         std::cout << "starting height of layer: " << particle_bead_height << "\n";
-        auto particle_positions = random_fill_cylinder(main_cylinder_height,
-                                                       particle_bead_height + main_cylinder_height,
+        auto particle_positions = random_fill_cylinder(max_particle_height,
+                                                       particle_bead_height + max_particle_height,
                                                        main_cylinder_radius, layer_particles);
 
         for (std::size_t i = 0; i != particle_positions.size(); ++i) {
@@ -113,7 +113,7 @@ void DEM::proctor_test(const std::string& settings_file_name) {
         output_filling->print_kinetic_energy = true;
         output_filling->print_surface_forces = true;
         output_filling->print_particle_cracks = true;
-
+        std::cout << "starting simulation" << "\n";
         simulator.setup();
         EngineType::RunForTime run_for_time01(simulator, 0.1s);
         simulator.run(run_for_time01);
@@ -153,9 +153,12 @@ void DEM::proctor_test(const std::string& settings_file_name) {
             directory_name.str(std::string());
             directory_name << output_directory << "/layer_" << layer << "/stroke_" << stroke;
             auto output_stroke = simulator.create_output(directory_name.str(), 0.001s);
+            auto output_contact = simulator.create_output(directory_name.str() + "/contact_data", 0.01s);
             output_stroke->print_kinetic_energy = true;
             output_stroke->print_surface_forces = true;
             output_stroke->print_particle_cracks = true;
+
+            output_contact->print_contacts = true;
 
             EngineType::RunForTime run_for_time_falling(simulator, falling_time);
             EngineType::SurfaceVelocityLessThan max_velocity_surface(0.01, hammer);
@@ -168,15 +171,9 @@ void DEM::proctor_test(const std::string& settings_file_name) {
             simulator.remove_force_control_on_surface(hammer, 'z');
 
             simulator.run(max_velocity);
-            /*
-            EngineType::ObjectVelocityLess max_velocity_object(simulator, 0.1, 0.01s);
-            EngineType::SurfaceNormalForceWithinInterval surface_force(simulator, hammer, 10., 100., 0.1s);
-            EngineType::CombinedConditions run_condition({&max_velocity_object,
-                                                          &surface_force,
-                                                          &run_for_time_falling});
-            simulator.run(run_condition);
-             */
             simulator.remove_output(output_stroke);
+            
+            max_particle_height = simulator.get_bounding_box()[5];
         }
 
     }

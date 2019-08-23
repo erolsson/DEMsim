@@ -23,15 +23,16 @@ namespace DEM {
 
         void update(double dh, const Vec3& dt, const Vec3&, const Vec3& normal);
 
-        double get_overlap() const { return h_; }
-        double get_normal_force() const { return F_; }
-        const Vec3& get_tangential_force() const { return FT_; }
-        const Vec3 get_rolling_resistance_torque() const { return Vec3{};};
-        double get_contact_area() const {return sqrt(a_); }
-        bool active() const {return F_ != 0; }
+        [[nodiscard]] double get_overlap() const { return h_; }
+        [[nodiscard]] double get_normal_force() const { return F_; }
+        [[nodiscard]] const Vec3& get_tangential_force() const { return FT_; }
+        [[nodiscard]] Vec3 get_rolling_resistance_torque() const { return Vec3{};};
+        [[nodiscard]] double get_contact_area() const {return sqrt(a_); }
+        [[nodiscard]] bool active() const {return F_ != 0; }
 
-        void set_increment(std::chrono::duration<double>) {}
+        static void set_increment(std::chrono::duration<double>) {}
 
+        [[nodiscard]] std::string get_output_string() const;
     private:
         double h_{ 0. };
         double h_max_ { 0. };

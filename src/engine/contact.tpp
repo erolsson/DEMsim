@@ -56,15 +56,6 @@ void DEM::Contact<ForceModel, ParticleType>::update()
         w = calculate_rotation_this_inc();
     }
     force_model_.update(h, dt, w, normal_);
-    /*
-    if(surface_->get_id() == 2) {
-        std::string filename = "contact_forces.dat";
-        std::ofstream output_file;
-        output_file.open(filename, std::fstream::app);
-        output_file << h << ", " << get_normal_force().z() << "\n";
-        output_file.close();
-    }
-     */
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -119,5 +110,19 @@ DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_rotation_vector_part
 template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_rotation_vector_surface() const {
     return p1_->get_rotation_this_increment();
+}
+
+template<typename ForceModel, typename ParticleType>
+std::string DEM::Contact<ForceModel, ParticleType>::get_output_string() const {
+    std::stringstream ss;
+    ss << p1_->get_id() << ", ";
+    if (p2_ != nullptr) {
+        ss << p2_->get_id();
+    }
+    else {
+        ss << surface_->get_id();
+    }
+    ss << ", " << get_overlap() << ", " << force_model_.get_output_string();
+    return ss.str();
 }
 

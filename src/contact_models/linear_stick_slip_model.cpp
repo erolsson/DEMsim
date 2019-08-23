@@ -52,3 +52,9 @@ void DEM::LinearStickSlipModel::update(double h, const Vec3& dt, const Vec3&, co
         uT_.set_zero();
     }
 }
+
+std::string DEM::LinearStickSlipModel::get_output_string() const {
+    std::stringstream ss;
+    ss << F_;
+    return ss.str();
+}

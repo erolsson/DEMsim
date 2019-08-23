@@ -117,6 +117,9 @@ double DEM::StoneMaterialContact::update_normal_force(double dh) {
             }
             Fmax_ = F;
             hp_ = (h_ - pow(F/ke_, 1./1.5)); // Plastic indentation depth
+            if (hp_ < 0) {
+                hp_ = hmax_/2;
+            }
             ku_ = F/pow(h_-hp_, unloading_exp_);
         }
         else if (dh > 0) {
@@ -255,6 +258,12 @@ void DEM::StoneMaterialContact::check_fracture(const Vec3& normal) {
         Vec3 contact_position = p2_->get_position() + p2_->get_radius()*normal;
         p2_->fracture_particle(contact_position, FN_, p1_->get_id(), normal);
     }
+}
+
+std::string DEM::StoneMaterialContact::get_output_string() const {
+    std::stringstream ss;
+    ss << hmax_ << ", " << hs_ << ", " << hlinear_ << ", " << hp_ << ", " << FN_;
+    return ss.str();
 }
 
 

@@ -24,7 +24,9 @@ namespace DEM {
         [[nodiscard]] const Vec3& get_rolling_resistance_torque() const { return Tr_; };
         [[nodiscard]] double get_contact_area() const { return sqrt(a_); }
         [[nodiscard]] bool active() const { return FN_!=0; }
+
         static void set_increment(std::chrono::duration<double>) {}
+        [[nodiscard]] std::string get_output_string() const;
 
     private:
         double update_normal_force(double dh);

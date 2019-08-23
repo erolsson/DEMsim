@@ -126,7 +126,20 @@ void DEM::Output<ForceModel, ParticleType>::write_particle_cracks() const {
                         << crack.get_normal().z() << ", " << current_time_.count() << "\n";
         }
     }
+}
 
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::write_contacts() const {
+    std::ostringstream filename_stream;
+    filename_stream << directory_ << "/" << "contacts_" << current_time_.count() << ".dou";
+    std::ofstream output_file;
+    output_file.open(filename_stream.str());
+    for (const auto& c: contacts_.get_objects()) {
+        if(c->get_overlap() > 0) {
+            output_file << c->get_output_string() << "\n";
+        }
+    }
+    output_file.close();
 }
 
 

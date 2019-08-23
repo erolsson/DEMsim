@@ -34,6 +34,7 @@ namespace DEM {
         bool print_surface_positions = false;
         bool print_surface_forces = false;
         bool print_particle_cracks = false;
+        bool print_contacts = false;
 
     private:
         using OutputFunPtr = void (Output<ForceModel, ParticleType>::*)() const;
@@ -48,7 +49,8 @@ namespace DEM {
                                    {Output::print_kinetic_energy,    &Output::write_kinetic_energy},
                                    {Output::print_surface_positions, &Output::write_surface_positions},
                                    {Output::print_surface_forces,    &Output::write_surface_forces},
-                                   {Output::print_particle_cracks,   &Output::write_particle_cracks}};
+                                   {Output::print_particle_cracks,   &Output::write_particle_cracks},
+                                   {Output::print_contacts,          &Output::write_contacts}};
 
         std::chrono::duration<double> current_time_;
         std::chrono::duration<double> time_until_output_;
@@ -59,6 +61,7 @@ namespace DEM {
         void write_surface_positions() const;
         void write_surface_forces() const;
         void write_particle_cracks() const;
+        void write_contacts() const;
     };
 }
 
