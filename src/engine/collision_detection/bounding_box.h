@@ -42,12 +42,9 @@ namespace DEM {
     private:
         ParticleType* particle_;
         SurfaceType* surface_;
-        double stretch_{ 0.0001 };
+        double stretch_{ 1e-3 };
 
-        // Function pointer to the update function, set in the construction of the bounding box
-        // In doing so, if statements is avoided at each update
-        void (BoundingBox<ForceModel, ParticleType>::*update_function)();
-        void particle_update();
+q        void particle_update();
         void surface_update();
     };
 }

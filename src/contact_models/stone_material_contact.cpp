@@ -139,6 +139,10 @@ double DEM::StoneMaterialContact::update_normal_force(double dh) {
         else {
             kl_ = ke_;
             hl_ = hp_;
+            if (hmax_ < hs_) {
+                hmax_ = 0;
+                hp_ = 0;
+            }
         }
     }
     else {
