@@ -69,6 +69,7 @@ void DEM::proctor_test(const std::string& settings_file_name) {
     auto particle_output = simulator.create_output(output_directory + "/animation", 0.01s);
     particle_output->print_particles = true;
     particle_output->print_surface_positions = true;
+    particle_output->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
     simulator.set_mass_scale_factor(1.);
@@ -172,7 +173,7 @@ void DEM::proctor_test(const std::string& settings_file_name) {
 
             simulator.run(max_velocity);
             simulator.remove_output(output_stroke);
-            
+            simulator.remove_output(output_contact);
             max_particle_height = simulator.get_bounding_box()[5];
         }
 
