@@ -53,10 +53,10 @@ void DEM::Engine<ForceModel, ParticleType>::run(Condition& condition)
         time_to_log -= increment_;
         if (time_to_log <= increment_) {
             time_to_log = logging_interval;
-            std::cout << "Simulation time is " << get_time().count() << "\n";
+            std::cout << "Simulation time is " << get_time().count() << std::endl;
             auto velocity_pair = max_particle_velocity();
             std::cout << "Fastest particle is " <<  velocity_pair.first << " with a speed of "
-                      <<  velocity_pair.second <<  "\n";
+                      <<  velocity_pair.second << std::endl;
         }
     }
     std::cout << "Simulation finalized at " << get_time().count() << std::endl;

@@ -10,7 +10,7 @@ if __name__ == '__main__':
     animation.save_directory = '../results/proctor_test/test/fig'
     animation.save_frames = True
     animation.delay = 0.01
-    animation.start_time = 7.58
+    animation.start_time = 0
     """
     animation.surfaces_colors[0] = (0., 1., 0.)
     animation.surfaces_colors[5001] = (1., 0., 0.)
