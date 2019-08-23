@@ -7,7 +7,7 @@
 #include <random>
 
 std::vector<DEM::Vec3> DEM::random_fill_cylinder(double z0, double z1, double cylinder_radius,
-        std::vector<double> radii)
+        const std::vector<double>& radii)
 {
     std::vector<Vec3> particle_positions;
     std::random_device random_device;

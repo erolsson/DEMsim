@@ -140,12 +140,7 @@ double DEM::StoneMaterialContact::update_normal_force(double dh) {
         }
     }
     else {
-        hmax_ = 0;
-        hp_ = 0;
-        Fmax_ = 0;
         a_ = 0;
-        hl_ = hp_;
-        kl_ = ke_;
     }
     return F;
 }

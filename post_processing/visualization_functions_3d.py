@@ -42,7 +42,6 @@ class SpheresPlotter:
                                     resolution=32,
                                     scale_factor=1.,
                                     scale_mode='scalar').mlab_source
-            print "foo"
         else:
             self.ms.set(x=x, y=y, z=z)
 

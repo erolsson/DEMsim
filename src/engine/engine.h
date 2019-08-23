@@ -278,10 +278,10 @@ namespace DEM {
 
         // Settings type of private data
         Vec3 gravity_ {Vec3{0,0,0}};
-        std::vector<std::pair<double, std::size_t>> viscocity_parameters_;
+        std::vector<std::pair<double, std::size_t>> viscocity_parameters_ {};
         std::chrono::duration<double> increment_;
         double mass_scale_factor_ { 1. };
-        bool rotation_;
+        bool rotation_ = true;
 
         void do_step();
 

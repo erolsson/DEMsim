@@ -16,7 +16,7 @@ class Animation:
     def __init__(self, directory):
         self.directory = directory
         self.delay = 0.0
-        self.start_time = 0,
+        self.start_time = 0
         self.end_time = None
         self.save_frames = False
         self.save_directory = ''
@@ -61,6 +61,7 @@ class Animation:
             particle_data = np.genfromtxt(self.directory + '/particles_' + t + '.dou', delimiter=',')
             spheres_plotter.plot(particle_data)
             surfaces_plotter.plot(float(t))
+
             if self.save_frames:
                 if self.figure_directory is None:
                     self.figure_directory = self.directory
