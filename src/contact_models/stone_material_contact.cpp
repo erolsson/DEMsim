@@ -122,29 +122,41 @@ double DEM::StoneMaterialContact::update_normal_force(double dh) {
             }
             ku_ = F/pow(h_-hp_, unloading_exp_);
         }
-        else if (h_ > hp_) {
-            if (dh > 0) {
-                if (h_ > hl_) {
-                    F = kl_*pow(h_ - hl_, 1.5);
-                    ku_ = F/pow(h_ - hp_, unloading_exp_);
-                }
+
+        else if (dh > 0) {
+            if (hmax_ < hs_) {
+                F = kl_*(h_ - hl_);
+                hp_ = (h_ - hl_)/2;
+            }
+            else if (h_ > hl_) {
+                F = kl_*pow(h_ - hl_, 1.5);
+            }
+            ku_ = F/pow(h_ - hp_, unloading_exp_);
+        }
+        else {
+            if (h_ > hp_) {
+                F = ku_*pow(h_ - hp_, unloading_exp_);
+            }
+            if (hmax_ < hs_) {
+                kl_ = (Fmax_ - F)/(hmax_ - h_);
+                hl_ = hmax_ - Fmax_/kl_;
             }
             else {
-                F = ku_*pow(h_ - hp_, unloading_exp_);
                 double A = pow(F/Fmax_, 1./1.5);
+                if (A > 1.) {
+                    A = 1 - 1e-9;
+                }
                 hl_ = (h_ - A*hmax_)/(1 - A);
                 kl_ = Fmax_/pow(hmax_ - hl_, 1.5);
             }
         }
-        else {
-            kl_ = ke_;
-            hl_ = hp_;
-            hmax_ = 0;
-            hp_ = 0;
-        }
     }
     else {
         a_ = 0;
+        kl_ = ke_;
+        hl_ = hp_;
+        hmax_ = 0;
+        hp_ = 0;
     }
     return F;
 }
