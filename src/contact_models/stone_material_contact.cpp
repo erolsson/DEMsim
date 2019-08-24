@@ -131,7 +131,9 @@ double DEM::StoneMaterialContact::update_normal_force(double dh) {
             else if (h_ > hl_) {
                 F = kl_*pow(h_ - hl_, 1.5);
             }
-            ku_ = F/pow(h_ - hp_, unloading_exp_);
+            if (h_ > hp_) {
+                ku_ = F/pow(h_ - hp_, unloading_exp_);
+            }
         }
         else {
             if (h_ > hp_) {
