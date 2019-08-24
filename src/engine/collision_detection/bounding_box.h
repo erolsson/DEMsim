@@ -42,7 +42,7 @@ namespace DEM {
     private:
         ParticleType* particle_;
         SurfaceType* surface_;
-        double stretch_{ 1e-3 };
+        double stretch_{ 1e-4 };
 
         void (BoundingBox<ForceModel, ParticleType>::*update_function)();
         void particle_update();
