@@ -23,6 +23,7 @@ if __name__ == '__main__':
         stroke_directories = glob.glob(output_directory + 'layer_' + str(layer) + '/stroke_*')
         strokes = [int(re.findall(r'\d+', dirname)[-1]) for dirname in stroke_directories]
         for stroke in sorted(strokes):
+            layer_count += 1
             dir_name = output_directory + 'layer_' + str(layer) + '/stroke_' + str(stroke)
             fracture_count = get_fractured_particles_at_stroke(output_directory, layer, stroke)
             fracture_data.append([layer_count, layer+1, stroke+1, fracture_count])
