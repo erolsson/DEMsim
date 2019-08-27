@@ -1,13 +1,13 @@
 from mayavi import mlab
 
-from animation import Animation
+from post_processing.animation import Animation
 
 if __name__ == '__main__':
-    simulation_directory = '../results/proctor_test/fuller/animation/'
+    simulation_directory = '../results/proctor_test/fuller1/animation/'
 
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)
-    animation.save_directory = '../results/proctor_test/test/fig'
+    animation.save_directory = '../results/proctor_test/fuller1/fig'
     animation.save_frames = True
     animation.delay = 0.01
     animation.start_time = 0

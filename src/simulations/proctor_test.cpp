@@ -118,7 +118,7 @@ void DEM::proctor_test(const std::string& settings_file_name) {
         simulator.setup();
         EngineType::RunForTime run_for_time01(simulator, 0.1s);
         simulator.run(run_for_time01);
-
+        
         EngineType::ParticleVelocityLess max_velocity(simulator, 0.1, 0.01s);
         simulator.run(max_velocity);
         // Moving the hammer to the impact position
