@@ -62,6 +62,7 @@ add_executable(DEMsim
                src/particles/spherical_particle_base.h
                src/surfaces/circular_plate.tpp
                src/surfaces/circular_plate.h
-               src/simulations/proctor_test.cpp)
+               src/simulations/proctor_test.cpp
+               src/simulations/stone_compaction.cpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")

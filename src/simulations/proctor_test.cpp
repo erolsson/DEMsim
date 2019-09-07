@@ -134,7 +134,7 @@ void DEM::proctor_test(const std::string& settings_file_name) {
                 const auto& pos = p->get_position();
                 double x0 = pos.x() - hammer_position_x;
                 double y0 = pos.y() - hammer_position_y;
-                if (pow(x0, 2) + pow(y0, 2) > hammer_radius*hammer_radius) {
+                if (x0*x0 + y0*y0 > hammer_radius*hammer_radius) {
                     if (pos.z() + p->get_radius() > z_max) {
                         z_max = pos.z() + p->get_radius();
                     }

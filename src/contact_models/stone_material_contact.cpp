@@ -157,8 +157,8 @@ double DEM::StoneMaterialContact::update_normal_force(double dh) {
         a_ = 0;
         kl_ = ke_;
         hl_ = hp_;
-        // hmax_ = 0;
-        // hp_ = 0;
+        hmax_ = 0;
+        hp_ = 0;
     }
     return F;
 }

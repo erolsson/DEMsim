@@ -13,6 +13,7 @@ std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
             {"closed_die_compaction", DEM::closed_die_compaction},
             {"contact_tester",        DEM::contact_tester},
             {"cyclic_triaxial",       DEM::cyclic_triaxial},
-            {"proctor_test",          DEM::proctor_test}};
+            {"proctor_test",          DEM::proctor_test},
+            {"stone_compaction",      DEM::stone_compaction}};
 }
 

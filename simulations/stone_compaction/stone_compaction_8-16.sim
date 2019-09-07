@@ -1,0 +1,15 @@
+N=1000
+gas_density=0.2
+filling_density=0.5
+aspect_ratio_after_filling=1.
+output_dir=../results/stone_compaction/8-16mm/
+radius_file=../simulations/proctor_test/8-16mm.dat
+E=65E9
+nu=0.15
+mu=0.7
+mu_wall=0.7
+unloading_exponent=1.7
+weibull_fracture_stress=386.5e6
+weibull_exponent=3.87
+compaction_velocity=0.001
+compaction_distance=0.1

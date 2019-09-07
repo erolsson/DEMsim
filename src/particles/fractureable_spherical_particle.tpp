@@ -21,7 +21,7 @@ DEM::FractureableSphericalParticle<ForceModel>::FractureableSphericalParticle(do
 template<typename ForceModel>
 void DEM::FractureableSphericalParticle<ForceModel>::fracture_particle(const DEM::Vec3& position, double force,
         std::size_t id_of_impacter, const Vec3& normal) {
-    auto crack_iter = has_crack_at_position(position);
+    auto crack_iter = has_crack_at_position(position - get_position());
     if (crack_iter != cracks_.end()) {
         if (force > crack_iter->get_force()) {
             crack_iter->set_force(force);
@@ -32,7 +32,7 @@ void DEM::FractureableSphericalParticle<ForceModel>::fracture_particle(const DEM
                   << " with force " << force << " from object " << id_of_impacter << "\n";
         # pragma omp critical
         {
-            cracks_.emplace_back(position, force, id_of_impacter, normal);
+            cracks_.emplace_back(position - get_position(), force, id_of_impacter, normal);
         }
     }
 
