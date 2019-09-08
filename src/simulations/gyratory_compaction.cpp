@@ -21,10 +21,10 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     SimulationParameters parameters{settings_file_name};
 
-    auto N = parameters.get<std::size_t>("N");
-    auto output_directory = parameters.get<std::string>("output_dir");
-    auto particle_file = parameters.get<std::string>("radius_file");
-    auto filling_density = parameters.get<double>("filling_density");
+    auto N = parameters.get_parameter<std::size_t>("N");
+    auto output_directory = parameters.get_parameter<std::string>("output_dir");
+    auto particle_file = parameters.get_parameter<std::string>("radius_file");
+    auto filling_density = parameters.get_parameter<double>("filling_density");
 
     EngineType simulator(1us);
 
@@ -37,7 +37,7 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
     // Read particle radii from file
     auto particle_radii = read_vector_from_file<double>(particle_file);
     particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);
-    auto aspect_ratio_at_dense = parameters.get<double>("aspect_ratio_at_dense");
+    auto aspect_ratio_at_dense = parameters.get_parameter<double>("aspect_ratio_at_dense");
     double particle_volume = 0.;
     for(auto& r: particle_radii) {
         particle_volume += 4.*pi*r*r*r/3.;

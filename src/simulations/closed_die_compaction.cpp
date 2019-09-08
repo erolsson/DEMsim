@@ -22,33 +22,33 @@ void DEM::closed_die_compaction(const std::string& settings_file_name){
 
     SimulationParameters parameters(settings_file_name);
 
-    auto N = parameters.get<std::size_t>("N");
-    auto output_directory = parameters.get<std::string>("output_dir");
-    auto particle_file = parameters.get<std::string>("radius_file");
-    auto filling_density = parameters.get<double>("filling_density");
+    auto N = parameters.get_parameter<std::size_t>("N");
+    auto output_directory = parameters.get_parameter<std::string>("output_dir");
+    auto particle_file = parameters.get_parameter<std::string>("radius_file");
+    auto filling_density = parameters.get_parameter<double>("filling_density");
 
     EngineType simulator(1us);
 
     auto material = simulator.create_material<ElasticIdealPlasticMaterial>(2630.);
-    material->sY = parameters.get<double>("sY");
-    material->E = parameters.get<double>("E");
-    material->nu = parameters.get<double>("nu");
+    material->sY = parameters.get_parameter<double>("sY");
+    material->E = parameters.get_parameter<double>("E");
+    material->nu = parameters.get_parameter<double>("nu");
 
-    material->mu = parameters.get<double>("mu");
-    material->mu_wall = parameters.get<double>("mu_wall");
-    material->kT = parameters.get<double>("kT");
+    material->mu = parameters.get_parameter<double>("mu");
+    material->mu_wall = parameters.get_parameter<double>("mu_wall");
+    material->kT = parameters.get_parameter<double>("kT");
 
-    auto target_relative_density = parameters.get<double>("density");
-    std::chrono::duration<double> compaction_time {parameters.get<double>("compaction_time")};
-    auto unloading_velocity = parameters.get<double>("unloading_velocity");
-    std::chrono::duration<double> unloading_time {parameters.get<double>("unloading_time")};
+    auto target_relative_density = parameters.get_parameter<double>("density");
+    std::chrono::duration<double> compaction_time {parameters.get_parameter<double>("compaction_time")};
+    auto unloading_velocity = parameters.get_parameter<double>("unloading_velocity");
+    std::chrono::duration<double> unloading_time {parameters.get_parameter<double>("unloading_time")};
 
 
     // Read particle radii from file
     auto particle_radii = read_vector_from_file<double>(particle_file);
     particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);
     std::sort(particle_radii.rbegin(), particle_radii.rend());
-    auto aspect_ratio_at_dense = parameters.get<double>("aspect_ratio_at_dense");
+    auto aspect_ratio_at_dense = parameters.get_parameter<double>("aspect_ratio_at_dense");
     double particle_volume = 0.;
     for(auto& r: particle_radii) {
         particle_volume += 4.*pi*r*r*r/3.;

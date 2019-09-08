@@ -22,21 +22,21 @@ void DEM::cyclic_triaxial(const std::string &settings_file_name) {
 
     SimulationParameters parameters(settings_file_name);
 
-    auto N = parameters.get<std::size_t>("N");
-    auto output_directory = parameters.get<std::string>("output_dir");
-    auto particle_file = parameters.get<std::string>("radius_file");
-    auto gas_density = parameters.get<double>("gas_density");
+    auto N = parameters.get_parameter<std::size_t>("N");
+    auto output_directory = parameters.get_parameter<std::string>("output_dir");
+    auto particle_file = parameters.get_parameter<std::string>("radius_file");
+    auto gas_density = parameters.get_parameter<double>("gas_density");
 
-    auto aspect_ratio_after_filling = parameters.get<double>("aspect_ratio_after_filling");
+    auto aspect_ratio_after_filling = parameters.get_parameter<double>("aspect_ratio_after_filling");
 
     EngineType simulator(1us);
 
     auto mat = simulator.create_material<StoneMaterial>(2370.);
-    mat->E = parameters.get<double>("E");
-    mat->nu = parameters.get<double>("nu");
-    mat->unloading_exponent = parameters.get<double>("unloading_exponent");
-    mat->mu = parameters.get<double>("mu");
-    mat->mu_wall = parameters.get<double>("mu_wall");
+    mat->E = parameters.get_parameter<double>("E");
+    mat->nu = parameters.get_parameter<double>("nu");
+    mat->unloading_exponent = parameters.get_parameter<double>("unloading_exponent");
+    mat->mu = parameters.get_parameter<double>("mu");
+    mat->mu_wall = parameters.get_parameter<double>("mu_wall");
 
     auto particle_radii = read_vector_from_file<double>(particle_file);
     particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);

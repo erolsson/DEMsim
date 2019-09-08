@@ -25,16 +25,16 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     Material mat {0, 2370.};
 
     SimulationParameters parameters{settings_file_name};
-    auto radius = parameters.get<double>("R");
-    auto increments = parameters.get<unsigned>("N");
-    auto h1 = parameters.get<double>("h1");
-    auto dh = parameters.get<double>("dh");
-    auto dt = parameters.get<double>("dt");
-    auto filename=parameters.get<std::string>("output_file");
-    mat.E = parameters.get<double>("E");
-    mat.nu = parameters.get<double>("nu");
-    mat.unloading_exponent = parameters.get<double>("unloading_exponent");
-    mat.mu = parameters.get<double>("mu");
+    auto radius = parameters.get_parameter<double>("R");
+    auto increments = parameters.get_parameter<unsigned>("N");
+    auto h1 = parameters.get_parameter<double>("h1");
+    auto dh = parameters.get_parameter<double>("dh");
+    auto dt = parameters.get_parameter<double>("dt");
+    auto filename= parameters.get_parameter<std::string>("output_file");
+    mat.E = parameters.get_parameter<double>("E");
+    mat.nu = parameters.get_parameter<double>("nu");
+    mat.unloading_exponent = parameters.get_parameter<double>("unloading_exponent");
+    mat.mu = parameters.get_parameter<double>("mu");
 
     auto p1 = FractureableSphericalParticle<ForceModel>(radius, Vec3{-radius, 0, 0}, Vec3{}, &mat, 0);
     auto p2 = FractureableSphericalParticle<ForceModel>(radius, Vec3{radius, 0, 0}, Vec3{}, &mat, 1);

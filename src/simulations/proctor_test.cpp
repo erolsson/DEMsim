@@ -23,21 +23,23 @@ void DEM::proctor_test(const std::string& settings_file_name) {
     using namespace std::chrono_literals;
 
     SimulationParameters parameters(settings_file_name);
-    auto output_directory = parameters.get<std::string>("output_dir");
-    auto particle_file = parameters.get<std::string>("radius_file");
-    auto gas_density = parameters.get<double>("gas_density");
-    auto filling_density = parameters.get<double>("filling_density");
+    auto output_directory = parameters.get_parameter<std::string>("output_dir");
+    auto particle_file = parameters.get_parameter<std::string>("radius_file");
+    auto gas_density = parameters.get_parameter<double>("gas_density");
+    auto filling_density = parameters.get_parameter<double>("filling_density");
+    auto strokes_per_rotation = parameters.get_parameter<unsigned>("strokes_per_rotation");
+    auto layer_data = parameters.get_vector<unsigned>("layer_data");
 
     EngineType simulator(1us);
 
     auto mat = simulator.create_material<StoneMaterial>(2370.);
-    mat->E = parameters.get<double>("E");
-    mat->nu = parameters.get<double>("nu");
-    mat->unloading_exponent = parameters.get<double>("unloading_exponent");
-    mat->mu = parameters.get<double>("mu");
-    mat->mu_wall = parameters.get<double>("mu_wall");
-    mat->weibull_fracture_stress = parameters.get<double>("weibull_fracture_stress");
-    mat->weibull_exponent = parameters.get<double>("weibull_exponent");
+    mat->E = parameters.get_parameter<double>("E");
+    mat->nu = parameters.get_parameter<double>("nu");
+    mat->unloading_exponent = parameters.get_parameter<double>("unloading_exponent");
+    mat->mu = parameters.get_parameter<double>("mu");
+    mat->mu_wall = parameters.get_parameter<double>("mu_wall");
+    mat->weibull_fracture_stress = parameters.get_parameter<double>("weibull_fracture_stress");
+    mat->weibull_exponent = parameters.get_parameter<double>("weibull_exponent");
 
     auto particle_radii = read_vector_from_file<double>(particle_file);
 
@@ -48,7 +50,7 @@ void DEM::proctor_test(const std::string& settings_file_name) {
             main_cylinder_height, true, true, false);
 
     auto cylinder_volume = main_cylinder_height*main_cylinder_radius*main_cylinder_radius*3.1415;
-    auto layer_volume = cylinder_volume/5*filling_density;
+    auto layer_volume = cylinder_volume/layer_data.size()*filling_density;
     double hammer_radius = 0.025;
     double hammer_height = 0.08;
     Vec3 hammer_resting_position = Vec3(0., 0., -1.01*hammer_height);
@@ -79,7 +81,7 @@ void DEM::proctor_test(const std::string& settings_file_name) {
     auto start_particle_radii_iter = particle_radii.begin();
     auto end_particle_radii_iter = particle_radii.begin();
     double max_particle_height = 0;
-    for (unsigned layer = 0; layer != 5; ++layer) {
+    for (unsigned layer = 0; layer != layer_data.size(); ++layer) {
         std::vector<double> layer_particles;
         double particle_volume = 0;
         while (particle_volume < layer_volume) {
@@ -123,8 +125,8 @@ void DEM::proctor_test(const std::string& settings_file_name) {
         simulator.run(max_velocity);
         // Moving the hammer to the impact position
         simulator.remove_output(output_filling);
-        for (unsigned stroke = 0; stroke != 25; ++stroke) {
-            double hammer_position_phi = 2*3.1415/25*stroke;
+        for (unsigned stroke = 0; stroke != layer_data[layer]; ++stroke) {
+            double hammer_position_phi = 2*3.1415/strokes_per_rotation*stroke;
             double hammer_position_x = hammer_radius*cos(hammer_position_phi);
             double hammer_position_y = hammer_radius*sin(hammer_position_phi);
 
@@ -176,6 +178,5 @@ void DEM::proctor_test(const std::string& settings_file_name) {
             simulator.remove_output(output_contact);
             max_particle_height = simulator.get_bounding_box()[5];
         }
-
     }
 }

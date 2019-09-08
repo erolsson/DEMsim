@@ -23,24 +23,24 @@ void DEM::stone_compaction(const std::string& settings_file_name) {
     using namespace std::chrono_literals;
 
     SimulationParameters parameters(settings_file_name);
-    auto output_directory = parameters.get<std::string>("output_dir");
-    auto particle_file = parameters.get<std::string>("radius_file");
-    auto gas_density = parameters.get<double>("gas_density");
-    auto filling_density = parameters.get<double>("filling_density");
+    auto output_directory = parameters.get_parameter<std::string>("output_dir");
+    auto particle_file = parameters.get_parameter<std::string>("radius_file");
+    auto gas_density = parameters.get_parameter<double>("gas_density");
+    auto filling_density = parameters.get_parameter<double>("filling_density");
 
     EngineType simulator(1us);
 
     auto mat = simulator.create_material<StoneMaterial>(2370.);
-    mat->E = parameters.get<double>("E");
-    mat->nu = parameters.get<double>("nu");
-    mat->unloading_exponent = parameters.get<double>("unloading_exponent");
-    mat->mu = parameters.get<double>("mu");
-    mat->mu_wall = parameters.get<double>("mu_wall");
-    mat->weibull_fracture_stress = parameters.get<double>("weibull_fracture_stress");
-    mat->weibull_exponent = parameters.get<double>("weibull_exponent");
+    mat->E = parameters.get_parameter<double>("E");
+    mat->nu = parameters.get_parameter<double>("nu");
+    mat->unloading_exponent = parameters.get_parameter<double>("unloading_exponent");
+    mat->mu = parameters.get_parameter<double>("mu");
+    mat->mu_wall = parameters.get_parameter<double>("mu_wall");
+    mat->weibull_fracture_stress = parameters.get_parameter<double>("weibull_fracture_stress");
+    mat->weibull_exponent = parameters.get_parameter<double>("weibull_exponent");
 
-    auto compaction_velocity = parameters.get<double>("compaction_velocity");
-    auto compaction_distance = parameters.get<double>("compaction_distance");
+    auto compaction_velocity = parameters.get_parameter<double>("compaction_velocity");
+    auto compaction_distance = parameters.get_parameter<double>("compaction_distance");
 
     auto particle_radii = read_vector_from_file<double>(particle_file);
 
@@ -105,7 +105,7 @@ void DEM::stone_compaction(const std::string& settings_file_name) {
 
     auto particle_positions = random_fill_cylinder(0, filling_height,
                                                    main_cylinder_radius, simulation_particle_radii);
-  
+
     for (std::size_t i = 0; i != particle_positions.size(); ++i) {
         ParticleType *p = simulator.create_particle(simulation_particle_radii[i], particle_positions[i],
                                                     Vec3(0, 0, 0), mat);
