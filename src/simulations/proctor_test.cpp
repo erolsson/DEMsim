@@ -4,6 +4,7 @@
 
 #include <sstream>
 
+#include "../engine/engine.h"
 #include "simulations.h"
 
 #include "../contact_models/stone_material_contact.h"
