@@ -6,7 +6,6 @@
 
 #include "simulations.h"
 
-q
 #include "../contact_models/stone_material_contact.h"
 #include "../materials/stone_material.h"
 
