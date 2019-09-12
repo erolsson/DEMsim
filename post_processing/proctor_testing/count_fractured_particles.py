@@ -29,7 +29,7 @@ if __name__ == '__main__':
             dir_name = output_directory + 'layer_' + str(layer) + '/stroke_' + str(stroke)
             fracture_count = get_fractured_particles_at_stroke(output_directory, layer, stroke)
             fracture_data.append([layer_count, layer+1, stroke+1, fracture_count])
-            print "Working with layer", layer_count, "stroke", stroke
+            print "Working with layer", layer, "stroke", stroke
 
     fracture_data = np.array(fracture_data)
     with open(output_directory + '/fractured_particles.pkl', 'w') as fracture_pickle:
