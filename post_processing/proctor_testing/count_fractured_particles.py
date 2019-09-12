@@ -8,7 +8,7 @@ import numpy as np
 
 def get_fractured_particles_at_stroke(directory, layer_idx, stroke_idx):
     filename = directory + '/' + 'layer_' + str(layer_idx) + '/stroke_' + str(stroke_idx) + '/particle_cracks.dou'
-    data = np.genfromtxt(filename, delimiter=',', dtype=[str, str] + [float]*8)
+    data = np.genfromtxt(filename, delimiter=',', dtype=None)
     print data
     if data.shape[0] == 0:
         return 0
