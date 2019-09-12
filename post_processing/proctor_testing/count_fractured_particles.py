@@ -13,7 +13,7 @@ def get_fractured_particles_at_stroke(directory, layer_idx, stroke_idx):
     if full_data.shape[0] == 0:
         return 0
     time_data = np.genfromtxt(filename, delimiter=',', dtype=None, usecols=(-1,))
-    data = full_data[time_data[:, -1] == time_data[-1, -1], :]
+    data = full_data[time_data[:] == time_data[-1], :]
     print data
     return data.shape[0]
 
