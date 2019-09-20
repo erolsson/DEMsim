@@ -30,20 +30,35 @@ class SpheresPlotter:
     def __init__(self, opacity=1., color=(184./255, 115./255., 51./255.)):
         self.ms = None
         self.color = color
+        self.opacity = opacity
 
-    def plot(self, data):
+    def plot(self, data, function=None, vmin=None, vmax=None):
         x = data[:, 1]
         y = data[:, 2]
         z = data[:, 3]
         r = data[:, 7]
-        if self.ms is None or self.ms.points.shape[0] != data.shape[0]:
-            self.ms = mlab.points3d(x, y, z, 2 * r,
-                                    color=self.color,
-                                    resolution=32,
-                                    scale_factor=1.,
-                                    scale_mode='scalar').mlab_source
+        if vmin is None:
+            vmin = np.min(function)
+        if vmax is None:
+            vmax = np.max(function)
+        if function is not None:
+            pts = mlab.points3d(x, y, z, resolution=32, opacity=self.opacity, transparent=self.opacity != 1.,
+                                scale_factor=1., vmax=vmax, vmin=vmin)
+            self.ms = pts.mlab_source
+            pts.glyph.scale_mode = 'scale_by_vector'
+            self.ms.dataset.point_data.vectors = np.tile(2/np.sqrt(3)*r, (3, 1)).transpose()
+            self.ms.dataset.point_data.scalars = function
+
         else:
-            self.ms.set(x=x, y=y, z=z)
+            if self.ms is None or self.ms.points.shape[0] != data.shape[0]:
+                self.ms = mlab.points3d(x, y, z, 2*r,
+                                        color=self.color,
+                                        resolution=32,
+                                        scale_factor=1.,
+                                        scale_mode='scalar',
+                                        opacity=self.opacity).mlab_source
+            else:
+                self.ms.set(x=x, y=y, z=z)
 
 
 def fulfill_bounding_box(bounding_box, x, y, z, time):
