@@ -33,5 +33,5 @@ if __name__ == '__main__':
             print "Working with layer", layer, "stroke", stroke
 
     fracture_data = np.array(fracture_data)
-    with open(output_directory + '/fractured_particles.pkl', 'w') as fracture_pickle:
+    with open(output_directory + '/number_particle_cracks.pkl', 'w') as fracture_pickle:
         pickle.dump(fracture_data, fracture_pickle)
