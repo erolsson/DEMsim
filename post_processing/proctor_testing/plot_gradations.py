@@ -17,9 +17,10 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 base_directory = os.path.expanduser('~/DEMsim/results/proctor_test/')
 simulations = ['8-16mm_continued', 'fuller']
 colors = ['b', 'r']
+labels = ['8-16 mm', r'F{\"u}ller curve']
+bg_index = {'8-16 mm': {}, r'F{\"u}ller curve': {}}
 for i, sim in enumerate(simulations):
-    plt.figure(i)
-    for material, line, label in zip(['', '_weak'], ['-', '--'], [r'$\sigma_w=387.5$ MPa', r'$\sigma_w=200$ MPa']):
+    for material, line, in zip(['', '_weak'], ['--', ':']):
         simulation = sim + material
 
         with open(base_directory + '/' + simulation + '/gradation_pickle.pkl', 'r') as pickle_handle:
@@ -29,11 +30,11 @@ for i, sim in enumerate(simulations):
         if material == '':
             particle_volume = 4*np.pi*r0**3/3
             volume_cdf = np.cumsum(particle_volume)/np.sum(particle_volume)
-            plt.plot(2*r0, volume_cdf, ':' + colors[i], lw=3, label='Starting')
+            plt.semilogx(2*r0, volume_cdf*100, '' + colors[i], lw=2, label=labels[i])
 
         particle_volume = 4*np.pi*r1**3/3
         volume_cdf = np.cumsum(particle_volume)/np.sum(particle_volume)
-        plt.plot(2*r1, volume_cdf, line + colors[i], lw=2, label=label)
+        plt.semilogx(2*r1, volume_cdf*100, line + colors[i], lw=2)
 
         cdf_start = np.zeros(r0.shape[0] + 1)
         particle_volume_start = 4*np.pi*r0**3/3
@@ -57,17 +58,44 @@ for i, sim in enumerate(simulations):
             dv_end = (np.interp(sieve_sizes[j], end_size, cdf_end) -
                       np.interp(sieve_sizes[j-1], end_size, cdf_end))
             diff = dv_end - dv_start
-            print diff
             if diff > 0:
                 bg += diff
         print "Bg for", sim, material, "is", bg*100
-    plt.xlabel('Size [mm]')
-    plt.ylabel('Weight passing')
-    plt.legend(loc='best')
-plt.figure(0)
-plt.savefig('gradations_8-16mm.png')
+        bg_index[labels[i]][material] = bg*100
 
-plt.figure(1)
-plt.savefig('gradations_fuller.png')
+print bg_index
+for line, label in zip(['w', '-k', '--k', ':k'], [r'$\quad$', 'Starting',
+                                                  r'$\sigma_w=387.5$ MPa', r'$\sigma_w=200$ MPa']):
+    plt.plot([1, 2], [-1, -1], line, lw=2, label=label)
+plt.xlim(1, 16)
+plt.ylim(0, 100)
+sieves = [1., 2., 4., 8., 11.2, 16.]
+plt.xticks(sieves, [str(s) for s in sieves])
+plt.xlabel('Size [mm]')
+plt.ylabel(r'Weight passing [\%]')
+ax = plt.gca()
+box = ax.get_position()
+plt.text(0.05, 0.9, '(a)', horizontalalignment='left', verticalalignment='bottom', transform=ax.transAxes)
+plt.legend(loc='upper left', bbox_to_anchor=(0., 0.89), framealpha=0.9)
+plt.tight_layout()
+plt.savefig('gradations_after_test.png')
 
+plt.figure(2)
+plt.bar(0, bg_index['8-16 mm'][''], 1, color='b', label=labels[0])
+plt.bar(1, bg_index[r'F{\"u}ller curve'][''], 1, color='r', label=labels[1])
+print bg_index['8-16 mm']['']/bg_index[r'F{\"u}ller curve']['']
+plt.bar(3, bg_index['8-16 mm']['_weak'], 1, color='b')
+plt.bar(4, bg_index[r'F{\"u}ller curve']['_weak'], 1, color='r')
+print bg_index['8-16 mm']['_weak']/bg_index[r'F{\"u}ller curve']['_weak']
+
+plt.legend(loc='upper left', bbox_to_anchor=(0., 0.89), framealpha=0.9)
+
+plt.xticks([1, 4], [r'$\sigma_w=387.5$ MPa', r'$\sigma_w=200$ MPa'])
+plt.ylabel('Modified Bg. Index')
+
+ax = plt.gca()
+ax.tick_params('x', pad=15)
+plt.tight_layout()
+plt.text(0.05, 0.9, '(b)', horizontalalignment='left', verticalalignment='bottom', transform=ax.transAxes)
+plt.savefig('sim_bg.png')
 plt.show()

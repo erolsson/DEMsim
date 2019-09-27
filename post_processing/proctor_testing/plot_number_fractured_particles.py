@@ -16,26 +16,25 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 base_directory = os.path.expanduser('~/DEMsim/results/proctor_test')
 Simulation = namedtuple('Simulation', ['directory', 'line', 'fig', 'name'])
 Figure = namedtuple('Figure', ['xlim', 'ylim', 'leg_handles', 'label', 'name'])
-simulations = [Simulation(directory=base_directory + '/8-16mm_continued/', line='b', fig=0,
-                          name=r'8-16 mm $\sigma_w=387.5$ MPa'),
-               Simulation(directory=base_directory + '/8-16mm_continued_weak/', line='--b', fig=0,
-                          name=r'8-16 mm $\sigma_w=200$ MPa'),
-               Simulation(directory=base_directory + '/fuller/', line='r', fig=1,
-                          name=r'F{\"u}ller curve  $\sigma_w=387.5$ MPa'),
-               Simulation(directory=base_directory + '/fuller_weak/', line='--r', fig=1,
-                          name=r'F{\"u}ller curve $\sigma_w=200$ MPa'),
-               Simulation(directory=base_directory + '/8-16mm_continued/', line='b', fig=2,
-                          name=r'8-16 mm $\sigma_w=387.5$ MPa'),
-               Simulation(directory=base_directory + '/8-16mm_continued_weak/', line='--b', fig=2,
-                          name=r'8-16 mm $\sigma_w=200$ MPa'),
-               Simulation(directory=base_directory + '/8-16mm_one_layer/', line='b', fig=3,
-                          name=r'8-16 mm $\sigma_w=387.5$ MPa'),
-               Simulation(directory=base_directory + '/8-16mm_one_layer_weak/', line='--b', fig=3,
-                          name=r'8-16 mm $\sigma_w=200$ MPa')]
-figures = [Figure(xlim=125, ylim=400, leg_handles=[], label='(a)', name='proctor_8-16mm.png'),
-           Figure(xlim=125, ylim=200, leg_handles=[], label='(a)', name='proctor_fuller.png'),
-           Figure(xlim=200, ylim=600, leg_handles=[], label='(a)', name='proctor_continued.png'),
-           Figure(xlim=125, ylim=300, leg_handles=[], label='(b)', name='proctor_one_layer.png')]
+simulations = [Simulation(directory=base_directory + '/8-16mm_continued/', line='--b', fig=0,
+                          name=r'8-16 mm $\sigma_W=387.5$ MPa'),
+               Simulation(directory=base_directory + '/8-16mm_continued_weak/', line=':b', fig=0,
+                          name=r'8-16 mm $\sigma_W=200$ MPa'),
+               Simulation(directory=base_directory + '/fuller/', line='--r', fig=0,
+                          name=r'F{\"u}ller curve  $\sigma_W=387.5$ MPa'),
+               Simulation(directory=base_directory + '/fuller_weak/', line=':r', fig=0,
+                          name=r'F{\"u}ller curve $\sigma_W=200$ MPa'),
+               Simulation(directory=base_directory + '/8-16mm_continued/', line='--b', fig=1,
+                          name=r'8-16 mm $\sigma_W=387.5$ MPa'),
+               Simulation(directory=base_directory + '/8-16mm_continued_weak/', line=':b', fig=1,
+                          name=r'8-16 mm $\sigma_W=200$ MPa'),
+               Simulation(directory=base_directory + '/8-16mm_one_layer/', line='--b', fig=2,
+                          name=r'8-16 mm $\sigma_W=387.5$ MPa'),
+               Simulation(directory=base_directory + '/8-16mm_one_layer_weak/', line=':b', fig=2,
+                          name=r'8-16 mm $\sigma_W=200$ MPa')]
+figures = [Figure(xlim=125, ylim=200, leg_handles=[], label='(a)', name='proctor.png'),
+           Figure(xlim=200, ylim=300, leg_handles=[], label='(a)', name='proctor_continued.png'),
+           Figure(xlim=125, ylim=150, leg_handles=[], label='(b)', name='proctor_one_layer.png')]
 
 for simulation in simulations:
     plt.figure(simulation.fig)
@@ -47,7 +46,7 @@ for simulation in simulations:
 
 for fig_number, figure in enumerate(figures):
     plt.figure(fig_number)
-    if fig_number in range(0, 3):
+    if fig_number in range(0, 2):
         for layer_count in [25, 50, 75, 100]:
             plt.plot([layer_count, layer_count], [0, figure.ylim], '--k')
     plt.xlabel('Blows', fontsize=24)
@@ -56,7 +55,7 @@ for fig_number, figure in enumerate(figures):
     plt.ylim(0, figure.ylim)
     ax = plt.subplot(111)
     plt.text(0.05, 0.9, figure.label, horizontalalignment='left', verticalalignment='bottom', transform=ax.transAxes)
-    plt.legend(loc=(0.05, 0.6), bbox_transform=ax.transAxes)
+    plt.legend(loc='upper left', bbox_to_anchor=(0., 0.89), framealpha=0.9)
     plt.tight_layout()
     plt.savefig(figure.name)
 
