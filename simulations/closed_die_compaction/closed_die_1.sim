@@ -1,0 +1,16 @@
+N=5000
+filling_density=0.45
+aspect_ratio_at_dense=1.
+output_dir=../results/closed_die_compaction/5/
+radius_file=../simulations/closed_die_compaction/size_distribution.dat
+sY=200E6
+E=200E9
+nu=0.3
+mu=0.3
+mu_wall=0.2
+kT=1e9
+density=0.8
+compaction_time=1.0s
+unloading_velocity=0.01
+unloading_time=1.0s
+

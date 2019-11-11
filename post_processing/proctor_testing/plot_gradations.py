@@ -17,8 +17,8 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 base_directory = os.path.expanduser('~/DEMsim/results/proctor_test/')
 simulations = ['8-16mm_continued', 'fuller']
 colors = ['b', 'r']
-labels = ['8-16 mm', r'F{\"u}ller curve']
-bg_index = {'8-16 mm': {}, r'F{\"u}ller curve': {}}
+labels = ['8-16 mm', r'Fuller curve']
+bg_index = {'8-16 mm': {}, r'Fuller curve': {}}
 for i, sim in enumerate(simulations):
     for material, line, in zip(['', '_weak'], ['--', ':']):
         simulation = sim + material
@@ -82,11 +82,11 @@ plt.savefig('gradations_after_test.png')
 
 plt.figure(2)
 plt.bar(0, bg_index['8-16 mm'][''], 1, color='b', label=labels[0])
-plt.bar(1, bg_index[r'F{\"u}ller curve'][''], 1, color='r', label=labels[1])
-print bg_index['8-16 mm']['']/bg_index[r'F{\"u}ller curve']['']
+plt.bar(1, bg_index[r'Fuller curve'][''], 1, color='r', label=labels[1])
+print bg_index['8-16 mm']['']/bg_index[r'Fuller curve']['']
 plt.bar(3, bg_index['8-16 mm']['_weak'], 1, color='b')
-plt.bar(4, bg_index[r'F{\"u}ller curve']['_weak'], 1, color='r')
-print bg_index['8-16 mm']['_weak']/bg_index[r'F{\"u}ller curve']['_weak']
+plt.bar(4, bg_index[r'Fuller curve']['_weak'], 1, color='r')
+print bg_index['8-16 mm']['_weak']/bg_index[r'Fuller curve']['_weak']
 
 plt.legend(loc='upper left', bbox_to_anchor=(0., 0.89), framealpha=0.9)
 
