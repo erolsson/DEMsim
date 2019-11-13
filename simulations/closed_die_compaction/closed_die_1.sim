@@ -1,7 +1,7 @@
-N=5000
-filling_density=0.45
+N=1000
+filling_density=0.3
 aspect_ratio_at_dense=1.
-output_dir=../results/closed_die_compaction/5/
+output_dir=../results/closed_die_compaction/6/
 radius_file=../simulations/closed_die_compaction/size_distribution.dat
 sY=200E6
 E=200E9

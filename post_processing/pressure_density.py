@@ -17,21 +17,21 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 
 
 def particle_volume(particle_directory):
-    particle_files = glob.glob(particle_directory + '/particles_*.dat')
+    particle_files = glob.glob(particle_directory + '/particles_*.dou')
     particle_data = np.genfromtxt(particle_files[0], delimiter=', ')
     r = particle_data[:, 7]
     return np.sum(4*pi*r**3/3)
 
 
 def dimensions_cylinder(data_directory):
-    with open(data_directory + '/surface_positions.dat', 'r') as position_data_file:
+    with open(data_directory + '/surface_positions.dou', 'r') as position_data_file:
         first_line = position_data_file.readlines()[0]
         first_line = first_line.split(', ')
     id_idx = [i for i in range(len(first_line)) if first_line[i].startswith('ID')]
     surface_types = [first_line[idx+1][5:] for idx in id_idx]
     if surface_types.count('Cylinder') == 1 and surface_types.count('PointSurface') == 2:
         id_idx.sort(key=lambda x: first_line[x+1])
-        wall_data = np.genfromtxt(data_directory + '/surface_positions.dat', delimiter=', ')
+        wall_data = np.genfromtxt(data_directory + '/surface_positions.dou', delimiter=', ')
         data = np.zeros((wall_data.shape[0], 4))
         data[:, 0] = wall_data[:, -1]
         data[:, 1] = wall_data[:, id_idx[0]+2]
@@ -58,12 +58,12 @@ def relative_density_cylinder(data_directory):
 
 def pressures_cylinder(data_directory):
     dimensions = dimensions_cylinder(data_directory)
-    force_data = np.genfromtxt(data_directory + '/surface_forces.dat', delimiter=', ')
+    force_data = np.genfromtxt(data_directory + '/surface_forces.dou', delimiter=', ')
     r = dimensions[:, 1]
     z0 = dimensions[:, 2]
     z1 = dimensions[:, 3]
 
-    with open(data_directory + '/surface_positions.dat', 'r') as position_data_file:
+    with open(data_directory + '/surface_positions.dou', 'r') as position_data_file:
         first_line = position_data_file.readlines()[0]
         first_line = first_line.split(', ')
         id_idx = [i for i in range(len(first_line)) if first_line[i].startswith('ID')]
@@ -83,7 +83,7 @@ def pressures_cylinder(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../results/closed_die_compaction/4'
+    simulation_directory = '../results/closed_die_compaction/5'
     v_particles = particle_volume(simulation_directory)
 
     v_cylinder = volume_cylinder(simulation_directory)
