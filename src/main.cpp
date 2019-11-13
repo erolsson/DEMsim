@@ -18,14 +18,13 @@ int main(int argc, char** argv)
     std::vector<std::string> arguments(argv+1, argv+argc);
     std::string program_name = arguments[0];
 
-    std::string settings_file_name = arguments[1];
-
     if (argc < 3) {
         std::cerr << "Please provide a path to a simulation settings file as second argument" << '\n';
         return 0;
     }
 
-    std::ifstream settings_file(arguments[1]);
+    std::string settings_file_name = arguments[1];
+    std::ifstream settings_file(settings_file_name);
     if (!settings_file.good()) {
         std::cerr << "Please provide a valid path to a simulation settings file as "
                      "second argument having extension .sim" << '\n';
