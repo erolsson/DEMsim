@@ -11,7 +11,7 @@
 #include "../surfaces/surface_base.h"
 
 
-namespace DEM{
+namespace DEM {
     template<typename ForceModel, typename ParticleType> class Surface;
 
     template<typename ForceModel, typename ParticleType>
