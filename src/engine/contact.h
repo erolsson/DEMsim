@@ -27,7 +27,10 @@ namespace DEM{
         void update();
         [[nodiscard]] Vec3 get_position() const;
 
-        [[nodiscard]] Vec
+        [[nodiscard]] Vec3 get_normal_force() const { return force_model_.get_normal_force()*get_normal(); }
+        [[nodiscard]] Vec3 get_tangential_force() const { return force_model_.get_tangential_force(); }
+        [[nodiscard]] Vec3 get_torque(const Vec3& point) const;
+
         std::pair<ParticleType*, ParticleType*> get_particles() const  { return std::make_pair(p1_, p2_); }
         const SurfaceType* get_surface() const { return surface_; }
 
@@ -45,10 +48,7 @@ namespace DEM{
         SurfaceType*  const surface_;
 
         double r2_;                       // r2 - distance between particles or particle plane is overlap
-        char position_divider_;3 get_normal_force() const { return force_model_.get_normal_force()*get_normal(); }
-        [[nodiscard]] Vec3 get_tangential_force() const { return force_model_.get_tangential_force(); }
-        [[nodiscard]] Vec3 get_torque(const Vec3& point) const;
-
+        char position_divider_;
         Vec3 normal_;                     // Contact plane normal, same direction as normal_force_
 
         ForceModel force_model_;
