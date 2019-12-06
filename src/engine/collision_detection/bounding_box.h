@@ -19,6 +19,7 @@ namespace DEM {
     using PointSurfaceType = PointSurface<ForceModel, ParticleType>;
     using SurfaceType = Surface<ForceModel, ParticleType>;
     using CylinderType = Cylinder<ForceModel, ParticleType>;
+
     public:
         BoundingBox(ParticleType* particle, std::size_t index);
         BoundingBox(SurfaceType* surface,  std::size_t index);

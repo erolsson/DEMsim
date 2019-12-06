@@ -14,6 +14,8 @@ namespace DEM {
             const std::vector<double>& radii);
     bool check_overlaps(const Vec3& point, double radius, const std::vector<Vec3>& particle_positions,
                        const std::vector<double>& radii);
+
+
 }
 
 #endif //DEMSIM_UTILITIES_H

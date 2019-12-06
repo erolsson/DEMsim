@@ -3,7 +3,7 @@
 //
 
 #include "bounding_box_projection.h"
-#include "bounding_box.h"
+
 
 template<typename ForceModel, typename ParticleType>
 DEM::BoundingBoxProjection<ForceModel, ParticleType>::BoundingBoxProjection(BoundingBox<ForceModel, ParticleType>* bbox,

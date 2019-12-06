@@ -9,7 +9,7 @@
 #include "../utilities/vec3.h"
 
 template<typename ForceModel, typename ParticleType>
-DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::vector<Vec3> points, bool infinite) :
+DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::vector<DEM::Vec3> points, bool infinite) :
         Surface<ForceModel, ParticleType>::Surface(id),
         points_(std::move(points)),
         infinite_(infinite),
@@ -20,7 +20,7 @@ DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::v
 
 
 template<typename ForceModel, typename ParticleType>
-double DEM::PointSurface<ForceModel, ParticleType>::distance_to_point(const Vec3& point) const
+double DEM::PointSurface<ForceModel, ParticleType>::distance_to_point(const DEM::Vec3& point) const
 {
     return vector_to_point(point).length();
 }

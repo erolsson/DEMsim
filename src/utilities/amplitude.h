@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
+#include "vec3.h"
 
 namespace DEM {
     class Amplitude {
@@ -34,6 +35,8 @@ namespace DEM {
         double factor_ = 1.;
         std::function<std::chrono::duration<double>()> time_func_;
     };
+
+    void Viscoelastice(double dh, const DEM::Vec3 &dt, const DEM::Vec3 &, const DEM::Vec3 &normal);
 }
 
 #endif //DEMSIM_AMPLITUDE_H

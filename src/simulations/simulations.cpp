@@ -8,12 +8,13 @@
 
 std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
     // Add all valid simulation routines here
-    return std::map<std::string, SimulationFunctionPtr> {
+    return std::map<std::string, SimulationFunctionPtr>{
             {"gyratory_compaction",   DEM::gyratory_compaction},
             {"closed_die_compaction", DEM::closed_die_compaction},
             {"contact_tester",        DEM::contact_tester},
             {"cyclic_triaxial",       DEM::cyclic_triaxial},
             {"proctor_test",          DEM::proctor_test},
-            {"stone_compaction",      DEM::stone_compaction}};
+            {"stone_compaction",      DEM::stone_compaction},
+            {"electrode_box",         DEM::electrode_box}};
 }
 

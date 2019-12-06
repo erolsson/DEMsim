@@ -19,6 +19,7 @@
 
 
 #include <cmath>
+#include <vector>
 #include <iostream>
 
 namespace DEM {
@@ -192,6 +193,10 @@ namespace DEM {
     {
         return Vec3(a.x()*factor, a.y()*factor, a.z()*factor);
     }
+
+    bool check_overlaps(const Vec3 &point, double radius, const std::vector<DEM::Vec3> &particle_positions,
+                        const std::vector<double> &radii);
+
 }
 
 #endif //DEMSIM6_0_VEC3_H

@@ -20,6 +20,7 @@ namespace DEM {
         double mu { 0. };
         double mu_wall { 0. };
 
+
         double hs { 20e-6 };      // Thickness of the surface layer
         double Fs { 100. };        // Force at indentation depth hs
         double min_crack_distance { 1e-3 };   // Minimum distance between cracks to treat them as separate cracks

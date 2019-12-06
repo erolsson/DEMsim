@@ -18,19 +18,19 @@ namespace DEM {
 
         const Vec3& get_normal() { return normal_; }
 
-        double distance_to_point(const Vec3& point) const override;
+        [[nodiscard]] double distance_to_point(const Vec3& point) const override;
 
-        Vec3 vector_to_point(const Vec3& point) const override;
+        [[nodiscard]] Vec3 vector_to_point(const Vec3& point) const override;
 
-        Vec3 displacement_this_inc(const Vec3& position) const override;
+        [[nodiscard]] Vec3 displacement_this_inc(const Vec3& position) const override;
 
         void move(const Vec3& distance, const Vec3& velocity) override;
 
         void rotate(const Vec3& position, const Vec3& rotation_vector) override;
 
-        std::string get_output_string() const override;
+        [[nodiscard]] std::string get_output_string() const override;
 
-        double get_radius() const { return radius_; }
+        [[nodiscard]] double get_radius() const { return radius_; }
 
     private:
         using Surface<ForceModel, ParticleType>::id_;

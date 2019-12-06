@@ -47,7 +47,7 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Contact<ForceModel, ParticleType>::update()
 {
     auto distance_vector = calculate_distance_vector();
-    double h = r2_ - distance_vector.length();
+    auto h = r2_ - distance_vector.length();
     normal_ = distance_vector.normalize();
     Vec3 dt(0, 0, 0);
     Vec3 w(0, 0, 0);

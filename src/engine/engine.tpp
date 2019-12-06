@@ -108,6 +108,8 @@ DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3
     return c;
 }
 
+
+
 template<typename ForceModel, typename ParticleType>
 typename DEM::Engine<ForceModel, ParticleType>::OutputPointerType
 DEM::Engine<ForceModel, ParticleType>::create_output(std::string directory, std::chrono::duration<double> interval)

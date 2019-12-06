@@ -12,13 +12,14 @@
 #include <vector>
 
 #include "../utilities/amplitude.h"
+#include "../surfaces/point_surface.h"
 #include "collision_detection/collision_detector.h"
 #include "contact.h"
 #include "../utilities/contact_matrix.h"
 #include "../surfaces/cylinder.h"
+
 #include "../materials/material_base.h"
 #include "output.h"
-#include "../surfaces/point_surface.h"
 #include "../surfaces/surface_base.h"
 #include "../utilities/vec3.h"
 
@@ -30,6 +31,7 @@ namespace DEM {
         using ParticlePointer = ParticleType*;
         using PointSurfacePointer = PointSurface<ForceModel, ParticleType>*;
         using CylinderPointer = Cylinder<ForceModel, ParticleType>*;
+
         using OutputPointerType = std::shared_ptr<Output<ForceModel, ParticleType>>;
         using SurfaceType = Surface<ForceModel, ParticleType>;
         explicit Engine(std::chrono::duration<double> dt);
@@ -48,6 +50,7 @@ namespace DEM {
 
         CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
                                         bool inward=true, bool infinite=false, bool closed_ends=false);
+
 
         OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval);
         void remove_output(const OutputPointerType& output_to_remove);
@@ -295,6 +298,8 @@ namespace DEM {
         void run_output();
 
         friend class Output<ForceModel, ParticleType>;
+
+
     };
 
     // Functors for different running conditions
