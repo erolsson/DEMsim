@@ -278,5 +278,3 @@ std::string DEM::StoneMaterialContact::get_output_string() const {
     ss << hmax_ << ", " << hs_ << ", " << hlinear_ << ", " << hp_ << ", " << FN_;
     return ss.str();
 }
-
-

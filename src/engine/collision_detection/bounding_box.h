@@ -31,7 +31,7 @@ namespace DEM {
         BoundingBox(const BoundingBox& rhs);
         BoundingBox& operator=(const BoundingBox& rhs);
 
-        std::size_t get_id() const;
+        [[nodiscard]] std::size_t get_id() const;
         void update();
         void set_stretch(double stretch) {stretch_ = stretch; }
 

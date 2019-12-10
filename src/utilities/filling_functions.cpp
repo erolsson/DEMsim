@@ -3,6 +3,8 @@
 //
 
 #include "filling_functions.h"
+#include <vector>
+#include "../simulations/electrode_box.cpp"
 
 #include <random>
 
@@ -46,3 +48,34 @@ bool DEM::check_overlaps(const DEM::Vec3& point, double radius, const std::vecto
     }
     return false;
 }
+
+
+std::vector<DEM::Vec3> DEM::random_fill_box(double z0, double z1, double box_width,
+                                            const std::vector<double>& radii)
+{
+    std::vector<Vec3> particle_positions;
+    std::random_device random_device;
+    std::default_random_engine rand_engine(random_device());
+    for (auto r : radii) {
+        std::uniform_real_distribution<double> dist_r(0.+r,
+                                                      box_width-r);
+        std::uniform_real_distribution<double> dist_z(z0+r, z1-r);
+        bool overlapping = true;
+        Vec3 position {};
+        while(overlapping) {
+            position.x() = dist_r(rand_engine);
+            position.y() = dist_r(rand_engine);
+            position.z() = dist_z(rand_engine);
+
+            //Check if a particle at the chosen position overlaps with an other
+            if (position.x()*position.x()+position.y()*position.y() <
+                (box_width-r)*(box_width-r)) {
+                overlapping = check_overlaps(position, r, particle_positions, radii);
+            }
+        }
+
+        particle_positions.push_back(position);
+    }
+    return particle_positions;
+}
+

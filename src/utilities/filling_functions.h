@@ -12,10 +12,12 @@
 namespace DEM {
     std::vector<Vec3> random_fill_cylinder(double z0, double z1, double cylinder_radius,
             const std::vector<double>& radii);
-    bool check_overlaps(const Vec3& point, double radius, const std::vector<Vec3>& particle_positions,
-                       const std::vector<double>& radii);
-
-
 }
+
+namespace DEM {
+    std::vector<Vec3> random_fill_box(double z0, double z1, double box_width,
+                                      const std::vector<double>& radii);
+}
+
 
 #endif //DEMSIM_UTILITIES_H
