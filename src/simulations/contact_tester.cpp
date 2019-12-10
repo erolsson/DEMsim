@@ -21,7 +21,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     using ForceModel = Viscoelastic;
     using ParticleType = SphericalParticle<ForceModel>;
     using namespace std::chrono_literals;
-    namespace fs = std::experimental::filesystem;
+    namespace fs = std::filesystem;
 
     using Material = ViscoelasticMaterial;
     Material mat {0, 2370.};

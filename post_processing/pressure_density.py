@@ -40,7 +40,7 @@ def dimensions_cylinder(data_directory):
         return data
     else:
         raise ValueError("A cylinder could not be defined from the data in " + data_directory +
-                         '/surface_positions.dat')
+                         '/surface_positions.dou')
 
 
 def volume_cylinder(data_directory):

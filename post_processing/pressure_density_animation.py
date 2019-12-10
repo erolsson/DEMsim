@@ -3,8 +3,8 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib
 
-from pressure_density import relative_density_cylinder
-from pressure_density import pressures_cylinder
+from .pressure_density import relative_density_cylinder
+from .pressure_density import pressures_cylinder
 
 matplotlib.style.use('classic')
 plt.rc('text', usetex=True)
@@ -31,7 +31,7 @@ if not os.path.isdir(figure_save_directory):
     os.makedirs(figure_save_directory)
 
 for tp in range(interesting_time_points):
-    print "Generating figure", tp
+    print("Generating figure", tp)
     fig = plt.figure(0, (6, 6))
     plt.plot(d[:tp+1], p[:tp+1, 2], 'b', lw=3, label='Upper pressure')
     plt.plot(d[:tp+1], p[:tp+1, 1], 'r', lw=3, label='Lower pressure')
