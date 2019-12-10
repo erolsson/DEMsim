@@ -77,8 +77,7 @@ class PointSurfacePlotter:
         self.bounding_box = bounding_box
 
     def plot(self, data, color, opacity, time=0.):
-        n = data.shape[0]/3
-
+        n = int(data.shape[0]/3)
         x = data[0:3*n-2:3]
         y = data[1:3*n-1:3]
         z = data[2:3*n:3]
@@ -188,7 +187,7 @@ class SurfacesPlotter:
                 data_line = self.data[t]
                 self.counter = 0
             except LookupError:
-                print "No surface data at time ", t
+                print("No surface data at time ", t)
                 sys.exit(1)
 
         plot_order = self.plot_order

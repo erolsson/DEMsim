@@ -5,13 +5,13 @@
 #include "output.h"
 
 #include <chrono>
-#include <experimental/filesystem>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 
 #include "../particles/fractureable_spherical_particle.h"
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 template<typename ForceModel, typename ParticleType>
 DEM::Output<ForceModel, ParticleType>::Output(std::string directory, std::chrono::duration<double> interval,
@@ -19,6 +19,7 @@ DEM::Output<ForceModel, ParticleType>::Output(std::string directory, std::chrono
     particles_(engine.particles_), surfaces_(engine.surfaces_), contacts_(engine.contacts_),
     directory_(directory), current_time_(engine.get_time()), time_until_output_(interval), interval_(interval)
 {
+        std::cout << "Creating output: " << directory << std::endl;
     if (!fs::exists(directory_)) {
         fs::create_directories(directory_);
     }

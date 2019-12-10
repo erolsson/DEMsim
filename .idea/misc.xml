@@ -2,6 +2,10 @@
 <project version="4">
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="CidrRootsConfiguration">
+    <sourceRoots>
+      <file path="$PROJECT_DIR$/post_processing" />
+      <file path="$PROJECT_DIR$/src" />
+    </sourceRoots>
     <excludeRoots>
       <file path="$PROJECT_DIR$/results" />
     </excludeRoots>

@@ -19,7 +19,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     using ForceModel = StoneMaterialContact;
     using ParticleType = FractureableSphericalParticle<ForceModel>;
     using namespace std::chrono_literals;
-    namespace fs = std::experimental::filesystem;
+    namespace fs = std::filesystem;
 
     using Material = StoneMaterial;
     Material mat {0, 2370.};
