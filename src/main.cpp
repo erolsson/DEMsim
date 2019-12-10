@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include <fenv.h>
+#include <cfenv>
 
 #include "simulations/simulations.h"
 

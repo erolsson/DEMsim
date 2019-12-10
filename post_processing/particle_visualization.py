@@ -4,7 +4,7 @@ from animation import Animation
 from pressure_density import dimensions_cylinder
 
 if __name__ == '__main__':
-    simulation_directory = '../results/proctor_test/8-16mm_continued/animation/'
+    simulation_directory = '../results/viscoelastic/visco_8-16_visc'
     # Doing some inspection to construct a good bounding_box figure
     # dimension_data = dimensions_cylinder(simulation_directory)
     # time = dimension_data[:, 0]
@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)
-    animation.save_directory = '../results/proctor_test/8-16mm_continued/animation/'
+    animation.save_directory = '../results/viscoelastic/animation/'
     animation.save_frames = True
     animation.delay = 0.01
     """
