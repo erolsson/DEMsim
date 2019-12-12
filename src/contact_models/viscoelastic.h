@@ -43,15 +43,15 @@ namespace DEM {
         double k_;
         double R0_;
         double F_{ 0 };
-        std::vector<double> tau_i = {};
-        std::vector<double>  alpha_i = {};
-        std::vector<double> di_={0.};
-        std::vector<double> ddi_={0.};
-        std::vector<double> ai={0.};
-        std::vector<double> x = {};
+        std::vector<double> tau_i;
+        std::vector<double>  alpha_i ;
+        std::vector<double> di_;
+        std::vector<double> ddi_;
+        std::vector<double> ai;
+        std::vector<double> x;
         double dF_{0.};
         double F_visc{0.};
-        std::vector< double> bi={0.};
+        std::vector< double> bi;
         double tsi0_;
         std::size_t id2_{};
 
