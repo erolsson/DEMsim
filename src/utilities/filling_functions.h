@@ -15,8 +15,8 @@ namespace DEM {
 }
 
 namespace DEM {
-    std::vector<Vec3> random_fill_box(double z0, double z1, double box_width,
-                                      const std::vector<double>& radii);
+    std::vector<Vec3>random_fill_box(double z0, double z1, double box_width,
+                                     const std::vector<double>& radii, double binder_thickness);
 }
 
 

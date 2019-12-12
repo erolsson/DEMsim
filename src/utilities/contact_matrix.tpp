@@ -29,19 +29,22 @@ bool DEM::ContactMatrix<T>::erase(size_t idx1, size_t idx2)
 {
     //Finding the index
     auto pos = data_indices_[idx1].find(idx2);
+    size_t i = 0;
     if (pos != data_indices_[idx1].end()) {
+        i = pos->second;
         data_indices_[idx1].erase(pos);
     }
     else {
         pos = data_indices_[idx2].find(idx1);
-        if(pos!=data_indices_[idx2].end())
+        if(pos!=data_indices_[idx2].end()) {
+            i = pos->second;
             data_indices_[idx2].erase(pos);
+        }
         else
             return false;
     }
 
     // freeing the memory allocated by the pointer at idx1 and idx2
-    size_t i = pos->second;
     delete data_[i];
 
     // Tidying up the data vector by swapping elements and placing the removed element last and then pop it

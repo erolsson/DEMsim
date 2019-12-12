@@ -51,26 +51,26 @@ bool DEM::check_overlaps(const DEM::Vec3& point, double radius, const std::vecto
 
 
 std::vector<DEM::Vec3> DEM::random_fill_box(double z0, double z1, double box_width,
-                                            const std::vector<double>& radii)
+                                           const std::vector<double>& radii, double binder_thickness)
 {
     std::vector<Vec3> particle_positions;
     std::random_device random_device;
     std::default_random_engine rand_engine(random_device());
     for (auto r : radii) {
-        std::uniform_real_distribution<double> dist_r(0.+r,
-                                                      box_width-r);
-        std::uniform_real_distribution<double> dist_z(z0+r, z1-r);
+        std::uniform_real_distribution<double> dist_r(-(box_width)/2+r + binder_thickness,
+                                                      (box_width)/2-(r + binder_thickness) );
+        std::uniform_real_distribution<double> dist_z(z0+r, z1-(r + binder_thickness));
         bool overlapping = true;
         Vec3 position {};
-        while(overlapping) {
+            while(overlapping) {
             position.x() = dist_r(rand_engine);
             position.y() = dist_r(rand_engine);
             position.z() = dist_z(rand_engine);
 
             //Check if a particle at the chosen position overlaps with an other
             if (position.x()*position.x()+position.y()*position.y() <
-                (box_width-r)*(box_width-r)) {
-                overlapping = check_overlaps(position, r, particle_positions, radii);
+                (box_width-(r+binder_thickness))*(box_width-(r+binder_thickness))) {
+                overlapping = check_overlaps(position, r+binder_thickness, particle_positions, radii);
             }
         }
 
