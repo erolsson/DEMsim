@@ -28,13 +28,14 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
 
 
 
-  tsi0_ = 1 / (((1 - v1 * v1) / E1) + ((1 - v2 * v2) / E2));
-  k_=4*tsi0_*sqrt(R0_)/3; //initial contact stiffness
+    tsi0_ = 1 / (((1 - v1 * v1) / E1) + ((1 - v2 * v2) / E2));
+    k_=4*tsi0_*sqrt(R0_)/3; //initial contact stiffness
     for (unsigned i=0; i!=M; ++i)
     {
-
-        ai[i] = {1-exp((-dt_/tau_i[i]))};
-        bi[i] = {(tau_i[i]/dt_ )*((dt_/tau_i[i])-exp((-dt_/tau_i[i])))};
+        di_.push_back(0);
+        ddi_.push_back(0);
+        ai.push_back(1-exp((-dt_/tau_i[i])));
+        bi.push_back(tau_i[i]/dt_ *((dt_/tau_i[i])-exp((-dt_/tau_i[i]))));
     }
 
 //Normal force
@@ -56,8 +57,10 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     id2_= surface->get_id();
     for (unsigned i=0; i!=M; ++i)
     {
-        ai[i] = {1-exp((-dt_/tau_i[i]))};
-        bi[i] = {(tau_i[i]/dt_ )*((dt_/tau_i[i])-exp((-dt_/tau_i[i])))};
+        di_.push_back(0);
+        ddi_.push_back(0);
+        ai.push_back(1-exp((-dt_/tau_i[i])));
+        bi.push_back(tau_i[i]/dt_*((dt_/tau_i[i])-exp((-dt_/tau_i[i]))));
     }
 }
 

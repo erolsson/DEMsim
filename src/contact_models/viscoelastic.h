@@ -12,7 +12,7 @@
 #include "../utilities/vec3.h"
 
 namespace DEM {
-    class Viscoelastic{
+    class Viscoelastic {
         using ParticleType = SphericalParticle<Viscoelastic>;
         using SurfaceType = Surface<Viscoelastic, ParticleType>;
 
@@ -43,12 +43,12 @@ namespace DEM {
         double k_;
         double R0_;
         double F_{ 0 };
-        std::vector<double> tau_i;
-        std::vector<double>  alpha_i;
+        std::vector<double> tau_i = {};
+        std::vector<double>  alpha_i = {};
         std::vector<double> di_={0.};
         std::vector<double> ddi_={0.};
         std::vector<double> ai={0.};
-        std::vector<double> x;
+        std::vector<double> x = {};
         double dF_{0.};
         double F_visc{0.};
         std::vector< double> bi={0.};

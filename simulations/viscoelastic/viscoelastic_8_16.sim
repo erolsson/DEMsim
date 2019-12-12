@@ -1,4 +1,4 @@
-N=100
+N=20
 gas_density=0.2
 filling_density=0.5
 aspect_ratio_after_filling=1.
