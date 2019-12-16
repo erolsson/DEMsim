@@ -4,16 +4,18 @@
 
 #include "viscoelastic.h"
 #include <cmath>
+#include <vector>
 #include "../materials/ViscoelasticMaterial.h"
 
 #include <iostream>
 
-DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::Viscoelastic::ParticleType* particle2,
+DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM::Viscoelastic::ParticleType* particle2,
                                 std::chrono::duration<double> dt)  {
     //extracting from material
     auto mat1 = dynamic_cast<const ViscoelasticMaterial *>(particle1->get_material());
     auto mat2 = dynamic_cast<const ViscoelasticMaterial *>(particle2->get_material());
-    R0_ = 1. / (1. / particle1->get_radius() + 1. / particle1->get_radius());
+    R0_ = 1. / (1. / particle1->get_radius() + 1. / particle2->get_radius());
+    std::cout<<R0_<<"R";
     double E1 = mat1->E;
     double E2 = mat2->E;
     double v1 = mat1->nu;
@@ -23,11 +25,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     alpha_i=mat1->alpha_i;
     kT_=mat1->kT;
     bt_= mat1->bt;
-
     dt_ = dt.count();  // time increment
-
-
-
     tsi0_ = 1 / (((1 - v1 * v1) / E1) + ((1 - v2 * v2) / E2));
     k_=4*tsi0_*sqrt(R0_)/3; //initial contact stiffness
     for (unsigned i=0; i!=M; ++i)
@@ -44,6 +42,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
                                 std::chrono::duration<double>dt){
     auto mat1 = dynamic_cast<const ViscoelasticMaterial *>(particle1->get_material());
     double E1 = mat1->E;
+    dt_ = dt.count();
     double v1 = mat1->nu;
     R0_= particle1->get_radius();
     M=mat1->M();
@@ -52,7 +51,6 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     kT_=mat1->kT;
     bt_= mat1->bt;
     tsi0_ = 1 / ((1 - v1 * v1) / E1);
-    dt_ = dt.count();  // time increment
     k_=4*tsi0_*sqrt(R0_)/3; //initial contact stiffness
     id2_= surface->get_id();
     for (unsigned i=0; i!=M; ++i)
@@ -63,26 +61,24 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
         bi.push_back(tau_i[i]/dt_*((dt_/tau_i[i])-exp((-dt_/tau_i[i]))));
     }
 }
-
-
-
 void DEM::Viscoelastic::update(double h, const DEM::Vec3& dt,const Vec3& rot, const DEM::Vec3& normal)
 {
-    update_normal_force(h-h_);
+    update_normal_force(h);
     update_tangential_force(dt, normal);
 }
 
-double DEM::Viscoelastic::update_normal_force(double dh)
+double DEM::Viscoelastic::update_normal_force(double h)
 {
-    if (dh+h_ > -bt_)
+    if (h-h_ > -bt_)
+    std::cout<<h_<<"h";
     {
-        dF_=(3./2)*sqrt(h_ + bt_)*dh;
+        dF_=(3./2)*sqrt(h_ + bt_)*(h-h_);
 
         std::cout << dF_ << std::endl;
         for (unsigned i=0 ; i != M; ++i)
         {
             auto hn32 = pow(h_ + bt_, 3./2);
-            auto h_32diff= pow(h_ + dh + bt_, 3./ 2)-hn32;
+            auto h_32diff= pow(h_ + (h-h_) + bt_, 3./ 2)-hn32;
             ddi_ [i]= bi[i]*h_32diff + ai[i]*(hn32-di_[i]);
             dF_ -= alpha_i[i]*ddi_[i];
 
@@ -90,11 +86,14 @@ double DEM::Viscoelastic::update_normal_force(double dh)
         }
         F_visc+=k_*dF_;
 
-        h_+=dh;
-        std::cout << F_visc << std::endl;
+        h_+=(h-h_);
+        //std::cout << F_visc << std::endl;
+    }
+    if (F_visc<0){
+        F_visc=0;
     }
     return F_visc;
-    }
+}
 
 
 

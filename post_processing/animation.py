@@ -56,6 +56,7 @@ class Animation:
         if self.save_frames and not os.path.isdir(self.save_directory):
             os.makedirs(self.save_directory)
         for i, t in enumerate(frame_times):
+            print(i)
             particle_data = np.genfromtxt(self.directory + '/particles_' + t + '.dou', delimiter=',')
             spheres_plotter.plot(particle_data)
             surfaces_plotter.plot(float(t))

@@ -10,6 +10,7 @@
 #include "../surfaces/surface_base.h"
 #include "../surfaces/point_surface.h"
 #include "../utilities/vec3.h"
+#include <vector>
 
 namespace DEM {
     class Viscoelastic {
@@ -21,7 +22,8 @@ namespace DEM {
         Viscoelastic(ParticleType* particle1, ParticleType* particle2,  std::chrono::duration<double> dt);
         Viscoelastic(ParticleType* particle1, SurfaceType* surface, std::chrono::duration<double>dt );
 
-        void update(double dh, const Vec3& dt, const Vec3& rot, const Vec3& normal);
+        void update(double h, const Vec3& dt, const Vec3& rot, const Vec3& normal);
+
 
         [[nodiscard]] double get_overlap() const { return h_; }
         [[nodiscard]] double get_normal_force() const { return F_visc; }
@@ -31,7 +33,10 @@ namespace DEM {
         [[nodiscard]] bool active() const {return F_ != 0; }
         [[nodiscard]] std::string get_output_string() const;
 
+
         static void set_increment(std::chrono::duration<double>) {}
+
+
 
     private:
         double dt_;   // Time increment
@@ -44,14 +49,15 @@ namespace DEM {
         double R0_;
         double F_{ 0 };
         std::vector<double> tau_i;
-        std::vector<double>  alpha_i ;
+        std::vector<double> alpha_i ;
+        std::vector<double> ai;
+        std::vector<double> bi;
+
         std::vector<double> di_;
         std::vector<double> ddi_;
-        std::vector<double> ai;
         std::vector<double> x;
         double dF_{0.};
         double F_visc{0.};
-        std::vector< double> bi;
         double tsi0_;
         std::size_t id2_{};
 
@@ -65,6 +71,8 @@ namespace DEM {
         void update_tangential_resistance(const Vec3 &rot);
     };
 }
+
+
 
 
 #endif //DEMSIM_VISCOELASTIC_H

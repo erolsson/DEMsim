@@ -24,8 +24,6 @@ DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, Particl
 {
     normal_ = calculate_distance_vector().normal();
 }
-
-
 template<typename ForceModel, typename ParticleType>
 DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, SurfaceType* surface,
                                                 std::chrono::duration<double> increment) :
@@ -41,8 +39,6 @@ DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, Surface
 {
     normal_ = calculate_distance_vector().normal();
 }
-
-
 template<typename ForceModel, typename ParticleType>
 void DEM::Contact<ForceModel, ParticleType>::update()
 {

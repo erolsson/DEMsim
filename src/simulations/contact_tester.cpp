@@ -7,7 +7,7 @@
 #include "simulations.h"
 
 #include "../engine/engine.h"
-#include "../particles/fractureable_spherical_particle.h"
+#include "../particles/spherical_particle.h"
 #include "../engine/contact.h"
 #include "../contact_models/stone_material_contact.h"
 #include "../materials/stone_material.h"
@@ -31,7 +31,6 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     auto increments = parameters.get_parameter<unsigned>("N");
     //auto h1 = parameters.get_parameter<double>("h1");
     auto tick = parameters.get_parameter<long double>("tick");
-    //auto dt = parameters.get_parameter<double>("dt");
     auto filename= parameters.get_parameter<std::string>("output_file");
     mat.E = parameters.get_parameter<double>("E");
     mat.nu = parameters.get_parameter<double>("nu");
@@ -44,12 +43,11 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius, 0, 0}, Vec3{}, &mat, 0);
     auto p2 = SphericalParticle<ForceModel>(radius, Vec3{radius, 0, 0}, Vec3{}, &mat, 1);
 
-    auto c = Contact<ForceModel, ParticleType>(&p2, &p1, 1000s);
+    auto c = Contact<ForceModel, ParticleType>(&p2, &p1, 100s);
 
     //p1.move(Vec3{h1, 0, 0});
     //p2.move(Vec3{-h1, 0, 0});
-    c.update();
-    c.update();
+
 
     fs::path path_to_output_file {filename};
     fs::create_directories(path_to_output_file.parent_path());
@@ -61,12 +59,12 @@ void DEM::contact_tester(const std::string& settings_file_name) {
         p2.move(Vec3{static_cast<double>(-tick/2), 0, 0});
         c.update();
         output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
-                    << c.get_normal_force().y()  << ", " << c.get_tangential_force().x()
+                    << p1.get_position().x() - p2.get_position().x() << ", "
                     << c.get_tangential_force().y() << std::endl;
     }
 
 
-    for(unsigned i = 0; i != 2*increments; ++i) {
+    for(unsigned i = 0; i != increments; ++i) {
        p1.move(Vec3{static_cast<double>(-tick/2), 0, 0});
        p2.move(Vec3{static_cast<double>(tick/2), 0, 0});
        c.update();

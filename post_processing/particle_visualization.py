@@ -4,7 +4,7 @@ from animation import Animation
 from pressure_density import dimensions_cylinder
 
 if __name__ == '__main__':
-    simulation_directory = '../results/closed_die_compaction/5'
+    simulation_directory = '../results/viscoelastic/visco_8-16_visc'
     # Doing some inspection to construct a good bounding_box figure
     # dimension_data = dimensions_cylinder(simulation_directory)
     # time = dimension_data[:, 0]

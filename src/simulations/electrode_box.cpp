@@ -95,7 +95,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     output1->print_surface_forces = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(1.);
+    simulator.set_mass_scale_factor(10e15);
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.1s);
 
