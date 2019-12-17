@@ -32,7 +32,9 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
         di_.push_back(0);
         ddi_.push_back(0);
         ai.push_back(1-exp((-dt_/tau_i[i])));
-        bi.push_back(tau_i[i]/dt_ *((dt_/tau_i[i])-exp((-dt_/tau_i[i]))));
+        std::cout << ai[i] << std::endl;
+        bi.push_back(tau_i[i]/dt_ *((dt_/tau_i[i])-ai[i]));
+        std::cout << bi[i]<< std::endl;
     }
 
 //Normal force
@@ -40,12 +42,12 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
 DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM::Viscoelastic::SurfaceType *surface,
                                 std::chrono::duration<double>dt){
     auto mat1 = dynamic_cast<const ViscoelasticMaterial *>(particle1->get_material());
-    //auto mat2 = dynamic_cast<const ViscoelasticMaterial *>(particle2->get_material());
+
     R0_ = 1. / (1. / particle1->get_radius());
     double E1 = mat1->E;
-    //double E2 = mat2->E;
+
     double v1 = mat1->nu;
-    //double v2 = mat2->nu;
+
     M=mat1->M();
     tau_i=mat1->tau_i;
     alpha_i=mat1->alpha_i;
@@ -60,7 +62,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
         di_.push_back(0);
         ddi_.push_back(0);
         ai.push_back(1-exp((-dt_/tau_i[i])));
-        bi.push_back(tau_i[i]/dt_ *((dt_/tau_i[i])-exp((-dt_/tau_i[i]))));
+        bi.push_back(tau_i[i]/dt_ *((dt_/tau_i[i])-ai[i]));
     }
 }
 void DEM::Viscoelastic::update(double h, const DEM::Vec3& dt,const Vec3& rot, const DEM::Vec3& normal){
@@ -71,8 +73,9 @@ void DEM::Viscoelastic::update(double h, const DEM::Vec3& dt,const Vec3& rot, co
 
 double DEM::Viscoelastic::update_normal_force(double h)
 {
-    double dh = h - h_;
-    if (h > -bt_){
+    double dh=h-h_;
+
+    if (h> -bt_){
 
         dF_=3./2*sqrt(h_ + bt_)*dh;
 
@@ -98,10 +101,6 @@ double DEM::Viscoelastic::update_normal_force(double h)
     }
     return F_visc;
 }
-
-
-
-
 unsigned DEM::Viscoelastic::M;
 //tangential
 
@@ -128,9 +127,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3& dt, const DEM::
         //uT_.set_zero();
     //}
 }
-void DEM::Viscoelastic::update_tangential_resistance(const DEM::Vec3 &rot) {
-    rot.length();
-}
+
 std::string DEM::Viscoelastic::get_output_string() const {
     std::stringstream ss;
     ss  << F_visc;

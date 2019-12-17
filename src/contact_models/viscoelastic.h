@@ -66,8 +66,6 @@ namespace DEM {
         double update_normal_force(double h);
         void update_tangential_force(const Vec3& dt, const Vec3& normal);
 
-
-        void update_tangential_resistance(const Vec3 &rot);
     };
 }
 
