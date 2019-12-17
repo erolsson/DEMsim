@@ -48,23 +48,22 @@ namespace DEM {
         double k_;
         double R0_;
         double F_{ 0 };
-        std::vector<double> tau_i;
-        std::vector<double> alpha_i ;
-        std::vector<double> ai;
-        std::vector<double> bi;
+        std::vector<double> tau_i {};
+        std::vector<double> alpha_i {};
+        std::vector<double> ai {};
+        std::vector<double> bi {};
 
-        std::vector<double> di_;
-        std::vector<double> ddi_;
-        std::vector<double> x;
+        std::vector<double> di_ {};
+        std::vector<double> ddi_ {};
+        std::vector<double> x {};
         double dF_{0.};
         double F_visc{0.};
         double tsi0_;
-        std::size_t id2_{};
 
         Vec3 FT_{ Vec3(0., 0., 0.) };
         Vec3 uT_{ Vec3(0., 0., 0.) };
 
-        double update_normal_force(double dh);
+        double update_normal_force(double h);
         void update_tangential_force(const Vec3& dt, const Vec3& normal);
 
 

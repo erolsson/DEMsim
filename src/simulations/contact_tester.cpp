@@ -43,7 +43,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius, 0, 0}, Vec3{}, &mat, 0);
     auto p2 = SphericalParticle<ForceModel>(radius, Vec3{radius, 0, 0}, Vec3{}, &mat, 1);
 
-    auto c = Contact<ForceModel, ParticleType>(&p2, &p1, 100s);
+    auto c = Contact<ForceModel, ParticleType>(&p2, &p1, 0.35s);
 
     //p1.move(Vec3{h1, 0, 0});
     //p2.move(Vec3{-h1, 0, 0});

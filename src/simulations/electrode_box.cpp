@@ -25,14 +25,14 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     auto particle_file = parameters.get_parameter<std::string>("radius_file");
     auto gas_density = parameters.get_parameter<double>("gas_density");
 
-    auto aspect_ratio_after_filling = parameters.get_parameter<double>("aspect_ratio_after_filling");
+    //auto aspect_ratio_after_filling = parameters.get_parameter<double>("aspect_ratio_after_filling");
 
     EngineType simulator(1us);
 
     auto mat = simulator.create_material<ViscoelasticMaterial>(4.8);
     mat->E = parameters.get_parameter<double>("E");
     mat->nu = parameters.get_parameter<double>("nu");
-    mat->unloading_exponent = parameters.get_parameter<double>("unloading_exponent");
+    //mat->unloading_exponent = parameters.get_parameter<double>("unloading_exponent");
     mat->mu = parameters.get_parameter<double>("mu");//VAD ?
     mat->mu_wall = parameters.get_parameter<double>("mu_wall");
     mat->tau_i=parameters.get_vector<double>( "tau_i" );
@@ -54,13 +54,13 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
 
-    auto box_width = pow(4*particle_volume/pi/aspect_ratio_after_filling, 1./3)*2;
-    auto box_height = 2*box_width*aspect_ratio_after_filling/gas_density;
+    auto box_width = pow(3*particle_volume/4*pi, 1./3)*2;
+    auto box_height =box_width/gas_density;
     std::cout << "The simulated box has a width of " << box_width << " and a height of "
               << box_height << "\n";
 
 
-    auto particle_positions = random_fill_box(0, box_height, box_width, particle_radii, mat->bt);
+    auto particle_positions = random_fill_box(0.0, box_height, box_width, particle_radii, mat->bt);
     for (std::size_t i=0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
@@ -68,13 +68,13 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     // Creating The bottom plate surface
     Vec3 p4(0., 0., 0.);
     Vec3 p2(0.,  box_width, 0.);
-    Vec3 p3(box_height,   0. , 0.);
+    Vec3 p3(box_width,   0. , 0.);
     Vec3 p1(box_width,  box_width, 0.);
 
     // Creating The top plate surface
     Vec3 p5(0., 0., box_height);
     Vec3 p6(0.,  box_width, box_height);
-    Vec3 p7(box_height,   0. , box_height);
+    Vec3 p7(box_width,   0. , box_height);
     Vec3 p8(box_width,  box_width, box_height);
 
     std::vector<Vec3> bottom_points{p4, p3, p2, p1};
@@ -95,11 +95,24 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     output1->print_surface_forces = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(10e15);
+    simulator.set_mass_scale_factor(1.0);
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.1s);
 
     simulator.run(run_for_time);
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
     simulator.run(max_velocity);
+
+
+    auto bbox = simulator.get_bounding_box();
+    double h = bbox[5];
+    top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
+
+    // Compress the compact
+    double h_target = box_height;
+    std::chrono::duration<double> compaction_time {parameters.get_parameter<double>("compaction_time")};
+    double surface_velocity = (h_target - h)/(compaction_time.count());
+    top_surface->set_velocity(Vec3(0, 0, surface_velocity));
+    run_for_time.reset(compaction_time);
+    simulator.run(run_for_time);
 }
