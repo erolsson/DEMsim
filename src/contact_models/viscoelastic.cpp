@@ -39,7 +39,7 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
 
 //Normal force
 }
-DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM::Viscoelastic::SurfaceType *surface,
+DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM::Viscoelastic::SurfaceType *,
                                 std::chrono::duration<double>dt){
     auto mat1 = dynamic_cast<const ViscoelasticMaterial *>(particle1->get_material());
 
@@ -52,6 +52,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     tau_i=mat1->tau_i;
     alpha_i=mat1->alpha_i;
     kT_=mat1->kT;
+    mu_=mat1->mu;
     bt_= mat1->bt;
     dt_ = dt.count();  // time increment
     tsi0_ = 1. / ((1 - v1 * v1) / E1);
@@ -65,7 +66,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
         bi.push_back(tau_i[i]/dt_ *((dt_/tau_i[i])-ai[i]));
     }
 }
-void DEM::Viscoelastic::update(double h, const DEM::Vec3& dt,const Vec3& rot, const DEM::Vec3& normal){
+void DEM::Viscoelastic::update(double h, const DEM::Vec3& dt,const Vec3& , const DEM::Vec3& normal){
     update_normal_force(h);
     update_tangential_force(dt, normal);
 
@@ -75,7 +76,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
 {
     double dh=h-h_;
 
-    if (h> -bt_){
+    if (h> bt_ && h_ > bt_){
 
         dF_=3./2*sqrt(h_ + bt_)*dh;
 
@@ -93,39 +94,33 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
         F_visc+=k_*dF_;
 
-        h_+= dh;
+
         //std::cout << F_visc << std::endl;
     }
-    if (F_visc<0){
-        F_visc=0;
-    }
+    h_+= dh;
     return F_visc;
 }
 unsigned DEM::Viscoelastic::M;
 //tangential
 
-void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3& dt, const DEM::Vec3& normal)
-{
-
-   for  (unsigned i=0 ; i != M; ++i) {
+void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3& dt, const DEM::Vec3& normal) {
+    if (F_visc > 0.0) {
         // Projecting uT on the new contact plane by removing the component in the contact normal direction
-       uT_ -= dot_product(uT_, normal)*normal;
-       uT_ += dt;
-       // if (kT_*uT_.length() > mu_*F_visc) { // Slip
-         //   uT_ = mu_*F_visc/kT_*uT_.normal();
-       FT_ = -kT_*uT_ *0.9;
-       }
+        uT_ -= dot_product(uT_, normal)*normal;
+        uT_ += dt;
+        if (kT_*uT_.length() > mu_*F_visc) { // Slip
+            uT_ = mu_*F_visc/kT_*uT_.normal();
+        }
+        FT_ = -kT_*uT_ *0.9;
+        if(!dt.is_zero())
+            FT_ -= mu_*F_visc*dt.normal()*0.1;
+    }
+    else {
+        FT_.set_zero();
+        uT_.set_zero();
+    }
 
 
-
-
-    //    if(!dt.is_zero())
-      //      FT_ -= mu_*F_visc*dt.normal()*0.1;
-    //}
-    //else {
-      //  FT_.set_zero();
-        //uT_.set_zero();
-    //}
 }
 
 std::string DEM::Viscoelastic::get_output_string() const {

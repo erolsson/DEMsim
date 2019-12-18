@@ -43,7 +43,6 @@ void DEM::closed_die_compaction(const std::string& settings_file_name){
     auto unloading_velocity = parameters.get_parameter<double>("unloading_velocity");
     std::chrono::duration<double> unloading_time {parameters.get_parameter<double>("unloading_time")};
 
-
     // Read particle radii from file
     auto particle_radii = read_vector_from_file<double>(particle_file);
     particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);

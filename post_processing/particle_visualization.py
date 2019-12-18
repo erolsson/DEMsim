@@ -15,9 +15,9 @@ if __name__ == '__main__':
 
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)
-    animation.save_directory = '../results/viscoelastic/animation/'
+    animation.save_directory = '../results/viscoelastic/animation1/'
     animation.save_frames = True
-    animation.delay = 0.01
+    animation.delay = 0.0001
     """
     animation.surfaces_colors[0] = (0., 1., 0.)
     animation.surfaces_colors[5001] = (1., 0., 0.)

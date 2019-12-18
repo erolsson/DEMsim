@@ -48,6 +48,7 @@ namespace DEM {
         double k_;
         double R0_;
         double F_{ 0 };
+        double mu_;
         std::vector<double> tau_i {};
         std::vector<double> alpha_i {};
         std::vector<double> ai {};
