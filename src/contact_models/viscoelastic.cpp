@@ -4,6 +4,8 @@
 
 #include "viscoelastic.h"
 #include <cmath>
+#include <vector>
+
 #include "../materials/ViscoelasticMaterial.h"
 
 #include <iostream>
@@ -14,7 +16,7 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     auto mat1 = dynamic_cast<const ViscoelasticMaterial *>(particle1->get_material());
     auto mat2 = dynamic_cast<const ViscoelasticMaterial *>(particle2->get_material());
     R0_ = 1. / (1. / particle1->get_radius() + 1. / particle2->get_radius());
-    std::cout<<R0_<<"R";
+
     double E1 = mat1->E;
     double E2 = mat2->E;
     double v1 = mat1->nu;
@@ -30,11 +32,11 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     for (unsigned i=0; i!=M; ++i)
     {
         di_.push_back(0);
+        ddti_.emplace_back(0., 0., 0.);
+        dti_.emplace_back(0., 0., 0.);
         ddi_.push_back(0);
         ai.push_back(1-exp((-dt_/tau_i[i])));
-        std::cout << ai[i] << std::endl;
         bi.push_back(tau_i[i]/dt_ *((dt_/tau_i[i])-ai[i]));
-        std::cout << bi[i]<< std::endl;
     }
 
 //Normal force
@@ -62,6 +64,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     {
         di_.push_back(0);
         ddi_.push_back(0);
+        ddti_.emplace_back(0., 0., 0.);
+        dti_.emplace_back(0., 0., 0.);
         ai.push_back(1-exp((-dt_/tau_i[i])));
         bi.push_back(tau_i[i]/dt_ *((dt_/tau_i[i])-ai[i]));
     }
@@ -71,55 +75,62 @@ void DEM::Viscoelastic::update(double h, const DEM::Vec3& dt,const Vec3& , const
     update_tangential_force(dt, normal);
 
 }
+unsigned DEM::Viscoelastic::M;
 
 double DEM::Viscoelastic::update_normal_force(double h)
 {
     double dh=h-h_;
-
-    if (h> bt_ && h_ > bt_){
+    if (h> -bt_ && h_ > -bt_){
+        if(h+bt_>0){
+            area_ = pi*R0_*(h + bt_);
+        } else{
+            area_=0;
+        }
 
         dF_=3./2*sqrt(h_ + bt_)*dh;
-
-        std::cout << dF_ << std::endl;
         auto hn32 = pow(h_ + bt_, 3./2);
         auto h_32diff = pow(h + bt_, 3./ 2)-hn32;
-
         for (unsigned i=0 ; i != M; ++i)
         {
             ddi_ [i]= bi[i]*h_32diff + ai[i]*(hn32-di_[i]);
             dF_ -= alpha_i[i]*ddi_[i];
-
             di_[i]+=ddi_[i];
         }
-
         F_visc+=k_*dF_;
-
-
-        //std::cout << F_visc << std::endl;
+        std::cout << F_visc << std::endl;
     }
     h_+= dh;
     return F_visc;
 }
-unsigned DEM::Viscoelastic::M;
-//tangential
-
-void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3& dt, const DEM::Vec3& normal) {
-    if (F_visc > 0.0) {
+void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
+    if (F_visc> 0.0  && !uT_.is_zero()) {
         // Projecting uT on the new contact plane by removing the component in the contact normal direction
-        uT_ -= dot_product(uT_, normal)*normal;
+        uT_ -= dot_product(uT_, normal) * normal;
+        std::cout<<uT_<<"uT"<<std::endl;
         uT_ += dt;
-        if (kT_*uT_.length() > mu_*F_visc) { // Slip
-            uT_ = mu_*F_visc/kT_*uT_.normal();
+        if (kT_ * uT_.length() >0.05*F_visc) { // contact aborted
+        FT_.set_zero();
+        }else {
+
+            dFT_=-2*area_*tsi0_*dt/bt_/uT_.length();
+
+            for (unsigned i=0; i!=M; ++i)
+            {
+                ddti_[i] = bi[i]*dt + ai[i]*(uT_-dti_[i]);
+                dFT_ -= alpha_i[i]*ddti_[i];
+                ddti_[i]+=dti_[i];
+            }
+            FT_+=dFT_;
         }
-        FT_ = -kT_*uT_ *0.9;
-        if(!dt.is_zero())
-            FT_ -= mu_*F_visc*dt.normal()*0.1;
-    }
-    else {
+
+    } else {
         FT_.set_zero();
         uT_.set_zero();
     }
-
+    if (std::isnan(FT_.length())) {
+        std::cout<<FT_<<"FT"<<std::endl;
+        std::abort();
+    }
 
 }
 

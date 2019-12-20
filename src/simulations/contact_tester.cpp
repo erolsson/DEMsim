@@ -64,7 +64,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     }
 
 
-    for(unsigned i = 0; i != increments; ++i) {
+    for(unsigned i = 0; i != 2* increments; ++i) {
        p1.move(Vec3{static_cast<double>(-tick/2), 0, 0});
        p2.move(Vec3{static_cast<double>(tick/2), 0, 0});
        c.update();
@@ -73,7 +73,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                 << c.get_tangential_force().y() << std::endl;
     }
 
-    for(unsigned i = 0; i != increments; ++i) {
+    for(unsigned i = 0; i != 2*increments; ++i) {
         p1.move(Vec3{static_cast<double>(tick/2), 0, 0});
         p2.move(Vec3{static_cast<double>(-tick/2), 0, 0});
         c.update();
@@ -82,7 +82,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                     << c.get_tangential_force().y() << std::endl;
     }
 
-    for(unsigned i = 0; i != increments; ++i) {
+    for(unsigned i = 0; i != 2*increments; ++i) {
         p1.move(Vec3{static_cast<double>(-tick/2), 0, 0});
         p2.move(Vec3{static_cast<double>(tick/2), 0, 0});
         c.update();

@@ -28,10 +28,11 @@ namespace DEM {
         [[nodiscard]] double get_overlap() const { return h_; }
         [[nodiscard]] double get_normal_force() const { return F_visc; }
         [[nodiscard]] const Vec3& get_tangential_force() const { return FT_; }
+        [[nodiscard]] double get_contact_area() const {return area_; }
         [[nodiscard]] Vec3 get_rolling_resistance_torque() const { return Vec3{};};
-        [[nodiscard]] double get_contact_area() const {return sqrt(a_); }
         [[nodiscard]] bool active() const {return F_ != 0; }
         [[nodiscard]] std::string get_output_string() const;
+
 
 
         static void set_increment(std::chrono::duration<double>) {}
@@ -43,7 +44,8 @@ namespace DEM {
         double kT_;
         double bt_;
         double h_ {0. };
-        double a_ { 0. };
+        // double a_ { 0. };
+        double area_ {0. };
         static unsigned M;
         double k_;
         double R0_;
@@ -55,18 +57,21 @@ namespace DEM {
         std::vector<double> bi {};
 
         std::vector<double> di_ {};
-        std::vector<double> ddi_ {};
+        std::vector<double > ddi_ {};
+        std::vector<DEM::Vec3> ddti_ {};
+        std::vector<DEM::Vec3> dti_ {};
         std::vector<double> x {};
         double dF_{0.};
         double F_visc{0.};
         double tsi0_;
-
-        Vec3 FT_{ Vec3(0., 0., 0.) };
+        Vec3 dFT_{Vec3(0., 0., 0.)};
+        Vec3 FT_{Vec3(0., 0., 0.)};
         Vec3 uT_{ Vec3(0., 0., 0.) };
+
+
 
         double update_normal_force(double h);
         void update_tangential_force(const Vec3& dt, const Vec3& normal);
-
     };
 }
 
