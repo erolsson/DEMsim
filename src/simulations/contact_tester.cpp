@@ -40,10 +40,10 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     mat.alpha_i = parameters.get_vector<double>("alpha_i");
     mat.tau_i =parameters.get_vector<double>("tau_i");
 
-    auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius, 0, 0}, Vec3{}, &mat, 0);
-    auto p2 = SphericalParticle<ForceModel>(radius, Vec3{radius, 0, 0}, Vec3{}, &mat, 1);
+    auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius-mat.bt/2, 0, 0}, Vec3{}, &mat, 0);
+    auto p2 = SphericalParticle<ForceModel>(radius, Vec3{radius+mat.bt/2,0, 0}, Vec3{}, &mat, 1);
 
-    auto c = Contact<ForceModel, ParticleType>(&p2, &p1, 0.00005s);
+    auto c = Contact<ForceModel, ParticleType>(&p2, &p1, 0.00001s);
 
     //p1.move(Vec3{h1, 0, 0});
     //p2.move(Vec3{-h1, 0, 0});
@@ -54,7 +54,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     std::ofstream output_file;
     output_file.open(filename);
 
-    for(unsigned i = 0; i != increments; ++i) {
+    for(unsigned i = 0; i != 3*increments; ++i) {
         p1.move(Vec3{static_cast<double>(tick/2), 0, 0});
         p2.move(Vec3{static_cast<double>(-tick/2), 0, 0});
         c.update();
@@ -62,6 +62,16 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                     << p1.get_position().x() - p2.get_position().x() << ", "
                     << c.get_tangential_force().y() << std::endl;
     }
+    for(unsigned i = 0; i != increments; ++i) {
+        p1.move(Vec3{0, static_cast<double>(tick/2), 0});
+        p2.move(Vec3{0, 0, 0});
+        c.update();
+        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
+                    << p1.get_position().x() - p2.get_position().x() << ", "
+                    << c.get_tangential_force().y() << std::endl;
+    }
+
+
 
 
     for(unsigned i = 0; i != 2* increments; ++i) {
@@ -73,21 +83,5 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                 << c.get_tangential_force().y() << std::endl;
     }
 
-    for(unsigned i = 0; i != 2*increments; ++i) {
-        p1.move(Vec3{static_cast<double>(tick/2), 0, 0});
-        p2.move(Vec3{static_cast<double>(-tick/2), 0, 0});
-        c.update();
-        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
-                    << p1.get_position().x() - p2.get_position().x() << ", "
-                    << c.get_tangential_force().y() << std::endl;
-    }
 
-    for(unsigned i = 0; i != 2*increments; ++i) {
-        p1.move(Vec3{static_cast<double>(-tick/2), 0, 0});
-        p2.move(Vec3{static_cast<double>(tick/2), 0, 0});
-        c.update();
-        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
-                    << p1.get_position().x() - p2.get_position().x() << ", "
-                    << c.get_tangential_force().y() << std::endl;
-    }
 }

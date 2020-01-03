@@ -80,62 +80,82 @@ unsigned DEM::Viscoelastic::M;
 double DEM::Viscoelastic::update_normal_force(double h)
 {
     double dh=h-h_;
-    if (h> -bt_ && h_ > -bt_){
-        if(h+bt_>0){
-            area_ = pi*R0_*(h + bt_);
+    //std::cout << "h:" << h << std::endl;
+    if (h> -bt_ && h_ > -bt_ ){
+        if(h>0){
+            area_ = pi*R0_*(h+bt_ );
         } else{
             area_=0;
         }
 
-        dF_=3./2*sqrt(h_ + bt_)*dh;
-        auto hn32 = pow(h_ + bt_, 3./2);
-        auto h_32diff = pow(h + bt_, 3./ 2)-hn32;
+        dF_=3./2*sqrt(h_+bt_ )*dh;
+        //std::cout << "dF_:" << dF_ << std::endl;
+        auto hn32 = pow(h_+bt_, 3./2);
+        auto h_32diff = pow(h+bt_ , 3./ 2)-hn32;
         for (unsigned i=0 ; i != M; ++i)
         {
-            ddi_ [i]= bi[i]*h_32diff + ai[i]*(hn32-di_[i]);
+            ddi_[i]= bi[i]*h_32diff + ai[i]*(hn32-di_[i]);
             dF_ -= alpha_i[i]*ddi_[i];
             di_[i]+=ddi_[i];
         }
-        F_visc+=k_*dF_;
-        std::cout << F_visc << std::endl;
+
+         F_visc+=k_*dF_;
+         //std::cout << F_visc << std::endl;
+    }
+    else{
+        F_visc=0;
     }
     h_+= dh;
-    return F_visc;
+    //std::cout << "h_:" << h_ << std::endl;
+    //std::cout << "dh" << dh << std::endl;
+
+    return -F_visc;
 }
+
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
-    if (F_visc> 0.0  && !uT_.is_zero()) {
+    uT_ -= dot_product(uT_, normal) * normal;
+    uT_ += dt;
+   //std::cout<<uT_<<"uT"<<std::endl;
+    if (-F_visc> 0.0  && !uT_.is_zero()) {
         // Projecting uT on the new contact plane by removing the component in the contact normal direction
-        uT_ -= dot_product(uT_, normal) * normal;
-        std::cout<<uT_<<"uT"<<std::endl;
-        uT_ += dt;
-        if (kT_ * uT_.length() >0.05*F_visc) { // contact aborted
-        FT_.set_zero();
-        }else {
 
-            dFT_=-2*area_*tsi0_*dt/bt_/uT_.length();
+        dFT_=-2*area_*tsi0_*dt/bt_;
+        //std::cout<<dFT_<<"dFT"<<std::endl;
 
+        for (unsigned i=0; i!=M; ++i)
+        {
+            ddti_[i] = bi[i]*dt + ai[i]*(uT_-dti_[i]);
+            dFT_ -= alpha_i[i]*ddti_[i];
+            dti_[i]+=ddti_[i];
+        }
+        FT_-=dFT_;
+
+        if (FT_.length() > -0.05*F_visc) { // contact aborted
+            FT_.set_zero();
+            uT_.set_zero();
             for (unsigned i=0; i!=M; ++i)
             {
-                ddti_[i] = bi[i]*dt + ai[i]*(uT_-dti_[i]);
-                dFT_ -= alpha_i[i]*ddti_[i];
-                ddti_[i]+=dti_[i];
+                dti_[i].set_zero();
             }
-            FT_+=dFT_;
         }
+
 
     } else {
         FT_.set_zero();
         uT_.set_zero();
     }
     if (std::isnan(FT_.length())) {
-        std::cout<<FT_<<"FT"<<std::endl;
+        //std::cout<<FT_<<"FT"<<std::endl;
         std::abort();
     }
+    //std::cout<<FT_<<"FT"<<std::endl;
 
 }
 
 std::string DEM::Viscoelastic::get_output_string() const {
     std::stringstream ss;
     ss  << F_visc;
+    //ss  << FT_;
+    //ss  << uT_;
     return ss.str();
 }

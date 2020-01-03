@@ -48,8 +48,8 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     }
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
 
-    auto box_width = pow(3*particle_volume/4*pi, 1./3)*2;
-    auto box_height =box_width/0.2;
+    auto box_width = pow(3*particle_volume/4*pi, 1./3);
+    auto box_height =box_width*5;
     std::cout << "The simulated box has a width of " << box_width << " and a height of "
               << box_height << "\n";
 
@@ -107,7 +107,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     output1->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(10.0e5);
+    simulator.set_mass_scale_factor(10.0e6);
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.1s);
 

@@ -1,7 +1,6 @@
 from mayavi import mlab
 
 from animation import Animation
-from pressure_density import dimensions_cylinder
 
 if __name__ == '__main__':
     simulation_directory = '../results/viscoelastic/visco_5_box'
