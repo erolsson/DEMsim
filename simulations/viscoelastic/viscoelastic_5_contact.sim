@@ -1,4 +1,4 @@
-N=1000
+N=3000
 R=10e-6
 output_file=../results/viscoelastic/viscoelastic_5_contact
 E=70e9
@@ -6,7 +6,6 @@ nu=0.5
 mu=0.1
 kT=0.0
 tick=0.0005e-6
-ttick=0.005e-8
 bt=0.5e-6
 alpha_i=0.4,0.5
 tau_i=1,10

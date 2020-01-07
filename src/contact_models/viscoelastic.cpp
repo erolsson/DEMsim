@@ -80,6 +80,7 @@ unsigned DEM::Viscoelastic::M;
 double DEM::Viscoelastic::update_normal_force(double h)
 {
     double dh=h-h_;
+    h_ = h - dh;
     //std::cout << "h:" << h << std::endl;
     if (h> -bt_ && h_ > -bt_ ){
         if(h>0){
@@ -92,15 +93,17 @@ double DEM::Viscoelastic::update_normal_force(double h)
         //std::cout << "dF_:" << dF_ << std::endl;
         auto hn32 = pow(h_+bt_, 3./2);
         auto h_32diff = pow(h+bt_ , 3./ 2)-hn32;
+        //std::cout << pow(h+bt_ , 3./ 2) << "   " << hn32 << std::endl;
         for (unsigned i=0 ; i != M; ++i)
         {
             ddi_[i]= bi[i]*h_32diff + ai[i]*(hn32-di_[i]);
+            //std::cout << "ddi_[i] " << ddi_[i] << "   " << alpha_i[i] << std::endl;
             dF_ -= alpha_i[i]*ddi_[i];
             di_[i]+=ddi_[i];
         }
 
          F_visc+=k_*dF_;
-         //std::cout << F_visc << std::endl;
+         //std::cout << dF_ << "  " << F_visc << std::endl;
     }
     else{
         F_visc=0;
@@ -116,7 +119,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
     uT_ -= dot_product(uT_, normal) * normal;
     uT_ += dt;
    //std::cout<<uT_<<"uT"<<std::endl;
-    if (-F_visc> 0.0  && !uT_.is_zero()) {
+    if (F_visc != 0.0  && !uT_.is_zero()) {
         // Projecting uT on the new contact plane by removing the component in the contact normal direction
 
         dFT_=-2*area_*tsi0_*dt/bt_;
@@ -128,9 +131,9 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
             dFT_ -= alpha_i[i]*ddti_[i];
             dti_[i]+=ddti_[i];
         }
-        FT_-=dFT_;
+        FT_+=dFT_;
 
-        if (FT_.length() > -0.05*F_visc) { // contact aborted
+        if (FT_.length() > 0.05*F_visc) { // contact aborted
             FT_.set_zero();
             uT_.set_zero();
             for (unsigned i=0; i!=M; ++i)

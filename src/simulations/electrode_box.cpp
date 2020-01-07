@@ -34,6 +34,9 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     mat->tau_i=parameters.get_vector<double>( "tau_i" );
     mat->alpha_i=parameters.get_vector<double>( "alpha_i" );
     mat->bt = parameters.get_parameter<double>("bt");
+    std::chrono::duration<double> compaction_time {parameters.get_parameter<double>("compaction_time")};
+    auto unloading_velocity = parameters.get_parameter<double>("unloading_velocity");
+    std::chrono::duration<double> unloading_time {parameters.get_parameter<double>("unloading_time")};
 
 
 
@@ -58,7 +61,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     for (std::size_t i=0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
-    double scale=2;
+    double scale=box_width;
 
     // Creating The bottom plate surface
     Vec3 p4(-scale, -scale, 0.);
@@ -107,15 +110,30 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     output1->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(10.0e6);
+    simulator.set_mass_scale_factor(10e6);
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.1s);
 
     simulator.run(run_for_time);
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
     simulator.run(max_velocity);
+
+
+    // Move the lid to the uppermost particle
     auto bbox = simulator.get_bounding_box();
     double h = bbox[5];
-    std::cout<< h<< "h surface"<< std::endl;
-    bottom_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
+    top_surface->move(Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
+
+    // Compress the compact
+    double h_target = (particle_volume/mat->density)/(box_width*box_width);
+    double surface_velocity = (h_target - h)/(compaction_time.count());
+    top_surface->set_velocity(Vec3(0, 0, surface_velocity));
+    run_for_time.reset(compaction_time);
+    simulator.run(run_for_time);
+
+    // Unload the compact
+    top_surface->set_velocity(Vec3(0, 0, unloading_velocity));
+    run_for_time.reset(unloading_time);
+    simulator.run(run_for_time);
+
 }

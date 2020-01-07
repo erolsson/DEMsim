@@ -54,34 +54,22 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     std::ofstream output_file;
     output_file.open(filename);
 
-    for(unsigned i = 0; i != 3*increments; ++i) {
+    for(unsigned i = 0; i != increments; ++i) {
         p1.move(Vec3{static_cast<double>(tick/2), 0, 0});
         p2.move(Vec3{static_cast<double>(-tick/2), 0, 0});
         c.update();
         output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
                     << p1.get_position().x() - p2.get_position().x() << ", "
-                    << c.get_tangential_force().y() << std::endl;
+                    << c.get_tangential_force().y() << ", "
+                    << p1.get_position().y() - p2.get_position().y() << std::endl;
     }
-    for(unsigned i = 0; i != increments; ++i) {
+    for(unsigned i = 0; i !=increments; ++i) {
         p1.move(Vec3{0, static_cast<double>(tick/2), 0});
         p2.move(Vec3{0, 0, 0});
         c.update();
         output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
                     << p1.get_position().x() - p2.get_position().x() << ", "
-                    << c.get_tangential_force().y() << std::endl;
+                    << c.get_tangential_force().y()<< ", "
+                    << p1.get_position().y() - p2.get_position().y() << std::endl;
     }
-
-
-
-
-    for(unsigned i = 0; i != 2* increments; ++i) {
-       p1.move(Vec3{static_cast<double>(-tick/2), 0, 0});
-       p2.move(Vec3{static_cast<double>(tick/2), 0, 0});
-       c.update();
-       output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
-                << p1.get_position().x() - p2.get_position().x() << ", "
-                << c.get_tangential_force().y() << std::endl;
-    }
-
-
 }
