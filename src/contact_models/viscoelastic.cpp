@@ -21,6 +21,7 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     double E2 = mat2->E;
     double v1 = mat1->nu;
     double v2 = mat2->nu;
+    surface_contact_=false;
     M=mat1->M();
     tau_i=mat1->tau_i;
     alpha_i=mat1->alpha_i;
@@ -49,12 +50,12 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     double E1 = mat1->E;
 
     double v1 = mat1->nu;
+    surface_contact_=true;
 
     M=mat1->M();
     tau_i=mat1->tau_i;
     alpha_i=mat1->alpha_i;
     kT_=mat1->kT;
-    mu_=mat1->mu;
     bt_= mat1->bt;
     dt_ = dt.count();  // time increment
     tsi0_ = 1. / ((1 - v1 * v1) / E1);
@@ -83,7 +84,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
     h_ = h - dh;
     //std::cout << "h:" << h << std::endl;
     if (h> -bt_ && h_ > -bt_ ){
-        if(h>0){
+        if(h>-bt_){
             area_ = pi*R0_*(h+bt_ );
         } else{
             area_=0;
@@ -103,16 +104,31 @@ double DEM::Viscoelastic::update_normal_force(double h)
         }
 
          F_visc+=k_*dF_;
+        if(surface_contact_ && F_visc<0 ){
+            F_visc=0;
+            /*
+            dF_ = 0;
+            for (unsigned i=0 ; i != M; ++i) {
+                ddi_[i] = 0;
+                di_[i] = 0;
+            }
+             */
+        }
          //std::cout << dF_ << "  " << F_visc << std::endl;
     }
     else{
-        F_visc=0;
+        F_visc = 0;
+        dF_ = 0;
+        for (unsigned i=0 ; i != M; ++i) {
+            ddi_[i] = 0;
+            di_[i] = 0;
+        }
     }
     h_+= dh;
     //std::cout << "h_:" << h_ << std::endl;
     //std::cout << "dh" << dh << std::endl;
 
-    return -F_visc;
+    return F_visc;
 }
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
@@ -146,10 +162,11 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
     } else {
         FT_.set_zero();
         uT_.set_zero();
-    }
-    if (std::isnan(FT_.length())) {
-        //std::cout<<FT_<<"FT"<<std::endl;
-        std::abort();
+        for (unsigned i=0; i!=M; ++i)
+        {
+            dti_[i].set_zero();
+            ddti_[i].set_zero();
+        }
     }
     //std::cout<<FT_<<"FT"<<std::endl;
 

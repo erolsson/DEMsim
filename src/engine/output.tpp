@@ -36,10 +36,8 @@ DEM::Output<ForceModel, ParticleType>::Output(std::string directory, std::chrono
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::run_output(const std::chrono::duration<double>& increment)
 {
-    current_time_ += increment;
-    time_until_output_ -= increment;
     using namespace std::chrono_literals;
-    if (time_until_output_ - increment < -1ns) {
+    if (time_until_output_ - increment < -1ns || current_time_ == 0s) {
         time_until_output_ = interval_;
 
         // Looping over all output functions and checking if they are enabled, if so call it
@@ -49,6 +47,8 @@ void DEM::Output<ForceModel, ParticleType>::run_output(const std::chrono::durati
             }
         }
     }
+    current_time_ += increment;
+    time_until_output_ -= increment;
 }
 
 template<typename ForceModel, typename ParticleType>

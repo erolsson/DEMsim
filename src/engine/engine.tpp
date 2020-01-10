@@ -47,6 +47,7 @@ void DEM::Engine<ForceModel, ParticleType>::run(Condition& condition)
     using namespace std::chrono_literals;
     std::chrono::duration<double> logging_interval = 0.01s;
     std::chrono::duration<double> time_to_log = 0.01s;
+    run_output();
     while (condition()) {
         time_ += increment_;
         do_step();
@@ -255,14 +256,14 @@ std::array<double, 6> DEM::Engine<ForceModel, ParticleType>::get_bounding_box() 
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::do_step()
 {
-    sum_contact_forces();
-    move_particles();
-    move_surfaces();
     collision_detector_.do_check();
     destroy_contacts();
     create_contacts();
     update_contacts();
     run_output();
+    sum_contact_forces();
+    move_particles();
+    move_surfaces();
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -360,8 +361,6 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
             p->set_angular_velocity(new_ang_v);
             p->rotate(new_rot);
         }
-
-
     }
 }
 
