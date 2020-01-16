@@ -26,7 +26,7 @@ namespace DEM {
 
 
         [[nodiscard]] double get_overlap() const { return h_; }
-        [[nodiscard]] double get_normal_force() const { return F_visc; }
+        [[nodiscard]] double get_normal_force() const { return F_visc+F_particle; }
         [[nodiscard]] const Vec3& get_tangential_force() const { return FT_; }
         [[nodiscard]] double get_contact_area() const {return area_; }
         [[nodiscard]] Vec3 get_rolling_resistance_torque() const { return Vec3{};};
@@ -44,10 +44,10 @@ namespace DEM {
         double kT_;
         double bt_;
         double h_ {0. };
-        // double a_ { 0. };
         double area_ {0. };
         static unsigned M;
         double k_;
+        double kparticle_;
         double R0_;
         double F_{ 0 };
 
@@ -63,11 +63,14 @@ namespace DEM {
         std::vector<double> x {};
         double dF_{0.};
         double F_visc{0.};
+        double F_particle{0.};
+
         double tsi0_;
+        double tsi0particle_;
         Vec3 dFT_{Vec3(0., 0., 0.)};
         Vec3 FT_{Vec3(0., 0., 0.)};
         Vec3 uT_{ Vec3(0., 0., 0.) };
-        bool surface_contact_;
+        bool adhesive_;
 
 
 

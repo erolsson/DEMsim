@@ -26,9 +26,11 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     //auto aspect_ratio_after_filling = parameters.get_parameter<double>("aspect_ratio_after_filling");
     EngineType simulator(1us);
-    auto mat = simulator.create_material<ViscoelasticMaterial>(4.8);
+    auto mat = simulator.create_material<ViscoelasticMaterial>(4.8e3);
     mat->E = parameters.get_parameter<double>("E");
+    mat->Ep= parameters.get_parameter <double> ("Ep");
     mat->nu = parameters.get_parameter<double>("nu");
+    mat->nup = parameters.get_parameter<double>("nup");
     mat->mu = parameters.get_parameter<double>("mu");//VAD ?
     mat->mu_wall = parameters.get_parameter<double>("mu_wall");
     mat->tau_i=parameters.get_vector<double>( "tau_i" );
@@ -83,22 +85,22 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::vector<Vec3> side_points_4{p7, p8, p3, p1};
 
 
-    auto bottom_surface = simulator.create_point_surface(bottom_points, true);
+    auto bottom_surface = simulator.create_point_surface(bottom_points, true, false);
     std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;
 
-    auto top_surface = simulator.create_point_surface(top_points, true);
+    auto top_surface = simulator.create_point_surface(top_points, true, true);
     std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
 
-    auto side_surface_1 = simulator.create_point_surface(side_points_1, true);
+    auto side_surface_1 = simulator.create_point_surface(side_points_1, true, false);
     std::cout << "Normal of first side surface is " << side_surface_1->get_normal() << std::endl;
 
-    auto side_surface_2 = simulator.create_point_surface(side_points_2, true);
+    auto side_surface_2 = simulator.create_point_surface(side_points_2, true, false);
     std::cout << "Normal of second side surface is " << side_surface_2->get_normal() << std::endl;
 
-    auto side_surface_3 = simulator.create_point_surface(side_points_3, true);
+    auto side_surface_3 = simulator.create_point_surface(side_points_3, true, false);
     std::cout << "Normal of third side surface is " << side_surface_3->get_normal() << std::endl;
 
-    auto side_surface_4 = simulator.create_point_surface(side_points_4, true);
+    auto side_surface_4 = simulator.create_point_surface(side_points_4, true, false);
     std::cout << "Normal of fourth side surface is " << side_surface_4->get_normal() << std::endl;
 
     auto output1 = simulator.create_output(output_directory, 0.01s);
@@ -109,7 +111,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     output1->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(10e5);
+    simulator.set_mass_scale_factor(10e6);
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.1s);
 
@@ -122,7 +124,6 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     auto bbox = simulator.get_bounding_box();
     double h = bbox[5];
     top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
-
 
     // Compress the compact
     //double h_target = (particle_volume/mat->density)/(box_width*box_width);

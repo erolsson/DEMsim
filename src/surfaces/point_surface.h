@@ -17,7 +17,7 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     class PointSurface : public Surface<ForceModel, ParticleType> {
     public:
-        PointSurface(std::size_t id, std::vector<Vec3> points, bool infinite);
+        PointSurface(std::size_t id, std::vector<Vec3> points, bool infinite, bool adhesive=false);
         ~PointSurface() override = default;
 
         [[nodiscard]] Vec3 get_normal(const Vec3&) const override { return normal_; }
@@ -31,10 +31,12 @@ namespace DEM {
         void rotate(const Vec3& point, const Vec3& rotation_vector) override;
 
         [[nodiscard]] std::string get_output_string() const override;
+        [[nodiscard]] bool adhesive() const { return adhesive_; }
 
     private:
         std::vector<Vec3> points_;
         bool infinite_;
+        bool adhesive_ {false};
         Vec3 normal_;
 
         using Surface<ForceModel, ParticleType>::id_;

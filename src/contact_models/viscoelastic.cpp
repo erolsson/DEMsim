@@ -21,7 +21,13 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     double E2 = mat2->E;
     double v1 = mat1->nu;
     double v2 = mat2->nu;
-    surface_contact_=false;
+    double vp1 = mat1->nup;
+    double vp2 = mat2->nup;
+    double Ep2 = mat2->Ep;
+    double Ep1 = mat1->Ep;
+    //std::cout << "Ep1:" << Ep1 << std::endl;
+    //std::cout << "vp1:" << vp1 << std::endl;
+    adhesive_=true;
     M=mat1->M();
     tau_i=mat1->tau_i;
     alpha_i=mat1->alpha_i;
@@ -29,7 +35,12 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     bt_= mat1->bt;
     dt_ = dt.count();  // time increment
     tsi0_ = 1. / (((1 - v1 * v1) / E1) + ((1 - v2 * v2) / E2));
+    tsi0particle_=1./(((1-vp1*vp1)/Ep1)+((1-vp2*vp2)/Ep2));
+    //std::cout << "tsi0particle::" << tsi0particle_ << std::endl;
     k_=4.*tsi0_*sqrt(R0_)/3; //initial contact stiffness
+    //std::cout << "k_:" << k_ << std::endl;
+    kparticle_=4*tsi0particle_*sqrt(R0_)/3;
+    //std::cout << "kparticle_:" << kparticle_ << std::endl;
     for (unsigned i=0; i!=M; ++i)
     {
         di_.push_back(0);
@@ -40,9 +51,9 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
         bi.push_back(tau_i[i]/dt_ *((dt_/tau_i[i])-ai[i]));
     }
 
-//Normal force
+
 }
-DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM::Viscoelastic::SurfaceType *,
+DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM::Viscoelastic::SurfaceType * surface,
                                 std::chrono::duration<double>dt){
     auto mat1 = dynamic_cast<const ViscoelasticMaterial *>(particle1->get_material());
 
@@ -50,17 +61,22 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     double E1 = mat1->E;
 
     double v1 = mat1->nu;
-    surface_contact_=true;
+
+
+    adhesive_ = surface->adhesive();
 
     M=mat1->M();
     tau_i=mat1->tau_i;
     alpha_i=mat1->alpha_i;
     kT_=mat1->kT;
     bt_= mat1->bt;
+    double vp1=mat1->nup;
+    double Ep1 = mat1->Ep;
     dt_ = dt.count();  // time increment
     tsi0_ = 1. / ((1 - v1 * v1) / E1);
-
+    tsi0particle_=1./((1-vp1*vp1)/Ep1);
     k_=4.*tsi0_*sqrt(R0_)/3; //initial contact stiffness
+    kparticle_=4*tsi0particle_*sqrt(R0_)/3;
     for (unsigned i=0; i!=M; ++i)
     {
         di_.push_back(0);
@@ -77,7 +93,7 @@ void DEM::Viscoelastic::update(double h, const DEM::Vec3& dt,const Vec3& , const
 
 }
 unsigned DEM::Viscoelastic::M;
-
+//Normal force
 double DEM::Viscoelastic::update_normal_force(double h)
 {
     double dh=h-h_;
@@ -89,9 +105,8 @@ double DEM::Viscoelastic::update_normal_force(double h)
         } else{
             area_=0;
         }
-
         dF_=3./2*sqrt(h_+bt_ )*dh;
-        //std::cout << "dF_:" << dF_ << std::endl;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            //
         auto hn32 = pow(h_+bt_, 3./2);
         auto h_32diff = pow(h+bt_ , 3./ 2)-hn32;
         //std::cout << pow(h+bt_ , 3./ 2) << "   " << hn32 << std::endl;
@@ -102,19 +117,19 @@ double DEM::Viscoelastic::update_normal_force(double h)
             dF_ -= alpha_i[i]*ddi_[i];
             di_[i]+=ddi_[i];
         }
+        F_visc+=k_*dF_;
 
-         F_visc+=k_*dF_;
-        if(surface_contact_ && F_visc<0 ){
-            F_visc=0;
-            /*
-            dF_ = 0;
-            for (unsigned i=0 ; i != M; ++i) {
-                ddi_[i] = 0;
-                di_[i] = 0;
-            }
-             */
+        if( h> 0.0 ){
+            F_particle = kparticle_*pow( h ,3.0/2);
+            //std::cout << "F_particle:" << F_particle << std::endl;
+
         }
-         //std::cout << dF_ << "  " << F_visc << std::endl;
+        else {
+            F_particle = 0;
+        }
+        if(!adhesive_ && F_visc<0 ){
+            return 0;
+        }
     }
     else{
         F_visc = 0;
@@ -125,10 +140,9 @@ double DEM::Viscoelastic::update_normal_force(double h)
         }
     }
     h_+= dh;
-    //std::cout << "h_:" << h_ << std::endl;
-    //std::cout << "dh" << dh << std::endl;
+    //std::cout << "F:" << F_particle+F_visc << std::endl;
+    return F_visc+F_particle;
 
-    return F_visc;
 }
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
@@ -157,8 +171,6 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
                 dti_[i].set_zero();
             }
         }
-
-
     } else {
         FT_.set_zero();
         uT_.set_zero();
@@ -168,14 +180,10 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
             ddti_[i].set_zero();
         }
     }
-    //std::cout<<FT_<<"FT"<<std::endl;
-
 }
 
 std::string DEM::Viscoelastic::get_output_string() const {
     std::stringstream ss;
-    ss  << F_visc;
-    //ss  << FT_;
-    //ss  << uT_;
+    ss  << F_visc+F_particle;
     return ss.str();
 }

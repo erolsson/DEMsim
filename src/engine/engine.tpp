@@ -89,9 +89,9 @@ DEM::Engine<ForceModel, ParticleType>::create_particle(double radius, const Vec3
 
 template<typename ForceModel, typename ParticleType>
 typename DEM::Engine<ForceModel, ParticleType>::PointSurfacePointer
-DEM::Engine<ForceModel, ParticleType>::create_point_surface(const std::vector<Vec3>& points, bool infinite)
+DEM::Engine<ForceModel, ParticleType>::create_point_surface(const std::vector<Vec3>& points, bool infinite, bool adhesive)
 {
-    auto ps = new PointSurface<ForceModel, ParticleType>(number_of_objects_, points, infinite);
+    auto ps = new PointSurface<ForceModel, ParticleType>(number_of_objects_, points, infinite, adhesive);
     surfaces_.push_back(ps);
     ++number_of_objects_;
     return ps;

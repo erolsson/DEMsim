@@ -9,10 +9,11 @@
 #include "../utilities/vec3.h"
 
 template<typename ForceModel, typename ParticleType>
-DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::vector<DEM::Vec3> points, bool infinite) :
+DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::vector<DEM::Vec3> points, bool infinite, bool adhesive) :
         Surface<ForceModel, ParticleType>::Surface(id),
         points_(std::move(points)),
         infinite_(infinite),
+        adhesive_(adhesive),
         normal_(calculate_normal())
 {
     update_bounding_box();

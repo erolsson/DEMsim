@@ -18,6 +18,8 @@ namespace DEM {
         double E;
         double mu ;
         double nu;
+        double nup;
+        double Ep;
         double bt;
         std::vector<double> tau_i;
         std::vector<double> alpha_i;

@@ -29,11 +29,11 @@ namespace DEM {
         using ContactPointerType = typename ContactMatrix<ContactType>::PointerType;
         using ForceAmpPtr = std::shared_ptr<Amplitude>;
 
+
     public:
 
         double max_velocity{0.};
         bool force_control{ false };
-
         explicit Surface(std::size_t id);
         virtual ~Surface() = default;
         std::size_t get_id() const { return id_; }
@@ -45,6 +45,7 @@ namespace DEM {
 
         virtual void move(const Vec3& distance, const Vec3& velocity) = 0;
         virtual void rotate(const Vec3& position, const Vec3& rotation_vector) = 0;
+
 
         double get_mass() const { return mass_; }
         void set_mass(double mass) {mass_ = mass; }
@@ -58,6 +59,7 @@ namespace DEM {
 
         Vec3 get_tangential_displacement_this_inc(const Vec3& point) const;
         void rest();
+        [[nodiscard]] bool adhesive() const { return adhesive_; }
 
         std::vector<ParticleType*> get_contacting_particles() const;
         double get_normal_force() const;
@@ -88,6 +90,7 @@ namespace DEM {
 
     private:
         double mass_ = 0;
+        bool adhesive_ {false};
         ContactVector<ContactPointerType> contacts_{ContactVector<ContactPointerType>()};
     };
 }
