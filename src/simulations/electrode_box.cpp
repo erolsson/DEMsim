@@ -52,7 +52,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
         particle_volume += 4.*pi*(r+mat->bt)*(r+mat->bt)*(r+mat->bt)/3.;
     }
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
-    double box_width = pow(3*particle_volume/4*pi, 1./3)*1.1;
+    double box_width = pow(3*particle_volume/4*pi, 1./3)*1.5;
     double box_height =box_width;
     std::cout << "The simulated box has a width of " << box_width << " and a height of "
               << box_height << "\n";
@@ -85,10 +85,10 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::vector<Vec3> side_points_4{p7, p8, p3, p1};
 
 
-    auto bottom_surface = simulator.create_point_surface(bottom_points, true, false);
+    auto bottom_surface = simulator.create_point_surface(bottom_points, true , true);
     std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;
 
-    auto top_surface = simulator.create_point_surface(top_points, true, true);
+    auto top_surface = simulator.create_point_surface(top_points, true , false);
     std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
 
     auto side_surface_1 = simulator.create_point_surface(side_points_1, true, false);
@@ -97,7 +97,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     auto side_surface_2 = simulator.create_point_surface(side_points_2, true, false);
     std::cout << "Normal of second side surface is " << side_surface_2->get_normal() << std::endl;
 
-    auto side_surface_3 = simulator.create_point_surface(side_points_3, true, false);
+    auto side_surface_3 = simulator.create_point_surface(side_points_3, true , false);
     std::cout << "Normal of third side surface is " << side_surface_3->get_normal() << std::endl;
 
     auto side_surface_4 = simulator.create_point_surface(side_points_4, true, false);
@@ -111,7 +111,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     output1->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(10e6);
+    simulator.set_mass_scale_factor(10);
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.1s);
 

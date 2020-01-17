@@ -26,7 +26,9 @@ namespace DEM {
 
 
         [[nodiscard]] double get_overlap() const { return h_; }
-        [[nodiscard]] double get_normal_force() const { return F_visc+F_particle; }
+        [[nodiscard]] double get_normal_force() const {
+            //std::cout << F_visc + F_particle << std::endl;
+            return F_; }
         [[nodiscard]] const Vec3& get_tangential_force() const { return FT_; }
         [[nodiscard]] double get_contact_area() const {return area_; }
         [[nodiscard]] Vec3 get_rolling_resistance_torque() const { return Vec3{};};
@@ -50,6 +52,7 @@ namespace DEM {
         double kparticle_;
         double R0_;
         double F_{ 0 };
+        std::size_t id2_{};
 
         std::vector<double> tau_i {};
         std::vector<double> alpha_i {};

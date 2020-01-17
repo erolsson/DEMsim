@@ -46,7 +46,7 @@ namespace DEM {
         ParticlePointer create_particle(double radius, const Vec3& position, const Vec3& velocity,
                                       MaterialBase* material);
 
-        PointSurfacePointer create_point_surface(const std::vector<Vec3>& points, bool infinite, bool adhesive=true);
+        PointSurfacePointer create_point_surface(const std::vector<Vec3>& points, bool infinite , bool adhesive=true );
 
         CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
                                         bool inward=true, bool infinite=false, bool closed_ends=false);
@@ -298,6 +298,7 @@ namespace DEM {
         void run_output();
 
         friend class Output<ForceModel, ParticleType>;
+
 
 
     };
