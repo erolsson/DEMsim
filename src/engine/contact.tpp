@@ -44,14 +44,23 @@ void DEM::Contact<ForceModel, ParticleType>::update()
 {
     auto distance_vector = calculate_distance_vector();
     auto h = r2_ - distance_vector.length();
-    normal_ = distance_vector.normalize();
+    normal_ = distance_vector.normal();
     Vec3 dt(0, 0, 0);
     Vec3 w(0, 0, 0);
-    if (h > 0) {
-        dt = calculate_tangential_displacement_this_inc();
-        w = calculate_rotation_this_inc();
-    }
+    
+    dt = calculate_tangential_displacement_this_inc();
+    w = calculate_rotation_this_inc();
+    
     force_model_.update(h, dt, w, normal_);
+    /*
+    std::string filename = "contact.dou";
+    std::ofstream output_file;
+    output_file.open(filename, std::fstream::app);
+    output_file << h << ", " << force_model_.get_normal_force() << ", " << distance_vector.x() << ", "
+                << distance_vector.y() << ", " << distance_vector.z() << "\n";
+
+     output_file.close();
+         */
 }
 
 template<typename ForceModel, typename ParticleType>

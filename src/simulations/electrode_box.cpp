@@ -52,17 +52,19 @@ void DEM::electrode_box(const std::string &settings_file_name) {
         particle_volume += 4.*pi*(r+mat->bt)*(r+mat->bt)*(r+mat->bt)/3.;
     }
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
-    double box_width = pow(3*particle_volume/4*pi, 1./3)*1.5;
+    double box_width = pow(3*particle_volume/4*pi, 1./3)*1.2;
     double box_height =box_width;
     std::cout << "The simulated box has a width of " << box_width << " and a height of "
               << box_height << "\n";
 
 
-    auto particle_positions = random_fill_box(0.0, box_height, box_width, particle_radii, mat->bt);
+     auto particle_positions = random_fill_box(0.0, box_height, box_width, particle_radii, mat->bt);
+
     for (std::size_t i=0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
 
+    //simulator.create_particle(0.05, Vec3(box_width/2, box_width/2,0.05+5.5e-3), Vec3(0,0,0), mat);
 
     // Creating The bottom plate surface
     Vec3 p4(0, 0, 0.);
@@ -88,6 +90,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     auto bottom_surface = simulator.create_point_surface(bottom_points, true , true);
     std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;
 
+
     auto top_surface = simulator.create_point_surface(top_points, true , false);
     std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
 
@@ -111,7 +114,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     output1->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(10);
+    simulator.set_mass_scale_factor(1);
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.1s);
 
@@ -125,7 +128,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     double h = bbox[5];
     top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
 
-    // Compress the compact
+     //Compress the compact
     //double h_target = (particle_volume/mat->density)/(box_width*box_width);
     double surface_velocity = -0.4;
             //(h_target - h)/(compaction_time.count());
@@ -136,5 +139,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
      //Unload the compact
     top_surface->set_velocity(Vec3(0, 0, unloading_velocity));
     run_for_time.reset(unloading_time);
-    simulator.run(run_for_time);
+    simulator.run(max_velocity);
+    top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
+
 }
