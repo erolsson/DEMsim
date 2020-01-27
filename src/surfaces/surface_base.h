@@ -60,6 +60,7 @@ namespace DEM {
         Vec3 get_tangential_displacement_this_inc(const Vec3& point) const;
         void rest();
         [[nodiscard]] bool adhesive() const { return adhesive_; }
+        [[nodiscard]] const std::vector<Vec3>& get_points() const { return points_; }
 
         std::vector<ParticleType*> get_contacting_particles() const;
         double get_normal_force() const;
@@ -91,6 +92,8 @@ namespace DEM {
     private:
         double mass_ = 0;
         bool adhesive_ {false};
+        const std::vector<Vec3> points_;
+
         ContactVector<ContactPointerType> contacts_{ContactVector<ContactPointerType>()};
     };
 }

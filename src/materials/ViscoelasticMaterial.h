@@ -21,6 +21,7 @@ namespace DEM {
         double nup;
         double Ep;
         double bt;
+        double contact;
         std::vector<double> tau_i;
         std::vector<double> alpha_i;
         [[nodiscard]] unsigned M() const { return tau_i.size(); }

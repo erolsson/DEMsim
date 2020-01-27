@@ -9,7 +9,7 @@
 
 #include "../contact_models/viscoelastic.h"
 #include "../materials/ViscoelasticMaterial.h"
-
+#include "../surfaces/point_surface.h"
 #include "../utilities/file_reading_functions.h"
 
 void DEM::electrode_box(const std::string &settings_file_name) {
@@ -28,6 +28,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     EngineType simulator(1us);
     auto mat = simulator.create_material<ViscoelasticMaterial>(4.8e3);
     mat->E = parameters.get_parameter<double>("E");
+    mat->contact = parameters.get_parameter<double>("contact");
     mat->Ep= parameters.get_parameter <double> ("Ep");
     mat->nu = parameters.get_parameter<double>("nu");
     mat->nup = parameters.get_parameter<double>("nup");
@@ -135,11 +136,24 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     run_for_time.reset(compaction_time);
     simulator.run(run_for_time);
-
+    std::cout<<"beginning of unloading"<< std::endl;
      //Unload the compact
     top_surface->set_velocity(Vec3(0, 0, unloading_velocity));
-    run_for_time.reset(unloading_time);
     simulator.run(max_velocity);
-    top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
 
+    std::cout<<"Bringing the surface down"<< std::endl;
+    bbox = simulator.get_bounding_box();
+    h = bbox[5];
+    std::cout<<"h:"<< h << std::endl;
+    std::vector<Vec3> points_=top_surface->get_points();
+    std::cout<<"surface height5:"<< points_[1].z() <<std::endl;
+    std::cout << "Volume of simulated particles is " << particle_volume << "\n";
+    top_surface->move(-Vec3(0,0,points_[1].z()-h),Vec3(0,0,0));
+    run_for_time.reset(compaction_time);
+    simulator.run(run_for_time);
+    double Prorosity= (1-((4.8e3*particle_volume/ box_width*box_width*points_[8].z())/(4.8e3)))*100;
+    std::cout<<"Prosity is:"<< Prorosity <<std::endl;
 }
+
+
+

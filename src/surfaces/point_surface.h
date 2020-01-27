@@ -33,6 +33,8 @@ namespace DEM {
         [[nodiscard]] std::string get_output_string() const override;
         [[nodiscard]] bool adhesive() const { return adhesive_; }
 
+        [[nodiscard]] const std::vector<Vec3>& get_points() const { return points_; }
+
     private:
         std::vector<Vec3> points_;
         bool infinite_;

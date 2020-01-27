@@ -74,6 +74,7 @@ namespace DEM {
         Vec3 FT_{Vec3(0., 0., 0.)};
         Vec3 uT_{ Vec3(0., 0., 0.) };
         bool adhesive_;
+        bool procent_;
 
 
 
