@@ -16,8 +16,10 @@ namespace DEM {
         ~ViscoelasticMaterial() override = default;
 
         double E;
-        double mu ;
         double nu;
+        double totaldensity;
+        double bindervolumefraction;
+        double binderdensity;
         double nup;
         double Ep;
         double bt;
@@ -26,8 +28,8 @@ namespace DEM {
         std::vector<double> alpha_i;
         [[nodiscard]] unsigned M() const { return tau_i.size(); }
         double kT;
-        double mu_wall { 0. };
-        double unloading_exponent;
+        double mu{ 0. };
+        double mu_wall{ 0. };
 
     };
 }

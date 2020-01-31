@@ -52,6 +52,7 @@ namespace DEM {
         double kparticle_;
         double R0_;
         double F_{ 0 };
+        double mu_;
         std::size_t id2_{};
 
         std::vector<double> tau_i {};

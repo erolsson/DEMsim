@@ -29,6 +29,7 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     double vp2 = mat2->nup;
     double Ep2 = mat2->Ep;
     double Ep1 = mat1->Ep;
+    mu_ = (mat1->mu + mat2->mu)/2;
     adhesive_=true;
     M=mat1->M();
     tau_i=mat1->tau_i;
@@ -62,6 +63,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     double v1 = mat1->nu;
     double vp1=mat1->nup;
     double Ep1 = mat1->Ep;
+    mu_ = mat1->mu_wall;
 
     adhesive_ = surface->adhesive();
 
@@ -180,7 +182,17 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
                 dti_[i].set_zero();
             }
         }
-    } else {
+    }
+    else if (F_particle > 0.0 ) {
+       
+        uT_ -= dot_product(uT_, normal)*normal;
+        uT_ += dt;
+        if (kT_*uT_.length() > mu_*F_) { // Slip
+            uT_ = mu_*F_/kT_*uT_.normal();
+        }
+        FT_ = -kT_*uT_;
+    }
+    else {
         FT_.set_zero();
         uT_.set_zero();
         for (unsigned i=0; i!=M; ++i)

@@ -27,6 +27,9 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     //auto aspect_ratio_after_filling = parameters.get_parameter<double>("aspect_ratio_after_filling");
     EngineType simulator(1us);
     auto mat = simulator.create_material<ViscoelasticMaterial>(4.8e3);
+    mat->totaldensity=parameters.get_parameter<double>("totaldensity");
+    mat->bindervolumefraction=parameters.get_parameter<double>("bindervolumefraction");
+    mat->binderdensity=parameters.get_parameter<double>("binderdensity");
     mat->E = parameters.get_parameter<double>("E");
     mat->contact = parameters.get_parameter<double>("contact");
     mat->Ep= parameters.get_parameter <double> ("Ep");
@@ -52,9 +55,10 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     for(auto& r: particle_radii) {
         particle_volume += 4.*pi*(r+mat->bt)*(r+mat->bt)*(r+mat->bt)/3.;
     }
+    double bindervolume=mat->totaldensity*mat->bindervolumefraction*particle_volume/mat->binderdensity;
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
-    double box_width = pow(3*particle_volume/4*pi, 1./3)*1.2;
-    double box_height =box_width;
+    double box_width = ((pow(3*particle_volume/4*pi, 1./3))/1.7)*sqrt(2);
+    double box_height =box_width*10;
     std::cout << "The simulated box has a width of " << box_width << " and a height of "
               << box_height << "\n";
 
@@ -115,7 +119,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     output1->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(1);
+    simulator.set_mass_scale_factor(10);
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.1s);
 
@@ -128,30 +132,35 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     auto bbox = simulator.get_bounding_box();
     double h = bbox[5];
     top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
-
-     //Compress the compact
-    //double h_target = (particle_volume/mat->density)/(box_width*box_width);
-    double surface_velocity = -0.4;
+    double surface_velocity = -0.1;
             //(h_target - h)/(compaction_time.count());
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     run_for_time.reset(compaction_time);
     simulator.run(run_for_time);
+
+
+
     std::cout<<"beginning of unloading"<< std::endl;
      //Unload the compact
     top_surface->set_velocity(Vec3(0, 0, unloading_velocity));
     simulator.run(max_velocity);
 
-    std::cout<<"Bringing the surface down"<< std::endl;
+
+
+    std::cout<<"Calculation Porosity"<< std::endl;
     bbox = simulator.get_bounding_box();
     h = bbox[5];
     std::cout<<"h:"<< h << std::endl;
-    std::vector<Vec3> points_=top_surface->get_points();
-    std::cout<<"surface height5:"<< points_[1].z() <<std::endl;
+    std::cout<<"box_width:"<< box_width << std::endl;
+    //std::vector<Vec3> points_=top_surface->get_points();
+   //std::cout<<"surface height5:"<< points_[1].z() <<std::endl;
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
-    top_surface->move(-Vec3(0,0,points_[1].z()-h),Vec3(0,0,0));
-    run_for_time.reset(compaction_time);
-    simulator.run(run_for_time);
-    double Prorosity= (1-((4.8e3*particle_volume/ box_width*box_width*points_[8].z())/(4.8e3)))*100;
+    //top_surface->move(-Vec3(0,0,points_[1].z()-h),Vec3(0,0,0));
+    //std::vector<Vec3> points_=top_surface->get_points();
+    //std::cout<<"surface height5:"<< points_[1].z() <<std::endl;
+
+
+    double Prorosity= (1-(particle_volume/ (box_width*box_width*h)))*100;
     std::cout<<"Prosity is:"<< Prorosity <<std::endl;
 }
 
