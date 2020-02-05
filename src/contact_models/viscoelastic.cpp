@@ -8,6 +8,8 @@
 
 #include "../materials/ViscoelasticMaterial.h"
 
+
+
 #include <iostream>
 
 DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM::Viscoelastic::ParticleType* particle2,
@@ -15,6 +17,8 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     //extracting from material
     auto mat1 = dynamic_cast<const ViscoelasticMaterial *>(particle1->get_material());
     auto mat2 = dynamic_cast<const ViscoelasticMaterial *>(particle2->get_material());
+
+
     R0_ = 1. / (1. / particle1->get_radius() + 1. / particle2->get_radius());
     double random = rand() % 10 + 1;
     //std::cout << "random:" << random << std::endl;

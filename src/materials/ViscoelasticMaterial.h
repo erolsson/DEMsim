@@ -17,6 +17,7 @@ namespace DEM {
 
         double E;
         double nu;
+        double fb;
         double totaldensity;
         double bindervolumefraction;
         double binderdensity;
