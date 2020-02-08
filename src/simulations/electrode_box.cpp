@@ -54,14 +54,17 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     double particle_volume = 0.;
     double particle_surface_area= 0.;
+    double just_particle_volume=0.;
     for(auto& r: particle_radii) {
         particle_volume += 4.*pi*(r+mat->bt)*(r+mat->bt)*(r+mat->bt)/3.;
         particle_surface_area += 4.*pi*(r+mat->bt)*(r+mat->bt);
+        just_particle_volume += 4.*pi*(r)*(r)*(r)/3.;
     }
+
     double bindervolume = mat->totaldensity*mat->bindervolumefraction*particle_volume/mat->binderdensity;
     std::cout << "Volume of binder is " << bindervolume << "\n";
-    double contact_percentage = (bindervolume/(mat->fb*mat->bt))/ particle_surface_area;
-    std::cout << "percentage of contact  is " << contact_percentage << "\n";
+    //double contact_percentage = ((bindervolume/(mat->fb*mat->bt))/ particle_surface_area)*100;
+    //std::cout << "percentage of contact  is " << contact_percentage << "\n";
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
     double box_width = ((pow(3*particle_volume/4*pi, 1./3))/1.7)*sqrt(2);
     double box_height =box_width*2;
@@ -166,7 +169,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     //std::cout<<"surface height5:"<< points_[1].z() <<std::endl;
 
 
-    double Prorosity= (1-(particle_volume/ (box_width*box_width*h)))*100;
+    double Prorosity= (1-((just_particle_volume+bindervolume)/ (box_width*box_width*h)))*100;
     std::cout<<"Prosity is:"<< Prorosity <<std::endl;
 }
 

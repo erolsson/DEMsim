@@ -19,6 +19,7 @@ namespace DEM {
         double nu;
         double fb;
         double totaldensity;
+        double binderweightfraction;
         double bindervolumefraction;
         double binderdensity;
         double nup;

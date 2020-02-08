@@ -24,7 +24,6 @@ namespace DEM {
 
         void update(double h, const Vec3& dt, const Vec3& rot, const Vec3& normal);
 
-
         [[nodiscard]] double get_overlap() const { return h_; }
         [[nodiscard]] double get_normal_force() const {
             //std::cout << F_visc + F_particle << std::endl;
@@ -35,8 +34,6 @@ namespace DEM {
         [[nodiscard]] bool active() const {return F_ != 0; }
         [[nodiscard]] std::string get_output_string() const;
         static void set_increment(std::chrono::duration<double>) {}
-
-
 
     private:
         double dt_;   // Time increment
@@ -66,6 +63,7 @@ namespace DEM {
         double F_visc{0.};
         double F_particle{0.};
 
+
         double tsi0_;
         double tsi0particle_;
         Vec3 dFT_{Vec3(0., 0., 0.)};
@@ -73,8 +71,6 @@ namespace DEM {
         Vec3 uT_{ Vec3(0., 0., 0.) };
         bool adhesive_;
         bool procent_;
-
-
 
         double update_normal_force(double h);
         void update_tangential_force(const Vec3& dt, const Vec3& normal);

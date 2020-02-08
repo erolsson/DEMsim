@@ -21,6 +21,8 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
 
     R0_ = 1. / (1. / particle1->get_radius() + 1. / particle2->get_radius());
     double random = rand() % 10 + 1;
+
+
     //std::cout << "random:" << random << std::endl;
     if (random < mat1->contact){
         procent_=true;
@@ -45,6 +47,7 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     tsi0particle_=1./(((1-vp1*vp1)/Ep1)+((1-vp2*vp2)/Ep2));
     k_=4.*tsi0_*sqrt(R0_)/3; //initial contact stiffness
     kparticle_=4*tsi0particle_*sqrt(R0_)/3;
+
     for (unsigned i=0; i!=M; ++i)
     {
         di_.push_back(0);
