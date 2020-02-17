@@ -35,6 +35,7 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     double vp2 = mat2->nup;
     double Ep2 = mat2->Ep;
     double Ep1 = mat1->Ep;
+    //binder_radii_= (particle1->get_radius()*particle2->get_radius())/(particle1->get_radius()+particle2->get_radius());
     mu_ = (mat1->mu + mat2->mu)/2;
     adhesive_=true;
     M=mat1->M();
@@ -42,6 +43,7 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     alpha_i=mat1->alpha_i;
     kT_=mat1->kT;
     bt_= mat1->bt;
+    //bindervolume_= mat1->bindervolume;
     dt_ = dt.count();  // time increment
     tsi0_ = 1. / (((1 - v1 * v1) / E1) + ((1 - v2 * v2) / E2));
     tsi0particle_=1./(((1-vp1*vp1)/Ep1)+((1-vp2*vp2)/Ep2));
@@ -71,6 +73,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     double vp1=mat1->nup;
     double Ep1 = mat1->Ep;
     mu_ = mat1->mu_wall;
+    //bindervolume_= mat1->bindervolume;
+    //binder_radii_= (particle1->get_radius()*(1.0/2));
 
     adhesive_ = surface->adhesive();
 
@@ -115,7 +119,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
 {
     double dh=h-h_;
     h_ = h - dh;
-    if(procent_) {
+    if(procent_ ) {
         if (h > -bt_ && h_ > -bt_) {
             dF_ = 3. / 2 * sqrt(h + bt_) * dh;
             area_ = pi * R0_ * (h + bt_);
@@ -147,6 +151,8 @@ double DEM::Viscoelastic::update_normal_force(double h)
             }
         }
         h_ += dh;
+        //bindervolume_  -=  (1.0/1000)* bindervolume_;
+        //std::cout<<bindervolume_<<"bindervolume"<<std::endl;
         return F_visc + F_particle;
     }
     else {
@@ -161,6 +167,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         return F_particle;
     }
     }
+
 
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {

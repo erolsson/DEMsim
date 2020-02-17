@@ -44,6 +44,8 @@ namespace DEM {
         static unsigned M;
         double k_;
         double kparticle_;
+        //double binder_radii_;
+        //double bindervolume_;
         double R0_;
         double F_{ 0 };
         double mu_;
