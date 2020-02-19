@@ -176,7 +176,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     std::cout<<"Moving the side surface to get force-deformation "<< std::endl;
     double side_surface_velocity=0.05;
-    side_surface_3->set_velocity(Vec3(side_surface_velocity-0. , 0, 0.));
+    side_surface_2->set_velocity(Vec3(side_surface_velocity-0. , 0, 0.));
     std::chrono::duration<double> side_surface_time {((mat->delta) / surface_velocity)};
     run_for_time.reset(side_surface_time);
     simulator.run(run_for_time);
@@ -185,7 +185,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
 
     std::cout<<"unloading the side surface to get force-deformation "<< std::endl;
-    side_surface_3->set_velocity(-Vec3(side_surface_velocity-0. , 0, 0.));
+    side_surface_2->set_velocity(-Vec3(side_surface_velocity-0. , 0, 0.));
     run_for_time.reset(side_surface_time);
     simulator.run(run_for_time);
     std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
