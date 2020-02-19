@@ -16,7 +16,7 @@ std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
             {"proctor_test",          DEM::proctor_test},
             {"stone_compaction",      DEM::stone_compaction},
             {"electrode_box",         DEM::electrode_box},
-            {"binder_contact_calculator",  DEM::binder_contact_calculator}
+            // {"binder_contact_calculator",  DEM::binder_contact_calculator}
     };
 }
 
