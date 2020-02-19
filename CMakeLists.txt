@@ -67,6 +67,6 @@ add_executable(DEMsim
                src/contact_models/viscoelastic.cpp
                src/contact_models/viscoelastic.h
                src/materials/ViscoelasticMaterial.h
-               src/simulations/binder_contact_calculator.cpp)
+        )
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")
