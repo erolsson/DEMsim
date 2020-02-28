@@ -169,29 +169,27 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::vector<Vec3> points_=top_surface->get_points();
     std::cout<<"surface height5:"<< points_[1].z() <<std::endl;
     top_surface->move(-Vec3(0,0,points_[1].z()-h),Vec3(0,0,0));
-    std::cout<<"surface height5:"<< points_[1].z() <<std::endl;
 
 
 
 
-    std::cout<<"Moving the side surface to get force-deformation "<< std::endl;
-    double side_surface_velocity=0.05;
-    side_surface_2->set_velocity(Vec3(side_surface_velocity-0. , 0, 0.));
-    std::chrono::duration<double> side_surface_time {((mat->delta) / surface_velocity)};
+
+    std::cout<<"Moving the top surface to get force-deformation "<< std::endl;
+    double delta_=points_[1].z()*1.6/100.0;
+    double side_surface_velocity=0.005;
+    top_surface->set_velocity(Vec3(side_surface_velocity-0. , 0, 0.));
+    std::chrono::duration<double> side_surface_time {((delta_) / surface_velocity)};
     run_for_time.reset(side_surface_time);
     simulator.run(run_for_time);
-    std::vector<Vec3> points_side_=side_surface_3->get_points();
-    std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
+    std::vector<Vec3> points_side_=top_surface->get_points();
+    std::cout<<"side surface:"<< points_side_[1].z() <<std::endl;
 
 
-    std::cout<<"unloading the side surface to get force-deformation "<< std::endl;
-    side_surface_2->set_velocity(-Vec3(side_surface_velocity-0. , 0, 0.));
+    std::cout<<"Relaxation "<< std::endl;
+    top_surface->set_velocity(-Vec3(0. , 0, 0.));
     run_for_time.reset(side_surface_time);
     simulator.run(run_for_time);
-    std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
+    //std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
 
 }
-
-
-
 
