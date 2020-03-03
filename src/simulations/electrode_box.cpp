@@ -150,8 +150,6 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     simulator.run(max_velocity);
 
 
-
-
     std::cout<<"Calculation Porosity"<< std::endl;
     bbox = simulator.get_bounding_box();
     h = bbox[5];
@@ -161,8 +159,6 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     double Prorosity= (1-((just_particle_volume)/ (box_width*box_width*h)))*100;
     std::cout<<"Prosity is:"<< Prorosity <<std::endl;
     std::cout<<"h is:"<< h <<std::endl;
-
-
 
 
     std::cout<<"Move the lid to the uppermost particle "<< std::endl;
@@ -176,7 +172,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     std::cout<<"Moving the top surface to get force-deformation "<< std::endl;
     double delta_=points_[1].z()*1.6/100.0;
-    double side_surface_velocity=0.005;
+    double side_surface_velocity=0.05;
     top_surface->set_velocity(Vec3(0.-side_surface_velocity , 0, 0.));
     std::chrono::duration<double> side_surface_time {((delta_) / surface_velocity)};
     run_for_time.reset(side_surface_time);
@@ -184,7 +180,8 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::vector<Vec3> points_side_=top_surface->get_points();
     std::cout<<"side surface:"<< points_side_[1].z() <<std::endl;
 
-
+    //std::cout<<"top surface"<< points_[1].z()<<std::endl;
+    //std::cout<<"side surface"
     std::cout<<"Relaxation "<< std::endl;
     top_surface->set_velocity(-Vec3(0. , 0, 0.));
     run_for_time.reset(side_surface_time);
