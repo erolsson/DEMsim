@@ -14,5 +14,5 @@ tau_i= 0.01,211,4807
 mu=0.7
 mu_wall=0.7
 bindervolume=0.1877
-active_particle_height=1.3089
+active_particle_height=1.11
 delta=0.0178
