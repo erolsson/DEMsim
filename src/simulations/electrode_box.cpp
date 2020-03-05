@@ -20,12 +20,14 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     using namespace std::chrono_literals;
     SimulationParameters parameters(settings_file_name);
 
-    auto N = parameters.get_parameter<std::size_t>("N");
+    auto N = parameters.get_parameter<unsigned>("N");
+    auto delta = parameters.get_parameter<double>("delta");
     auto output_directory = parameters.get_parameter<std::string>("output_dir");
     auto particle_file = parameters.get_parameter<std::string>("radius_file");
 
     EngineType simulator(1us);
     auto mat = simulator.create_material<ViscoelasticMaterial>(4800);
+
     mat->E = parameters.get_parameter<double>("E");
     mat->kT=parameters.get_parameter<double>("kT");
     mat->contact = parameters.get_parameter<double>("contact");
@@ -40,7 +42,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     mat->bindervolume = parameters.get_parameter<double>("bindervolume");
     mat->active_particle_height=parameters.get_parameter<double>("active_particle_height");
     mat->bt = parameters.get_parameter<double>("bt");
-    mat->delta = parameters.get_parameter<double>("delta");
+
 
 
 
@@ -50,7 +52,8 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);
     std::sort(particle_radii.rbegin(), particle_radii.rend());
 
-
+    std::cout << "Number of particles" <<N<< "\n";
+    std::cout << "delta" <<delta<< "\n";
     double just_particle_volume=0.;
     double particle_surface_area= 0.;
     for(auto& r: particle_radii) {
@@ -161,30 +164,30 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::cout<<"h is:"<< h <<std::endl;
 
 
-    std::cout<<"Move the lid to the uppermost particle "<< std::endl;
-    std::vector<Vec3> points_=top_surface->get_points();
-    std::cout<<"surface height5:"<< points_[1].z() <<std::endl;
-    top_surface->move(-Vec3(0,0,points_[1].z()-h),Vec3(0,0,0));
-
-
-
-    std::cout<<"Moving the top surface to get force-deformation "<< std::endl;
-    double delta_=points_[1].z()*1.6/100.0;
+    //std::cout<<"Move the lid to the uppermost particle "<< std::endl;
+    //std::vector<Vec3> points_=top_surface->get_points();
+    //std::cout<<"surface height5:"<< points_[1].z() <<std::endl;
+    //top_surface->move(-Vec3(0,0,points_[1].z()-h),Vec3(0,0,0));
+    //std::vector<Vec3> points_=top_surface->get_points();
+    std::cout<<"Moving the side surface to get force-deformation "<< std::endl;
     double side_surface_velocity=0.005;
-    top_surface->set_velocity(Vec3(0.-side_surface_velocity , 0, 0.));
-    std::chrono::duration<double> side_surface_time {((delta_) / surface_velocity)};
+    side_surface_2->set_velocity(Vec3(side_surface_velocity-0. , 0, 0.));
+    //double delta_=points_[1].z()*1.6/100.0;
+    std::chrono::duration<double> side_surface_time {((0.0240) / surface_velocity)};
+
+
     run_for_time.reset(side_surface_time);
     simulator.run(run_for_time);
-    std::vector<Vec3> points_side_=top_surface->get_points();
-    std::cout<<"side surface:"<< points_side_[1].z() <<std::endl;
+    std::vector<Vec3> points_side_=side_surface_2->get_points();
+    std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
 
     //std::cout<<"top surface"<< points_[1].z()<<std::endl;
     //std::cout<<"side surface"
-    std::cout<<"Relaxation "<< std::endl;
-    top_surface->set_velocity(-Vec3(0. , 0, 0.));
-    run_for_time.reset(side_surface_time);
+    std::cout<<"unloading the side surface to get force-deformation "<< std::endl;
+    side_surface_2->set_velocity(-Vec3(0. , 0, 0.));
+    run_for_time.reset(side_surface_time/2);
     simulator.run(run_for_time);
-    //std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
+    std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
 
 }
 
