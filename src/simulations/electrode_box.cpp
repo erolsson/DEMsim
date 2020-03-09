@@ -25,6 +25,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     auto output_directory = parameters.get_parameter<std::string>("output_dir");
     auto particle_file = parameters.get_parameter<std::string>("radius_file");
 
+
     EngineType simulator(1us);
     auto mat = simulator.create_material<ViscoelasticMaterial>(4800);
 
@@ -42,6 +43,8 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     mat->bindervolume = parameters.get_parameter<double>("bindervolume");
     mat->active_particle_height=parameters.get_parameter<double>("active_particle_height");
     mat->bt = parameters.get_parameter<double>("bt");
+
+
 
 
 
@@ -140,7 +143,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::cout<<"h"<< h << std::endl;
     top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
-    double surface_velocity = 0.05;
+    double surface_velocity = 0.005;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
     run_for_time.reset(compaction_time);
@@ -159,7 +162,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::cout<<"h:"<< h << std::endl;
     std::cout<<"box_width:"<< box_width << std::endl;
     std::cout << "Volume of simulated particles is " <<just_particle_volume << "\n";
-    double Prorosity= (1-((just_particle_volume)/ (box_width*box_width*h)))*100;
+    double Prorosity= (1-((just_particle_volume)/ (box_width*box_width*h+0.075*(box_width*box_width*h))))*100;
     std::cout<<"Prosity is:"<< Prorosity <<std::endl;
     std::cout<<"h is:"<< h <<std::endl;
 
@@ -170,7 +173,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     //top_surface->move(-Vec3(0,0,points_[1].z()-h),Vec3(0,0,0));
     //std::vector<Vec3> points_=top_surface->get_points();
     std::cout<<"Moving the side surface to get force-deformation "<< std::endl;
-    double side_surface_velocity=0.005;
+    double side_surface_velocity=0.0005;
     side_surface_2->set_velocity(Vec3(side_surface_velocity-0. , 0, 0.));
     //double delta_=points_[1].z()*1.6/100.0;
     std::chrono::duration<double> side_surface_time {((0.0240) / surface_velocity)};
@@ -183,9 +186,9 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     //std::cout<<"top surface"<< points_[1].z()<<std::endl;
     //std::cout<<"side surface"
-    std::cout<<"unloading the side surface to get force-deformation "<< std::endl;
-    side_surface_2->set_velocity(-Vec3(0. , 0, 0.));
-    run_for_time.reset(side_surface_time/2);
+    std::cout<<"Relaxation "<< std::endl;
+    side_surface_2->set_velocity(Vec3(0. , 0, 0.));
+    run_for_time.reset(side_surface_time*1000);
     simulator.run(run_for_time);
     std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
 
