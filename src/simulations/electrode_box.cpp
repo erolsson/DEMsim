@@ -9,7 +9,6 @@
 
 #include "../contact_models/viscoelastic.h"
 #include "../materials/ViscoelasticMaterial.h"
-#include "../surfaces/point_surface.h"
 #include "../utilities/file_reading_functions.h"
 
 void DEM::electrode_box(const std::string &settings_file_name) {
@@ -44,13 +43,6 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     mat->active_particle_height=parameters.get_parameter<double>("active_particle_height");
     mat->bt = parameters.get_parameter<double>("bt");
 
-
-
-
-
-
-
-
     auto particle_radii = read_vector_from_file<double>(particle_file);
     particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);
     std::sort(particle_radii.rbegin(), particle_radii.rend());
@@ -77,7 +69,6 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     for (std::size_t i=0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
-
 
     // Creating The bottom plate surface
     Vec3 p4(0, 0, 0.);
@@ -128,7 +119,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     output1->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(100.0);
+    simulator.set_mass_scale_factor(1.0);
     simulator.setup();
     EngineType::RunForTime run_for_time(simulator, 0.1s);
 
@@ -143,16 +134,15 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::cout<<"h"<< h << std::endl;
     top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
-    double surface_velocity = 0.005;
+    double surface_velocity = 0.0005;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
     run_for_time.reset(compaction_time);
     simulator.run(run_for_time);
 
 
-
     std::cout<<"beginning of unloading"<< std::endl;
-    top_surface->set_velocity(Vec3(0, 0, surface_velocity));
+    top_surface->set_velocity(Vec3(0, 0, surface_velocity*1000));
     simulator.run(max_velocity);
 
 
