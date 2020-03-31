@@ -112,11 +112,11 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
 
     auto output1 = simulator.create_output(output_directory, 0.01s);
-    output1->print_particles = false;
+    output1->print_particles = true;
     output1->print_kinetic_energy = false;
     output1->print_surface_positions = true;
     output1->print_surface_forces = true;
-    output1->print_contacts = false;
+    output1->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
     simulator.set_mass_scale_factor(1.0);
