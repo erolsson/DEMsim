@@ -112,11 +112,11 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
 
     auto output1 = simulator.create_output(output_directory, 0.01s);
-    output1->print_particles = true;
-    output1->print_kinetic_energy = true;
+    output1->print_particles = false;
+    output1->print_kinetic_energy = false;
     output1->print_surface_positions = true;
     output1->print_surface_forces = true;
-    output1->print_contacts = true;
+    output1->print_contacts = false;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
     simulator.set_mass_scale_factor(1.0);
@@ -134,7 +134,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::cout<<"h"<< h << std::endl;
     top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
-    double surface_velocity = 0.05;
+    double surface_velocity = 0.5;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
     run_for_time.reset(compaction_time);
@@ -142,7 +142,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
 
     std::cout<<"beginning of unloading"<< std::endl;
-    top_surface->set_velocity(Vec3(0, 0, surface_velocity*1000));
+    top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     simulator.run(max_velocity);
 
 
@@ -163,7 +163,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     //top_surface->move(-Vec3(0,0,points_[1].z()-h),Vec3(0,0,0));
     //std::vector<Vec3> points_=top_surface->get_points();
     std::cout<<"Moving the side surface to get force-deformation "<< std::endl;
-    double side_surface_velocity=0.0005;
+    double side_surface_velocity=0.5;
     side_surface_2->set_velocity(Vec3(side_surface_velocity-0. , 0, 0.));
     //double delta_=points_[1].z()*1.6/100.0;
     std::chrono::duration<double> side_surface_time {((0.0240) / surface_velocity)};
@@ -178,7 +178,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     //std::cout<<"side surface"
     std::cout<<"Relaxation "<< std::endl;
     side_surface_2->set_velocity(Vec3(0. , 0, 0.));
-    run_for_time.reset(side_surface_time*1000);
+    run_for_time.reset(side_surface_time*10);
     simulator.run(run_for_time);
     std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
 
