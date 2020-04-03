@@ -134,7 +134,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::cout<<"h"<< h << std::endl;
     top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
-    double surface_velocity = 0.05;
+    double surface_velocity = 0.00028;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
     run_for_time.reset(compaction_time);
@@ -142,7 +142,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
 
     std::cout<<"beginning of unloading"<< std::endl;
-    top_surface->set_velocity(Vec3(0, 0, surface_velocity*10));
+    top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     simulator.run(max_velocity);
 
 
@@ -178,9 +178,9 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     //std::cout<<"side surface"
     std::cout<<"Relaxation "<< std::endl;
     side_surface_2->set_velocity(Vec3(0. , 0, 0.));
-    run_for_time.reset(side_surface_time*10);
+    run_for_time.reset(side_surface_time*1000);
     simulator.run(run_for_time);
     std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
-    // simulator.set_time_incremement(100us);
+    simulator.set_time_incremement(100us);
 }
 
