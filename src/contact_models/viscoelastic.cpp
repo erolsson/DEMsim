@@ -223,3 +223,13 @@ std::string DEM::Viscoelastic::get_output_string() const {
     ss  << F_visc+F_particle;
     return ss.str();
 }
+
+void DEM::Viscoelastic::set_increment(std::chrono::duration<double> dt) {
+    dt_ = dt.count();
+    ai = {};
+    bi = {};
+    for (unsigned i=0; i!=M; ++i) {
+        ai.push_back(1-exp((-dt_/tau_i[i])));
+        bi.push_back(tau_i[i]/dt_ *((dt_/tau_i[i])-ai[i]));
+    }
+}

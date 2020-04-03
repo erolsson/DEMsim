@@ -73,6 +73,7 @@ namespace DEM {
         void set_gravity(const Vec3& g) { gravity_ = g; }
         void set_mass_scale_factor(double factor) { mass_scale_factor_ = factor; }
         void set_rotation(bool particle_rotation) {rotation_ = particle_rotation; }
+        void set_time_incremement(std::chrono::duration<double> dt);
 
         class RunFunctorBase {
         public:
