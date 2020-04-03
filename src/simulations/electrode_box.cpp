@@ -113,7 +113,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;
-    output1->print_kinetic_energy = true;
+    output1->print_kinetic_energy = false;
     output1->print_surface_positions = true;
     output1->print_surface_forces = true;
     output1->print_contacts = true;
@@ -142,7 +142,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
 
     std::cout<<"beginning of unloading"<< std::endl;
-    top_surface->set_velocity(Vec3(0, 0, surface_velocity*1000));
+    top_surface->set_velocity(Vec3(0, 0, surface_velocity*10));
     simulator.run(max_velocity);
 
 
@@ -178,7 +178,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     //std::cout<<"side surface"
     std::cout<<"Relaxation "<< std::endl;
     side_surface_2->set_velocity(Vec3(0. , 0, 0.));
-    run_for_time.reset(side_surface_time*1000);
+    run_for_time.reset(side_surface_time*10);
     simulator.run(run_for_time);
     std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
     // simulator.set_time_incremement(100us);
