@@ -181,6 +181,6 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     run_for_time.reset(side_surface_time*1000);
     simulator.run(run_for_time);
     std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
-
+    // simulator.set_time_incremement(100us);
 }
 

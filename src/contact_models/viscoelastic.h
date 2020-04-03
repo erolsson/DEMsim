@@ -33,7 +33,7 @@ namespace DEM {
         [[nodiscard]] Vec3 get_rolling_resistance_torque() const { return Vec3{};};
         [[nodiscard]] bool active() const {return F_ != 0; }
         [[nodiscard]] std::string get_output_string() const;
-        static void set_increment(std::chrono::duration<double>) {}
+        void set_increment(std::chrono::duration<double>);
 
     private:
         double dt_;   // Time increment

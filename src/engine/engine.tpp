@@ -407,7 +407,12 @@ void DEM::Engine<ForceModel, ParticleType>::run_output()
     }
 }
 
-
-
-
-
+template<typename ForceModel, typename ParticleType>
+void DEM::Engine<ForceModel, ParticleType>::set_time_incremement(std::chrono::duration<double> dt) {
+    increment_ = dt;
+    auto& contact_vector = contacts_.get_objects();
+    for (unsigned i = 0; i < contact_vector.size(); ++i) {
+        auto c = contact_vector[i];
+        c->set_increment(dt);
+    }
+}
