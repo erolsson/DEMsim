@@ -19,7 +19,6 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     using namespace std::chrono_literals;
     SimulationParameters parameters(settings_file_name);
 
-    auto N = parameters.get_parameter<unsigned>("N");
     auto delta = parameters.get_parameter<double>("delta");
     auto output_directory = parameters.get_parameter<std::string>("output_dir");
     auto particle_file = parameters.get_parameter<std::string>("radius_file");
@@ -44,10 +43,10 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     mat->bt = parameters.get_parameter<double>("bt");
 
     auto particle_radii = read_vector_from_file<double>(particle_file);
-    particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);
+    particle_radii.assign(particle_radii.begin(), particle_radii.begin()+ 3600);
     std::sort(particle_radii.rbegin(), particle_radii.rend());
 
-    std::cout << "Number of particles" <<N<< "\n";
+    //std::cout << "Number of particles" <<mat->N<< "\n";
     std::cout << "delta" <<delta<< "\n";
     double just_particle_volume=0.;
     double particle_surface_area= 0.;
@@ -57,8 +56,8 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     }
 
     std::cout << "Volume of simulated particles is " <<just_particle_volume<< "\n";
-    double box_width = pow(3*(just_particle_volume)/4*pi, 1./3)/0.9770;
-    double box_height =box_width*2.0;
+    double box_width = 1.5;
+    double box_height =box_width*4.0;
     std::cout << "The simulated box has a width of " << box_width << " and a height of "
               << box_height << "\n";
 

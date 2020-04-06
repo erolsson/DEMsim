@@ -1,4 +1,4 @@
-N=6500
+N=4000
 output_dir=../results/viscoelastic/visco_5_box_ny_2
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
@@ -14,6 +14,6 @@ tau_i= 211,4807
 mu=0.7
 mu_wall=0.7
 bindervolume=0.1877
-active_particle_height=1.4
+active_particle_height=1.3
 delta=0.0240
 relaxation_time=2500
