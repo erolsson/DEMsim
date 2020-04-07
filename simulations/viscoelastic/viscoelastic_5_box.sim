@@ -1,5 +1,5 @@
 N=4000
-output_dir=../results/viscoelastic/masskalning100C1
+output_dir=../results/viscoelastic/masskalning100C1ny
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=0.47
