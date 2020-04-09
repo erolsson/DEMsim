@@ -1,4 +1,4 @@
-N=4000
+N=7740
 output_dir=../results/viscoelastic/masskalning1C2
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
