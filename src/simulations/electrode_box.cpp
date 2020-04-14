@@ -43,7 +43,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     mat->bt = parameters.get_parameter<double>("bt");
 
     auto particle_radii = read_vector_from_file<double>(particle_file);
-    particle_radii.assign(particle_radii.begin(), particle_radii.begin()+ 5000);
+    particle_radii.assign(particle_radii.begin(), particle_radii.begin()+4000);
     std::sort(particle_radii.rbegin(), particle_radii.rend());
 
     //std::cout << "Number of particles" <<mat->N<< "\n";
