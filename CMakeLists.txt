@@ -66,6 +66,8 @@ add_executable(DEMsim
                src/simulations/stone_compaction.cpp
                src/contact_models/viscoelastic.cpp
                src/contact_models/viscoelastic.h
+               src/contact_models/battery_particle_contact.h
+               src/contact_models/battery_particle_contact.cpp
                src/materials/ViscoelasticMaterial.h)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")

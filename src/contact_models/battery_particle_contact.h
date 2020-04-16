@@ -1,9 +1,9 @@
 //
-// Created by elahe on 2019-11-14.
+// Created by erolsson on 15/04/2020.
 //
 
-#ifndef DEMSIM_VISCOELASTIC_H
-#define DEMSIM_VISCOELASTIC_H
+#ifndef DEMSIM_BATTERY_PARTICLE_CONTACT_H
+#define DEMSIM_BATTERY_PARTICLE_CONTACT_H
 
 #include <chrono>
 #include <vector>
@@ -13,16 +13,15 @@
 #include "../surfaces/point_surface.h"
 #include "../utilities/vec3.h"
 
-
 namespace DEM {
-    class Viscoelastic {
-        using ParticleType = SphericalParticle<Viscoelastic>;
-        using SurfaceType = Surface<Viscoelastic, ParticleType>;
+    class BatteryParticleContact {
+        using ParticleType = SphericalParticle<BatteryParticleContact>;
+        using SurfaceType = Surface<BatteryParticleContact, ParticleType>;
 
     public:
 
-        Viscoelastic(ParticleType* particle1, ParticleType* particle2,  std::chrono::duration<double> dt);
-        Viscoelastic(ParticleType* particle1, SurfaceType* surface, std::chrono::duration<double>dt );
+        BatteryParticleContact(ParticleType* particle1, ParticleType* particle2,  std::chrono::duration<double> dt);
+        BatteryParticleContact(ParticleType* particle1, SurfaceType* surface, std::chrono::duration<double>dt );
 
         void update(double h, const Vec3& dt, const Vec3& rot, const Vec3& normal);
 
@@ -65,8 +64,9 @@ namespace DEM {
         std::vector<double> x {};
         double dF_{0.};
         double F_visc{0.};
-        double F_particle{0.};
+        double F_particle{ 0. };
 
+        double yield_h_ { 1e99 };
 
         double tsi0_;
         double tsi0particle_;
@@ -82,6 +82,4 @@ namespace DEM {
 }
 
 
-
-
-#endif //DEMSIM_VISCOELASTIC_H
+#endif //DEMSIM_BATTERY_PARTICLE_CONTACT_H
