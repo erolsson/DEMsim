@@ -35,6 +35,7 @@ namespace DEM {
         bool print_surface_forces = false;
         bool print_particle_cracks = false;
         bool print_contacts = false;
+        bool print_bounding_box = false;
 
     private:
         using OutputFunPtr = void (Output<ForceModel, ParticleType>::*)() const;
@@ -43,6 +44,8 @@ namespace DEM {
         const std::vector<ParticleType*>& particles_;
         const std::vector<SurfaceType*>& surfaces_;
         const ContactMatrix<ContactType>& contacts_;
+        const Engine<ForceModel, ParticleType>& engine_;
+
         std::string directory_;
 
         FuncVec output_functions_ {{Output::print_particles,         &Output::write_particles},
@@ -50,7 +53,8 @@ namespace DEM {
                                    {Output::print_surface_positions, &Output::write_surface_positions},
                                    {Output::print_surface_forces,    &Output::write_surface_forces},
                                    {Output::print_particle_cracks,   &Output::write_particle_cracks},
-                                   {Output::print_contacts,          &Output::write_contacts}};
+                                   {Output::print_contacts,          &Output::write_contacts},
+                                   {Output::print_bounding_box,      &Output::write_bounding_box}};
 
         std::chrono::duration<double> current_time_;
         std::chrono::duration<double> time_until_output_;
@@ -62,6 +66,7 @@ namespace DEM {
         void write_surface_forces() const;
         void write_particle_cracks() const;
         void write_contacts() const;
+        void write_bounding_box() const;
     };
 }
 
