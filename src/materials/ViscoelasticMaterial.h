@@ -17,13 +17,16 @@ namespace DEM {
 
         double E;
         double nu;
+
         double fb;
         double active_particle_height;
         double bindervolume;
         double nup;
         double Ep;
         double bt;
-        double delta;
+        double N;
+
+
         double contact;
         std::vector<double> tau_i;
         std::vector<double> alpha_i;
