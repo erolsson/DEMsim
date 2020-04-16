@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "engine.h"
 #include "../particles/fractureable_spherical_particle.h"
 
 namespace fs = std::filesystem;
@@ -16,7 +17,7 @@ namespace fs = std::filesystem;
 template<typename ForceModel, typename ParticleType>
 DEM::Output<ForceModel, ParticleType>::Output(std::string directory, std::chrono::duration<double> interval,
                                               const Engine<ForceModel, ParticleType>& engine) :
-    particles_(engine.particles_), surfaces_(engine.surfaces_), contacts_(engine.contacts_),
+    particles_(engine.particles_), surfaces_(engine.surfaces_), contacts_(engine.contacts_), engine_(engine),
     directory_(directory), current_time_(engine.get_time()), time_until_output_(interval), interval_(interval)
 {
         std::cout << "Creating output: " << directory << std::endl;
@@ -140,6 +141,17 @@ void DEM::Output<ForceModel, ParticleType>::write_contacts() const {
             output_file << c->get_output_string() << "\n";
         }
     }
+    output_file.close();
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::write_bounding_box() const {
+    std::string filename = directory_ + "/bounding_box.dou";
+    std::ofstream output_file;
+    output_file.open(filename, std::fstream::app);
+    auto bbox = engine_.get_bounding_box();
+    output_file << current_time_.count() << ", " << bbox[0] << ", " << bbox[1] << ", " << bbox[2]
+                << ", " << bbox[3] << ", " << bbox[4] << ", " << bbox[5] << "\n";
     output_file.close();
 }
 
