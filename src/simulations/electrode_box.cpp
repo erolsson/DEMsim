@@ -19,8 +19,8 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     using namespace std::chrono_literals;
     SimulationParameters parameters(settings_file_name);
 
-    auto N = parameters.get_parameter<unsigned>("N");
     auto delta = parameters.get_parameter<double>("delta");
+    auto N = parameters.get_parameter<double>("N");
     auto output_directory = parameters.get_parameter<std::string>("output_dir");
     auto particle_file = parameters.get_parameter<std::string>("radius_file");
 
@@ -47,7 +47,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);
     std::sort(particle_radii.rbegin(), particle_radii.rend());
 
-    std::cout << "Number of particles" <<N<< "\n";
+    //std::cout << "Number of particles" <<mat->N<< "\n";
     std::cout << "delta" <<delta<< "\n";
     double just_particle_volume=0.;
     double particle_surface_area= 0.;
@@ -57,8 +57,8 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     }
 
     std::cout << "Volume of simulated particles is " <<just_particle_volume<< "\n";
-    double box_width = pow(3*(just_particle_volume)/4*pi, 1./3)/0.9770;
-    double box_height =box_width*2.0;
+    double box_width = 1.5;
+    double box_height =box_width*2;
     std::cout << "The simulated box has a width of " << box_width << " and a height of "
               << box_height << "\n";
 
@@ -142,7 +142,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
 
     std::cout<<"beginning of unloading"<< std::endl;
-    top_surface->set_velocity(Vec3(0, 0, surface_velocity*10));
+    top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     simulator.run(max_velocity);
 
 
@@ -178,9 +178,9 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     //std::cout<<"side surface"
     std::cout<<"Relaxation "<< std::endl;
     side_surface_2->set_velocity(Vec3(0. , 0, 0.));
-    run_for_time.reset(side_surface_time*10);
+    run_for_time.reset(side_surface_time*5000);
     simulator.run(run_for_time);
     std::cout<<"side surface:"<< points_side_[1].x() <<std::endl;
-    // simulator.set_time_incremement(100us);
+    simulator.set_time_incremement(100us);
 }
 
