@@ -27,7 +27,7 @@ def pressure_box(data_directory):
 
     p = surface_force / (0.15 * 0.15)
     p_side = surface_force_side
-    return p
+    return p_side
 
 
 def indentation(data_directory):
@@ -46,7 +46,7 @@ def indentation(data_directory):
     surface_indentation_side = indentation_data[711:1191, box_idx[3] * 15+3 ]
     indent = surface_indentation
     side = surface_indentation_side
-    return indent
+    return side
 
 
 def binder(data_directory):

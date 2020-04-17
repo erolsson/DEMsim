@@ -23,7 +23,7 @@ namespace DEM {
         double bindervolume;
         double nup;
         double Ep;
-        double yield_stress { 1e99 };
+        double yield_stress { 1.3600e+09 };
         double bt;
         double N;
 
