@@ -33,7 +33,7 @@ namespace DEM {
 
         void sum_contact_forces() {
             SphericalParticleBase<ForceModel>::sum_contact_forces(contacts_);
-        }
+    }
 
         void add_contact(ContactPointerType contact, std::size_t index, int direction) {
             SphericalParticleBase<ForceModel>::add_contact(contact, index, direction, contacts_);

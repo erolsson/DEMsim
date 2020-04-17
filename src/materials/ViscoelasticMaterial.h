@@ -17,6 +17,7 @@ namespace DEM {
 
         double E;
         double nu;
+
         double fb;
         double active_particle_height;
         double bindervolume;
@@ -24,7 +25,9 @@ namespace DEM {
         double Ep;
         double yield_stress { 1e99 };
         double bt;
-        double delta;
+        double N;
+
+
         double contact;
         std::vector<double> tau_i;
         std::vector<double> alpha_i;

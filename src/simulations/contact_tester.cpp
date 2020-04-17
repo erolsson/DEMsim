@@ -24,7 +24,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     namespace fs = std::filesystem;
 
     using Material = ViscoelasticMaterial;
-    Material mat {0, 2370.};
+    Material mat {0, 4800.};
 
     SimulationParameters parameters{settings_file_name};
     auto radius = parameters.get_parameter<double>("R");
@@ -41,9 +41,11 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     mat.mu = parameters.get_parameter<double>("mu");
     mat.alpha_i = parameters.get_vector<double>("alpha_i");
     mat.tau_i =parameters.get_vector<double>("tau_i");
+    //mat.contact = parameters.get_parameter<double>("contact");
 
     auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius-mat.bt/2-tick, 0, 0}, Vec3{}, &mat, 0);
-    auto p2 = SphericalParticle<ForceModel>(radius, Vec3{radius+mat.bt/2+tick,0, 0}, Vec3{}, &mat, 1);
+    auto p2 = SphericalParticle<ForceModel>(radius, Vec3{radius+mat.bt/2+tick,0, 0}, Vec3{}, &mat, 0);
+
 
     auto c = Contact<ForceModel, ParticleType>(&p2, &p1, 0.00001s);
 
