@@ -1,5 +1,5 @@
-N=2553
-output_dir=../results/viscoelastic/masskalning1priyankbugra
+N=3700
+output_dir=../results/viscoelastic/masskalning1C1
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=0.47
@@ -14,6 +14,6 @@ tau_i= 211,4807
 mu=0.7
 mu_wall=0.7
 bindervolume=0.1877
-active_particle_height=1.11
+active_particle_height=1.30
 delta=0.0240
 relaxation_time=2500
