@@ -162,11 +162,11 @@ double DEM::BatteryParticleContact::update_normal_force(double h)
         // Particles in contact
         // If unloading or displacement smaller than yield displacement, use Hertz
         if (dh < 0 || h_ + dh < yield_h_) {
-            F_particle += kparticle_*sqrt(h_)*dh;
+            F_particle += 1.5*kparticle_*sqrt(h_)*dh;
         }
         // Plastic contact, use a linear relationship with the stiffness obtained at the yield point
         else {
-            F_particle += kparticle_*sqrt(yield_h_)*dh;
+            F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
         }
     }
     else {
