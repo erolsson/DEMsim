@@ -49,6 +49,8 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     tsi0particle_=1./(((1-vp1*vp1)/Ep1)+((1-vp2*vp2)/Ep2));
     k_=4.*tsi0_*sqrt(R0_)/3; //initial contact stiffness
     kparticle_=4*tsi0particle_*sqrt(R0_)/3;
+    yield_h_ = pow(std::min(mat1->yield_stress, mat2->yield_stress)*R0_*R0_/kparticle_, 2./3);
+    std::cout << "procent:" << procent_ << std::endl;
 
     for (unsigned i=0; i!=M; ++i)
     {
@@ -83,11 +85,11 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     kT_=mat1->kT;
     bt_= mat1->bt;
     double random = rand() % 10 + 1;
-    //std::cout << "random:" << random << std::endl;
+    std::cout << "bt model:" <<bt_ << std::endl;
     if (random < mat1->contact){
         procent_=true;
     }
-    //std::cout << "procent:" << procent_ << std::endl;
+
 
     dt_ = dt.count();  // time increment
     tsi0_ = 1. / ((1 - v1 * v1) / E1);
@@ -96,6 +98,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     k_=4.*tsi0_*sqrt(R0_)/3; //initial contact stiffness
     //std::cout << "k:" << k_ << std::endl;
     kparticle_=4*tsi0particle_*sqrt(R0_)/3;
+    yield_h_ = pow(mat1->yield_stress*R0_*R0_/kparticle_, 2./3);
     id2_= surface->get_id();
     for (unsigned i=0; i!=M; ++i)
     {
@@ -130,16 +133,14 @@ double DEM::Viscoelastic::update_normal_force(double h)
                 di_[i] += ddi_[i];
             }
             F_visc += k_ * dF_;
-
-            if (h > 0) {
-                F_particle = kparticle_ * pow(h, 3.0 / 2);
-            } else {
-                F_particle = 0;
-            }
             if (!adhesive_ && F_visc < 0) {
                 return 0;
             }
-        } else {
+
+
+        }
+
+        else {
             F_particle = 0;
             F_visc = 0;
             dF_ = 0;
@@ -147,24 +148,34 @@ double DEM::Viscoelastic::update_normal_force(double h)
             for (unsigned i = 0; i != M; ++i) {
                 ddi_[i] = 0;
                 di_[i] = 0;
-            }
+                }
         }
-        h_ += dh;
 
-        return F_visc + F_particle;
+    }
+
+    if (h > 0.0 && h_ > 0) {
+        // Particles in contact
+        // If unloading or displacement smaller than yield displacement, use Hertz
+        if (dh < 0 || h_ + dh < yield_h_) {
+            F_particle += 1.5*kparticle_*sqrt(h_)*dh;
+        }
+            // Plastic contact, use a linear relationship with the stiffness obtained at the yield point
+        else {
+            F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
+        }
     }
     else {
-        if(h > 0.0 ) {
-            area_ = pi * R0_ * (h);
-            F_particle = kparticle_ * pow(h, 3.0 / 2);
-        }
-        else{
-            F_particle = 0;
-        }
-        h_ += dh;
-        return F_particle;
+        F_particle = 0;
     }
+
+    if (h > 0.0) {
+        area_ = pi * R0_ * (h);
     }
+
+    h_ += dh;
+    return F_visc+F_particle;
+
+}
 
 
 

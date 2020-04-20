@@ -44,6 +44,7 @@ namespace DEM {
         double h_ {0. };
         double area_ {0. };
         static unsigned M;
+        double yield_h_ { 1e99 };
         double k_;
         double kparticle_;
         //double binder_radii_;
