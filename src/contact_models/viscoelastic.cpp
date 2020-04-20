@@ -50,7 +50,7 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     k_=4.*tsi0_*sqrt(R0_)/3; //initial contact stiffness
     kparticle_=4*tsi0particle_*sqrt(R0_)/3;
     yield_h_ = pow(std::min(mat1->yield_stress, mat2->yield_stress)*R0_*R0_/kparticle_, 2./3);
-    std::cout << "procent:" << procent_ << std::endl;
+    //std::cout << "procent:" << procent_ << std::endl;
 
     for (unsigned i=0; i!=M; ++i)
     {
@@ -85,7 +85,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     kT_=mat1->kT;
     bt_= mat1->bt;
     double random = rand() % 10 + 1;
-    std::cout << "bt model:" <<bt_ << std::endl;
+    //std::cout << "bt model:" <<bt_ << std::endl;
     if (random < mat1->contact){
         procent_=true;
     }

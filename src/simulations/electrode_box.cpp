@@ -7,13 +7,13 @@
 
 #include "../engine/engine.h"
 
-#include "../contact_models/battery_particle_contact.h"
+#include "../contact_models/viscoelastic.h"
 #include "../materials/ViscoelasticMaterial.h"
 #include "../utilities/file_reading_functions.h"
 
 void DEM::electrode_box(const std::string &settings_file_name) {
     using namespace DEM;
-    using ForceModel = BatteryParticleContact;
+    using ForceModel = Viscoelastic;
     using ParticleType = SphericalParticle<ForceModel>;
     using EngineType = Engine<ForceModel, ParticleType>;
     using namespace std::chrono_literals;
