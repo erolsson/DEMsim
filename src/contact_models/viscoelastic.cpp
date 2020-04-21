@@ -173,7 +173,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
     }
 
     h_ += dh;
-    return F_visc+F_particle;
+    return F_visc+std::max(F_particle, 0.);
 
 }
 
