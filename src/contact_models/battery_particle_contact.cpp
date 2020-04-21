@@ -23,9 +23,7 @@ DEM::BatteryParticleContact::BatteryParticleContact (DEM::BatteryParticleContact
 
 
     //std::cout << "random:" << random << std::endl;
-    if (random< mat1->contact){
-        procent_= true;
-    }
+    procent_= true;
 
     double E1 = mat1->E;
     double E2 = mat2->E;
@@ -53,6 +51,7 @@ DEM::BatteryParticleContact::BatteryParticleContact (DEM::BatteryParticleContact
 
 
     yield_h_ = pow(std::min(mat1->yield_stress, mat2->yield_stress)*R0_*R0_/kparticle_, 2./3);
+    std::cout << "procent:" << procent_ << std::endl;
 
     for (unsigned i=0; i!=M; ++i)
     {
@@ -91,10 +90,8 @@ DEM::BatteryParticleContact::BatteryParticleContact(DEM::BatteryParticleContact:
     bt_= mat1->bt;
     double random = rand() % 10 + 1;
     //std::cout << "random:" << random << std::endl;
-    if (random< mat1->contact){
-        procent_= true;
-    }
-    //std::cout << "procent:" << procent_ << std::endl;
+    procent_=true;
+
 
     dt_ = dt.count();  // time increment
     tsi0_ = 1. / ((1 - v1 * v1) / E1);
@@ -176,10 +173,7 @@ double DEM::BatteryParticleContact::update_normal_force(double h)
     else {
         F_particle = 0;
     }
-    if (F_particle<0.0){
 
-        F_particle=0;
-    }
 
     h_ += dh;
     return F_visc + F_particle;

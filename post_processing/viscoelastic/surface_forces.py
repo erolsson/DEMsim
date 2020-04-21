@@ -23,11 +23,11 @@ def pressure_box(data_directory):
     box_idx = [i for i, surface_type in enumerate(surface_types) if surface_type == 'PointSurface']
 
     surface_force = force_data[:, box_idx[1] * 5 + 1]
-    surface_force_side = force_data[711:1191, box_idx[3] * 5 + 2]
+    surface_force_side = force_data[:, box_idx[4] * 5 + 2]
 
     p = surface_force / (0.15 * 0.15)
     p_side = surface_force_side
-    return p_side
+    return p
 
 
 def indentation(data_directory):
@@ -43,10 +43,11 @@ def indentation(data_directory):
     b = box_idx[3] * 5 + 3
     print(b)
     surface_indentation = indentation_data[:, box_idx[1] * 15 + 5]
-    surface_indentation_side = indentation_data[711:1191, box_idx[3] * 15+3 ]
+    surface_indentation_side = indentation_data[:, box_idx[4] * 15+3 ]
+
     indent = surface_indentation
     side = surface_indentation_side
-    return side
+    return indent
 
 
 def binder(data_directory):
@@ -76,7 +77,8 @@ if __name__ == '__main__':
     h_side = indentation(simulation_directory)
     print (h_side)
     pressure_side = pressure_box(simulation_directory)
-    a = np.linspace(0., 4.79, 479)
+    # a use to draw relaxation
+    a = np.linspace(0., 62.59, 6259)
     print(pressure_side)
     just_particle_volume = 1.33587
     box_width = 1.5

@@ -1,4 +1,4 @@
-N=3700
+N=3500
 output_dir=../results/viscoelastic/C1plastic3700mass1
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9

@@ -34,6 +34,9 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     double vp1 = mat1->nup;
     double vp2 = mat2->nup;
     double Ep2 = mat2->Ep;
+    //id2_= particle1->get_id();
+    //std::cout << "id:" << id2_ << std::endl;
+
 
     double Ep1 = mat1->Ep;
     //binder_radii_= (particle1->get_radius()*particle2->get_radius())/(particle1->get_radius()+particle2->get_radius());
