@@ -147,6 +147,8 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     run_for_time.reset(compaction_time/9.0);
     simulator.run(run_for_time);
 
+    // EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
+    // simulator.run(zero_force);
 
     std::cout<<"Calculation Porosity"<< std::endl;
     bbox = simulator.get_bounding_box();
