@@ -52,7 +52,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     std::cout << "bt model:" <<mat.bt << std::endl;
 
 
-    auto c = Contact<ForceModel, ParticleType>(&p2, &p1, 0.000001s);
+    auto c = Contact<ForceModel, ParticleType>(&p2, &p1, 1s);
 
     //p1.move(Vec3{h1, 0, 0});
     //p2.move(Vec3{-h1, 0, 0});
@@ -72,7 +72,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                     << c.get_tangential_force().y() << ", "
                     << p1.get_position().y() - p2.get_position().y() << std::endl;
     }
-    for(unsigned i = 0; i != 2*increments; ++i) {
+    for(unsigned i = 0; i != increments; ++i) {
         p1.move(Vec3{static_cast<double>(-tick/2), 0, 0});
         p2.move(Vec3{static_cast<double>(tick/2), 0, 0});
         c.update();
@@ -81,6 +81,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                     << c.get_tangential_force().y() << ", "
                     << p1.get_position().y() - p2.get_position().y() << std::endl;
     }
+
 
 
 

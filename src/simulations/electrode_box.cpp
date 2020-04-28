@@ -135,7 +135,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::cout<<"h"<< h << std::endl;
     top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
-    double surface_velocity =0.05;
+    double surface_velocity = 2e-03;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
     run_for_time.reset(compaction_time);
@@ -144,8 +144,8 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     std::cout<<"beginning of unloading"<< std::endl;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
-    EngineType::SurfaceNormalForceLess zero_force(top_surface, 0);
-    simulator.run(zero_force);
+    run_for_time.reset(compaction_time/9.0);
+    simulator.run(run_for_time);
 
 
     std::cout<<"Calculation Porosity"<< std::endl;
