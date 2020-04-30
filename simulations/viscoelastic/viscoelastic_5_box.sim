@@ -1,5 +1,5 @@
-N=3330
-output_dir=../results/viscoelastic/3330-C1
+N=3700
+output_dir=../results/viscoelastic/3700-C1
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=0.47
