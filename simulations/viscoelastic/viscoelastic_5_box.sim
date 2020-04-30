@@ -1,5 +1,5 @@
 N=3330
-output_dir=../results/viscoelastic/C33330bindervolumeextract
+output_dir=../results/viscoelastic/3330-C3
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=0.47
