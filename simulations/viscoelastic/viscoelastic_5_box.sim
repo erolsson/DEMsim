@@ -1,5 +1,5 @@
 N=3330
-output_dir=../results/viscoelastic/3330-C3
+output_dir=../results/viscoelastic/3330-C4
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=0.47
@@ -14,6 +14,6 @@ tau_i=1,211,4807
 mu=0.7
 mu_wall=0.7
 bindervolume=0.1877
-active_particle_height=1.37
+active_particle_height=1.2356
 delta=0.0240
 relaxation_time=2500
