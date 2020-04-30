@@ -124,6 +124,9 @@ double DEM::Viscoelastic::update_normal_force(double h)
 {
     double dh=h-h_;
     h_ = h - dh;
+    if (h > hmax_) {
+        h = hmax_;
+    }
     if(procent_ ) {
         if (h > -bt_ && h_ > -bt_) {
             dF_ = 3. / 2 * sqrt(h + bt_) * dh;
@@ -159,7 +162,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
     if (h > 0.0 && h_ > 0) {
         // Particles in contact
         // If unloading or displacement smaller than yield displacement, use Hertz
-        if (dh < 0 || h_ + dh < yield_h_) {
+        if (h < hmax_ || h_ + dh < yield_h_) {
             F_particle += 1.5*kparticle_*sqrt(h_)*dh;
         }
             // Plastic contact, use a linear relationship with the stiffness obtained at the yield point

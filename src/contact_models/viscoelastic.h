@@ -42,7 +42,8 @@ namespace DEM {
         double kT_;
         double bt_;
         double h_ {0. };
-        double area_ {0. };
+        double hmax_ { 0. };
+        double area_ { 0. };
         static unsigned M;
         double yield_h_ { 1e99 };
         double k_;
