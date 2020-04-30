@@ -125,7 +125,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
     double dh=h-h_;
     h_ = h - dh;
     if (h > hmax_) {
-        h = hmax_;
+        hmax_ = h;
     }
     if(procent_ ) {
         if (h > -bt_ && h_ > -bt_) {
