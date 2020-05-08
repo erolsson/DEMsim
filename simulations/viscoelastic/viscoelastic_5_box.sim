@@ -1,5 +1,5 @@
 N=2553
-output_dir=../results/viscoelastic/BUGRAcompactionHighviscoFindpressure
+output_dir=../results/viscoelastic/BUGRAcompactionLowviscoFindpressure
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=0.47
