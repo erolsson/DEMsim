@@ -58,7 +58,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     std::cout << "Volume of simulated particles is " <<just_particle_volume<< "\n";
     double box_width = 1.5;
-    double box_height =box_width;
+    double box_height =box_width*1.5;
     std::cout << "The simulated box has a width of " << box_width << " and a height of "
               << box_height << "\n";
 
