@@ -1,4 +1,4 @@
-N=2553
+N=3500
 output_dir=../results/viscoelastic/newbugracompactionhighviscoFindpressurenew
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
