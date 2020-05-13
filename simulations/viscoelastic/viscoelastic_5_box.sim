@@ -1,5 +1,5 @@
-N=700
-output_dir=../results/viscoelastic/biggerparticlebugracompactionlowviscoFindpressure
+N=950
+output_dir=../results/viscoelastic/biggerparticlenew
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=0.47
