@@ -1,5 +1,5 @@
 N=4500
-output_dir=../results/viscoelastic/radius4bt1highvisco
+output_dir=../results/viscoelastic/radius4bt1highviscohighvelocity
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=0.47
