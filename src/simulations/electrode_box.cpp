@@ -137,9 +137,12 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::cout<<"h"<< h<< std::endl;
     double surface_velocity = 2e-03;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
-    std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
-    run_for_time.reset(compaction_time);
-    simulator.run(run_for_time);
+    //std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
+    //run_for_time.reset(compaction_time);
+    //simulator.run(run_for_time);
+    EngineType::SurfaceNormalForceWithinInterval  Interval ( simulator, top_surface,2.2500e+11,500e+11, 0.01  );
+    simulator.run(Interval);
+
 
 
     std::cout<<"beginning of unloading"<< std::endl;
