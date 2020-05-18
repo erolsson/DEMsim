@@ -1,5 +1,5 @@
 N=4500
-output_dir=../results/viscoelastic/Forceintervalradius4b051highviscohighvelocity
+output_dir=../results/viscoelastic/Forceintervalradius4b15highviscohighvelocity
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=0.47
@@ -8,7 +8,7 @@ nu=0.49
 fb=0.9
 nup=0.25
 Ep=142e9
-bt=0.5e-2
+bt=1.5e-2
 alpha_i=0.1,0.065,0.057
 tau_i=1,211,4807
 mu=0.7
