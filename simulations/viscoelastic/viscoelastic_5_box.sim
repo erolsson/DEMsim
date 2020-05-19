@@ -1,5 +1,5 @@
 N=4500
-output_dir=../results/viscoelastic/Forceintervalradius4b12highviscohighvelocity
+output_dir=../results/viscoelastic/Forceintervalradius4b12lowviscohighvelocity
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=0.47
