@@ -136,7 +136,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
-    double surface_velocity = 1e-04;
+    double surface_velocity = 1e-03;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     //std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
     //run_for_time.reset(compaction_time);
