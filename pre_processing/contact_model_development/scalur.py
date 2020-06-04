@@ -147,7 +147,7 @@ R0 = 1./(1/p1.R + 1/p2.R)
 c2d = Contact2D(p1, p2, 8e-2/R0, 0.3)
 c3d = Contact3D(p1, p2, 8e-2/R0, 0.3)
 
-dmax = 0.01*R0
+dmax = 0.02*R0
 delta2d = np.zeros(5*N)
 ft2d = np.zeros(5*N)
 delta3d = np.zeros((5*N, 3))
@@ -188,7 +188,11 @@ for i in range(0, 2*N):
     ft3d[i + 3*N, :] = c3d.Q
 
 
-plt.plot(delta2d, ft2d)
+# plt.plot(delta2d, ft2d)
 plt.plot(delta3d[:, 0], ft3d[:, 0], 'r', lw=2)
-print ft3d
+plt.xlabel('Tangential displacement')
+plt.ylabel('Tangential force')
+
+plt.tight_layout()
+plt.savefig('tangential_force.png')
 plt.show()

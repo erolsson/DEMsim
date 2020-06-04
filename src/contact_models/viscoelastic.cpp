@@ -55,6 +55,10 @@ DEM::Viscoelastic::Viscoelastic (DEM::Viscoelastic::ParticleType *particle1,DEM:
     yield_h_ = pow(std::min(mat1->yield_stress, mat2->yield_stress)*R0_*R0_/kparticle_, 2./3);
     //std::cout << "procent:" << procent_ << std::endl;
 
+    double G1 = E1/2/(1+v1);
+    double G2 = E2/2/(1+v2);
+    kT_ = 8/((2-v1)/G1 + (2-v2)/G2)*0.001*R0_;
+
     for (unsigned i=0; i!=M; ++i)
     {
         di_.push_back(0);
@@ -103,6 +107,10 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     kparticle_=4*tsi0particle_*sqrt(R0_)/3;
     yield_h_ = pow(mat1->yield_stress*R0_*R0_/kparticle_, 2./3);
     id2_= surface->get_id();
+
+    double G1 = E1/2/(1+v1);
+    kT_ = 8/((2-v1)/G1)*0.001*R0_;
+
     for (unsigned i=0; i!=M; ++i)
     {
         di_.push_back(0);
@@ -139,13 +147,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
                 di_[i] += ddi_[i];
             }
             F_visc += k_ * dF_;
-            if (!adhesive_ && F_visc < 0) {
-                return 0;
-            }
-
-
         }
-
         else {
             F_particle = 0;
             F_visc = 0;
@@ -154,12 +156,12 @@ double DEM::Viscoelastic::update_normal_force(double h)
             for (unsigned i = 0; i != M; ++i) {
                 ddi_[i] = 0;
                 di_[i] = 0;
-                }
+            }
+            return 0;
         }
-
     }
 
-    if (h > 0.0 && h_ > 0) {
+    if (h > 0.0 && h_ > 0.0) {
         // Particles in contact
         // If unloading or displacement smaller than yield displacement, use Hertz
         if (h < hmax_ || h_ + dh < yield_h_) {
@@ -174,25 +176,23 @@ double DEM::Viscoelastic::update_normal_force(double h)
         F_particle = 0;
     }
 
-    if (h > 0.0) {
-        area_ = pi * R0_ * (h);
-    }
-
     h_ += dh;
-    return F_visc+std::max(F_particle, 0.);
-
+    if (adhesive_) {
+        return F_visc + std::max(F_particle, 0.);
+    }
+    return std::max(F_visc, 0.) + std::max(F_particle, 0.);
 }
 
 
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
-   uT_ -= dot_product(uT_, normal) * normal;
+    uT_ -= dot_product(uT_, normal) * normal;
+    FT_part_ -= dot_product(FT_part_, normal) * normal;
+    FT_visc_ -= dot_product(FT_visc_, normal) * normal;
     uT_ += dt;
    //std::cout<<uT_<<"uT"<<std::endl;
-    if (F_visc != 0.0  && !uT_.is_zero()) {
-        // Projecting uT on the new contact plane by removing the component in the contact normal direction
-
-        dFT_=-2*area_*tsi0_*dt/bt_;
+    if (F_visc != 0.0  && !dt.is_zero()) {
+        dFT_ = 2*area_*tsi0_*dt/bt_;
         //std::cout<<dFT_<<"dFT"<<std::endl;
 
         for (unsigned i=0; i!=M; ++i)
@@ -201,10 +201,10 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
             dFT_ -= alpha_i[i]*ddti_[i];
             dti_[i]+=ddti_[i];
         }
-        FT_+=dFT_;
+        FT_visc_ += dFT_;
 
-        if (FT_.length() > 0.05*F_visc) { // contact aborted
-            FT_.set_zero();
+        if (FT_visc_.length() > F_visc) { // contact aborted
+            FT_visc_.set_zero();
             uT_.set_zero();
             for (unsigned i=0; i!=M; ++i)
             {
@@ -212,24 +212,24 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
             }
         }
     }
-    else if (F_particle > 0.0 ) {
-       
-        uT_ -= dot_product(uT_, normal)*normal;
-        uT_ += dt;
-        if (kT_*uT_.length() > mu_*F_) { // Slip
-            uT_ = mu_*F_/kT_*uT_.normal();
+    else if (F_particle > 0.0) {
+        FT_part_ += kT_*dt;
+        if (FT_part_.length() > mu_*F_) { // Slip
+            FT_part_ = mu_*F_*FT_part_.normal();
         }
-        FT_ = -kT_*uT_;
     }
     else {
         FT_.set_zero();
         uT_.set_zero();
+        FT_part_.set_zero();
+        FT_visc_.set_zero();
         for (unsigned i=0; i!=M; ++i)
         {
             dti_[i].set_zero();
             ddti_[i].set_zero();
         }
     }
+    FT_ = - FT_visc_ - FT_part_;
 
 }
 
