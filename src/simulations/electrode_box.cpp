@@ -89,7 +89,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     std::vector<Vec3> side_points_2{ p6, p5,p2, p4};
     std::vector<Vec3> side_points_3{ p5, p7,p4, p3};
     std::vector<Vec3> side_points_4{p7, p8, p3, p1};
-
+    // Testing
 
     auto bottom_surface = simulator.create_point_surface(bottom_points, true , true);
     std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;

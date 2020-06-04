@@ -74,6 +74,8 @@ namespace DEM {
         double tsi0particle_;
         Vec3 dFT_{Vec3(0., 0., 0.)};
         Vec3 FT_{Vec3(0., 0., 0.)};
+        Vec3 FT_visc_ {Vec3(0., 0., 0.)};
+        Vec3 FT_part_ {Vec3(0., 0., 0.)};
         Vec3 uT_{ Vec3(0., 0., 0.) };
         bool adhesive_;
         bool procent_;
