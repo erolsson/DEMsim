@@ -224,7 +224,7 @@ namespace DEM {
         class SurfaceNormalForceWithinInterval : public RunFunctorBase {
         public:
             SurfaceNormalForceWithinInterval(const Engine& engine, const SurfaceType* surface, double fmin, double fmax,
-                    std::chrono::duration<double> time_interval) :
+                    std::chrono::duration<double>time_interval) :
                     engine_(engine), surface_(surface), fmin_(fmin), fmax_(fmax), time_interval_(time_interval) ,
                     start_time_(engine.get_time()){}
             ~SurfaceNormalForceWithinInterval() = default;

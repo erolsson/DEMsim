@@ -212,8 +212,9 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
             }
         }
     }
-    else if (F_particle > 0.0) {
+     else if (F_particle > 0.0) {
         FT_part_ += kT_*dt;
+        //kT_: G*8*sqrt(R*angel of impact) G=60GPa
         if (FT_part_.length() > mu_*F_) { // Slip
             FT_part_ = mu_*F_*FT_part_.normal();
         }
