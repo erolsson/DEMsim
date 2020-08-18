@@ -19,6 +19,8 @@ namespace DEM {
     void proctor_test(const std::string& settings_file_name);
     void stone_compaction(const std::string& settings_file_name);
     void electrode_box(const std::string& settings_file_name);
+    void contact_tester_surface(const std::string& settings_file_name);
+
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 
 
