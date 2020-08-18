@@ -15,7 +15,7 @@ namespace DEM {
         CircularPlate(std::size_t id, double radius, const Vec3& normal, const Vec3& mid_point);
 
         ~CircularPlate() override = default;
-
+        using Surface<ForceModel, ParticleType>::get_id;
         const Vec3& get_normal() { return normal_; }
 
         [[nodiscard]] double distance_to_point(const Vec3& point) const override;
@@ -33,7 +33,6 @@ namespace DEM {
         [[nodiscard]] double get_radius() const { return radius_; }
 
     private:
-        using Surface<ForceModel, ParticleType>::id_;
         using Surface<ForceModel, ParticleType>::displacement_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_point_;

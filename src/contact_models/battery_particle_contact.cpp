@@ -7,15 +7,15 @@
 #include <cmath>
 #include <iostream>
 
-#include "../materials/ViscoelasticMaterial.h"
+#include "../materials/electrode_material.h"
 
 
 DEM::BatteryParticleContact::BatteryParticleContact (DEM::BatteryParticleContact::ParticleType* particle1,
                                                      DEM::BatteryParticleContact::ParticleType* particle2,
                                                      std::chrono::duration<double> dt)  {
     //extracting from material
-    auto mat1 = dynamic_cast<const ViscoelasticMaterial *>(particle1->get_material());
-    auto mat2 = dynamic_cast<const ViscoelasticMaterial *>(particle2->get_material());
+    auto mat1 = dynamic_cast<const ElectrodeMaterial *>(particle1->get_material());
+    auto mat2 = dynamic_cast<const ElectrodeMaterial *>(particle2->get_material());
 
 
     R0_ = 1. / (1. / particle1->get_radius() + 1. / particle2->get_radius());
@@ -69,7 +69,7 @@ DEM::BatteryParticleContact::BatteryParticleContact (DEM::BatteryParticleContact
 DEM::BatteryParticleContact::BatteryParticleContact(DEM::BatteryParticleContact::ParticleType* particle1,
                                                     DEM::BatteryParticleContact::SurfaceType* surface,
                                                     std::chrono::duration<double>dt){
-    auto mat1 = dynamic_cast<const ViscoelasticMaterial* >(particle1->get_material());
+    auto mat1 = dynamic_cast<const ElectrodeMaterial* >(particle1->get_material());
 
     R0_ = 1. / (1. / particle1->get_radius());
     double E1 = mat1->E;

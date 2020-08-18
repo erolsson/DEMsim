@@ -21,9 +21,9 @@ namespace DEM {
     using CylinderType = Cylinder<ForceModel, ParticleType>;
 
     public:
-        BoundingBox(ParticleType* particle, std::size_t index);
-        BoundingBox(SurfaceType* surface,  std::size_t index);
-        BoundingBox(CylinderType* cylinder, std::size_t index, bool); //Special bounding box for inward cylinders
+        BoundingBox(ParticleType* particle, std::size_t index, double stretch);
+        BoundingBox(SurfaceType* surface,  std::size_t index, double stretch);
+        BoundingBox(CylinderType* cylinder, std::size_t index, double stretch, bool); //Special bounding box for inward cylinders
 
         // Copy constructor and assignment operator needed due to pointers between different projection vectors
         // which becomes invalid when different bounding boxes are re-allocated due to vector-over-capacity
@@ -43,7 +43,7 @@ namespace DEM {
     private:
         ParticleType* particle_;
         SurfaceType* surface_;
-        double stretch_{ 2e-2 };
+        double stretch_;
 
         void (BoundingBox<ForceModel, ParticleType>::*update_function)();
         void particle_update();

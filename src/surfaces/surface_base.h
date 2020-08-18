@@ -22,7 +22,7 @@ namespace DEM {
 
     template<typename ForceModel, typename ParticleType>
     class Engine;
-
+    class ParameterMap;
     template<typename ForceModel, typename ParticleType>
     class Surface {
         using ContactType = Contact<ForceModel, ParticleType>;
@@ -31,13 +31,15 @@ namespace DEM {
 
 
     public:
-
         double max_velocity{0.};
         bool force_control{ false };
-        explicit Surface(std::size_t id);
+        explicit Surface(std::size_t id, const std::string& name, bool adhesive=false);
+        explicit Surface(const ParameterMap& parameters);
         virtual ~Surface() = default;
         std::size_t get_id() const { return id_; }
+        const std::string& get_name() const { return name_; }
         virtual Vec3 get_normal(const Vec3& position) const = 0;
+
         // virtual double get_curvature_radius() const = 0;  //  ToDo Implement later
         virtual double distance_to_point(const Vec3& point) const = 0;
         virtual Vec3 vector_to_point(const Vec3& point) const = 0;
@@ -59,8 +61,8 @@ namespace DEM {
 
         Vec3 get_tangential_displacement_this_inc(const Vec3& point) const;
         void rest();
-        [[nodiscard]] bool adhesive() const { return adhesive_; }
-        [[nodiscard]] const std::vector<Vec3>& get_points() const { return points_; }
+
+        bool adhesive() const { return adhesive_; }
 
         std::vector<ParticleType*> get_contacting_particles() const;
         double get_normal_force() const;
@@ -71,6 +73,7 @@ namespace DEM {
 
         const std::array<ForceAmpPtr, 3>& get_applied_forces() const { return force_control_amplitudes_; }
         void set_force_amplitude(ForceAmpPtr amplitude, char direction);
+        [[nodiscard]] virtual std::string restart_data() const;
     protected:
         Vec3 velocity_{ Vec3(0, 0, 0) };
         Vec3 acceleration_{ Vec3(0, 0, 0) };
@@ -80,19 +83,17 @@ namespace DEM {
         // to allow for multiple rotations
         Vec3 rotation_this_inc_{ Vec3(0, 0, 0) };
         Vec3 rotation_point_{ Vec3(0, 0, 0) };
-
-        std::size_t id_;
-
-        std::array<double, 6> bbox_values_{0, 0, 0, 0, 0, 0};
-
-        std::array<ForceAmpPtr, 3> force_control_amplitudes_ = {nullptr, nullptr, nullptr};
+        std::array<double, 6> bbox_values_{0, 0, 0,
+                                           0, 0, 0};
 
         virtual void update_bounding_box() = 0;
 
     private:
-        double mass_ = 0;
+        std::size_t id_;
+        std::string name_;
+        double mass_ { 0 };
         bool adhesive_ {false};
-        const std::vector<Vec3> points_;
+        std::array<ForceAmpPtr, 3> force_control_amplitudes_ = {nullptr, nullptr, nullptr};
 
         ContactVector<ContactPointerType> contacts_{ContactVector<ContactPointerType>()};
     };

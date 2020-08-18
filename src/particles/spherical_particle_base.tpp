@@ -6,6 +6,8 @@
 
 #include <sstream>
 
+#include "../utilities/file_reading_functions.h"
+#include "../utilities/printing_functions.h"
 #include "../utilities/vec3.h"
 
 template<typename ForceModel>
@@ -15,6 +17,16 @@ DEM::SphericalParticleBase<ForceModel>::SphericalParticleBase(double radius, con
         ParticleBase<ForceModel>(4.*3.1415*radius*radius*radius/3*material->density, position, velocity, material, id),
         radius_(radius),
         inertia_(2*mass_*radius_*radius_/5)
+{
+    // Empty constructor
+}
+
+template<typename ForceModel>
+DEM::SphericalParticleBase<ForceModel>::SphericalParticleBase(const DEM::ParameterMap& parameters,
+                                                              DEM::MaterialBase *material):
+    ParticleBase<ForceModel>(parameters, material),
+    radius_(parameters.get_parameter<double>("r")),
+    inertia_(parameters.get_parameter<double>("I"))
 {
     // Empty constructor
 }
@@ -81,7 +93,7 @@ std::size_t DEM::SphericalParticleBase<ForceModel>::number_of_contacts() const
 template<typename ForceModel>
 std::string DEM::SphericalParticleBase<ForceModel>::get_output_string() const
 {
-    std::stringstream ss;
+    std::ostringstream ss;
     ss << id_ << ", " << position_.x() << ", " << position_.y() << ", " << position_.z() << ", ";
     ss << rot_.x() << ", " << rot_.y() << ", " << rot_.z() << ", " << radius_<< ", ";
     ss << kinetic_energy() << ", " << material_->id;
@@ -100,3 +112,14 @@ template<typename VectorType>
 void DEM::SphericalParticleBase<ForceModel>::remove_contact(std::size_t index, VectorType& contacts) {
     contacts.erase(index);
 }
+
+template<typename ForceModel>
+std::string DEM::SphericalParticleBase<ForceModel>::restart_data() const {
+    using DEM::named_print;
+    std::ostringstream ss;
+    ss << ParticleBase<ForceModel>::restart_data() << ", "
+       << named_print(radius_, "r") << ", "
+       << named_print(inertia_, "I");
+    return ss.str();
+}
+

@@ -13,29 +13,60 @@
 #include <sstream>
 #include <vector>
 
+#include "vec3.h"
+
 namespace DEM {
-    class SimulationParameters {
+    class ParameterMap {
     public:
-        explicit SimulationParameters(const std::string& settings_file_name);
+        explicit ParameterMap(const std::string& delimiter="=");
+        void add_data(std::string data_string);
+        void add_csv_data_string (std::string csv_string);
 
         template<typename DataType>
         DataType get_parameter(const std::string& name) const;
 
         template<typename DataType>
-        std::vector<DataType> get_vector(const std::string& name);
+        std::vector<DataType> get_vector(const std::string& name) const;
+        [[nodiscard]] Vec3 get_vec3(const std::string& name) const {
+            return Vec3(get_parameter<double>(name + "_x"),
+                        get_parameter<double>(name + "_y"),
+                        get_parameter<double>(name + "_z"));
+        }
+
+        [[nodiscard]] bool exist(const std::string& name) const {
+            return data_.find(name) != data_.end();
+        }
+
     private:
-        std::string filename_;
-        std::map<std::string, std::string> data_;
+        std::string delimiter_;
+        std::map<std::string, std::string> data_ {};
     };
 
+    class SimulationParameters {
+    public:
+        explicit SimulationParameters(const std::string& settings_file_name);
+
+        template<typename DataType>
+        inline DataType get_parameter(const std::string& name) const {
+            return data_.get_parameter<DataType>(name);
+        }
+
+        template<typename DataType>
+        inline std::vector<DataType> get_vector(const std::string& name) const {
+            return data_.get_vector<DataType>(name);
+        }
+    private:
+        std::string filename_;
+        ParameterMap data_;
+    };
 
     template<typename DataType>
-    DataType SimulationParameters::get_parameter(const std::string& name) const
+    DataType ParameterMap::get_parameter(const std::string& name) const
     {
         auto data_position = data_.find(name);
         if (data_position == data_.end()) {
-            std::stringstream error_ss;
-            error_ss << "Parameter " << name << " is not defined in file " << filename_;
+            std::ostringstream error_ss;
+            error_ss << "Parameter " << name << " is not defined";
             throw std::invalid_argument(error_ss.str());
         }
         // Read data back and forth to convert it to the requested data type
@@ -47,16 +78,16 @@ namespace DEM {
     }
 
     template<typename DataType>
-    std::vector<DataType> SimulationParameters::get_vector(const std::string& name) {
+    std::vector<DataType> ParameterMap::get_vector(const std::string& name) const {
         auto data_position = data_.find(name);
         if (data_position == data_.end()) {
             std::stringstream error_ss;
-            error_ss << "Parameter " << name << " is not defined in file " << filename_;
+            error_ss << "Parameter " << name << " is not defined";
             throw std::invalid_argument(error_ss.str());
         }
         std::string value;
         std::vector<DataType> data;
-        std::stringstream ss(data_position->second);
+        std::istringstream ss(data_position->second);
 
         while (std::getline(ss, value, ',')){
             std::stringstream data_converter;

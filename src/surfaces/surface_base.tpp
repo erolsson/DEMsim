@@ -4,11 +4,43 @@
 
 #include "surface_base.h"
 
+#include <sstream>
+#include <string>
+
+#include "../utilities/file_reading_functions.h"
+#include "../utilities/printing_functions.h"
+
 template<typename ForceModel, typename ParticleType>
-DEM::Surface<ForceModel, ParticleType>::Surface(std::size_t id) :
-        id_(id)
+DEM::Surface<ForceModel, ParticleType>::Surface(std::size_t id, const std::string& name, bool adhesive) :
+        id_(id), name_(name), adhesive_(adhesive)
 {
     //Empty constructor
+}
+
+template<typename ForceModel, typename ParticleType>
+DEM::Surface<ForceModel, ParticleType>::Surface(const DEM::ParameterMap& parameters) :
+    velocity_{ parameters.get_vec3("v") },
+    acceleration_{ parameters.get_vec3("a")},
+    displacement_this_inc_{parameters.get_vec3("disp_this_inc") },
+    rotation_this_inc_{ parameters.get_vec3("rot_this_inc")},
+    rotation_point_{ parameters.get_vec3("rot_point")},
+    id_(parameters.get_parameter<std::size_t>("id")),
+    name_(parameters.get_parameter<std::string>("name")),
+    mass_(parameters.get_parameter<double>("mass")),
+    adhesive_(false),
+    force_control_amplitudes_ {nullptr, nullptr, nullptr}
+{
+    if (parameters.exist("adhesive")) {
+        adhesive_ = parameters.get_parameter<bool>("adhesive");
+        std::string directions = "xyz";
+        for (std::size_t i = 0; i != force_control_amplitudes_.size(); ++i) {
+            if (parameters.get_parameter<bool>("force_control_" + directions.substr(i, i+1))) {
+                std::cout << "Warning: force control specified in direction " << directions[i]
+                          << "for surface " << id_ << "\n";
+                std::cout << "The force control has to be specified manually in the restart file\n";
+            }
+        }
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -98,3 +130,27 @@ void DEM::Surface<ForceModel, ParticleType>::set_force_amplitude(DEM::Surface<Fo
     }
 }
 
+template<typename ForceModel, typename ParticleType>
+std::string DEM::Surface<ForceModel, ParticleType>::restart_data() const {
+    using DEM::named_print;
+    std::ostringstream ss;
+    ss << named_print(id_, "id") << ", "
+       << named_print(name_, "name") << ", "
+       << named_print(mass_, "mass") << ", "
+       << named_print(velocity_, "v") << ", "
+       << named_print(acceleration_, "a") << ", "
+       << named_print(displacement_this_inc_, "disp_this_inc") << ", "
+       << named_print(rotation_this_inc_, "rot_this_inc") << ", "
+       << named_print(rotation_point_, "rot_point");
+    std::string directions = "xyz";
+    for (unsigned i = 0; i != force_control_amplitudes_.size(); ++i) {
+        ss << ", force_control_" << directions[i] << "=";
+        if (force_control_amplitudes_[i] == nullptr) {
+            ss << 0;
+        }
+        else {
+            ss << 1;
+        }
+    }
+    return ss.str();
+}

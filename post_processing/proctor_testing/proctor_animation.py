@@ -3,14 +3,23 @@ from mayavi import mlab
 from post_processing.animation import Animation
 
 if __name__ == '__main__':
-    simulation_directory = '../results/stone_compaction/8-16mm/animation/'
+    simulation_directory = '../results/proctor/animation'
 
-    mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
+    mlab.figure(size=(1500, 800), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)
-    animation.save_directory = '../results/stone_compaction/8-16mm/fig'
+    animation.save_directory = '../post_processing/proctor/animation2/imgs/'
     animation.save_frames = True
     animation.delay = 0.01
-    animation.start_time = 3.4
+    animation.start_time = 82.5
+    animation.end_time = 83.7
+    animation.surfaces_plotter.plotters[0].length_extension = 0.2
+    animation.surfaces_colors[1] = (1., 0., 0.)
+    animation.surfaces_opacities[1] = 1.
+
+    def hammer_visible(t):
+        return t > 83.27
+
+    animation.visible_functions[1] = hammer_visible
     """
     animation.surfaces_colors[0] = (0., 1., 0.)
     animation.surfaces_colors[5001] = (1., 0., 0.)

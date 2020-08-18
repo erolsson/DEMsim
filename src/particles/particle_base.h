@@ -13,6 +13,7 @@
 #include "../utilities/vec3.h"
 
 namespace DEM {
+    class ParameterMap;
 
     template<typename ForceModel>
     class ParticleBase {
@@ -20,7 +21,7 @@ namespace DEM {
         ParticleBase(const ParticleBase&) = delete;
         ParticleBase& operator=(const ParticleBase&) = delete;
         ParticleBase(double, const Vec3&, const Vec3&, MaterialBase*, unsigned );
-
+        ParticleBase(const ParameterMap& parameters, MaterialBase* material);
         unsigned get_id() const { return id_; }
         const MaterialBase* get_material() const { return material_; }
 
@@ -41,6 +42,7 @@ namespace DEM {
         const Vec3& get_displacement_this_increment() const { return displacement_this_inc_; }
         const Vec3& get_rotation_this_increment() const { return rot_this_inc_; }
 
+        [[nodiscard]] virtual std::string restart_data() const;
     protected:
         const unsigned id_;
         double mass_;

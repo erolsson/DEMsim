@@ -14,12 +14,17 @@
 #include "surface_base.h"
 
 namespace DEM {
+    class ParameterMap;
     template<typename ForceModel, typename ParticleType>
     class PointSurface : public Surface<ForceModel, ParticleType> {
     public:
-        PointSurface(std::size_t id, std::vector<Vec3> points, bool infinite, bool adhesive=true);
+        PointSurface(std::size_t id, std::vector<Vec3> points, bool infinite, const std::string& name,
+                     bool adhesive=true);
+        PointSurface(const ParameterMap& parameters);
         ~PointSurface() override = default;
 
+        using Surface<ForceModel, ParticleType>::get_id;
+        using Surface<ForceModel, ParticleType>::restart_data;
         [[nodiscard]] Vec3 get_normal(const Vec3&) const override { return normal_; }
         [[nodiscard]] Vec3 get_normal() const { return normal_; }     //Convenience function for avoiding to pass an arbitrary point
 
@@ -31,17 +36,15 @@ namespace DEM {
         void rotate(const Vec3& point, const Vec3& rotation_vector) override;
 
         [[nodiscard]] std::string get_output_string() const override;
-        [[nodiscard]] bool adhesive() const { return adhesive_; }
+        [[nodiscard]] std::string restart_data() const override;
 
         [[nodiscard]] const std::vector<Vec3>& get_points() const { return points_; }
 
     private:
         std::vector<Vec3> points_;
         bool infinite_;
-        bool adhesive_ {false};
         Vec3 normal_;
 
-        using Surface<ForceModel, ParticleType>::id_;
         using Surface<ForceModel, ParticleType>::displacement_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_point_;

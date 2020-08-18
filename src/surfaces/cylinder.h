@@ -14,13 +14,16 @@
 namespace DEM {
     // ToDo: update this class to allow for cylinders with arbitrary orientation, currently cylinders aligned in the
     //       z-axis are only working properly in the collision handling
+    class ParameterMap;
     template<typename ForceModel, typename ParticleType>
     class Cylinder : public Surface<ForceModel, ParticleType> {
     public:
         Cylinder(std::size_t id, double radius, const Vec3& axis, const Vec3& base_point, double length,
-                bool inward=true, bool infinite=false, bool closed_ends=false);
+                 const std::string& name, bool inward=true, bool infinite=false, bool closed_ends=false);
+        Cylinder(const ParameterMap& parameters);
         ~Cylinder() override = default;
-
+        using Surface<ForceModel, ParticleType>::get_id;
+        using Surface<ForceModel, ParticleType>::restart_data;
         [[nodiscard]] Vec3 get_normal(const Vec3& position) const override;
 
         [[nodiscard]] double distance_to_point(const Vec3& point) const override;
@@ -31,6 +34,7 @@ namespace DEM {
         void rotate(const Vec3& position, const Vec3& rotation_vector) override;
 
         [[nodiscard]] std::string get_output_string() const override;
+        [[nodiscard]] std::string restart_data() const override;
 
         void expand(double radius_increase);
         [[nodiscard]] double get_radius() const { return radius_; }
@@ -40,7 +44,6 @@ namespace DEM {
         }
 
     private:
-        using Surface<ForceModel, ParticleType>::id_;
         using Surface<ForceModel, ParticleType>::displacement_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_point_;

@@ -9,7 +9,7 @@
 #include <sstream>
 
 #include "../materials/elastic_ideal_plastic_material.h"
-#include "../engine/engine.h"
+#include "../utilities/printing_functions.h"
 
 DEM::StorakersMesarovicJohnson::StorakersMesarovicJohnson(DEM::StorakersMesarovicJohnson::ParticleType* particle1,
                                                           DEM::StorakersMesarovicJohnson::ParticleType* particle2,
@@ -52,6 +52,49 @@ DEM::StorakersMesarovicJohnson::StorakersMesarovicJohnson(DEM::StorakersMesarovi
     kT_ = mat1->kT*R0_;
     mu_ = mat1->mu_wall;
 }
+
+DEM::StorakersMesarovicJohnson::StorakersMesarovicJohnson(DEM::StorakersMesarovicJohnson::ParticleType*,
+                                                          DEM::StorakersMesarovicJohnson::ParticleType*,
+                                                          std::chrono::duration<double>,
+                                                          const DEM::ParameterMap& parameters) :
+    h_(parameters.get_parameter<double>("h")),
+    h_max_(parameters.get_parameter<double>("h_max")),
+    a_(parameters.get_parameter<double>("a")),
+    a_max_(parameters.get_parameter<double>("a_max")),
+    k_(parameters.get_parameter<double>("k")),
+    ku_(parameters.get_parameter<double>("ku")),
+    hu_max_(parameters.get_parameter<double>("hu_max")),
+    R0_(parameters.get_parameter<double>("R0")),
+    kT_(parameters.get_parameter<double>("kT")),
+    mu_(parameters.get_parameter<double>("mu")),
+    F_(parameters.get_parameter<double>("F")),
+    FT_(parameters.get_vec3("FT")),
+    uT_(parameters.get_vec3("uT"))
+{
+    // Empty constructor
+}
+
+DEM::StorakersMesarovicJohnson::StorakersMesarovicJohnson(DEM::StorakersMesarovicJohnson::ParticleType*,
+                                                          DEM::StorakersMesarovicJohnson::SurfaceType*,
+                                                          std::chrono::duration<double>,
+                                                          const DEM::ParameterMap& parameters):
+    h_(parameters.get_parameter<double>("h")),
+    h_max_(parameters.get_parameter<double>("h_max")),
+    a_(parameters.get_parameter<double>("a")),
+    a_max_(parameters.get_parameter<double>("a_max")),
+    k_(parameters.get_parameter<double>("k")),
+    ku_(parameters.get_parameter<double>("ku")),
+    hu_max_(parameters.get_parameter<double>("hu_max")),
+    R0_(parameters.get_parameter<double>("R0")),
+    kT_(parameters.get_parameter<double>("kT")),
+    mu_(parameters.get_parameter<double>("mu")),
+    F_(parameters.get_parameter<double>("F")),
+    FT_(parameters.get_vec3("FT")),
+    uT_(parameters.get_vec3("uT"))
+{
+    // Empty constructor
+}
+
 
 void DEM::StorakersMesarovicJohnson::update(double dh, const DEM::Vec3& dt, const Vec3&, const DEM::Vec3& normal)
 {
@@ -106,3 +149,16 @@ std::string DEM::StorakersMesarovicJohnson::get_output_string() const {
     ss << h_max_ << ", " << F_;
     return ss.str();
 }
+
+std::string DEM::StorakersMesarovicJohnson::restart_data() const {
+    std::ostringstream ss;
+    ss << named_print(h_, "h") << ", " << named_print(h_max_, "h_max") << ", "
+       << named_print(a_, "a") << ", " << named_print(a_max_, "a_max") << ", "
+       << named_print(k_, "k") << ", " << named_print(ku_, "ku") << ", "
+       << named_print(hu_max_, "hu_max") << ", " << named_print(R0_, "R0") << ", "
+       << named_print(kT_, "kT") << ", " << named_print(mu_, "mu") << ", "
+       << named_print(F_, "F") << ", " << named_print(FT_, "FT") << ", "
+       << named_print(uT_, "uT");
+    return ss.str();
+}
+

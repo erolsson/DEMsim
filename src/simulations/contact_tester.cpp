@@ -13,7 +13,7 @@
 #include "../materials/stone_material.h"
 #include "../utilities/file_reading_functions.h"
 #include "../contact_models/viscoelastic.h"
-#include "../materials/ViscoelasticMaterial.h"
+#include "../materials/electrode_material.h"
 
 
 void DEM::contact_tester(const std::string& settings_file_name) {
@@ -23,7 +23,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     using namespace std::chrono_literals;
     namespace fs = std::filesystem;
 
-    using Material = ViscoelasticMaterial;
+    using Material = ElectrodeMaterial;
     Material mat {0, 4800.};
 
     SimulationParameters parameters{settings_file_name};
@@ -36,8 +36,6 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     mat.E = parameters.get_parameter<double>("E");
     mat.nu = parameters.get_parameter<double>("nu");
     mat.Ep=parameters.get_parameter<double>("Ep");
-    mat.contact=parameters.get_parameter<double>("contact");
-    std::cout << "contact:" << mat.contact << std::endl;
     mat.nup=parameters.get_parameter<double>("nup");
     mat.bt =parameters.get_parameter<double>("bt");
     std::cout << "bt:" << mat.bt << std::endl;
@@ -47,8 +45,10 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     mat.tau_i =parameters.get_vector<double>("tau_i");
 
 
-    auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius-(mat.bt)/2-tick, 0, 0}, Vec3{}, &mat, 1);
-    auto p2 = SphericalParticle<ForceModel>(radius, Vec3{radius+(mat.bt)/2+tick,0, 0}, Vec3{}, &mat, 1);
+    auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius-(mat.bt)/2 - 10*tick, 0, 0},
+            Vec3{}, &mat, 1);
+    auto p2 = SphericalParticle<ForceModel>(radius,
+            Vec3{radius+(mat.bt)/2 + 10*tick,0, 0}, Vec3{}, &mat, 1);
     std::cout << "bt model:" <<mat.bt << std::endl;
 
 
@@ -64,8 +64,8 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     output_file.open(filename);
 
     for(unsigned i = 0; i != increments; ++i) {
-        p1.move(Vec3{static_cast<double>(tick/2), 0, 0});
-        p2.move(Vec3{static_cast<double>(-tick/2), 0, 0});
+        p1.move(Vec3{tick/2, 0, 0});
+        p2.move(Vec3{-tick/2, 0, 0});
         c.update();
         output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
                     << p1.get_position().x() - p2.get_position().x() << ", "
@@ -73,8 +73,8 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                     << p1.get_position().y() - p2.get_position().y() << std::endl;
     }
     for(unsigned i = 0; i != increments; ++i) {
-        p1.move(Vec3{static_cast<double>(-tick/2), 0, 0});
-        p2.move(Vec3{static_cast<double>(tick/2), 0, 0});
+        p1.move(Vec3{0, -tick/2, 0});
+        p2.move(Vec3{0, tick/2, 0});
         c.update();
         output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
                     << p1.get_position().x() - p2.get_position().x() << ", "
@@ -82,7 +82,32 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                     << p1.get_position().y() - p2.get_position().y() << std::endl;
     }
 
+    for(unsigned i = 0; i != increments; ++i) {
+        p1.move(Vec3{0, tick/2, 0});
+        p2.move(Vec3{0, -tick/2, 0});
+        c.update();
+        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
+                    << p1.get_position().x() - p2.get_position().x() << ", "
+                    << c.get_tangential_force().y() << ", "
+                    << p1.get_position().y() - p2.get_position().y() << std::endl;
+    }
+    for(unsigned i = 0; i != increments; ++i) {
+        p1.move(Vec3{0, -tick/2, 0});
+        p2.move(Vec3{0, tick/2, 0});
+        c.update();
+        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
+                    << p1.get_position().x() - p2.get_position().x() << ", "
+                    << c.get_tangential_force().y() << ", "
+                    << p1.get_position().y() - p2.get_position().y() << std::endl;
+    }
 
-
-
+    for(unsigned i = 0; i != increments; ++i) {
+        p1.move(Vec3{-tick/2, 0, 0});
+        p2.move(Vec3{tick/2, 0, 0});
+        c.update();
+        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
+                    << p1.get_position().x() - p2.get_position().x() << ", "
+                    << c.get_tangential_force().y() << ", "
+                    << p1.get_position().y() - p2.get_position().y() << std::endl;
+    }
 }

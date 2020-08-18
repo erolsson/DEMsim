@@ -15,8 +15,7 @@ namespace DEM {
     class Amplitude {
     public:
         Amplitude(std::function<std::chrono::duration<double>()> time_function, bool global_time);
-
-        double value() const;
+        [[nodiscard]] double value() const;
         void constant_term(double value) { constant_ = value; }
         void linear_term(double dfdt) { dfdt_ = dfdt; }
         void add_sine_term(double amp, double frequency, double phase_shift = 0);
@@ -35,8 +34,6 @@ namespace DEM {
         double factor_ = 1.;
         std::function<std::chrono::duration<double>()> time_func_;
     };
-
-    void Viscoelastice(double dh, const DEM::Vec3 &dt, const DEM::Vec3 &, const DEM::Vec3 &normal);
 }
 
 #endif //DEMSIM_AMPLITUDE_H

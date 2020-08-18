@@ -16,6 +16,7 @@
 #include "spherical_particle_base.h"
 
 namespace DEM {
+    class ParameterMap;
     // Please don't change this one
     constexpr double pi = 3.1415;
     template<typename ForceModel, typename SphericalParticleBase> class Contact;
@@ -30,7 +31,7 @@ namespace DEM {
 
         SphericalParticle(double radius, const Vec3& position, const Vec3& velocity, MaterialBase* material,
                           unsigned id);
-
+        SphericalParticle(const ParameterMap& parameters, MaterialBase* material);
         void sum_contact_forces() {
             SphericalParticleBase<ForceModel>::sum_contact_forces(contacts_);
     }

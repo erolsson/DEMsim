@@ -28,7 +28,7 @@ simulations = [Simulation(directory=base_directory + '/8-16mm/', line='b', fig=0
                           name=r'F{\"u}ller curve  $0 \% < 2$ mm $\sigma_w=200$ MPa')]
 
 figures = [Figure(xlim=100, ylim=6000, leg_handles=[]),
-           Figure(xlim=100, ylim=100, leg_handles=[]),
+           Figure(xlim=100, ylim=20, leg_handles=[]),
            Figure(xlim=20, ylim=10e3, leg_handles=[])]
 
 for simulation in simulations:

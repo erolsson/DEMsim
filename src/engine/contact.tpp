@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "../utilities/printing_functions.h"
 #include "../utilities/vec3.h"
 
 template<typename ForceModel, typename ParticleType>
@@ -39,6 +40,41 @@ DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType* particle1, Surface
 {
     normal_ = calculate_distance_vector().normal();
 }
+
+template<typename ForceModel, typename ParticleType>
+DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType *particle1, ParticleType *particle2,
+                                                std::chrono::duration<double> increment,
+                                                const DEM::ParameterMap& parameters) :
+    p1_(particle1),
+    p2_(particle2),
+    surface_(nullptr),
+    r2_(particle1->get_radius() + particle2->get_radius()),
+    position_divider_(2),
+    force_model_(particle1, particle2, increment, parameters),
+    distance_function(&Contact::calculate_distance_vector_particle),
+    tangential_function(&Contact::calculate_tangential_vector_particle),
+    rotation_function(&Contact::calculate_rotation_vector_particle)
+{
+    normal_ = calculate_distance_vector().normal();
+}
+
+template<typename ForceModel, typename ParticleType>
+DEM::Contact<ForceModel, ParticleType>::Contact(ParticleType *particle1, SurfaceType *surface,
+                                                std::chrono::duration<double> increment,
+                                                const DEM::ParameterMap& parameters) :
+    p1_(particle1),
+    p2_(nullptr),
+    surface_(surface),
+    r2_(particle1->get_radius()),
+    position_divider_(1),
+    force_model_(particle1, surface, increment, parameters),
+    distance_function(&Contact::calculate_distance_vector_surface),
+    tangential_function(&Contact::calculate_tangential_vector_surface),
+    rotation_function(&Contact::calculate_rotation_vector_surface)
+{
+    normal_ = calculate_distance_vector().normal();
+}
+
 template<typename ForceModel, typename ParticleType>
 void DEM::Contact<ForceModel, ParticleType>::update()
 {
@@ -130,4 +166,22 @@ std::string DEM::Contact<ForceModel, ParticleType>::get_output_string() const {
     ss << ", " << get_overlap() << ", " << force_model_.get_output_string();
     return ss.str();
 }
+
+template<typename ForceModel, typename ParticleType>
+std::string DEM::Contact<ForceModel, ParticleType>::restart_data() const {
+    std::stringstream ss;
+    using DEM::named_print;
+    if (p2_ != nullptr) {
+        ss << named_print("particle-particle", "type") << ", "
+           << named_print(p1_->get_id(), "object1") << ", " << named_print(p2_->get_id(), "object2") << ", ";
+    }
+    else {
+        ss << named_print("particle-surface", "type") << ", "
+           << named_print(p1_->get_id(), "object1") << ", " << named_print(surface_->get_id(), "object2") << ", ";
+    }
+    ss << force_model_.restart_data();
+    return ss.str();
+}
+
+
 

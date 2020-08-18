@@ -58,7 +58,7 @@ namespace DEM {
                           const std::vector<SurfaceType*>& surfaces,
                           const ContactMatrix<ContactType>& contacts);
 
-        void setup();
+        void setup(double stretch);
         void do_check();  //Not const due to re-ordering of the proj vectors
         const std::vector<CollisionPair>& contacts_to_create() const { return contacts_to_create_.get_objects(); }
         const std::vector<CollisionPair>& contacts_to_destroy() const { return contacts_to_destroy_;}

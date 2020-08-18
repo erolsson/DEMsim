@@ -2,16 +2,16 @@
 // Created by elahe on 2019-12-03.
 //
 #include "simulations.h"
+
 #include <vector>
 
-
 #include "../engine/engine.h"
-
 #include "../contact_models/viscoelastic.h"
-#include "../materials/ViscoelasticMaterial.h"
+#include "../materials/electrode_material.h"
 #include "../utilities/file_reading_functions.h"
+#include "../utilities/filling_functions.h"
 
-void DEM::electrode_box(const std::string &settings_file_name) {
+void DEM::electrode_box(const std::string& settings_file_name) {
     using namespace DEM;
     using ForceModel = Viscoelastic;
     using ParticleType = SphericalParticle<ForceModel>;
@@ -26,11 +26,10 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
 
     EngineType simulator(1us);
-    auto mat = simulator.create_material<ViscoelasticMaterial>(4800);
+    auto mat = simulator.create_material<ElectrodeMaterial>(4800);
 
     mat->E = parameters.get_parameter<double>("E");
     mat->kT=parameters.get_parameter<double>("kT");
-    mat->contact = parameters.get_parameter<double>("contact");
     mat->Ep= parameters.get_parameter <double> ("Ep");
     mat->nu = parameters.get_parameter<double>("nu");
     mat->fb = parameters.get_parameter<double>("fb");
@@ -39,8 +38,6 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     mat->mu_wall = parameters.get_parameter<double>("mu_wall");
     mat->tau_i=parameters.get_vector<double>( "tau_i" );
     mat->alpha_i=parameters.get_vector<double>( "alpha_i" );
-    mat->bindervolume = parameters.get_parameter<double>("bindervolume");
-    mat->active_particle_height=parameters.get_parameter<double>("active_particle_height");
     mat->bt = parameters.get_parameter<double>("bt");
 
     auto particle_radii = read_vector_from_file<double>(particle_file);
@@ -61,8 +58,6 @@ void DEM::electrode_box(const std::string &settings_file_name) {
     double box_height =box_width*2.5;
     std::cout << "The simulated box has a width of " << box_width << " and a height of "
               << box_height << "\n";
-
-
 
      auto particle_positions = random_fill_box(0.0, box_height, box_width, particle_radii, mat->bt);
 
@@ -121,7 +116,7 @@ void DEM::electrode_box(const std::string &settings_file_name) {
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
     simulator.set_mass_scale_factor(1.0);
-    simulator.setup();
+    simulator.setup(1.01*mat->bt);      // erolsson: added bounding_box_stretch to setup
     EngineType::RunForTime run_for_time(simulator, 0.1s);
 
     simulator.run(run_for_time);
