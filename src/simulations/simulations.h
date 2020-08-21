@@ -18,7 +18,8 @@ namespace DEM {
     void proctor_test(const std::string& settings_file_name);
     void stone_compaction(const std::string& settings_file_name);
     void electrode_box(const std::string& settings_file_name);
-    void cylinder_electrode_material(const std::string& settings_file_name);
+    void electrode_cylinder_filling(const std::string& settings_file_name);
+    void electrode_cylinder_compaction(const std::string& settings_file_name);
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 
 

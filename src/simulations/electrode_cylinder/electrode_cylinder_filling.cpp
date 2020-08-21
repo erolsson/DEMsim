@@ -2,14 +2,14 @@
 // Created by erolsson on 14/08/2020.
 //
 
-#include "simulations.h"
+#include "../simulations.h"
 
-#include "../engine/engine.h"
-#include "../contact_models/viscoelastic.h"
-#include "../particles/spherical_particle.h"
-#include "../materials/electrode_material.h"
+#include "../../engine/engine.h"
+#include "../../contact_models/viscoelastic.h"
+#include "../../particles/spherical_particle.h"
+#include "../../materials/electrode_material.h"
 
-void DEM::cylinder_electrode_material(const std::string& settings_file_name) {
+void DEM::electrode_cylinder_filling(const std::string& settings_file_name) {
     using namespace DEM;
     using ForceModel = Viscoelastic;
     using ParticleType = SphericalParticle<ForceModel>;
