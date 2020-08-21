@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(DEMsim)
 
 set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -msse4 -O3 -fopenmp")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -msse4 -g -O3 -fopenmp")
 
 add_executable(DEMsim
                src/utilities/contact_matrix.h
@@ -19,6 +19,7 @@ add_executable(DEMsim
                src/contact_models/linear_stick_slip_model.cpp
                src/contact_models/linear_stick_slip_model.h
                src/materials/material_base.h
+               src/materials/material_base.cpp
                src/engine/collision_detection/collision_detector.h
                src/engine/collision_detection/bounding_box.h
                src/engine/collision_detection/bounding_box_projection.h
@@ -51,6 +52,7 @@ add_executable(DEMsim
                src/contact_models/storakers_mesarovic_johnson.cpp
                src/contact_models/storakers_mesarovic_johnson.h
                src/materials/elastic_ideal_plastic_material.h
+               src/materials/elastic_ideal_plastic_material.cpp
                src/particles/fractureable_spherical_particle.tpp
                src/particles/fractureable_spherical_particle.h
                src/contact_models/stone_material_contact.cpp
@@ -66,9 +68,11 @@ add_executable(DEMsim
                src/simulations/stone_compaction.cpp
                src/contact_models/viscoelastic.cpp
                src/contact_models/viscoelastic.h
-               src/contact_models/battery_particle_contact.h
-               src/contact_models/battery_particle_contact.cpp
-               src/materials/ViscoelasticMaterial.h
-        )
+               src/materials/electrode_material.h
+               src/materials/electrode_material.cpp
+               src/utilities/printing_functions.h
+               src/simulations/electrode_box.cpp
+               src/simulations/electrode_cylinder/electrode_cylinder_filling.cpp
+               )
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")

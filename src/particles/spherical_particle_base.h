@@ -8,6 +8,7 @@
 #include "particle_base.h"
 
 namespace DEM {
+    class ParameterMap;
     template<typename ForceModel>
     class SphericalParticleBase : public ParticleBase<ForceModel> {
         using ParticleBase<ForceModel>::id_;
@@ -31,7 +32,7 @@ namespace DEM {
 
         SphericalParticleBase(double radius, const Vec3& position, const Vec3& velocity, MaterialBase* material,
                           unsigned id);
-
+        SphericalParticleBase(const ParameterMap& parameters, MaterialBase* material);
         SphericalParticleBase(const SphericalParticleBase&) = delete;
         SphericalParticleBase& operator=(const SphericalParticleBase&) = delete;
 
@@ -50,6 +51,7 @@ namespace DEM {
         void reset_contacts();
 
         [[nodiscard]] virtual std::string get_output_string() const;
+        [[nodiscard]] virtual std::string restart_data() const;
 
     protected:
         template<typename T>

@@ -23,12 +23,18 @@ class Animation:
         self.image_file_prefix = 'frame'
         self.image_file_extension = 'png'
         self.figure_directory = None
-        self.surfaces_colors = {}
-        self.surfaces_opacities = {}
+        self.surfaces_colors = defaultdict(lambda: (0., 0., 1.))
+        self.surfaces_opacities = defaultdict(lambda: 0.5)
         self.plot_order = None
         self.bounding_boxes = defaultdict(BoundingBox)
-        self.visible_functions = defaultdict(lambda t: True)
+        self.visible_functions = defaultdict(lambda: lambda t: True)
         self.dpi = 500, 800
+        self.zoom_settings = None
+
+        self.spheres_plotter = SpheresPlotter()
+        self.surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dou', self.surfaces_colors,
+                                                self.surfaces_opacities, self.plot_order, self.bounding_boxes,
+                                                self.visible_functions)
 
     def run(self):
         a = self._animation()
@@ -36,42 +42,46 @@ class Animation:
             pass
 
     def _animation(self):
+        self.surfaces_plotter.surfaces_opacities = self.surfaces_opacities
+        self.surfaces_plotter.surfaces_colors = self.surfaces_colors
+        self.surfaces_plotter.plot_order = self.plot_order
+        self.surfaces_plotter.bounding_boxes = self.bounding_boxes
+        self.surfaces_plotter.visible_times = self.visible_functions
+
         particle_files = glob.glob(self.directory + '/particles_*.dou')
         particle_files = [os.path.basename(particle_file) for particle_file in particle_files]
-        frame_times = []
+        self.frame_times = []
         for p_file in particle_files:
-            frame_times.append(re.findall(r"[-+]?\d*\.\d+|\d+", p_file)[0])
-        frame_times = np.array(sorted(frame_times, key=lambda x: float(x)), dtype=str)
-        frame_times_np = np.array([float(t) for t in frame_times])
-        frame_times = frame_times[frame_times_np >= self.start_time]
+            self.frame_times.append(re.findall(r"[-+]?\d*\.\d+|\d+", p_file)[0])
+        self.frame_times = np.array(sorted(self.frame_times, key=lambda x: float(x)), dtype=str)
+        frame_times_np = np.array([float(t) for t in self.frame_times])
+        self.frame_times = self.frame_times[frame_times_np >= self.start_time]
+        frame_times_np = frame_times_np[frame_times_np >= self.start_time]
         if self.end_time:
-            frame_times = frame_times[frame_times_np < self.end_time]
+            self.frame_times = self.frame_times[frame_times_np < self.end_time]
+        print(self.frame_times)
 
-        spheres_plotter = SpheresPlotter()
-        surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dou', self.surfaces_colors,
-                                           self.surfaces_opacities, self.plot_order, self.bounding_boxes,
-                                           self.visible_functions)
-
-        n = len(frame_times)
+        n = len(self.frame_times)
         if self.save_frames and not os.path.isdir(self.save_directory):
             os.makedirs(self.save_directory)
-        for i, t in enumerate(frame_times):
+        for i, t in enumerate(self.frame_times):
             print(i)
             particle_data = np.genfromtxt(self.directory + '/particles_' + t + '.dou', delimiter=',')
-            spheres_plotter.plot(particle_data)
-            surfaces_plotter.plot(float(t))
+            self.spheres_plotter.plot(particle_data)
+            self.surfaces_plotter.plot(float(t))
+
+            f = mlab.gcf()
+            f.scene.render()
 
             if self.save_frames:
                 if self.figure_directory is None:
                     self.figure_directory = self.directory
                 if not os.path.isdir(self.figure_directory):
                     os.makedirs(self.figure_directory)
-                # each file has name frame_00x, _0xx, xxx etc
 
-                name = '/' + self.image_file_prefix + '0'*(len(str(n))-len(str(i+1))) + str(i+1) + '.' \
+                # each file has name frame_00x, _0xx, xxx etc
+                name = '/' + self.image_file_prefix + '0'*(len(str(n))-len(str(i))) + str(i) + '.' \
                        + self.image_file_extension
-                f = mlab.gcf()
-                f.scene.render()
                 mlab.savefig(filename=self.save_directory + name)
 
             time.sleep(self.delay)

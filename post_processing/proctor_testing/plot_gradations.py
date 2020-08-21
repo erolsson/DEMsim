@@ -15,7 +15,7 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
 base_directory = os.path.expanduser('~/DEMsim/results/proctor_test/')
-simulations = ['8-16mm_continued', 'fuller']
+simulations = ['8-16mm', 'fuller']
 colors = ['b', 'r']
 labels = ['8-16 mm', r'Fuller curve']
 bg_index = {'8-16 mm': {}, r'Fuller curve': {}}

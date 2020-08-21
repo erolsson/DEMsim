@@ -10,7 +10,8 @@ mu=0.3
 mu_wall=0.2
 kT=1e9
 density=0.8
-compaction_time=1.0s
+density_levels=0.65,0.7,0.75,0.8
+compaction_time=0.3s
 unloading_velocity=0.01
-unloading_time=1.0s
+unloading_time=0.3s
 

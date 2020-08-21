@@ -19,6 +19,8 @@ namespace DEM {
     template<typename ForceModel, typename ParticleType>
     class Engine;
 
+    class ParameterMap;
+
     template<typename ForceModel, typename ParticleType>
     class Output {
         using SurfaceType = Surface<ForceModel, ParticleType>;
@@ -26,9 +28,14 @@ namespace DEM {
 
     public:
         Output(std::string directory, std::chrono::duration<double> interval,
-               const Engine<ForceModel, ParticleType>& engine);
+               const Engine<ForceModel, ParticleType>& engine, const std::string& name, bool remove_old_files=true);
+        Output(const ParameterMap& parameters, const Engine<ForceModel, ParticleType>& engine);
 
-        void run_output(const std::chrono::duration<double>& increment); //Prints info
+        [[nodiscard]] const std::string& get_name() const { return name_; }
+
+        void run_output();
+        void run_output(const std::chrono::duration<double>& increment);
+
         bool print_particles = false;
         bool print_kinetic_energy = false;
         bool print_surface_positions = false;
@@ -37,10 +44,12 @@ namespace DEM {
         bool print_contacts = false;
         bool print_bounding_box = false;
 
+        std::string restart_data() const;
+
     private:
         using OutputFunPtr = void (Output<ForceModel, ParticleType>::*)() const;
         using FuncVec = std::vector<std::pair<bool&, OutputFunPtr>>;
-
+        std::string name_;
         const std::vector<ParticleType*>& particles_;
         const std::vector<SurfaceType*>& surfaces_;
         const ContactMatrix<ContactType>& contacts_;

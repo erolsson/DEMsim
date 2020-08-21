@@ -5,12 +5,15 @@
 #include "cylinder.h"
 
 #include <sstream>
+#include <string>
+
+#include "../utilities/printing_functions.h"
 
 template<typename ForceModel, typename ParticleType>
 DEM::Cylinder<ForceModel, ParticleType>::Cylinder(std::size_t id, double radius, const Vec3& axis,
-                                             const Vec3& base_point, double length, bool inward, bool infinite,
-                                             bool closed_ends) :
-        Surface<ForceModel, ParticleType>::Surface(id),
+                                             const Vec3& base_point, double length, const std::string& name,
+                                             bool inward, bool infinite, bool closed_ends) :
+        Surface<ForceModel, ParticleType>::Surface(id, name),
         radius_(radius),
         axis_(axis.normal()),
         point_(base_point),
@@ -19,6 +22,21 @@ DEM::Cylinder<ForceModel, ParticleType>::Cylinder(std::size_t id, double radius,
         infinite_(infinite),
         closed_ends_(closed_ends),
         z_aligned_(axis_ == Vec3(0, 0, 1))
+{
+    update_bounding_box();
+}
+
+template<typename ForceModel, typename ParticleType>
+DEM::Cylinder<ForceModel, ParticleType>::Cylinder(const DEM::ParameterMap& parameters) :
+        Surface<ForceModel, ParticleType>::Surface(parameters),
+        radius_(parameters.get_parameter<double>("radius")),
+        axis_(parameters.get_vec3("axis")),
+        point_(parameters.get_vec3("point")),
+        length_(parameters.get_parameter<double>("length")),
+        inward_(parameters.get_parameter<bool>("inward")),
+        infinite_(parameters.get_parameter<bool>("infinite")),
+        closed_ends_(parameters.get_parameter<bool>("closed_ends")),
+        z_aligned_(parameters.get_parameter<bool>("z_aligned"))
 {
     update_bounding_box();
 }
@@ -128,10 +146,24 @@ template<typename ForceModel, typename ParticleType>
 std::string DEM::Cylinder<ForceModel, ParticleType>::get_output_string() const
 {
     std::ostringstream stream;
-    stream << "ID=" << id_ << ", TYPE=Cylinder, " << radius_  << ", " << axis_.x() << ", " << axis_.y() << ", "
+    stream << "ID=" << get_id() << ", TYPE=Cylinder, " << radius_  << ", " << axis_.x() << ", " << axis_.y() << ", "
            << axis_.z() << ", " << point_.x() << ", " << point_.y() << ", " << point_.z() << ", " << length_;
     return stream.str();
 }
+
+template<typename ForceModel, typename ParticleType>
+std::string DEM::Cylinder<ForceModel, ParticleType>::restart_data() const {
+    using DEM::named_print;
+    std::ostringstream ss;
+    ss << named_print("Cylinder", "type") << ", "
+       << DEM::Surface<ForceModel, ParticleType>::restart_data() << ", "
+       << named_print(radius_, "radius") << ", " << named_print(axis_, "axis") << ", "
+       << named_print(point_, "point") << ", " << named_print(length_, "length") << ", "
+       << named_print(inward_, "inward") << ", " << named_print(infinite_, "infinite") << ","
+       << named_print(closed_ends_, "closed_ends") << ", " << named_print(z_aligned_, "z_aligned");
+    return ss.str();
+}
+
 
 template<typename ForceModel, typename ParticleType>
 void DEM::Cylinder<ForceModel, ParticleType>::update_bounding_box()

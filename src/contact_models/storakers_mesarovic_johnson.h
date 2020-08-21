@@ -13,6 +13,7 @@
 
 
 namespace DEM {
+    class ParameterMap;
     class StorakersMesarovicJohnson {
         using ParticleType = SphericalParticle<StorakersMesarovicJohnson>;
         using SurfaceType = Surface<StorakersMesarovicJohnson, ParticleType>;
@@ -20,6 +21,12 @@ namespace DEM {
     public:
         StorakersMesarovicJohnson(ParticleType* particle1, ParticleType* particle2, std::chrono::duration<double>);
         StorakersMesarovicJohnson(ParticleType* particle1, SurfaceType* surface, std::chrono::duration<double>);
+
+        StorakersMesarovicJohnson(ParticleType*, ParticleType*, std::chrono::duration<double>,
+                                  const ParameterMap& parameters);
+        StorakersMesarovicJohnson(ParticleType*, SurfaceType*, std::chrono::duration<double>,
+                                  const ParameterMap& parameters);
+
 
         void update(double dh, const Vec3& dt, const Vec3&, const Vec3& normal);
 
@@ -33,6 +40,7 @@ namespace DEM {
         static void set_increment(std::chrono::duration<double>) {}
 
         [[nodiscard]] std::string get_output_string() const;
+        [[nodiscard]] std::string restart_data() const;
     private:
         double h_{ 0. };
         double h_max_ { 0. };

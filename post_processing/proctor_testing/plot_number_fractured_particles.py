@@ -2,6 +2,8 @@ from collections import namedtuple
 import os
 import pickle
 
+import numpy as np
+
 import matplotlib.pyplot as plt
 import matplotlib
 
@@ -13,34 +15,25 @@ plt.rcParams['text.latex.preamble'] = [r"\usepackage{amsmath}"]
 plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
-base_directory = os.path.expanduser('~/DEMsim/results/proctor_test')
-Simulation = namedtuple('Simulation', ['directory', 'line', 'fig', 'name'])
+base_directory = os.path.expanduser('~/DEMsim/post_processing/proctor_testing/particle_cracks/')
+Simulation = namedtuple('Simulation', ['file', 'line', 'fig', 'name'])
 Figure = namedtuple('Figure', ['xlim', 'ylim', 'leg_handles', 'label', 'name'])
-simulations = [Simulation(directory=base_directory + '/8-16mm_continued/', line='--b', fig=0,
+simulations = [Simulation(file=base_directory + '/8-16_strong.csv', line='--b', fig=0,
                           name=r'8-16 mm $\sigma_W=387.5$ MPa'),
-               Simulation(directory=base_directory + '/8-16mm_continued_weak/', line=':b', fig=0,
+               Simulation(file=base_directory + '/8-16_weak.csv', line=':b', fig=0,
                           name=r'8-16 mm $\sigma_W=200$ MPa'),
-               Simulation(directory=base_directory + '/fuller/', line='--r', fig=0,
+               Simulation(file=base_directory + '/fuller_strong.csv', line='--r', fig=0,
                           name=r'Fuller curve  $\sigma_W=387.5$ MPa'),
-               Simulation(directory=base_directory + '/fuller_weak/', line=':r', fig=0,
-                          name=r'Fuller curve $\sigma_W=200$ MPa'),
-               Simulation(directory=base_directory + '/8-16mm_continued/', line='--b', fig=1,
-                          name=r'8-16 mm $\sigma_W=387.5$ MPa'),
-               Simulation(directory=base_directory + '/8-16mm_continued_weak/', line=':b', fig=1,
-                          name=r'8-16 mm $\sigma_W=200$ MPa'),
-               Simulation(directory=base_directory + '/8-16mm_one_layer/', line='--b', fig=2,
-                          name=r'8-16 mm $\sigma_W=387.5$ MPa'),
-               Simulation(directory=base_directory + '/8-16mm_one_layer_weak/', line=':b', fig=2,
-                          name=r'8-16 mm $\sigma_W=200$ MPa')]
-figures = [Figure(xlim=125, ylim=200, leg_handles=[], label='(a)', name='proctor.png'),
-           Figure(xlim=200, ylim=300, leg_handles=[], label='(a)', name='proctor_continued.png'),
-           Figure(xlim=125, ylim=150, leg_handles=[], label='(b)', name='proctor_one_layer.png')]
+               Simulation(file=base_directory + '/fuller_weak.csv', line=':r', fig=0,
+                          name=r'Fuller curve $\sigma_W=200$ MPa')]
+figures = [Figure(xlim=125, ylim=200, leg_handles=[], label='(a)', name='proctor_leg.png')]
+           # Figure(xlim=200, ylim=300, leg_handles=[], label='(a)', name='proctor_continued.png'),
+           # Figure(xlim=125, ylim=150, leg_handles=[], label='(b)', name='proctor_one_layer.png')]
 
 for simulation in simulations:
     plt.figure(simulation.fig)
-    with open(simulation.directory + '/fractured_particles.pkl') as pickle_file:
-        fracture_data = pickle.load(pickle_file)
-    leg_h = plt.plot(fracture_data[:, 0], fracture_data[:, 3], simulation.line, lw=2, label=simulation.name)
+    fracture_data = np.genfromtxt(simulation.file, delimiter=",")
+    leg_h = plt.plot(fracture_data[:, 0]/120*125, fracture_data[:, 1], simulation.line, lw=2, label=simulation.name)
     figures[simulation.fig].leg_handles.append(leg_h[0])
 
 
@@ -54,8 +47,8 @@ for fig_number, figure in enumerate(figures):
     plt.xlim(0, figure.xlim)
     plt.ylim(0, figure.ylim)
     ax = plt.subplot(111)
-    plt.text(0.05, 0.9, figure.label, horizontalalignment='left', verticalalignment='bottom', transform=ax.transAxes)
-    plt.legend(loc='upper left', bbox_to_anchor=(0., 0.89), framealpha=0.9)
+    # plt.text(0.05, 0.9, figure.label, horizontalalignment='left', verticalalignment='bottom', transform=ax.transAxes)
+    plt.legend(loc='upper left', bbox_to_anchor=(0., 0.89), framealpha=1.)
     plt.tight_layout()
     plt.savefig(figure.name)
 

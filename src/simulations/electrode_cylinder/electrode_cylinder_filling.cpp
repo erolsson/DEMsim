@@ -1,43 +1,43 @@
 //
-// Created by erolsson on 2019-01-05.
+// Created by erolsson on 14/08/2020.
 //
 
-#include <string>
+#include "../simulations.h"
 
-#include "../engine/engine.h"
-#include "../materials/elastic_ideal_plastic_material.h"
-#include "../utilities/file_reading_functions.h"
-#include "../utilities/filling_functions.h"
-#include "simulations.h"
-#include "../contact_models/storakers_mesarovic_johnson.h"
+#include "../../engine/engine.h"
+#include "../../contact_models/viscoelastic.h"
+#include "../../particles/spherical_particle.h"
+#include "../../materials/electrode_material.h"
 
-void DEM::closed_die_compaction(const std::string& settings_file_name){
+void DEM::electrode_cylinder_filling(const std::string& settings_file_name) {
     using namespace DEM;
-    using ForceModel = StorakersMesarovicJohnson;
+    using ForceModel = Viscoelastic;
     using ParticleType = SphericalParticle<ForceModel>;
     using EngineType = Engine<ForceModel, ParticleType>;
-
     using namespace std::chrono_literals;
-
     SimulationParameters parameters(settings_file_name);
 
-    auto N = parameters.get_parameter<std::size_t>("N");
+    auto N = parameters.get_parameter<double>("N");
     auto output_directory = parameters.get_parameter<std::string>("output_dir");
     auto particle_file = parameters.get_parameter<std::string>("radius_file");
-    auto filling_density = parameters.get_parameter<double>("filling_density");
 
     EngineType simulator(1us);
-    auto density_levels = parameters.get_vector<double>( "density_levels" );
+    auto mat = simulator.create_material<ElectrodeMaterial>(4800);
 
-    auto material = simulator.create_material<ElasticIdealPlasticMaterial>(2630.);
-    material->sY = parameters.get_parameter<double>("sY");
-    material->E = parameters.get_parameter<double>("E");
-    material->nu = parameters.get_parameter<double>("nu");
+    mat->E = parameters.get_parameter<double>("E");
+    mat->kT = parameters.get_parameter<double>("kT");
+    mat->Ep = parameters.get_parameter<double>("Ep");
+    mat->nu = parameters.get_parameter<double>("nu");
+    mat->fb = parameters.get_parameter<double>("fb");
+    mat->nup = parameters.get_parameter<double>("nup");
+    mat->mu = parameters.get_parameter<double>("mu");
+    mat->mu_wall = parameters.get_parameter<double>("mu_wall");
+    mat->tau_i = parameters.get_vector<double>("tau_i");
+    mat->alpha_i = parameters.get_vector<double>("alpha_i");
+    mat->bt = parameters.get_parameter<double>("bt");
+    auto filling_density = parameters.get_parameter<double>("filling_density");
 
-    material->mu = parameters.get_parameter<double>("mu");
-    material->mu_wall = parameters.get_parameter<double>("mu_wall");
-    material->kT = parameters.get_parameter<double>("kT");
-
+    simulator.setup(mat->bt);
     // auto target_relative_density = parameters.get_parameter<double>("density");
     std::chrono::duration<double> compaction_time {parameters.get_parameter<double>("compaction_time")};
     auto unloading_velocity = parameters.get_parameter<double>("unloading_velocity");
@@ -52,17 +52,16 @@ void DEM::closed_die_compaction(const std::string& settings_file_name){
     for(auto& r: particle_radii) {
         particle_volume += 4.*pi*r*r*r/3.;
     }
-
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
     auto cylinder_radius = pow(4*particle_volume/pi/aspect_ratio_at_dense, 1./3)/2;
     auto cylinder_height = 2*cylinder_radius*aspect_ratio_at_dense/filling_density;
     simulator.create_cylinder(cylinder_radius, Vec3(0, 0, 1), Vec3(0, 0, 0), cylinder_height, true, true);
     std::cout << "The simulated inward_cylinder has a radius of " << cylinder_radius << " and a height of "
               << cylinder_height << "\n";
-    auto particle_positions = random_fill_cylinder(0, cylinder_height, cylinder_radius, particle_radii);
+    auto particle_positions = random_fill_cylinder(0, cylinder_height, cylinder_radius, particle_radii, mat->bt);
 
-    for (std::size_t i=0; i != particle_positions.size(); ++i) {
-        simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), material);
+    for (std::size_t i=0; i != N; ++i) {
+        simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
 
     // Creating The bottom plate surface
@@ -91,50 +90,16 @@ void DEM::closed_die_compaction(const std::string& settings_file_name){
     output1->print_kinetic_energy = true;
     output1->print_surface_positions = true;
     output1->print_surface_forces = true;
+    output1->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
     simulator.set_mass_scale_factor(10.);
-    simulator.setup();
+    simulator.setup(2*mat->bt);
+    simulator.write_restart_file(output_directory + "/starting_state.res");
     EngineType::RunForTime run_for_time(simulator, 0.1s);
     simulator.run(run_for_time);
 
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
     simulator.run(max_velocity);
-
-
-    // Move the lid to the uppermost particle
-    auto bbox = simulator.get_bounding_box();
-    double h = bbox[5];
-    top_surface->move(-Vec3(0, 0, cylinder_height - h), Vec3(0, 0, 0));
-
-    // Compress the compact
-    for (unsigned level = 0; level != density_levels.size(); ++level) {
-        double h_target = (particle_volume/density_levels[level])/(pi*cylinder_radius*cylinder_radius);
-        double surface_velocity = (h_target - top_surface->get_points()[0].z())/(compaction_time.count());
-        top_surface->set_velocity(Vec3(0, 0, surface_velocity));
-        run_for_time.reset(compaction_time);
-        simulator.run(run_for_time);
-
-        std::stringstream restart_file_name;
-        restart_file_name << output_directory << "/restart_D=" << density_levels[level] << ".res";
-        simulator.write_restart_file(restart_file_name.str());
-
-        auto unloading_simulator = Engine<ForceModel, ParticleType>(restart_file_name.str());
-        // Unload the compact
-        auto unload_top_surface = unloading_simulator.get_surface("top_surface");
-        unload_top_surface->set_velocity(Vec3(0, 0, unloading_velocity));
-        auto compaction_output = unloading_simulator.get_output("output");
-        unloading_simulator.remove_output(compaction_output);
-        std::stringstream unloading_output_name;
-        unloading_output_name << output_directory << "/unload_D=" << density_levels[level];
-        auto output2 = unloading_simulator.create_output(unloading_output_name.str(), 0.001s);
-        output2->print_particles = true;
-        output2->print_kinetic_energy = true;
-        output2->print_surface_positions = true;
-        output2->print_surface_forces = true;
-        restart_file_name << 1;
-        unloading_simulator.write_restart_file(restart_file_name.str());
-        EngineType::RunForTime time_to_unload(unloading_simulator, unloading_time);
-        unloading_simulator.run(time_to_unload);
-    }
+    simulator.write_restart_file(output_directory + "/resting_state.res");
 }

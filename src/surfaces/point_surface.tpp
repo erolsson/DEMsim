@@ -5,17 +5,37 @@
 #include "point_surface.h"
 
 #include <sstream>
+#include "string"
 
+#include "../utilities/file_reading_functions.h"
+#include "../utilities/printing_functions.h"
 #include "../utilities/vec3.h"
 
+
 template<typename ForceModel, typename ParticleType>
-DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::vector<DEM::Vec3> points, bool infinite, bool adhesive) :
-        Surface<ForceModel, ParticleType>::Surface(id),
+DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::vector<DEM::Vec3> points, bool infinite,
+                                                          const std::string& name, bool adhesive) :
+        Surface<ForceModel, ParticleType>::Surface(id, name, adhesive),
         points_(std::move(points)),
         infinite_(infinite),
-        adhesive_(adhesive),
         normal_(calculate_normal())
 {
+    update_bounding_box();
+}
+
+
+template<typename ForceModel, typename ParticleType>
+DEM::PointSurface<ForceModel, ParticleType>::PointSurface(const DEM::ParameterMap& parameters) :
+    Surface<ForceModel, ParticleType>::Surface(parameters),
+    points_(), infinite_(parameters.get_parameter<bool>("infinite"))
+{
+    auto no_points = parameters.get_parameter<std::size_t>("no_points");
+    for (unsigned i = 0; i != no_points; ++i) {
+        std::ostringstream point;
+        point << "p" << i;
+        points_.push_back(parameters.get_vec3(point.str()));
+    }
+    normal_ = calculate_normal();
     update_bounding_box();
 }
 
@@ -39,7 +59,7 @@ DEM::Vec3 DEM::PointSurface<ForceModel, ParticleType>::vector_to_point(const Vec
     DEM::Vec3 min_vector = Vec3(0, 0, 0);
     bool inside = true;
 
-    for (unsigned i = 0; points_.size(); ++i){
+    for (unsigned i = 0; i != points_.size(); ++i){
         DEM::Vec3 vec{};
         DEM::Vec3 ps = plane_vector - points_[i];    // Vector from a corner to the point in the plane of the surfacve
         DEM::Vec3 edge{};
@@ -50,21 +70,21 @@ DEM::Vec3 DEM::PointSurface<ForceModel, ParticleType>::vector_to_point(const Vec
 
         double l = dot_product(ps, edge.normal());
 
-        if(l<0)
+        if ( l < 0 )
             vec = ps;
-        else if(l>edge.length())
+        else if ( l > edge.length() )
             vec = ps-edge;
         else
             vec = ps-l*edge.normal();
         l = vec.length();
         inside = inside && dot_product(cross_product(vec, edge), normal_) < 0;
-        if(l < min_distance){
+        if ( l < min_distance ){
             min_distance = l;
             min_vector = vec+v;
         }
     }
 
-    if(inside)
+    if ( inside )
         return v;
     return min_vector;
 }
@@ -105,7 +125,7 @@ template<typename ForceModel, typename ParticleType>
 std::string DEM::PointSurface<ForceModel, ParticleType>::get_output_string() const
 {
     std::ostringstream stream;
-    stream << "ID=" << id_ << ", TYPE=PointSurface, " << points_.size();
+    stream << "ID=" << get_id() << ", TYPE=PointSurface, " << points_.size();
     for(auto& p: points_) {
         stream << ", " << p.x() << ", " << p.y() << ", " << p.z();
     }
@@ -142,4 +162,20 @@ void DEM::PointSurface<ForceModel, ParticleType>::update_bounding_box()
 
     bbox_values_[4] = std::min_element(points_.begin(), points_.end(), z_cmp)->z();
     bbox_values_[5] = std::max_element(points_.begin(), points_.end(), z_cmp)->z();
+}
+
+template<typename ForceModel, typename ParticleType>
+std::string DEM::PointSurface<ForceModel, ParticleType>::restart_data() const {
+    using DEM::named_print;
+    std::ostringstream ss;
+    ss  << named_print("PointSurface", "type") << ", "
+        << DEM::Surface<ForceModel, ParticleType>::restart_data() << ", "
+        << named_print(points_.size(), "no_points") << ", " ;
+    for (unsigned i = 0; i != points_.size(); ++i) {
+        std::stringstream pname;
+        pname << "p" << i;
+        ss << named_print(points_[i], pname.str()) << ", ";
+    }
+    ss << named_print(infinite_, "infinite");
+    return ss.str();
 }

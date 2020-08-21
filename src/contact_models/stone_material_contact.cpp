@@ -244,8 +244,8 @@ void DEM::StoneMaterialContact::update_tangential_force(const Vec3& dt, const Ve
     }
 }
 
-void DEM::StoneMaterialContact::update_tangential_resistance(const DEM::Vec3 &rot) {
-    rot.length();
+void DEM::StoneMaterialContact::update_tangential_resistance(const DEM::Vec3&) {
+    // rot.length();
 }
 
 void DEM::StoneMaterialContact::assign_fracture_strengths() {

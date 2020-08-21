@@ -24,7 +24,8 @@
 #include "../utilities/vec3.h"
 
 namespace DEM {
-
+    class Amplitude;
+    class ParameterMap;
     template<typename ForceModel, typename ParticleType>
     class Engine {
     public:
@@ -35,7 +36,10 @@ namespace DEM {
         using OutputPointerType = std::shared_ptr<Output<ForceModel, ParticleType>>;
         using SurfaceType = Surface<ForceModel, ParticleType>;
         explicit Engine(std::chrono::duration<double> dt);
+        explicit Engine(const std::string& restart_file_name);
+
         void setup();
+        void setup(double bounding_box_stretch);
         template<typename Condition>
         void run(Condition& condition);
 
@@ -46,21 +50,33 @@ namespace DEM {
         ParticlePointer create_particle(double radius, const Vec3& position, const Vec3& velocity,
                                       MaterialBase* material);
 
-        PointSurfacePointer create_point_surface(const std::vector<Vec3>& points, bool infinite , bool adhesive=true );
+        PointSurfacePointer create_point_surface(const std::vector<Vec3>& points, bool infinite, bool adhesive=true);
+        PointSurfacePointer create_point_surface(const std::vector<Vec3>& points, bool infinite,
+                                                 const std::string& name, bool adhesive=true);
+
+        PointSurfacePointer create_point_surface(const std::vector<Vec3>& points, bool infinite,
+                                                 const char* name, bool adhesive=true);
 
         CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
                                         bool inward=true, bool infinite=false, bool closed_ends=false);
 
+        CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
+                                        const std::string& name, bool inward=true, bool infinite=false,
+                                        bool closed_ends=false);
+
 
         OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval);
+        OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval,
+                                        const std::string& name);
         void remove_output(const OutputPointerType& output_to_remove);
 
         std::shared_ptr<Amplitude> set_force_control_on_surface(Surface<ForceModel, ParticleType>* surface,
                 char direction,  bool global_time=false);
         void remove_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction);
 
-        std::pair<double, std::size_t> set_viscocity_parameters(double viscosity, size_t order=1);
-        void remove_viscosity_parameters(std::pair<double, std::size_t> parameter_pair);
+        [[maybe_unused]] std::pair<double, std::size_t> set_viscocity_parameters(double viscosity, size_t order=1);
+
+        [[maybe_unused]] void remove_viscosity_parameters(std::pair<double, std::size_t> parameter_pair);
 
         // Getters
         [[nodiscard]] std::chrono::duration<double> get_time() const { return time_; }
@@ -69,11 +85,20 @@ namespace DEM {
         [[nodiscard]] std::pair<size_t, double> max_surface_velocity() const;
         [[nodiscard]] std::array<double, 6> get_bounding_box() const;
 
+        [[maybe_unused]] [[nodiscard]] MaterialBase* get_material(std::size_t id) const;
+        [[maybe_unused]] [[nodiscard]] SurfaceType* get_surface(std::size_t id) const;
+        [[maybe_unused]] [[nodiscard]] SurfaceType* get_surface(const std::string& surface_name) const;
+        [[maybe_unused]] [[nodiscard]] OutputPointerType get_output(const std::string& output_name) const;
+        [[maybe_unused]] [[nodiscard]] ParticlePointer get_particle(std::size_t id) const;
+
         // Setters
         void set_gravity(const Vec3& g) { gravity_ = g; }
         void set_mass_scale_factor(double factor) { mass_scale_factor_ = factor; }
         void set_rotation(bool particle_rotation) {rotation_ = particle_rotation; }
-        void set_time_incremement(std::chrono::duration<double> dt);
+
+        [[maybe_unused]] void set_time_increment(std::chrono::duration<double> dt);
+
+        void write_restart_file(const std::string& filename) const;
 
         class RunFunctorBase {
         public:
@@ -82,11 +107,10 @@ namespace DEM {
         };
 
         // Functors for running a simulation until a condition is fulfilled
-        class RunForTime : public RunFunctorBase{
+        class RunForTime : public RunFunctorBase {
         public:
             RunForTime(const Engine& e, std::chrono::duration<double> time) :
-                engine_{e}, start_time_{engine_.get_time()}, time_to_run_{time}
-                {}
+                engine_{e}, start_time_{engine_.get_time()}, time_to_run_{time} {}
             ~RunForTime() = default;
             void reset(std::chrono::duration<double> new_run_time) {
                 start_time_ = engine_.get_time();
@@ -105,7 +129,7 @@ namespace DEM {
             std::chrono::duration<double> time_to_run_;
         };
 
-        class KineticEnergyLess : public RunFunctorBase{
+        class KineticEnergyLess : public RunFunctorBase {
         public:
             KineticEnergyLess(const Engine& e, double kinetic_energy, std::chrono::duration<double> update_time) :
                     engine_{e}, kinetic_energy_{kinetic_energy}, start_time_(engine_.get_time()),
@@ -128,7 +152,7 @@ namespace DEM {
             std::chrono::duration<double> update_time_;
         };
 
-        class ParticleVelocityLess : public RunFunctorBase{
+        class ParticleVelocityLess : public RunFunctorBase {
         public:
             ParticleVelocityLess(const Engine& e, double max_velocity, std::chrono::duration<double> update_time) :
                     engine_{e}, max_velocity_{max_velocity}, start_time_(engine_.get_time()),
@@ -283,11 +307,18 @@ namespace DEM {
         // Settings type of private data
         Vec3 gravity_ {Vec3{0,0,0}};
         std::vector<std::pair<double, std::size_t>> viscocity_parameters_ {};
-        std::chrono::duration<double> increment_;
+        std::chrono::duration<double> increment_{};
+        double bounding_box_stretch_ { 1e-4};
         double mass_scale_factor_ { 1. };
         bool rotation_ = true;
 
         void do_step();
+
+        void make_material_from_restart_data(const ParameterMap& parameters);
+        void make_output_from_restart_data(const ParameterMap& parameters);
+        void make_surface_from_restart_data(const ParameterMap& parameters);
+        void make_particle_from_restart_data(const ParameterMap& parameters);
+        void make_contact_from_restart_data(const ParameterMap& parameters);
 
         // Helper functions
         void move_particles();
@@ -303,8 +334,6 @@ namespace DEM {
 
 
     };
-
-    // Functors for different running conditions
 
 }
 

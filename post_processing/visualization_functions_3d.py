@@ -56,7 +56,8 @@ class SpheresPlotter:
                                         resolution=32,
                                         scale_factor=1.,
                                         scale_mode='scalar',
-                                        opacity=self.opacity).mlab_source
+                                        opacity=self.opacity,
+                                        reset_zoom=False).mlab_source
             else:
                 self.ms.set(x=x, y=y, z=z)
 
@@ -90,7 +91,8 @@ class PointSurfacePlotter:
 
         pts.remove()
         if self.ms is None:
-            self.ms = mlab.pipeline.surface(mesh, color=color, opacity=opacity, transparent=True).mlab_source
+            self.ms = mlab.pipeline.surface(mesh, color=color, opacity=opacity, transparent=True,
+                                            reset_zoom=False).mlab_source
         else:
             # Updating the pipeline with the new set of points
             # There is probably a cuter way to do this
@@ -100,13 +102,17 @@ class PointSurfacePlotter:
 class CylinderPlotter:
     def __init__(self, bounding_box=None):
         self.ms = None
+        self.upper_plate = None
+        self.lower_plate = None
         self.bounding_box = bounding_box
+        self.length_extension = 0.
+        self.closed = False
 
     def plot(self, data, color, opacity, time=0.):
         r = data[0]
         # axis = data[1:4]   # Todo use axis parameter
         point = data[4:7]
-        length = data[7]
+        length = data[7] + self.length_extension
 
         q, z = np.meshgrid(np.linspace(0, 2*pi, 100), np.linspace(point[2], point[2] + length, 100))
 
@@ -115,9 +121,26 @@ class CylinderPlotter:
         if self.bounding_box:
             fulfill_bounding_box(self.bounding_box, x, y, z, time)
         if self.ms is None:
-            self.ms = mlab.mesh(x, y, z, color=color, opacity=opacity, transparent=True).mlab_source
+            self.ms = mlab.mesh(x, y, z, color=color, opacity=opacity, transparent=True, reset_zoom=False).mlab_source
         else:
             self.ms.set(x=x, y=y, z=z)
+
+        if self.closed:
+            rad, q = np.meshgrid(np.linspace(0, r, 100), np.linspace(0, 2*pi, 100))
+            x = rad*np.cos(q) + point[0]
+            y = rad*np.sin(q) + point[1]
+
+            if self.upper_plate is None:
+                self.upper_plate = mlab.mesh(x, y, 0*x + point[2], color=color, opacity=opacity, transparent=True,
+                                             reset_zoom=False).mlab_source
+            else:
+                self.upper_plate.set(x=x, y=y, z=z)
+
+            if self.lower_plate is None:
+                self.lower_plate = mlab.mesh(x, y, 0*x, color=color, opacity=opacity, transparent=True,
+                                             reset_zoom=False).mlab_source
+            else:
+                self.lower_plate.set(x=x, y=y, z=z)
 
 
 PlotObject_ = namedtuple('PlotObject', ['start_idx', 'end_idx'])
@@ -153,6 +176,8 @@ class SurfacesPlotter:
             self.surfaces_opacities[surface_id] = surfaces_opacities.get(surface_id, 0.5)
             self.bounding_boxes[surface_id] = bounding_boxes.get(surface_id, BoundingBox())
             self.visible_times[surface_id] = visible_times.get(surface_id, lambda t: True)
+
+        print(self.visible_times)
 
     def set_data_file(self, surface_file_name):
         with open(surface_file_name) as data_file:

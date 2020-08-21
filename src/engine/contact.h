@@ -12,6 +12,7 @@
 
 
 namespace DEM {
+    class ParameterMap;
     template<typename ForceModel, typename ParticleType> class Surface;
 
     template<typename ForceModel, typename ParticleType>
@@ -23,6 +24,11 @@ namespace DEM {
         //Constructors
         Contact(ParticleType* particle1, ParticleType* particle2, std::chrono::duration<double> increment);
         Contact(ParticleType* particle1, SurfaceType* surface,  std::chrono::duration<double> increment);
+
+        Contact(ParticleType* particle1, ParticleType* particle2, std::chrono::duration<double> increment,
+                const ParameterMap& parameters);
+        Contact(ParticleType* particle1, SurfaceType* surface,  std::chrono::duration<double> increment,
+                const ParameterMap& parameters);
 
         void update();
         [[nodiscard]] Vec3 get_position() const;
@@ -41,6 +47,7 @@ namespace DEM {
 
         void set_increment(std::chrono::duration<double> increment) {force_model_.set_increment(increment); }
         [[nodiscard]] std::string get_output_string() const;
+        [[nodiscard]] std::string restart_data() const;
 
     private:
         ParticleType* const p1_;

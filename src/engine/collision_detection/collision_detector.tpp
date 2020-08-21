@@ -29,7 +29,7 @@ DEM::CollisionDetector<ForceModel, ParticleType>::CollisionDetector(const std::v
 }
 
 template<typename ForceModel, typename ParticleType>
-void DEM::CollisionDetector<ForceModel, ParticleType>::setup()
+void DEM::CollisionDetector<ForceModel, ParticleType>::setup(double stretch)
 {
     bounding_boxes_.clear();
     xproj_.clear();
@@ -38,7 +38,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::setup()
     std::size_t counter = 0;
     // bounding_boxes_.reserve(particles_.size() + surfaces_.size());
     for(const auto& p: particles_){
-        bounding_boxes_.emplace_back(p, counter);
+        bounding_boxes_.emplace_back(p, counter, stretch);
         ++counter;
     }
 
@@ -48,15 +48,15 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::setup()
             // Inspect the inward_cylinder bounding box to figure out if it is inward or not
             const auto& cyl_bounding_box = cylinder_ptr->get_bounding_box_values();
             if (std::abs(cyl_bounding_box[1]-cyl_bounding_box[0]) < 2*cylinder_ptr->get_radius()) {
-                bounding_boxes_.emplace_back(cylinder_ptr, counter, true);
+                bounding_boxes_.emplace_back(cylinder_ptr, counter, stretch, true);
             }
             else {
-                bounding_boxes_.emplace_back(s, counter);
+                bounding_boxes_.emplace_back(s, counter, stretch);
             }
 
         }
         else {
-            bounding_boxes_.emplace_back(s, counter);
+            bounding_boxes_.emplace_back(s, counter, stretch);
         }
         ++counter;
     }

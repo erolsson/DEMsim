@@ -5,7 +5,6 @@
 #ifndef SIMULATIONS_H
 #define SIMULATIONS_H
 
-#include <atomic>
 #include <map>
 #include <string>
 
@@ -19,7 +18,8 @@ namespace DEM {
     void proctor_test(const std::string& settings_file_name);
     void stone_compaction(const std::string& settings_file_name);
     void electrode_box(const std::string& settings_file_name);
-
+    void electrode_cylinder_filling(const std::string& settings_file_name);
+    void electrode_cylinder_compaction(const std::string& settings_file_name);
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 
 

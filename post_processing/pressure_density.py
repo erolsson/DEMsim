@@ -45,8 +45,7 @@ def dimensions_cylinder(data_directory):
 
 def volume_cylinder(data_directory):
     dimensions = dimensions_cylinder(data_directory)
-    volume = dimensions[:, 0:2]
-    volume[:, 1] = pi*dimensions[:, 1]**2*np.abs(dimensions[:, 3] - dimensions[:, 2])
+    volume = pi*dimensions[:, 1]**2*np.abs(dimensions[:, 3] - dimensions[:, 2])
     return volume
 
 
@@ -83,11 +82,11 @@ def pressures_cylinder(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../results/closed_die_compaction/5'
+    simulation_directory = '../results/closed_die_compaction/6/'
     v_particles = particle_volume(simulation_directory)
-
-    v_cylinder = volume_cylinder(simulation_directory)
-    pressures = pressures_cylinder(simulation_directory)
-    relative_density = v_particles/v_cylinder
-    plt.plot(relative_density[:, 1], pressures[:, 1:])
+    for directory in ["", "unload_D=0.65", "unload_D=0.7", "unload_D=0.75", "unload_D=0.8"]:
+        v_cylinder = volume_cylinder(simulation_directory + directory)
+        pressures = pressures_cylinder(simulation_directory + directory)
+        relative_density = v_particles/v_cylinder
+        plt.plot(relative_density, pressures[:, 1:])
     plt.show()

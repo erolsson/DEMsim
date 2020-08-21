@@ -5,7 +5,7 @@
 #include "bounding_box.h"
 
 template<typename ForceModel, typename ParticleType>
-DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(ParticleType* particle, std::size_t index) :
+DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(ParticleType* particle, std::size_t index, double stretch) :
         bounding_box_projections{BoundingBoxProjection(this, 2*index,   'b'),
                                  BoundingBoxProjection(this, 2*index+1, 'e'),
                                  BoundingBoxProjection(this, 2*index,   'b'),
@@ -14,13 +14,15 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(ParticleType* particle, 
                                  BoundingBoxProjection(this, 2*index+1, 'e')},
         particle_(particle),
         surface_(nullptr),
+        stretch_(stretch),
         update_function(&BoundingBox<ForceModel, ParticleType>::particle_update)
 {
 
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::SurfaceType* surface, std::size_t index) :
+DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::SurfaceType* surface, std::size_t index,
+                                                        double stretch) :
         bounding_box_projections{BoundingBoxProjection(this, 2*index,   'b'),
                                  BoundingBoxProjection(this, 2*index+1, 'e'),
                                  BoundingBoxProjection(this, 2*index,   'b'),
@@ -29,13 +31,15 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::SurfaceType
                                  BoundingBoxProjection(this, 2*index+1, 'e')},
         particle_(nullptr),
         surface_(surface),
+        stretch_(stretch),
         update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
 {
 
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderType* cylinder, std::size_t index, bool) :
+DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderType* cylinder, std::size_t index,
+                                                        double stretch, bool) :
         bounding_box_projections{BoundingBoxProjection(this, 2*index,   'b', true),
                                  BoundingBoxProjection(this, 2*index+1, 'e', true),
                                  BoundingBoxProjection(this, 2*index,   'b', true),
@@ -44,6 +48,7 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderTyp
                                  BoundingBoxProjection(this, 2*index+1, 'e', true)},
         particle_(nullptr),
         surface_(cylinder),
+        stretch_(stretch),
         update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
 {
 
@@ -65,6 +70,7 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(const BoundingBox& rhs) 
                                                        rhs.bounding_box_projections[5].inward_cylinder())},
         particle_(rhs.particle_),
         surface_(rhs.surface_),
+        stretch_(rhs.stretch_),
         update_function(rhs.update_function)
 {
 

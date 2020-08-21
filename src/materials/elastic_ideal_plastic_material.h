@@ -8,9 +8,11 @@
 #include "material_base.h"
 
 namespace DEM {
+    class ParameterMap;
     class ElasticIdealPlasticMaterial : public MaterialBase {
     public:
         ElasticIdealPlasticMaterial(unsigned id_number, double density) : MaterialBase(id_number, density) {}
+        explicit ElasticIdealPlasticMaterial(const ParameterMap& parameters);
         ~ElasticIdealPlasticMaterial() override = default;
         double E { 0. };
         double nu { 0. };
@@ -18,6 +20,7 @@ namespace DEM {
         double kT{ 0. };
         double mu { 0. };
         double mu_wall { 0. };
+        [[nodiscard]] std::string restart_data() const override;
     };
 }
 

@@ -21,6 +21,8 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <string>
+#include <sstream>
 
 namespace DEM {
     class Vec3 {
@@ -34,15 +36,15 @@ namespace DEM {
         Vec3(double x, double y, double z)
                 :data_{x, y, z} { }
 
-        const double& x() const {
+        [[nodiscard]] const double& x() const {
             return data_[0];
         }
 
-        const double& y() const {
+        [[nodiscard]] const double& y() const {
             return data_[1];
         }
 
-        const double& z() const {
+        [[nodiscard]] const double& z() const {
             return data_[2];
         }
 
@@ -82,44 +84,44 @@ namespace DEM {
             z() = -z();
         }
 
-        inline double length() const
+        [[nodiscard]] inline double length() const
         {
             return sqrt(x()*x() + y()*y() + z()*z());
         }
 
-        inline Vec3 normal() const
+        [[nodiscard]] inline Vec3 normal() const
         {
             double inv = inv_length();
             return *this*inv;
         }
 
         //Common vector operations, should be self-explaining
-        inline const Vec3 operator-() const
+        inline Vec3 operator-() const
         {
             return Vec3(-x(), -y(), -z());
         }
 
-        inline bool is_zero() const
+        [[nodiscard]] inline bool is_zero() const
         {
             return x()==0.0 && y()==0.0 && z()==0.0;
         }
 
-        inline const Vec3 operator-(const Vec3& vec) const
+        inline Vec3 operator-(const Vec3& vec) const
         {
             return Vec3(x()-vec.x(), y()-vec.y(), z()-vec.z());
         }
 
-        inline const Vec3 operator+(const Vec3& vec) const
+        inline Vec3 operator+(const Vec3& vec) const
         {
             return Vec3(x()+vec.x(), y()+vec.y(), z()+vec.z());
         }
 
-        inline const Vec3 operator*(double factor) const
+        inline Vec3 operator*(double factor) const
         {
             return Vec3(x()*factor, y()*factor, z()*factor);
         }
 
-        inline const Vec3 operator/(double factor) const
+        inline Vec3 operator/(double factor) const
         {
             double inv = 1/factor;
             return *this*inv;
@@ -156,10 +158,17 @@ namespace DEM {
             z() = 0.;
         }
 
+        [[nodiscard]] std::string csv_string() const
+        {
+            std::stringstream ss;
+            ss << x() << ", " << y() << ", " << z();
+            return ss.str();
+        }
+
     private:
         double data_[3]{0., 0., 0.};
 
-        double inv_length() const
+        [[nodiscard]] double inv_length() const
         {
             return 1./length();
         }
@@ -177,7 +186,7 @@ namespace DEM {
         return (a.x()==b.x() && a.y()==b.y() && a.z()==b.z());
     }
 
-    inline const Vec3 cross_product(const Vec3& a, const Vec3& b)
+    inline Vec3 cross_product(const Vec3& a, const Vec3& b)
     {
         return Vec3(a.y()*b.z()-a.z()*b.y(), a.z()*b.x()-a.x()*b.z(), a.x()*b.y()-a.y()*b.x());
     }
@@ -189,13 +198,12 @@ namespace DEM {
         return os;
     }
 
-    inline const Vec3 operator*(double factor, const Vec3& a)
+    inline Vec3 operator*(double factor, const Vec3& a)
     {
         return Vec3(a.x()*factor, a.y()*factor, a.z()*factor);
     }
 
-    bool check_overlaps(const Vec3 &point, double radius, const std::vector<DEM::Vec3> &particle_positions,
-                        const std::vector<double> &radii);
+
 
 }
 
