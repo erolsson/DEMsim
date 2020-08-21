@@ -19,7 +19,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     using namespace std::chrono_literals;
     SimulationParameters parameters(settings_file_name);
 
-    auto delta = parameters.get_parameter<double>("delta");
+
     auto N = parameters.get_parameter<double>("N");
     auto output_directory = parameters.get_parameter<std::string>("output_dir");
     auto particle_file = parameters.get_parameter<std::string>("radius_file");
@@ -45,7 +45,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     std::sort(particle_radii.rbegin(), particle_radii.rend());
 
     //std::cout << "Number of particles" <<mat->N<< "\n";
-    std::cout << "delta" <<delta<< "\n";
+
     double just_particle_volume=0.;
     double particle_surface_area= 0.;
     for(auto& r: particle_radii) {
