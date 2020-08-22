@@ -45,7 +45,7 @@ namespace DEM {
         bool print_bounding_box = false;
 
         std::string restart_data() const;
-
+        void set_new_directory(const std::string& directory);
     private:
         using OutputFunPtr = void (Output<ForceModel, ParticleType>::*)() const;
         using FuncVec = std::vector<std::pair<bool&, OutputFunPtr>>;

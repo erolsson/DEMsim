@@ -38,9 +38,7 @@ void DEM::electrode_cylinder_filling(const std::string& settings_file_name) {
     auto filling_density = parameters.get_parameter<double>("filling_density");
 
     simulator.setup(mat->bt);
-    // auto target_relative_density = parameters.get_parameter<double>("density");
     std::chrono::duration<double> compaction_time {parameters.get_parameter<double>("compaction_time")};
-    auto unloading_velocity = parameters.get_parameter<double>("unloading_velocity");
     std::chrono::duration<double> unloading_time {parameters.get_parameter<double>("unloading_time")};
 
     // Read particle radii from file
@@ -93,7 +91,7 @@ void DEM::electrode_cylinder_filling(const std::string& settings_file_name) {
     output1->print_contacts = true;
 
     simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(10.);
+    simulator.set_mass_scale_factor(100.);
     simulator.setup(2*mat->bt);
     simulator.write_restart_file(output_directory + "/starting_state.res");
     EngineType::RunForTime run_for_time(simulator, 0.1s);

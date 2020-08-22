@@ -426,18 +426,26 @@ DEM::Engine<ForceModel, ParticleType>::get_surface(std::size_t id) const {
     }
 }
 
-template<typename ForceModel, typename ParticleType> typename DEM::Engine<ForceModel, ParticleType>::SurfaceType*
-DEM::Engine<ForceModel, ParticleType>::get_surface(const std::string& surface_name) const {
+template<typename ForceModel, typename ParticleType>
+template<typename SurfaceT>
+SurfaceT DEM::Engine<ForceModel, ParticleType>::get_surface(const std::string& surface_name) const {
     auto it = std::find_if(surfaces_.begin(), surfaces_.end(),
                         [&surface_name](const auto& s1) { return s1->get_name() == surface_name; } );
-    if (it != surfaces_.end()) {
-        return *it;
-    }
-    else {
+    if (it == surfaces_.end()) {
         std::ostringstream error_ss;
         error_ss << "Surface " << surface_name << " does not exist";
         throw std::invalid_argument(error_ss.str());
     }
+    else {
+
+    }
+    SurfaceT surface = dynamic_cast<SurfaceT>(*it);
+    if (surface) {
+        return surface;
+    }
+    std::ostringstream error_ss;
+    error_ss << "Surface " << surface_name << " has wrong type";
+    throw std::invalid_argument(error_ss.str());
 }
 
 template<typename ForceModel, typename ParticleType>

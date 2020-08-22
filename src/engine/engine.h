@@ -87,7 +87,8 @@ namespace DEM {
 
         [[maybe_unused]] [[nodiscard]] MaterialBase* get_material(std::size_t id) const;
         [[maybe_unused]] [[nodiscard]] SurfaceType* get_surface(std::size_t id) const;
-        [[maybe_unused]] [[nodiscard]] SurfaceType* get_surface(const std::string& surface_name) const;
+        template<typename SurfaceT>
+        [[maybe_unused]] [[nodiscard]] SurfaceT get_surface(const std::string& surface_name) const;
         [[maybe_unused]] [[nodiscard]] OutputPointerType get_output(const std::string& output_name) const;
         [[maybe_unused]] [[nodiscard]] ParticlePointer get_particle(std::size_t id) const;
 

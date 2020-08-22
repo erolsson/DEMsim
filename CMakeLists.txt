@@ -73,6 +73,7 @@ add_executable(DEMsim
                src/utilities/printing_functions.h
                src/simulations/electrode_box.cpp
                src/simulations/electrode_cylinder/electrode_cylinder_filling.cpp
+               src/simulations/electrode_cylinder/electrode_cylinder_compaction.cpp
                )
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")
