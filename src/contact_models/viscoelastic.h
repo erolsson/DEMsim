@@ -41,6 +41,9 @@ namespace DEM {
         void set_increment(std::chrono::duration<double>);
 
     private:
+        std::size_t id_1;
+        std::size_t id_2;
+
         double dt_;   // Time increment
         double kT_;
         double bt_;
