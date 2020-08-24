@@ -138,6 +138,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     //simulator.run(run_for_time);
     EngineType::SurfaceNormalForceWithinInterval  Interval ( simulator, top_surface,2.2500e+11,500e+11, std::chrono::duration<double>(0.01)  );
     simulator.run(Interval);
+    simulator.write_restart_file(output_directory + "/compact_restart_file.res");
 
 
 
