@@ -1,5 +1,5 @@
 N=4500
-output_dir=../results/viscoelastic/2020-08-21
+output_dir=../results/viscoelastic/electrode00
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=340800
