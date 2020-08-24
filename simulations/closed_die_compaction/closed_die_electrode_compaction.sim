@@ -1,0 +1,6 @@
+output_dir=../results/closed_die_compaction/electrode/
+filling_file_name=../results/closed_die_compaction/electrode/resting_state.res
+compaction_velocity=0.01
+unload_velocity=0.01
+compaction_time=2
+unload_time=1

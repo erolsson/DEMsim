@@ -21,6 +21,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     auto mat1 = dynamic_cast<const ElectrodeMaterial *>(particle1->get_material());
     auto mat2 = dynamic_cast<const ElectrodeMaterial *>(particle2->get_material());
 
+    id_1 = particle1->get_id();
+    id_2 = particle2->get_id();
 
     R0_ = 1. / (1. / particle1->get_radius() + 1. / particle2->get_radius());
     Rb_ = 1. / (1. / (particle1->get_radius() + mat1->bt/2) + 1. / (particle2->get_radius() + mat2->bt)/2);
@@ -70,7 +72,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
 DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM::Viscoelastic::SurfaceType * surface,
                                 std::chrono::duration<double>dt){
     auto mat1 = dynamic_cast<const ElectrodeMaterial *>(particle1->get_material());
-
+    id_1 = particle1->get_id();
+    id_2 = surface->get_id();
     R0_ = 1. / (1. / particle1->get_radius());
     Rb_ = 1. / (1. / (particle1->get_radius() + mat1->bt/2));
 
@@ -111,15 +114,17 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     }
 }
 
-DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType*, DEM::Viscoelastic::ParticleType*,
+DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoelastic::ParticleType* p2,
                                 std::chrono::duration<double>, const DEM::ParameterMap& parameters) :
+        id_1(p1->get_id()),
+        id_2(p2->get_id()),
         dt_(parameters.get_parameter<double>("dt")),  // Time increment
         kT_(parameters.get_parameter<double>("kT")),
-        bt_(parameters.get_parameter<double>("bt_")),
+        bt_(parameters.get_parameter<double>("bt")),
         h_(parameters.get_parameter<double>("h")),
         hmax_(parameters.get_parameter<double>("hmax")),
         area_(parameters.get_parameter<double>("area")),
-        yield_h_(parameters.get_parameter<unsigned>("yield_h")),
+        yield_h_(parameters.get_parameter<double>("yield_h")),
         k_(parameters.get_parameter<double>("k")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
         R0_(parameters.get_parameter<double>("R0")),
@@ -153,15 +158,17 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType*, DEM::Viscoelas
     }
 }
 
-DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *, DEM::Viscoelastic::SurfaceType *,
+DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoelastic::SurfaceType* s,
                                 std::chrono::duration<double>, const DEM::ParameterMap& parameters) :
+        id_1(p->get_id()),
+        id_2(s->get_id()),
         dt_(parameters.get_parameter<double>("dt")),  // Time increment
         kT_(parameters.get_parameter<double>("kT")),
-        bt_(parameters.get_parameter<double>("bt_")),
+        bt_(parameters.get_parameter<double>("bt")),
         h_(parameters.get_parameter<double>("h")),
         hmax_(parameters.get_parameter<double>("hmax")),
         area_(parameters.get_parameter<double>("area")),
-        yield_h_(parameters.get_parameter<unsigned>("yield_h")),
+        yield_h_(parameters.get_parameter<double>("yield_h")),
         k_(parameters.get_parameter<double>("k")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
         R0_(parameters.get_parameter<double>("R0")),
@@ -182,7 +189,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *, DEM::Viscoela
         binder_contact_(parameters.get_parameter<bool>("binder_contact")),
         fractured_(parameters.get_parameter<bool>("fractured"))
 {
-    M = parameters.get_parameter<unsigned>("M");
+    M = parameters.get_parameter<std::size_t>("M");
     for (unsigned i=0; i != M; ++i) {
         tau_i.push_back(parameters.get_parameter<double>("tau_" + std::to_string(i)));
         alpha_i.push_back(parameters.get_parameter<double>("alpha_" + std::to_string(i)));
@@ -314,7 +321,11 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
 
 std::string DEM::Viscoelastic::get_output_string() const {
     std::stringstream ss;
-    ss  << F_visc << ", " << F_particle << ", " << binder_contact_;
+    ss  << F_ << ", " << F_visc << ", " << F_particle << ", " << hmax_ << ", "
+        << FT_.x() << ", "  << FT_.y() << ", " << FT_.z() << ","
+        << FT_visc_.x() << ", "  << FT_visc_.y() << ", " << FT_visc_.z() << ","
+        << FT_part_.x() << ", "  << FT_part_.y() << ", " << FT_part_.z() << ","
+        << binder_contact_ << ", " << bt_;
     return ss.str();
 }
 
@@ -355,9 +366,11 @@ std::string DEM::Viscoelastic::restart_data() const {
             << named_print(uT_, "uT") << ", "
             << named_print(adhesive_, "adhesive") << ", "
             << named_print(binder_contact_, "binder_contact") << ", "
-       << named_print(fractured_, "fractured_") << ", ";
+            << named_print(fractured_, "fractured") << ", "
+            << named_print(M, "M");
     for (unsigned i=0; i != M; ++i) {
-        ss << named_print(tau_i[i], "tau_" + std::to_string(i)) << ", "
+        ss <<  ", "
+           << named_print(tau_i[i], "tau_" + std::to_string(i)) << ", "
            << named_print(alpha_i[i], "alpha_" + std::to_string(i)) << ", "
            << named_print(ai[i], "a_" + std::to_string(i)) << ", "
            << named_print(bi[i], "b_" + std::to_string(i)) << ", "

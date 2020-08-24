@@ -210,3 +210,11 @@ void DEM::Output<ForceModel, ParticleType>::write_bounding_box() const {
                 << ", " << bbox[3] << ", " << bbox[4] << ", " << bbox[5] << "\n";
     output_file.close();
 }
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::set_new_directory(const std::string& directory) {
+    directory_ = directory;
+    if (!fs::exists(directory_)) {
+        fs::create_directories(directory_);
+    }
+}

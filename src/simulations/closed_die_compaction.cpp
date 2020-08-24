@@ -6,6 +6,7 @@
 
 #include "../engine/engine.h"
 #include "../materials/elastic_ideal_plastic_material.h"
+#include "../surfaces/point_surface.h"
 #include "../utilities/file_reading_functions.h"
 #include "../utilities/filling_functions.h"
 #include "simulations.h"
@@ -121,7 +122,7 @@ void DEM::closed_die_compaction(const std::string& settings_file_name){
 
         auto unloading_simulator = Engine<ForceModel, ParticleType>(restart_file_name.str());
         // Unload the compact
-        auto unload_top_surface = unloading_simulator.get_surface("top_surface");
+        auto unload_top_surface = unloading_simulator.get_surface<EngineType::PointSurfacePointer>("top_surface");
         unload_top_surface->set_velocity(Vec3(0, 0, unloading_velocity));
         auto compaction_output = unloading_simulator.get_output("output");
         unloading_simulator.remove_output(compaction_output);
