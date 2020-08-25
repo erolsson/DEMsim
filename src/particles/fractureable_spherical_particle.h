@@ -41,6 +41,7 @@ namespace DEM {
     public:
         FractureableSphericalParticle(double radius, const Vec3& position, const Vec3& velocity, MaterialBase* material,
                                       unsigned id);
+        virtual ~FractureableSphericalParticle() = default;
         using SphericalParticleBase<ForceModel>::get_id;
         using SphericalParticleBase<ForceModel>::get_position;
         void sum_contact_forces() {

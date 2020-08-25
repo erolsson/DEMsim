@@ -26,6 +26,7 @@
 namespace DEM {
     class Amplitude;
     class ParameterMap;
+    class PeriodicBCHandler;
     template<typename ForceModel, typename ParticleType>
     class Engine {
     public:
@@ -233,9 +234,6 @@ namespace DEM {
             conditions_(conditions){}
 
             bool operator()()  {
-                // std::cout << "Force condition: " << conditions_[1]->operator()() << " "
-                //           << "Velocity condition: " << conditions_[0]->operator()() << " "
-                //            << "Time condition: " << conditions_[2]->operator()() << "\n";
                 bool cond_value = false;
                 for(const auto& cond: conditions_){
                     cond_value = cond_value || cond->operator()();
@@ -304,6 +302,9 @@ namespace DEM {
         std::vector<OutputPointerType> outputs_{};
 
         CollisionDetector<ForceModel, ParticleType> collision_detector_;
+        std::shared_ptr<PeriodicBCHandler> periodic_bc_handler_x_ = nullptr;
+        std::shared_ptr<PeriodicBCHandler> periodic_bc_handler_y_ = nullptr;
+        std::shared_ptr<PeriodicBCHandler> periodic_bc_handler_z_ = nullptr;
 
         // Settings type of private data
         Vec3 gravity_ {Vec3{0,0,0}};

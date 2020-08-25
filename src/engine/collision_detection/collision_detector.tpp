@@ -62,14 +62,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::setup(double stretch)
     }
 
     for(auto& bounding_box: bounding_boxes_){
-        xproj_.push_back(&bounding_box.bounding_box_projections[0]);
-        xproj_.push_back(&bounding_box.bounding_box_projections[1]);
-
-        yproj_.push_back(&bounding_box.bounding_box_projections[2]);
-        yproj_.push_back(&bounding_box.bounding_box_projections[3]);
-
-        zproj_.push_back(&bounding_box.bounding_box_projections[4]);
-        zproj_.push_back(&bounding_box.bounding_box_projections[5]);
+        add_bounding_box_projections(bounding_box);
     }
     n_ = xproj_.size();
 }
@@ -87,7 +80,6 @@ template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::check_bounding_box_vector(
         std::vector<CollisionDetector::BoundingBoxProjectionType*>& vector, char axis)
 {
-    //std::cout << "\n";
     for (unsigned i = 0; i != n_; ++i) {
          unsigned j = i;
          while (j != 0 && vector[j-1]->get_value() > vector[j]->get_value()){
@@ -198,6 +190,46 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::destroy_contact_pair(cons
             contacts_to_destroy_.push_back(CollisionPair(b2->get_particle() ,b1->get_surface()));
     }
  }
+
+template<typename ForceModel, typename ParticleType>
+void DEM::CollisionDetector<ForceModel, ParticleType>::add_particle(const ParticleType* particle) {
+    auto bounding_box = bounding_boxes_.emplace_back(particle, bounding_boxes_.size(), bounding_box_stretch_);
+    add_bounding_box_projections(bounding_box);
+    n_ += 2;
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::CollisionDetector<ForceModel, ParticleType>::remove_particle(const ParticleType* particle) {
+    auto bbox_to_remove = std::find_if(bounding_boxes_.begin(), bounding_boxes_.end(),
+                                       [particle](const auto& bbox) {return bbox->get_particle() == particle; });
+    xproj_.erase(std::find(xproj_.begin(), xproj_.end(), bbox_to_remove->bounding_box_projections[0]));
+    xproj_.erase(std::find(xproj_.begin(), xproj_.end(), bbox_to_remove->bounding_box_projections[1]));
+
+    yproj_.erase(std::find(yproj_.begin(), yproj_.end(), bbox_to_remove->bounding_box_projections[2]));
+    yproj_.erase(std::find(yproj_.begin(), yproj_.end(), bbox_to_remove->bounding_box_projections[3]));
+
+    zproj_.erase(std::find(zproj_.begin(), zproj_.end(), bbox_to_remove->bounding_box_projections[4]));
+    zproj_.erase(std::find(zproj_.begin(), zproj_.end(), bbox_to_remove->bounding_box_projections[5]));
+
+    bounding_boxes_.erase(bbox_to_remove);
+}
+
+
+
+template<typename ForceModel, typename ParticleType>
+void DEM::CollisionDetector<ForceModel, ParticleType>::add_bounding_box_projections(
+        DEM::BoundingBox<ForceModel, ParticleType>& bounding_box) {
+    xproj_.push_back(&bounding_box.bounding_box_projections[0]);
+    xproj_.push_back(&bounding_box.bounding_box_projections[1]);
+
+    yproj_.push_back(&bounding_box.bounding_box_projections[2]);
+    yproj_.push_back(&bounding_box.bounding_box_projections[3]);
+
+    zproj_.push_back(&bounding_box.bounding_box_projections[4]);
+    zproj_.push_back(&bounding_box.bounding_box_projections[5]);
+
+}
+
 
 
 

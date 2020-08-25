@@ -18,10 +18,10 @@ namespace DEM {
     template<typename ForceModel>
     class ParticleBase {
     public:
-        ParticleBase(const ParticleBase&) = delete;
         ParticleBase& operator=(const ParticleBase&) = delete;
         ParticleBase(double, const Vec3&, const Vec3&, MaterialBase*, unsigned );
         ParticleBase(const ParameterMap& parameters, MaterialBase* material);
+        virtual ~ParticleBase() = default;
         unsigned get_id() const { return id_; }
         const MaterialBase* get_material() const { return material_; }
 

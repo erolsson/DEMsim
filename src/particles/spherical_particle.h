@@ -32,6 +32,7 @@ namespace DEM {
         SphericalParticle(double radius, const Vec3& position, const Vec3& velocity, MaterialBase* material,
                           unsigned id);
         SphericalParticle(const ParameterMap& parameters, MaterialBase* material);
+        virtual ~SphericalParticle() = default;
         void sum_contact_forces() {
             SphericalParticleBase<ForceModel>::sum_contact_forces(contacts_);
     }

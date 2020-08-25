@@ -33,13 +33,14 @@ namespace DEM {
         SphericalParticleBase(double radius, const Vec3& position, const Vec3& velocity, MaterialBase* material,
                           unsigned id);
         SphericalParticleBase(const ParameterMap& parameters, MaterialBase* material);
-        SphericalParticleBase(const SphericalParticleBase&) = delete;
+        virtual ~SphericalParticleBase() = default;
         SphericalParticleBase& operator=(const SphericalParticleBase&) = delete;
 
         [[nodiscard]] double get_radius() const { return radius_; }
         [[nodiscard]] double get_inertia() const { return inertia_; }
 
         void move(const Vec3& new_disp_this_inc);
+        void set_position(const Vec3& new_position) {position_ = new_position; }
         void rotate(const Vec3& new_rot_this_inc);
 
         [[nodiscard]] double kinetic_energy() const;
