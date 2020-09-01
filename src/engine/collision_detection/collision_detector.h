@@ -59,11 +59,15 @@ namespace DEM {
                           const ContactMatrix<ContactType>& contacts);
 
         void setup(double stretch);
-        void add_particle(const ParticleType* particle);
-        void remove_particle(const ParticleType* particle);
+        void add_particle(ParticleType* particle);
+        // void add_periodic_bc(std::pair<PointSurface<ForceModel, ParticleType>,
+        //         PointSurface<ForceModel, ParticleType>>& boundaries, char direction);
+        void remove_particle(ParticleType* particle);
         void do_check();  //Not const due to re-ordering of the proj vectors
         const std::vector<CollisionPair>& contacts_to_create() const { return contacts_to_create_.get_objects(); }
         const std::vector<CollisionPair>& contacts_to_destroy() const { return contacts_to_destroy_;}
+
+
 
     private:
         std::vector<BoundingBox<ForceModel, ParticleType> > bounding_boxes_{};
@@ -74,6 +78,7 @@ namespace DEM {
 
 
         std::size_t n_ = 0;
+        std::size_t collision_id_counter_ = 0;
         double bounding_box_stretch_ = 1e-6;
 
         const std::vector<ParticleType*>& particles_;

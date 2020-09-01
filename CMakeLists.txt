@@ -76,6 +76,7 @@ add_executable(DEMsim
                src/simulations/electrode_cylinder/electrode_cylinder_compaction.cpp
                src/simulations/periodic_bc/periodic_bc_tester.cpp
                src/engine/periodic_bc_handler.h
-               src/engine/periodic_bc_handler.tpp)
+               src/engine/periodic_bc_handler.tpp
+               src/simulations/periodic_bc/periodic_bc_simulation.cpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")

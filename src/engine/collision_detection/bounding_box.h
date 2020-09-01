@@ -28,27 +28,42 @@ namespace DEM {
         // Copy constructor and assignment operator needed due to pointers between different projection vectors
         // which becomes invalid when different bounding boxes are re-allocated due to vector-over-capacity
         // These constructors repairs the pointers
-        BoundingBox(const BoundingBox& rhs);
-        BoundingBox& operator=(const BoundingBox& rhs);
+        BoundingBox(const BoundingBox& rhs) = delete;
+        BoundingBox& operator=(const BoundingBox& rhs) = delete;
 
-        [[nodiscard]] std::size_t get_id() const;
+        BoundingBox(BoundingBox&& rhs) noexcept;
+        BoundingBox& operator=(BoundingBox&& rhs) noexcept;
+
+        [[nodiscard]] std::size_t get_collision_id() const;
+        [[nodiscard]] std::size_t get_object_id() const;
         void update();
         void set_stretch(double stretch) {stretch_ = stretch; }
 
         ParticleType* get_particle() const { return particle_;}
         SurfaceType* get_surface() const { return surface_;}
 
-        std::array<BProjectionType, 6> bounding_box_projections;
+        std::vector<BProjectionType> bounding_box_projections;
 
     private:
         ParticleType* particle_;
         SurfaceType* surface_;
         double stretch_;
+        std::size_t id_;
 
         void (BoundingBox<ForceModel, ParticleType>::*update_function)();
         void particle_update();
         void surface_update();
     };
+
+    template<typename ForceModel, typename ParticleType>
+    bool operator==(const BoundingBox<ForceModel, ParticleType> b1, const BoundingBox<ForceModel, ParticleType> b2) {
+        return b1.get_collision_id() == b2.get_collision_id();
+    }
+
+    template<typename ForceModel, typename ParticleType>
+    bool operator!=(const BoundingBox<ForceModel, ParticleType> b1, const BoundingBox<ForceModel, ParticleType> b2) {
+        return !(b1 == b2);
+    }
 }
 
 #include "bounding_box.tpp"

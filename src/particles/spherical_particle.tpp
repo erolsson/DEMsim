@@ -9,7 +9,8 @@
 
 template<typename ForceModel>
 DEM::SphericalParticle<ForceModel>::SphericalParticle(double radius, const DEM::Vec3& position,
-                                                      const DEM::Vec3& velocity, MaterialBase* material, unsigned id):
+                                                      const DEM::Vec3& velocity, const MaterialBase* material,
+                                                      unsigned id):
    SphericalParticleBase<ForceModel>(radius, position, velocity, material, id)
 
 {

@@ -10,7 +10,7 @@
 #include "../utilities/printing_functions.h"
 
 template<typename ForceModel>
-DEM::ParticleBase<ForceModel>::ParticleBase(double mass, const Vec3& pos, const Vec3& velocity, MaterialBase* m,
+DEM::ParticleBase<ForceModel>::ParticleBase(double mass, const Vec3& pos, const Vec3& velocity, const MaterialBase* m,
                                        unsigned id) :
         id_(id),
         mass_(mass),

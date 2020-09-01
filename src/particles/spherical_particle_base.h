@@ -30,7 +30,7 @@ namespace DEM {
 
         // No assignment of particles and no plain copies
 
-        SphericalParticleBase(double radius, const Vec3& position, const Vec3& velocity, MaterialBase* material,
+        SphericalParticleBase(double radius, const Vec3& position, const Vec3& velocity, const MaterialBase* material,
                           unsigned id);
         SphericalParticleBase(const ParameterMap& parameters, MaterialBase* material);
         virtual ~SphericalParticleBase() = default;

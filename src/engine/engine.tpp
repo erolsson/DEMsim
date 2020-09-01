@@ -23,6 +23,7 @@
 #include "../utilities/printing_functions.h"
 #include "collision_detection/collision_detector.h"
 #include "output.h"
+#include "periodic_bc_handler.h"
 #include "../simulations/simulations.h"
 #include "../utilities/file_reading_functions.h"
 
@@ -323,6 +324,23 @@ DEM::Engine<ForceModel, ParticleType>::remove_viscosity_parameters(std::pair<dou
                                                  parameter_pair), viscocity_parameters_.end());
 }
 
+template<typename ForceModel, typename ParticleType>
+[[maybe_unused]] void DEM::Engine<ForceModel, ParticleType>::add_periodic_boundary_condition(char axis,
+                                                                                             double boundary_min,
+                                                                                             double boundary_max) {
+    if (periodic_bc_handler_ == nullptr) {
+        periodic_bc_handler_ = std::make_unique<PeriodicBCHandlerType>(this, particles_, collision_detector_,
+                                                                       contacts_);
+    }
+    periodic_bc_handler_->add_periodic_bc(axis, boundary_min, boundary_max);
+}
+
+template<typename ForceModel, typename ParticleType>
+[[maybe_unused]] void DEM::Engine<ForceModel, ParticleType>::set_periodic_boundary_condition_strain_rate(
+        char axis, double strain_rate) {
+    periodic_bc_handler_->set_periodic_bc_strain_rate(axis, strain_rate);
+}
+
 //=====================================================================================================================
 //                        *** *** *** *** Get simulation data *** *** *** ***
 //=====================================================================================================================
@@ -580,6 +598,9 @@ void DEM::Engine<ForceModel, ParticleType>::make_contact_from_restart_data(const
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::create_contacts()
 {
+    if (periodic_bc_handler_ != nullptr) {
+        periodic_bc_handler_->create_periodic_bc_contacts();
+    }
     const auto& contacts_to_create = collision_detector_.contacts_to_create();
     for (const auto& c_data : contacts_to_create) {
         typename ContactMatrix<Contact<ForceModel, ParticleType>>::PointerType c = nullptr;
@@ -590,19 +611,28 @@ void DEM::Engine<ForceModel, ParticleType>::create_contacts()
         auto s = c_data.surface;
         if (s == nullptr) {
             c = contacts_.create_item_inplace(id1, id2, p1, p2, increment_);
-            p2->add_contact(c, id1, -1.);
         }
         else {
             c = contacts_.create_item_inplace(id1, id2, p1, s, increment_);
-            s->add_contact(c, id1);
         }
-        p1->add_contact(c, id2, 1.);
+        if (c != nullptr) {
+            p1->add_contact(c, id2, 1.);
+            if (p2 != nullptr) {
+                p2->add_contact(c, id1, -1);
+            }
+            else {
+                s->add_contact(c, id1);
+            }
+        }
     }
 }
 
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
 {
+    if (periodic_bc_handler_ != nullptr) {
+        periodic_bc_handler_->destroy_periodic_bc_contacts();
+    }
     const auto& contacts_to_destroy = collision_detector_.contacts_to_destroy();
     for (const auto& c_data : contacts_to_destroy) {
         auto id1 = c_data.get_id_pair().first;
@@ -610,14 +640,15 @@ void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
         auto p1 = c_data.particle1;
         auto p2 = c_data.particle2;
         auto s = c_data.surface;
-        p1->remove_contact(id2);
-        if (s == nullptr) {
-            p2->remove_contact(id1);
+        if ( contacts_.erase(id1, id2)) {
+            p1->remove_contact(id2);
+            if (s == nullptr) {
+                p2->remove_contact(id1);
+            }
+            else {
+                s->remove_contact(id1);
+            }
         }
-        else {
-            s->remove_contact(id1);
-        }
-        contacts_.erase(id1, id2);
     }
 }
 
@@ -672,6 +703,10 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
             p->set_angular_velocity(new_ang_v);
             p->rotate(new_rot);
         }
+    }
+
+    if (periodic_bc_handler_ != nullptr) {
+        periodic_bc_handler_->fulfill_periodic_bc();
     }
 }
 
@@ -762,19 +797,3 @@ void DEM::Engine<ForceModel, ParticleType>::write_restart_file(const std::string
 
     restart_file.close();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

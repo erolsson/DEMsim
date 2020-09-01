@@ -19,7 +19,7 @@ namespace DEM {
     class ParticleBase {
     public:
         ParticleBase& operator=(const ParticleBase&) = delete;
-        ParticleBase(double, const Vec3&, const Vec3&, MaterialBase*, unsigned );
+        ParticleBase(double, const Vec3&, const Vec3&, const MaterialBase*, unsigned );
         ParticleBase(const ParameterMap& parameters, MaterialBase* material);
         virtual ~ParticleBase() = default;
         unsigned get_id() const { return id_; }

@@ -28,7 +28,8 @@ namespace DEM {
         // char get_axis() const { return axis_; }
         std::array<std::size_t, 4> get_indices_on_other_axes(char axis) const;
         const BoundingBox<ForceModel, ParticleType>* get_bounding_box() const { return bbox_;}
-        std::size_t get_id() const {return bbox_->get_id(); }
+        std::size_t get_collision_id() const { return bbox_->get_collision_id(); }
+        std::size_t get_object_id() const { return bbox_->get_object_id(); }
         std::size_t get_index() const { return index_; };
 
         bool inward_cylinder() const { return  inward_cylinder_; }
@@ -36,9 +37,10 @@ namespace DEM {
         ParticleType* get_particle() const { return bbox_->get_particle(); }
         SurfaceType* get_surface() const { return bbox_->get_surface(); }
 
+        void set_bounding_box_pointer(const BoundingBox<ForceModel, ParticleType>* bbox) { bbox_ = bbox; }
     private:
         double value_ = 0;
-        const char position_char_;
+        char position_char_;
         const BoundingBox<ForceModel, ParticleType>* bbox_;
         std::size_t index_;
         bool inward_cylinder_;

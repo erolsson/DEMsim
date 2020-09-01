@@ -26,6 +26,8 @@
 namespace DEM {
     class Amplitude;
     class ParameterMap;
+
+    template<typename ForceModel, typename ParticleType>
     class PeriodicBCHandler;
     template<typename ForceModel, typename ParticleType>
     class Engine {
@@ -36,6 +38,7 @@ namespace DEM {
 
         using OutputPointerType = std::shared_ptr<Output<ForceModel, ParticleType>>;
         using SurfaceType = Surface<ForceModel, ParticleType>;
+        using PeriodicBCHandlerType = PeriodicBCHandler<ForceModel, ParticleType>;
         explicit Engine(std::chrono::duration<double> dt);
         explicit Engine(const std::string& restart_file_name);
 
@@ -65,7 +68,6 @@ namespace DEM {
                                         const std::string& name, bool inward=true, bool infinite=false,
                                         bool closed_ends=false);
 
-
         OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval);
         OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval,
                                         const std::string& name);
@@ -76,11 +78,14 @@ namespace DEM {
         void remove_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction);
 
         [[maybe_unused]] std::pair<double, std::size_t> set_viscocity_parameters(double viscosity, size_t order=1);
-
         [[maybe_unused]] void remove_viscosity_parameters(std::pair<double, std::size_t> parameter_pair);
+
+        [[maybe_unused]] void add_periodic_boundary_condition(char axis, double boundary_min, double boundary_max);
+        [[maybe_unused]] void set_periodic_boundary_condition_strain_rate(char axis, double strain_rate);
 
         // Getters
         [[nodiscard]] std::chrono::duration<double> get_time() const { return time_; }
+        [[nodiscard]] std::chrono::duration<double> get_time_increment() const { return increment_; }
         [[nodiscard]] double get_kinetic_energy() const;
         [[nodiscard]] std::pair<size_t, double> max_particle_velocity() const;
         [[nodiscard]] std::pair<size_t, double> max_surface_velocity() const;
@@ -302,9 +307,8 @@ namespace DEM {
         std::vector<OutputPointerType> outputs_{};
 
         CollisionDetector<ForceModel, ParticleType> collision_detector_;
-        std::shared_ptr<PeriodicBCHandler> periodic_bc_handler_x_ = nullptr;
-        std::shared_ptr<PeriodicBCHandler> periodic_bc_handler_y_ = nullptr;
-        std::shared_ptr<PeriodicBCHandler> periodic_bc_handler_z_ = nullptr;
+        std::unique_ptr<PeriodicBCHandlerType> periodic_bc_handler_ = nullptr;
+
 
         // Settings type of private data
         Vec3 gravity_ {Vec3{0,0,0}};

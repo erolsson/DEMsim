@@ -35,11 +35,10 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::setup(double stretch)
     xproj_.clear();
     yproj_.clear();
     zproj_.clear();
-    std::size_t counter = 0;
     // bounding_boxes_.reserve(particles_.size() + surfaces_.size());
     for(const auto& p: particles_){
-        bounding_boxes_.emplace_back(p, counter, stretch);
-        ++counter;
+        bounding_boxes_.emplace_back(p, collision_id_counter_, stretch);
+        ++collision_id_counter_;
     }
 
     for(const auto& s: surfaces_){
@@ -48,17 +47,17 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::setup(double stretch)
             // Inspect the inward_cylinder bounding box to figure out if it is inward or not
             const auto& cyl_bounding_box = cylinder_ptr->get_bounding_box_values();
             if (std::abs(cyl_bounding_box[1]-cyl_bounding_box[0]) < 2*cylinder_ptr->get_radius()) {
-                bounding_boxes_.emplace_back(cylinder_ptr, counter, stretch, true);
+                bounding_boxes_.emplace_back(cylinder_ptr, collision_id_counter_, stretch, true);
             }
             else {
-                bounding_boxes_.emplace_back(s, counter, stretch);
+                bounding_boxes_.emplace_back(s, collision_id_counter_, stretch);
             }
 
         }
         else {
-            bounding_boxes_.emplace_back(s, counter, stretch);
+            bounding_boxes_.emplace_back(s, collision_id_counter_, stretch);
         }
-        ++counter;
+        ++collision_id_counter_;
     }
 
     for(auto& bounding_box: bounding_boxes_){
@@ -94,7 +93,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::check_bounding_box_vector
 
             if (c1 == 'e' && c2 == 'b') {
                 if (! (bbm->inward_cylinder() || bbn->inward_cylinder()) || !cylinder_overlap(bbm, bbn)) {
-                    auto id_pair = std::make_pair(bbm->get_id(), bbn->get_id());
+                    auto id_pair = std::make_pair(bbm->get_collision_id(), bbn->get_collision_id());
                     if (!contacts_to_create_.erase(id_pair)) {
                         destroy_contact_pair(bbm, bbn);
                     }
@@ -165,53 +164,58 @@ template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::create_contact_pair(const BoundingBoxProjectionType* b1, 
         const BoundingBoxProjectionType* b2)
 {
-    if (b1->get_particle() != nullptr && b2->get_particle() !=nullptr)
-        contacts_to_create_.insert(std::make_pair(b1->get_id(), b2->get_id()),
-                                   CollisionPair(b1->get_particle(), b2->get_particle()));
-    else if (b1->get_particle() != nullptr && b2->get_surface() != nullptr)
-        contacts_to_create_.insert(std::make_pair(b1->get_id(), b2->get_id()),
-                                   CollisionPair(b1->get_particle(), b2->get_surface()));
-    else if (b2->get_particle() != nullptr && b1->get_surface() != nullptr)
-        contacts_to_create_.insert(std::make_pair(b2->get_id(), b1->get_id()),
-                                   CollisionPair(b2->get_particle(), b1->get_surface()));
+    if (b1->get_object_id() != b2->get_object_id()) {
+        if (b1->get_particle() != nullptr && b2->get_particle() != nullptr)
+            contacts_to_create_.insert(std::make_pair(b1->get_collision_id(), b2->get_collision_id()),
+                                       CollisionPair(b1->get_particle(), b2->get_particle()));
+
+        else if (b1->get_particle() != nullptr && b2->get_surface() != nullptr)
+            contacts_to_create_.insert(std::make_pair(b1->get_collision_id(), b2->get_collision_id()),
+                                       CollisionPair(b1->get_particle(), b2->get_surface()));
+        else if (b2->get_particle() != nullptr && b1->get_surface() != nullptr)
+            contacts_to_create_.insert(std::make_pair(b2->get_collision_id(), b1->get_collision_id()),
+                                       CollisionPair(b2->get_particle(), b1->get_surface()));
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::destroy_contact_pair(const BoundingBoxProjectionType* b1,
         const BoundingBoxProjectionType* b2)
 {
-    if (contacts_.exist(b1->get_id(), b2->get_id())) {
-       // There is actually a contact to destroy
-        if (b1->get_particle() != nullptr && b2->get_particle() !=nullptr)
-            contacts_to_destroy_.push_back(CollisionPair(b1->get_particle() ,b2->get_particle()));
-        else if (b1->get_particle() != nullptr && b2->get_surface() != nullptr)
-            contacts_to_destroy_.push_back(CollisionPair(b1->get_particle() ,b2->get_surface()));
-        else if (b2->get_particle() != nullptr && b1->get_surface() != nullptr)
-            contacts_to_destroy_.push_back(CollisionPair(b2->get_particle() ,b1->get_surface()));
+    if ((b1->get_collision_id() != b2->get_collision_id())) {
+        if (contacts_.exist(b1->get_object_id(), b2->get_object_id())) {
+            // There is actually a contact to destroy
+            if (b1->get_particle() != nullptr && b2->get_particle() != nullptr)
+                contacts_to_destroy_.push_back(CollisionPair(b1->get_particle(), b2->get_particle()));
+            else if (b1->get_particle() != nullptr && b2->get_surface() != nullptr)
+                contacts_to_destroy_.push_back(CollisionPair(b1->get_particle(), b2->get_surface()));
+            else if (b2->get_particle() != nullptr && b1->get_surface() != nullptr)
+                contacts_to_destroy_.push_back(CollisionPair(b2->get_particle(), b1->get_surface()));
+        }
     }
  }
 
 template<typename ForceModel, typename ParticleType>
-void DEM::CollisionDetector<ForceModel, ParticleType>::add_particle(const ParticleType* particle) {
-    auto bounding_box = bounding_boxes_.emplace_back(particle, bounding_boxes_.size(), bounding_box_stretch_);
-    add_bounding_box_projections(bounding_box);
+void DEM::CollisionDetector<ForceModel, ParticleType>::add_particle(ParticleType* particle) {
+    bounding_boxes_.emplace_back(particle, collision_id_counter_, bounding_box_stretch_);
+    add_bounding_box_projections(bounding_boxes_.back());
     n_ += 2;
+    ++collision_id_counter_;
 }
 
 template<typename ForceModel, typename ParticleType>
-void DEM::CollisionDetector<ForceModel, ParticleType>::remove_particle(const ParticleType* particle) {
+void DEM::CollisionDetector<ForceModel, ParticleType>::remove_particle(ParticleType* particle) {
     auto bbox_to_remove = std::find_if(bounding_boxes_.begin(), bounding_boxes_.end(),
-                                       [particle](const auto& bbox) {return bbox->get_particle() == particle; });
-    xproj_.erase(std::find(xproj_.begin(), xproj_.end(), bbox_to_remove->bounding_box_projections[0]));
-    xproj_.erase(std::find(xproj_.begin(), xproj_.end(), bbox_to_remove->bounding_box_projections[1]));
-
-    yproj_.erase(std::find(yproj_.begin(), yproj_.end(), bbox_to_remove->bounding_box_projections[2]));
-    yproj_.erase(std::find(yproj_.begin(), yproj_.end(), bbox_to_remove->bounding_box_projections[3]));
-
-    zproj_.erase(std::find(zproj_.begin(), zproj_.end(), bbox_to_remove->bounding_box_projections[4]));
-    zproj_.erase(std::find(zproj_.begin(), zproj_.end(), bbox_to_remove->bounding_box_projections[5]));
-
+                                       [particle](auto& bbox) {return bbox.get_particle() == particle; });
+    auto bbroj_pred = [particle](const auto& bbproj){return bbproj->get_bounding_box()->get_particle() == particle;};
+    for( const auto& proj: xproj_) {
+        std::cout << "\t" << proj->get_bounding_box()->get_particle() << std::endl;
+    }
+    xproj_.erase(std::remove_if(xproj_.begin(), xproj_.end(), bbroj_pred), xproj_.end());
+    yproj_.erase(std::remove_if(yproj_.begin(), yproj_.end(), bbroj_pred), yproj_.end());
+    zproj_.erase(std::remove_if(zproj_.begin(), zproj_.end(), bbroj_pred), zproj_.end());
     bounding_boxes_.erase(bbox_to_remove);
+    n_ -= 2;
 }
 
 
@@ -229,7 +233,3 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::add_bounding_box_projecti
     zproj_.push_back(&bounding_box.bounding_box_projections[5]);
 
 }
-
-
-
-

@@ -12,7 +12,7 @@
 
 template<typename ForceModel>
 DEM::SphericalParticleBase<ForceModel>::SphericalParticleBase(double radius, const DEM::Vec3& position,
-                                                              const DEM::Vec3& velocity, MaterialBase* material,
+                                                              const DEM::Vec3& velocity, const MaterialBase* material,
                                                               unsigned id):
         ParticleBase<ForceModel>(4.*3.1415*radius*radius*radius/3*material->density, position, velocity, material, id),
         radius_(radius),

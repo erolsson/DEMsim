@@ -29,7 +29,7 @@ namespace DEM {
     public:
         // No assignment of particles and no plain copies
 
-        SphericalParticle(double radius, const Vec3& position, const Vec3& velocity, MaterialBase* material,
+        SphericalParticle(double radius, const Vec3& position, const Vec3& velocity, const MaterialBase* material,
                           unsigned id);
         SphericalParticle(const ParameterMap& parameters, MaterialBase* material);
         virtual ~SphericalParticle() = default;
