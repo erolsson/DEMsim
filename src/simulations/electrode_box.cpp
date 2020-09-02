@@ -108,7 +108,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;
-    output1->print_kinetic_energy = false;
+    output1->print_kinetic_energy = true;
     output1->print_surface_positions = true;
     output1->print_surface_forces = true;
     output1->print_contacts = true;
@@ -129,14 +129,14 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     double h = bbox[5];
     std::cout<<"h"<< h << std::endl;
 
-    top_surface->move(-Vec3(0, 0, box_height - h-mat->bt), Vec3(0, 0, 0));
+    top_surface->move(-Vec3(0, 0, box_height - h-1.1*mat->bt), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
     double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     //std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
     //run_for_time.reset(compaction_time);
     //simulator.run(run_for_time);
-    EngineType::SurfaceNormalForceWithinInterval  Interval ( simulator, top_surface,300e+6,4e+6, std::chrono::duration<double>(0.01)  );
+    EngineType::SurfaceNormalForceWithinInterval  Interval ( simulator, top_surface,3e+10,4e+10, std::chrono::duration<double>(0.01)  );
     simulator.run(Interval);
     simulator.write_restart_file(output_directory + "/compact_restart_file.res");
 
