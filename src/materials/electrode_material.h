@@ -41,6 +41,8 @@ namespace DEM {
         double mu_wall{ 0. };
 
         [[nodiscard]] unsigned M() const { return tau_i.size(); }
+
+        double active_particle_height;
     };
 }
 #endif

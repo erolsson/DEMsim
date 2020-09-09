@@ -39,6 +39,8 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     mat->tau_i=parameters.get_vector<double>( "tau_i" );
     mat->alpha_i=parameters.get_vector<double>( "alpha_i" );
     mat->bt = parameters.get_parameter<double>("bt");
+    mat->active_particle_height = parameters.get_parameter<double>("active_particle_height");
+
 
     auto particle_radii = read_vector_from_file<double>(particle_file);
     particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);
@@ -133,12 +135,12 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     std::cout<<"h"<< h<< std::endl;
     double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
-    //std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
-    //run_for_time.reset(compaction_time);
-    //simulator.run(run_for_time);
-    EngineType::SurfaceNormalForceWithinInterval  Interval ( simulator, top_surface,100e+6,200e+6, std::chrono::duration<double>(0.01)  );
-    simulator.run(Interval);
-    simulator.write_restart_file(output_directory + "/compact_restart_file.res");
+    std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
+    run_for_time.reset(compaction_time);
+    simulator.run(run_for_time);
+    //EngineType::SurfaceNormalForceWithinInterval  Interval ( simulator, top_surface,47e+6,100e+6, std::chrono::duration<double>(0.01)  );
+    //simulator.run(Interval);
+    //simulator.write_restart_file(output_directory + "/compact_restart_file.res");
 
 
 
