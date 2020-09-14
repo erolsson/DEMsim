@@ -18,6 +18,7 @@ namespace DEM{
         void insert(KeyType key, const T& obj);
         bool erase(KeyType key);
         bool exist(KeyType key) const;
+        std::size_t size() const {return data_.size(); }
         void clear();
 
     private:

@@ -39,8 +39,9 @@ namespace DEM {
         using ContactType = Contact<ForceModel, FractureableSphericalParticle<ForceModel>>;
         using ContactPointerType = typename ContactMatrix<ContactType>::PointerType;
     public:
-        FractureableSphericalParticle(double radius, const Vec3& position, const Vec3& velocity, MaterialBase* material,
-                                      unsigned id);
+        FractureableSphericalParticle(double radius, const Vec3& position, const Vec3& velocity,
+                                      const MaterialBase* material,
+                                      std::size_t object_id, std::size_t collision_id=0);
         virtual ~FractureableSphericalParticle() = default;
         using SphericalParticleBase<ForceModel>::get_id;
         using SphericalParticleBase<ForceModel>::get_position;
@@ -58,6 +59,8 @@ namespace DEM {
 
         void fracture_particle(const Vec3& position, double force, std::size_t id_of_impacter, const Vec3& normal);
         [[nodiscard]] const std::vector<ParticleCrack>& get_particle_cracks() const { return cracks_; }
+        std::size_t get_number_of_contacts() const {return contacts_.size(); }
+        ContactVector<std::pair<ContactPointerType, int> >& get_contacts() {return contacts_; }
 
     private:
         ContactVector<std::pair<ContactPointerType, int> >  contacts_;

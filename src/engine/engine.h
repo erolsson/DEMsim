@@ -86,6 +86,9 @@ namespace DEM {
         // Getters
         [[nodiscard]] std::chrono::duration<double> get_time() const { return time_; }
         [[nodiscard]] std::chrono::duration<double> get_time_increment() const { return increment_; }
+        [[nodiscard]] std::size_t get_collision_object_count() const { return collision_id_counter_; }
+        void increment_collision_counter() { ++collision_id_counter_; }
+
         [[nodiscard]] double get_kinetic_energy() const;
         [[nodiscard]] std::pair<size_t, double> max_particle_velocity() const;
         [[nodiscard]] std::pair<size_t, double> max_surface_velocity() const;
@@ -297,7 +300,8 @@ namespace DEM {
         using ContactType = Contact<ForceModel, ParticleType>;
 
 
-        std::size_t number_of_objects_{ 0 };
+        std::size_t object_id_counter_ { 0 };
+        std::size_t collision_id_counter_ { 0 };
         std::chrono::duration<double> time_ { 0. };
 
         std::vector<MaterialBase*> materials_{};
@@ -336,6 +340,7 @@ namespace DEM {
         void run_output();
 
         friend class Output<ForceModel, ParticleType>;
+        friend class PeriodicBCHandler<ForceModel, ParticleType>;
 
 
 

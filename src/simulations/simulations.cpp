@@ -19,7 +19,8 @@ std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
             {"electrode_cylinder_filling",     DEM::electrode_cylinder_filling},
             {"electrode_cylinder_compaction",  DEM::electrode_cylinder_compaction},
             {"periodic_bc_tester",             DEM::periodic_bc_tester},
-            {"periodic_bc_simulation",         DEM::periodic_bc_simulation}
+            {"periodic_bc_simulation",         DEM::periodic_bc_simulation},
+            {"filling_periodic_box",           DEM::filling_periodic_box}
             // {"binder_contact_calculator",   DEM::binder_contact_calculator}
     };
 }

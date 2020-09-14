@@ -7,9 +7,10 @@ import time
 import numpy as np
 from mayavi import mlab
 
-from visualization_functions_3d import SpheresPlotter
-from visualization_functions_3d import SurfacesPlotter
-from visualization_functions_3d import BoundingBox
+from visualization_functions_3d.plotting_functions import SpheresPlotter
+from visualization_functions_3d.plotting_functions import SurfacesPlotter
+from visualization_functions_3d.plotting_functions import BoundingBox
+from visualization_functions_3d.periodic_bc import PeriodicBC
 
 
 class Animation:
@@ -30,8 +31,12 @@ class Animation:
         self.visible_functions = defaultdict(lambda: lambda t: True)
         self.dpi = 500, 800
         self.zoom_settings = None
+        self.plot_periodic_bc = False
+        self.periodic_bc_plotter = None
+        self.mirror_particles = False
 
         self.spheres_plotter = SpheresPlotter()
+        self.mirror_particles_plotter = SpheresPlotter(color=(192/255, 192/255, 192/255))
         self.surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dou', self.surfaces_colors,
                                                 self.surfaces_opacities, self.plot_order, self.bounding_boxes,
                                                 self.visible_functions)
@@ -48,8 +53,12 @@ class Animation:
         self.surfaces_plotter.bounding_boxes = self.bounding_boxes
         self.surfaces_plotter.visible_times = self.visible_functions
 
+        if self.plot_periodic_bc:
+            self.periodic_bc_plotter = PeriodicBC(self.directory + '/periodic_bc.dou')
+
         particle_files = glob.glob(self.directory + '/particles_*.dou')
         particle_files = [os.path.basename(particle_file) for particle_file in particle_files]
+
         self.frame_times = []
         for p_file in particle_files:
             self.frame_times.append(re.findall(r"[-+]?\d*\.\d+|\d+", p_file)[0])
@@ -68,7 +77,12 @@ class Animation:
             print(i)
             particle_data = np.genfromtxt(self.directory + '/particles_' + t + '.dou', delimiter=',')
             self.spheres_plotter.plot(particle_data)
+            if self.mirror_particles:
+                mirror_particle_data = np.genfromtxt(self.directory + '/mirror_particles_' + t + '.dou', delimiter=',')
+                self.mirror_particles_plotter.plot(mirror_particle_data)
             self.surfaces_plotter.plot(float(t))
+            if self.plot_periodic_bc:
+                self.periodic_bc_plotter.plot(float(t))
 
             f = mlab.gcf()
             f.scene.render()

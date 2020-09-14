@@ -31,7 +31,7 @@ namespace DEM {
         std::size_t get_collision_id() const { return bbox_->get_collision_id(); }
         std::size_t get_object_id() const { return bbox_->get_object_id(); }
         std::size_t get_index() const { return index_; };
-
+        void set_index(std::size_t index) {index_ = index; }
         bool inward_cylinder() const { return  inward_cylinder_; }
 
         ParticleType* get_particle() const { return bbox_->get_particle(); }

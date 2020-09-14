@@ -19,13 +19,12 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::do_check()
 
 template<typename ForceModel, typename ParticleType>
 DEM::CollisionDetector<ForceModel, ParticleType>::CollisionDetector(const std::vector<ParticleType*>& particles,
-                                                                    const std::vector<SurfaceType*>& surfaces,
-                                                                    const ContactMatrix<ContactType>& contacts) :
+                                                                    const std::vector<SurfaceType*>& surfaces) :
         particles_(particles),
         surfaces_(surfaces),
-        contacts_(contacts)
+        current_contacts_()
 {
-    //Empty constructor
+    current_contacts_.resize(particles.size() + surfaces.size());
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -36,6 +35,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::setup(double stretch)
     yproj_.clear();
     zproj_.clear();
     // bounding_boxes_.reserve(particles_.size() + surfaces_.size());
+    bounding_box_stretch_ = stretch;
     for(const auto& p: particles_){
         bounding_boxes_.emplace_back(p, collision_id_counter_, stretch);
         ++collision_id_counter_;
@@ -64,12 +64,42 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::setup(double stretch)
         add_bounding_box_projections(bounding_box);
     }
     n_ = xproj_.size();
+    current_contacts_.resize(collision_id_counter_);
 }
+
+template<typename ForceModel, typename ParticleType>
+void DEM::CollisionDetector<ForceModel, ParticleType>::restart(std::vector<ParameterMap>& restart_parameters) {
+    for (const auto& parameter_line: restart_parameters) {
+        auto data = parameter_line.get_parameter<std::string>("data");
+        if (data == "active_collisions") {
+            auto id1 = parameter_line.get_parameter<std::size_t>("object1");
+            auto id2 = parameter_line.get_parameter<std::size_t>("object2");
+            current_contacts_.create_item_inplace(id1, id2, true);
+        }
+    }
+    for (auto& bbox: bounding_boxes_) {
+        bbox.update();
+    }
+
+    auto bounding_box_compare = [](const auto& b1, const auto& b2) {return b1->get_value() < b2->get_value(); };
+    std::sort(xproj_.begin(), xproj_.end(), bounding_box_compare);
+    std::sort(yproj_.begin(), yproj_.end(), bounding_box_compare);
+    std::sort(zproj_.begin(), zproj_.end(), bounding_box_compare);
+    auto set_bbproj_indices = [this](auto& vec) mutable {
+        for (std::size_t idx = 0; idx != vec.size(); ++idx) {
+            vec[idx]->set_index(idx);
+        }
+    };
+    set_bbproj_indices(xproj_);
+    set_bbproj_indices(yproj_);
+    set_bbproj_indices(zproj_);
+}
+
 
 template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::update_bounding_boxes()
 {
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for(std::size_t i = 0; i < bounding_boxes_.size(); ++i){
         bounding_boxes_[i].update();
     }
@@ -164,34 +194,31 @@ template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::create_contact_pair(const BoundingBoxProjectionType* b1, 
         const BoundingBoxProjectionType* b2)
 {
-    if (b1->get_object_id() != b2->get_object_id()) {
-        if (b1->get_particle() != nullptr && b2->get_particle() != nullptr)
-            contacts_to_create_.insert(std::make_pair(b1->get_collision_id(), b2->get_collision_id()),
-                                       CollisionPair(b1->get_particle(), b2->get_particle()));
+    if (b1->get_particle() != nullptr && b2->get_particle() != nullptr)
+        contacts_to_create_.insert(std::make_pair(b1->get_collision_id(), b2->get_collision_id()),
+                                   CollisionPair(b1->get_particle(), b2->get_particle()));
 
-        else if (b1->get_particle() != nullptr && b2->get_surface() != nullptr)
-            contacts_to_create_.insert(std::make_pair(b1->get_collision_id(), b2->get_collision_id()),
-                                       CollisionPair(b1->get_particle(), b2->get_surface()));
-        else if (b2->get_particle() != nullptr && b1->get_surface() != nullptr)
-            contacts_to_create_.insert(std::make_pair(b2->get_collision_id(), b1->get_collision_id()),
-                                       CollisionPair(b2->get_particle(), b1->get_surface()));
-    }
+    else if (b1->get_particle() != nullptr && b2->get_surface() != nullptr)
+        contacts_to_create_.insert(std::make_pair(b1->get_collision_id(), b2->get_collision_id()),
+                                   CollisionPair(b1->get_particle(), b2->get_surface()));
+    else if (b2->get_particle() != nullptr && b1->get_surface() != nullptr)
+        contacts_to_create_.insert(std::make_pair(b1->get_collision_id(), b2->get_collision_id()),
+                                   CollisionPair(b2->get_particle(), b1->get_surface()));
+    current_contacts_.create_item_inplace(b1->get_collision_id(), b2->get_collision_id(), true);
 }
 
 template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::destroy_contact_pair(const BoundingBoxProjectionType* b1,
         const BoundingBoxProjectionType* b2)
 {
-    if ((b1->get_collision_id() != b2->get_collision_id())) {
-        if (contacts_.exist(b1->get_object_id(), b2->get_object_id())) {
-            // There is actually a contact to destroy
-            if (b1->get_particle() != nullptr && b2->get_particle() != nullptr)
-                contacts_to_destroy_.push_back(CollisionPair(b1->get_particle(), b2->get_particle()));
-            else if (b1->get_particle() != nullptr && b2->get_surface() != nullptr)
-                contacts_to_destroy_.push_back(CollisionPair(b1->get_particle(), b2->get_surface()));
-            else if (b2->get_particle() != nullptr && b1->get_surface() != nullptr)
-                contacts_to_destroy_.push_back(CollisionPair(b2->get_particle(), b1->get_surface()));
-        }
+    if (current_contacts_.erase(b1->get_collision_id(), b2->get_collision_id())) {
+        // There is actually a contact to destroy
+        if (b1->get_particle() != nullptr && b2->get_particle() != nullptr)
+            contacts_to_destroy_.push_back(CollisionPair(b1->get_particle(), b2->get_particle()));
+        else if (b1->get_particle() != nullptr && b2->get_surface() != nullptr)
+            contacts_to_destroy_.push_back(CollisionPair(b1->get_particle(), b2->get_surface()));
+        else if (b2->get_particle() != nullptr && b1->get_surface() != nullptr)
+            contacts_to_destroy_.push_back(CollisionPair(b2->get_particle(), b1->get_surface()));
     }
  }
 
@@ -201,6 +228,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::add_particle(ParticleType
     add_bounding_box_projections(bounding_boxes_.back());
     n_ += 2;
     ++collision_id_counter_;
+    current_contacts_.resize(particle->get_collision_id()+1);
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -208,9 +236,6 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::remove_particle(ParticleT
     auto bbox_to_remove = std::find_if(bounding_boxes_.begin(), bounding_boxes_.end(),
                                        [particle](auto& bbox) {return bbox.get_particle() == particle; });
     auto bbroj_pred = [particle](const auto& bbproj){return bbproj->get_bounding_box()->get_particle() == particle;};
-    for( const auto& proj: xproj_) {
-        std::cout << "\t" << proj->get_bounding_box()->get_particle() << std::endl;
-    }
     xproj_.erase(std::remove_if(xproj_.begin(), xproj_.end(), bbroj_pred), xproj_.end());
     yproj_.erase(std::remove_if(yproj_.begin(), yproj_.end(), bbroj_pred), yproj_.end());
     zproj_.erase(std::remove_if(zproj_.begin(), zproj_.end(), bbroj_pred), zproj_.end());
@@ -231,5 +256,25 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::add_bounding_box_projecti
 
     zproj_.push_back(&bounding_box.bounding_box_projections[4]);
     zproj_.push_back(&bounding_box.bounding_box_projections[5]);
+}
 
+template<typename ForceModel, typename ParticleType>
+std::vector<std::string> DEM::CollisionDetector<ForceModel, ParticleType>::restart_data() const {
+    std::vector<std::string> restart_strings;
+    restart_strings.push_back("data=stretch, stretch=" + std::to_string(bounding_box_stretch_));
+    auto contact_indices = current_contacts_.get_matrix_indices();
+    std::sort(contact_indices.begin(), contact_indices.end(),
+              [](const auto& pair1, const auto& pair2) {
+                  if (pair1.first == pair2.first) {
+                      return pair1.second < pair2.second;
+                  }
+                  else {
+                      return pair1.first < pair2.first;
+                  }
+    });
+    for (const auto& id_pair: contact_indices) {
+        restart_strings.push_back("data=active_collisions, object1=" + std::to_string(id_pair.first) + ", object2="
+                                  + std::to_string(id_pair.second));
+    }
+    return restart_strings;
 }

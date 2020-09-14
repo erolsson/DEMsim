@@ -48,7 +48,6 @@ namespace DEM {
         ParticleType* particle_;
         SurfaceType* surface_;
         double stretch_;
-        std::size_t id_;
 
         void (BoundingBox<ForceModel, ParticleType>::*update_function)();
         void particle_update();

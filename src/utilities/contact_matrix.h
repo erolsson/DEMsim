@@ -37,8 +37,11 @@ namespace DEM {
         void resize(size_t new_size);
         std::vector<T*>& get_objects() {return data_;};
         const std::vector<T*>& get_objects() const {return data_;}
+        const std::vector<const T*> get_objects_sorted() const;
+        const std::vector<std::pair<std::size_t, std::size_t>> get_matrix_indices() const { return  matrix_indices_; }
         bool erase(std::size_t idx1, std::size_t idx2);
         bool exist(std::size_t idx1, std::size_t idx2) const;
+
         template<typename ...Args>
         PointerType create_item_inplace(std::size_t idx1, std::size_t idx2, Args&&... args);
         PointerType get(size_t idx1, size_t idx2);

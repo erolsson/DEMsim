@@ -15,7 +15,6 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(ParticleType* particle, 
         particle_(particle),
         surface_(nullptr),
         stretch_(stretch),
-        id_(index),
         update_function(&BoundingBox<ForceModel, ParticleType>::particle_update)
 {
 
@@ -33,7 +32,6 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::SurfaceType
         particle_(nullptr),
         surface_(surface),
         stretch_(stretch),
-        id_(index),
         update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
 {
 
@@ -51,7 +49,6 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderTyp
         particle_(nullptr),
         surface_(cylinder),
         stretch_(stretch),
-        id_(index),
         update_function(&BoundingBox<ForceModel, ParticleType>::surface_update)
 {
 
@@ -63,7 +60,6 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox&& rhs) noexc
     particle_(rhs.particle_),
     surface_(rhs.surface_),
     stretch_(rhs.stretch_),
-    id_(rhs.id_),
     update_function(rhs.update_function)
 {
     for (auto& bbox : bounding_box_projections) {
@@ -80,7 +76,6 @@ DEM::BoundingBox<ForceModel, ParticleType>&
         particle_ = rhs.particle_;
         surface_ = rhs.surface_;
         stretch_ = rhs.stretch_;
-        id_ = rhs.id_;
         update_function = rhs.update_function;
 
         for (auto& bbox : bounding_box_projections) {
@@ -99,7 +94,10 @@ DEM::BoundingBox<ForceModel, ParticleType>&
 template<typename ForceModel, typename ParticleType>
 std::size_t DEM::BoundingBox<ForceModel, ParticleType>::get_collision_id() const
 {
-    return id_;
+    if (particle_ != nullptr) {
+        return particle_->get_collision_id();
+    }
+    return surface_->get_collision_id();
 }
 
 template<typename ForceModel, typename ParticleType>

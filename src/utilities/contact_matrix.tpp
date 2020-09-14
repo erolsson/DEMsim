@@ -101,3 +101,14 @@ typename DEM::ContactMatrix<T>::PointerType DEM::ContactMatrix<T>::get(size_t id
     }
 }
 
+template<typename T>
+const std::vector<const T*> DEM::ContactMatrix<T>::get_objects_sorted() const {
+    std::vector<const T*> objects;
+    for (const auto& id2_data: data_indices_) {
+        for (const auto& [id2, idx]: id2_data) {
+            objects.push_back(data_[idx]);
+        }
+    }
+    return objects;
+}
+

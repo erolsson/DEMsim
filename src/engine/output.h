@@ -43,6 +43,9 @@ namespace DEM {
         bool print_particle_cracks = false;
         bool print_contacts = false;
         bool print_bounding_box = false;
+        bool print_periodic_bc = false;
+        bool print_mirror_particles = false;
+        bool print_fabric_force_tensor = false;
 
         std::string restart_data() const;
         void set_new_directory(const std::string& directory);
@@ -57,13 +60,16 @@ namespace DEM {
 
         std::string directory_;
 
-        FuncVec output_functions_ {{Output::print_particles,         &Output::write_particles},
-                                   {Output::print_kinetic_energy,    &Output::write_kinetic_energy},
-                                   {Output::print_surface_positions, &Output::write_surface_positions},
-                                   {Output::print_surface_forces,    &Output::write_surface_forces},
-                                   {Output::print_particle_cracks,   &Output::write_particle_cracks},
-                                   {Output::print_contacts,          &Output::write_contacts},
-                                   {Output::print_bounding_box,      &Output::write_bounding_box}};
+        FuncVec output_functions_ {{Output::print_particles,           &Output::write_particles},
+                                   {Output::print_kinetic_energy,      &Output::write_kinetic_energy},
+                                   {Output::print_surface_positions,   &Output::write_surface_positions},
+                                   {Output::print_surface_forces,      &Output::write_surface_forces},
+                                   {Output::print_particle_cracks,     &Output::write_particle_cracks},
+                                   {Output::print_contacts,            &Output::write_contacts},
+                                   {Output::print_bounding_box,        &Output::write_bounding_box},
+                                   {Output::print_periodic_bc,         &Output::write_periodic_bc},
+                                   {Output::print_mirror_particles,    &Output::write_mirror_particles},
+                                   {Output::print_fabric_force_tensor, &Output::write_fabric_force_tensor}};
 
         std::chrono::duration<double> current_time_;
         std::chrono::duration<double> time_until_output_;
@@ -76,6 +82,9 @@ namespace DEM {
         void write_particle_cracks() const;
         void write_contacts() const;
         void write_bounding_box() const;
+        void write_periodic_bc() const;
+        void write_mirror_particles() const;
+        void write_fabric_force_tensor() const;
     };
 }
 

@@ -9,6 +9,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "Eigen/Dense"
+
 #include "engine.h"
 #include "../particles/fractureable_spherical_particle.h"
 #include "../utilities/printing_functions.h"
@@ -54,6 +56,9 @@ DEM::Output<ForceModel, ParticleType>::Output(const DEM::ParameterMap& parameter
         print_particle_cracks(parameters.get_parameter<bool>("print_particle_cracks")),
         print_contacts(parameters.get_parameter<bool>("print_contacts")),
         print_bounding_box(parameters.get_parameter<bool>("print_bounding_box")),
+        print_periodic_bc(parameters.get_parameter<bool>("print_periodic_bc")),
+        print_mirror_particles(parameters.get_parameter<bool>("print_mirror_particles")),
+        print_fabric_force_tensor(parameters.get_parameter<bool>("print_fabric_force_tensor")),
         name_(parameters.get_parameter<std::string>("name")),
         particles_(engine.particles_),
         surfaces_(engine.surfaces_),
@@ -105,7 +110,10 @@ std::string DEM::Output<ForceModel, ParticleType>::restart_data() const {
        << named_print(print_surface_forces, "print_surface_forces") << ", "
        << named_print(print_particle_cracks, "print_particle_cracks") << ", "
        << named_print(print_contacts, "print_contacts") << ", "
-       << named_print(print_bounding_box, "print_bounding_box");
+       << named_print(print_bounding_box, "print_bounding_box") << ", "
+       << named_print(print_periodic_bc, "print_periodic_bc") << ", "
+       << named_print(print_mirror_particles, "print_mirror_particles") << ", "
+       << named_print(print_fabric_force_tensor, "print_fabric_force_tensor");
     return ss.str();
 }
 
@@ -193,7 +201,7 @@ void DEM::Output<ForceModel, ParticleType>::write_contacts() const {
     filename_stream << directory_ << "/" << "contacts_" << current_time_.count() << ".dou";
     std::ofstream output_file;
     output_file.open(filename_stream.str());
-    for (const auto& c: contacts_.get_objects()) {
+    for (const auto& c: contacts_.get_objects_sorted()) {
         output_file << c->get_output_string() << "\n";
     }
     output_file.close();
@@ -211,6 +219,53 @@ void DEM::Output<ForceModel, ParticleType>::write_bounding_box() const {
     output_file.close();
 }
 
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::write_periodic_bc() const {
+    if (engine_.periodic_bc_handler_ != nullptr) {
+        std::string filename = directory_ + "/periodic_bc.dou";
+        std::ofstream output_file;
+        output_file.open(filename, std::fstream::app);
+        output_file << current_time_.count() << ", " << engine_.periodic_bc_handler_->print_periodic_bc() << "\n";
+        output_file.close();
+    }
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::write_mirror_particles() const {
+    if (engine_.periodic_bc_handler_ != nullptr) {
+        auto mirror_particles = engine_.periodic_bc_handler_->mirror_particles_output();
+        std::ostringstream filename_stream;
+        filename_stream << directory_ << "/" << "mirror_particles_" << current_time_.count() << ".dou";
+        std::ofstream output_file;
+        output_file.open(filename_stream.str());
+        for (const auto& mp: mirror_particles) {
+            output_file << mp << "\n";
+        }
+        output_file.close();
+    }
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::write_fabric_force_tensor() const {
+    Eigen::Matrix<double, 3, 3> force_tensor = Eigen::Matrix<double, 3, 3>::Zero();
+    for (const auto& c: contacts_.get_objects()) {
+        force_tensor += c->get_force_fabric_tensor();
+    }
+    std::string filename = directory_ + "/force_fabric_tensor.dou";
+    std::ofstream output_file;
+    output_file.open(filename, std::fstream::app);
+    output_file << current_time_.count();
+    for (unsigned i = 0; i != 3; ++i) {
+        for (unsigned j = 0; j != 3; ++j) {
+           output_file << ", " << force_tensor(i, j);
+        }
+    }
+    output_file << "\n";
+    output_file.close();
+
+}
+
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::set_new_directory(const std::string& directory) {
     directory_ = directory;
@@ -218,3 +273,7 @@ void DEM::Output<ForceModel, ParticleType>::set_new_directory(const std::string&
         fs::create_directories(directory_);
     }
 }
+
+
+
+

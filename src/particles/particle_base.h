@@ -43,6 +43,7 @@ namespace DEM {
         const Vec3& get_rotation_this_increment() const { return rot_this_inc_; }
 
         [[nodiscard]] virtual std::string restart_data() const;
+        void reset_contact_forces() {f_.set_zero(); torque_.set_zero(); }
     protected:
         const unsigned id_;
         double mass_;

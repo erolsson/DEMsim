@@ -15,7 +15,7 @@ namespace DEM {
         double min = 0;
     };
     class Vec3;
-
+    class ParameterMap;
 
     template<typename ForceModel, typename ParticleType>
     class CollisionDetector;
@@ -41,21 +41,29 @@ namespace DEM {
                           std::vector<ParticleType*>& simulation_particles,
                           CollisionDetectorType& collision_detector,
                           ContactMatrix<ContactType>& contacts);
+
+        PeriodicBCHandler(EngineType& engine,
+                          std::vector<ParticleType*>& simulation_particles,
+                          CollisionDetectorType& collision_detector,
+                          ContactMatrix<ContactType>& contacts,
+                          const std::vector<ParameterMap>& restart_data);
         void fulfill_periodic_bc();
         void add_periodic_bc(char axis, double boundary_min, double boundary_max);
         void set_periodic_bc_strain_rate(char axis, double strain_rate);
-
+        void set_boundary_stretch(double stretch) { stretch_ = stretch; }
         void create_periodic_bc_contacts();
         void destroy_periodic_bc_contacts();
+        std::string print_periodic_bc() const;
+        std::vector<std::string> mirror_particles_output() const;
+        std::vector<std::string> restart_data() const;
 
     private:
 
-        constexpr static auto particle_id_sort = [](const auto& p1, const auto& rhs) {return p1->get_id() < rhs; };
-        double stretch_ = 1e-2;
+        double stretch_ = 0;
         std::map<std::size_t, std::array<ParticleType*, 7>> mirror_particles_;
         std::array<Interval, 3> boundaries_ {};
         std::array<double, 3> velocities_ {0., 0., 0.};
-        std::array<bool, 3> active_directions_ = {false, false, false};
+        std::array<bool, 3> active_directions_ {false, false, false};
         EngineType& engine_;
         std::vector<ParticleType*>& simulation_particles_;
         CollisionDetector<ForceModel, ParticleType>& collision_detector_;
@@ -70,8 +78,12 @@ namespace DEM {
         void respect_boundaries(std::size_t particle_idx);
 
         ParticleType* get_mirror_particle(ParticleType* simulation_particle, std::size_t direction);
+        ParticleType* get_simulation_particle(std::size_t particle_id);
         ParticleType* create_mirror_particle(const ParticleType* simulation_particle, std::size_t direction,
                                              const Vec3& position);
+
+        ParticleType* create_mirror_particle(const ParticleType* simulation_particle, std::size_t direction,
+                                             const Vec3& position, std::size_t collision_id);
 
         void remove_mirror_particle(ParticleType* simulation_particle, std::size_t direction);
 
@@ -81,7 +93,13 @@ namespace DEM {
                                       const std::array<bool, 3>& mirror_directions);
 
         bool has_mirror_particle(const ParticleType* particle) const;
+        bool is_mirror_particle(const ParticleType* particle) const;
 
+        void handle_mirror_particles_add_contact(Contact<ForceModel, ParticleType>* contact,
+                                                 std::size_t id1, std::size_t id2, ParticleType* particle,
+                                                 int contact_direction);
+
+        static std::size_t direction_idx(char axis);
     };
 }
 

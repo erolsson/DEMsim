@@ -30,7 +30,7 @@ namespace DEM {
         // No assignment of particles and no plain copies
 
         SphericalParticle(double radius, const Vec3& position, const Vec3& velocity, const MaterialBase* material,
-                          unsigned id);
+                          std::size_t object_id, std::size_t collision_id=0);
         SphericalParticle(const ParameterMap& parameters, MaterialBase* material);
         virtual ~SphericalParticle() = default;
         void sum_contact_forces() {
@@ -38,13 +38,17 @@ namespace DEM {
     }
 
         void add_contact(ContactPointerType contact, std::size_t index, int direction) {
+            if (contact == nullptr) {
+                std::cout << "\n";
+            }
             SphericalParticleBase<ForceModel>::add_contact(contact, index, direction, contacts_);
         }
 
         void remove_contact(std::size_t index) {
             SphericalParticleBase<ForceModel>::remove_contact(index, contacts_);
         }
-
+        std::size_t get_number_of_contacts() const {return contacts_.size(); }
+        ContactVector<std::pair<ContactPointerType, int> >& get_contacts() {return contacts_; }
     private:
         ContactVector<std::pair<ContactPointerType, int> >  contacts_;
     };

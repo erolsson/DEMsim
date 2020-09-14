@@ -37,7 +37,7 @@ void DEM::periodic_bc_tester(const std::string&) {
     std::vector<Surface<ForceModel, ParticleType>*> surfaces;
     ContactMatrix<Contact<ForceModel, ParticleType>> contacts;
     contacts.resize(particles.size());
-    auto collision_detector = CollisionDetector<ForceModel, ParticleType>(particles, surfaces, contacts);
+    auto collision_detector = CollisionDetector<ForceModel, ParticleType>(particles, surfaces);
 
     auto periodic_bc_handler = PeriodicBCHandler<ForceModel, ParticleType>(simulator, particles, collision_detector,
                                                                            contacts);

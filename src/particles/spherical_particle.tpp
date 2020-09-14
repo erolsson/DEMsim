@@ -10,8 +10,8 @@
 template<typename ForceModel>
 DEM::SphericalParticle<ForceModel>::SphericalParticle(double radius, const DEM::Vec3& position,
                                                       const DEM::Vec3& velocity, const MaterialBase* material,
-                                                      unsigned id):
-   SphericalParticleBase<ForceModel>(radius, position, velocity, material, id)
+                                                      std::size_t object_id, std::size_t collision_id):
+   SphericalParticleBase<ForceModel>(radius, position, velocity, material, object_id, collision_id)
 
 {
     // Empty constructor

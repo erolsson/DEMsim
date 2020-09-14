@@ -31,11 +31,13 @@ namespace DEM {
         // No assignment of particles and no plain copies
 
         SphericalParticleBase(double radius, const Vec3& position, const Vec3& velocity, const MaterialBase* material,
-                          unsigned id);
+                              std::size_t object_id, std::size_t collision_id);
         SphericalParticleBase(const ParameterMap& parameters, MaterialBase* material);
         virtual ~SphericalParticleBase() = default;
         SphericalParticleBase& operator=(const SphericalParticleBase&) = delete;
 
+        [[nodiscard]] std::size_t get_collision_id() const { return collision_id_; }
+        void set_collision_id(std::size_t collision_id) { collision_id_ = collision_id;}
         [[nodiscard]] double get_radius() const { return radius_; }
         [[nodiscard]] double get_inertia() const { return inertia_; }
 
@@ -65,6 +67,7 @@ namespace DEM {
         void remove_contact(std::size_t index, VectorType& contacts);
 
     private:
+        std::size_t collision_id_;
         double radius_;   // Not const due to particle swelling
         double inertia_;
         /*

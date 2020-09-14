@@ -22,6 +22,8 @@ namespace DEM {
     void electrode_cylinder_compaction(const std::string& settings_file_name);
     void periodic_bc_tester(const std::string&);
     void periodic_bc_simulation(const std::string& settings_file_name);
+    void filling_periodic_box(const std::string& settings_file_name);
+
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 
 
