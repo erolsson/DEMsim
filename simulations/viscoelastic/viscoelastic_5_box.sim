@@ -1,5 +1,5 @@
 N=4500
-output_dir=../results/viscoelastic/electrodeheightcondition05
+output_dir=../results/viscoelastic/electrodeheightcondition075
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=340800
@@ -14,4 +14,4 @@ tau_i=211,4807
 mu=0.7
 mu_wall=0.7
 bindervolume=0.1877
-active_particle_height=0.5
+active_particle_height=0.75

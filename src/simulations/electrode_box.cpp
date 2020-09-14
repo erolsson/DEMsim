@@ -140,7 +140,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.run(run_for_time);
     //EngineType::SurfaceNormalForceWithinInterval  Interval ( simulator, top_surface,47e+6,100e+6, std::chrono::duration<double>(0.01)  );
     //simulator.run(Interval);
-    //simulator.write_restart_file(output_directory + "/compact_restart_file.res");
+
 
 
 
@@ -158,6 +158,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     double Prorosity= (1-((just_particle_volume)/ (box_width*box_width*h)))*100;
     std::cout<<"Prosity is:"<< Prorosity <<std::endl;
     std::cout<<"h is:"<< h <<std::endl;
+    simulator.write_restart_file(output_directory + "/compact_restart_file.res");
 
 }
 
