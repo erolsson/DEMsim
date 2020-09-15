@@ -76,6 +76,8 @@ add_executable(DEMsim
                src/engine/periodic_bc_handler.h
                src/engine/periodic_bc_handler.tpp
                src/simulations/periodic_bc/periodic_bc_simulation.cpp
-               src/simulations/periodic_bc/filling_periodic_box.cpp)
+               src/simulations/periodic_bc/filling_periodic_box.cpp
+               src/surfaces/deformable_point_surface.h
+               src/surfaces/deformable_point_surface.tpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")

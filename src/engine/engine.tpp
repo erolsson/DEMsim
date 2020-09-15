@@ -251,6 +251,27 @@ DEM::Engine<ForceModel, ParticleType>::create_point_surface(const std::vector<Ve
     return create_point_surface(points, infinite, name_ss.str(), adhesive);
 }
 
+template<typename ForceModel, typename ParticleType>
+typename Engine<ForceModel, ParticleType>::DeformablePointSurfacePointer
+Engine<ForceModel, ParticleType>::create_deformable_point_surface(const std::vector<Vec3> points, bool adhesive) {
+    std::stringstream name_ss;
+    name_ss << "deformable_point_surface_" << object_id_counter_;
+    return create_deformable_point_surface(points, name_ss.str(), adhesive);
+}
+
+template<typename ForceModel, typename ParticleType>
+typename Engine<ForceModel, ParticleType>::DeformablePointSurfacePointer
+Engine<ForceModel, ParticleType>::create_deformable_point_surface(const std::vector<Vec3> points,
+                                                                  const char* name, bool adhesive) {
+
+    auto dps = new DeformablePointSurface<ForceModel, ParticleType>(object_id_counter_, points, true, name, adhesive,
+                                                                    collision_id_counter_);
+    surfaces_.push_back(dps);
+    ++object_id_counter_;
+    ++collision_id_counter_;
+    return dps;
+}
+
 
 template<typename ForceModel, typename ParticleType>
 typename DEM::Engine<ForceModel, ParticleType>::CylinderPointer
