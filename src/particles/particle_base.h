@@ -18,10 +18,10 @@ namespace DEM {
     template<typename ForceModel>
     class ParticleBase {
     public:
-        ParticleBase(const ParticleBase&) = delete;
         ParticleBase& operator=(const ParticleBase&) = delete;
-        ParticleBase(double, const Vec3&, const Vec3&, MaterialBase*, unsigned );
+        ParticleBase(double, const Vec3&, const Vec3&, const MaterialBase*, unsigned );
         ParticleBase(const ParameterMap& parameters, MaterialBase* material);
+        virtual ~ParticleBase() = default;
         unsigned get_id() const { return id_; }
         const MaterialBase* get_material() const { return material_; }
 
@@ -43,6 +43,7 @@ namespace DEM {
         const Vec3& get_rotation_this_increment() const { return rot_this_inc_; }
 
         [[nodiscard]] virtual std::string restart_data() const;
+        void reset_contact_forces() {f_.set_zero(); torque_.set_zero(); }
     protected:
         const unsigned id_;
         double mass_;

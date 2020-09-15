@@ -22,7 +22,7 @@ namespace DEM {
         void add_data(std::string data_string);
         void add_csv_data_string (std::string csv_string);
 
-        template<typename DataType>
+        template<typename DataType=double>
         DataType get_parameter(const std::string& name) const;
 
         template<typename DataType>

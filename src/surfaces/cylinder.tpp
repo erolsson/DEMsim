@@ -12,8 +12,8 @@
 template<typename ForceModel, typename ParticleType>
 DEM::Cylinder<ForceModel, ParticleType>::Cylinder(std::size_t id, double radius, const Vec3& axis,
                                              const Vec3& base_point, double length, const std::string& name,
-                                             bool inward, bool infinite, bool closed_ends) :
-        Surface<ForceModel, ParticleType>::Surface(id, name),
+                                             bool inward, bool infinite, bool closed_ends, std::size_t collision_id) :
+        Surface<ForceModel, ParticleType>::Surface(id, collision_id,  name),
         radius_(radius),
         axis_(axis.normal()),
         point_(base_point),

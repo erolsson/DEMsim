@@ -19,7 +19,8 @@ namespace DEM {
     class Cylinder : public Surface<ForceModel, ParticleType> {
     public:
         Cylinder(std::size_t id, double radius, const Vec3& axis, const Vec3& base_point, double length,
-                 const std::string& name, bool inward=true, bool infinite=false, bool closed_ends=false);
+                 const std::string& name, bool inward=true, bool infinite=false, bool closed_ends=false,
+                 std::size_t collision_id=0);
         Cylinder(const ParameterMap& parameters);
         ~Cylinder() override = default;
         using Surface<ForceModel, ParticleType>::get_id;

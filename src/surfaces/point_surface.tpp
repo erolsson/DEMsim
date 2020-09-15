@@ -14,8 +14,9 @@
 
 template<typename ForceModel, typename ParticleType>
 DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::vector<DEM::Vec3> points, bool infinite,
-                                                          const std::string& name, bool adhesive) :
-        Surface<ForceModel, ParticleType>::Surface(id, name, adhesive),
+                                                          const std::string& name, bool adhesive,
+                                                          std::size_t collision_id) :
+        Surface<ForceModel, ParticleType>::Surface(id, collision_id, name, adhesive),
         points_(std::move(points)),
         infinite_(infinite),
         normal_(calculate_normal())

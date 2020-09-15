@@ -12,8 +12,10 @@
 template<typename ForceModel>
 DEM::FractureableSphericalParticle<ForceModel>::FractureableSphericalParticle(double radius, const Vec3 &position,
                                                                               const Vec3 &velocity,
-                                                                              MaterialBase *material, unsigned id)
-        :SphericalParticleBase<ForceModel>(radius, position, velocity, material, id) {
+                                                                              const MaterialBase *material,
+                                                                              std::size_t object_id,
+                                                                              std::size_t collision_id)
+        :SphericalParticleBase<ForceModel>(radius, position, velocity, material, object_id, collision_id) {
 
 }
 

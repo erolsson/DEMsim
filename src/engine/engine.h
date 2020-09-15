@@ -26,6 +26,9 @@
 namespace DEM {
     class Amplitude;
     class ParameterMap;
+
+    template<typename ForceModel, typename ParticleType>
+    class PeriodicBCHandler;
     template<typename ForceModel, typename ParticleType>
     class Engine {
     public:
@@ -35,6 +38,7 @@ namespace DEM {
 
         using OutputPointerType = std::shared_ptr<Output<ForceModel, ParticleType>>;
         using SurfaceType = Surface<ForceModel, ParticleType>;
+        using PeriodicBCHandlerType = PeriodicBCHandler<ForceModel, ParticleType>;
         explicit Engine(std::chrono::duration<double> dt);
         explicit Engine(const std::string& restart_file_name);
 
@@ -64,7 +68,6 @@ namespace DEM {
                                         const std::string& name, bool inward=true, bool infinite=false,
                                         bool closed_ends=false);
 
-
         OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval);
         OutputPointerType create_output(std::string directory, std::chrono::duration<double> interval,
                                         const std::string& name);
@@ -75,11 +78,17 @@ namespace DEM {
         void remove_force_control_on_surface(Surface<ForceModel, ParticleType>* surface, char direction);
 
         [[maybe_unused]] std::pair<double, std::size_t> set_viscocity_parameters(double viscosity, size_t order=1);
-
         [[maybe_unused]] void remove_viscosity_parameters(std::pair<double, std::size_t> parameter_pair);
+
+        [[maybe_unused]] void add_periodic_boundary_condition(char axis, double boundary_min, double boundary_max);
+        [[maybe_unused]] void set_periodic_boundary_condition_strain_rate(char axis, double strain_rate);
 
         // Getters
         [[nodiscard]] std::chrono::duration<double> get_time() const { return time_; }
+        [[nodiscard]] std::chrono::duration<double> get_time_increment() const { return increment_; }
+        [[nodiscard]] std::size_t get_collision_object_count() const { return collision_id_counter_; }
+        void increment_collision_counter() { ++collision_id_counter_; }
+
         [[nodiscard]] double get_kinetic_energy() const;
         [[nodiscard]] std::pair<size_t, double> max_particle_velocity() const;
         [[nodiscard]] std::pair<size_t, double> max_surface_velocity() const;
@@ -233,9 +242,6 @@ namespace DEM {
             conditions_(conditions){}
 
             bool operator()()  {
-                // std::cout << "Force condition: " << conditions_[1]->operator()() << " "
-                //           << "Velocity condition: " << conditions_[0]->operator()() << " "
-                //            << "Time condition: " << conditions_[2]->operator()() << "\n";
                 bool cond_value = false;
                 for(const auto& cond: conditions_){
                     cond_value = cond_value || cond->operator()();
@@ -294,7 +300,8 @@ namespace DEM {
         using ContactType = Contact<ForceModel, ParticleType>;
 
 
-        std::size_t number_of_objects_{ 0 };
+        std::size_t object_id_counter_ { 0 };
+        std::size_t collision_id_counter_ { 0 };
         std::chrono::duration<double> time_ { 0. };
 
         std::vector<MaterialBase*> materials_{};
@@ -304,6 +311,8 @@ namespace DEM {
         std::vector<OutputPointerType> outputs_{};
 
         CollisionDetector<ForceModel, ParticleType> collision_detector_;
+        std::unique_ptr<PeriodicBCHandlerType> periodic_bc_handler_ = nullptr;
+
 
         // Settings type of private data
         Vec3 gravity_ {Vec3{0,0,0}};
@@ -331,6 +340,7 @@ namespace DEM {
         void run_output();
 
         friend class Output<ForceModel, ParticleType>;
+        friend class PeriodicBCHandler<ForceModel, ParticleType>;
 
 
 

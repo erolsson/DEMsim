@@ -47,3 +47,4 @@ void DEM::ContactVector<T, KeyType>::clear()
     data_.clear();
 }
 
+

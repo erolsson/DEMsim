@@ -33,10 +33,11 @@ namespace DEM {
     public:
         double max_velocity{0.};
         bool force_control{ false };
-        explicit Surface(std::size_t id, const std::string& name, bool adhesive=false);
+        explicit Surface(std::size_t id, std::size_t collision_id, const std::string& name, bool adhesive=false);
         explicit Surface(const ParameterMap& parameters);
         virtual ~Surface() = default;
-        std::size_t get_id() const { return id_; }
+        std::size_t get_id() const { return object_id_; }
+        std::size_t get_collision_id() const { return collision_id_; }
         const std::string& get_name() const { return name_; }
         virtual Vec3 get_normal(const Vec3& position) const = 0;
 
@@ -89,7 +90,8 @@ namespace DEM {
         virtual void update_bounding_box() = 0;
 
     private:
-        std::size_t id_;
+        std::size_t object_id_;
+        std::size_t collision_id_;
         std::string name_;
         double mass_ { 0 };
         bool adhesive_ {false};

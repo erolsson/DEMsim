@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(DEMsim)
 
 set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -msse4 -g -O3 -fopenmp")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -msse4 -O3 -g -fopenmp")
 
 add_executable(DEMsim
                src/utilities/contact_matrix.h
@@ -62,8 +62,6 @@ add_executable(DEMsim
                src/simulations/cyclic_triaxial.cpp
                src/particles/spherical_particle_base.tpp
                src/particles/spherical_particle_base.h
-               src/surfaces/circular_plate.tpp
-               src/surfaces/circular_plate.h
                src/simulations/proctor_test.cpp
                src/simulations/stone_compaction.cpp
                src/contact_models/viscoelastic.cpp
@@ -74,6 +72,10 @@ add_executable(DEMsim
                src/simulations/electrode_box.cpp
                src/simulations/electrode_cylinder/electrode_cylinder_filling.cpp
                src/simulations/electrode_cylinder/electrode_cylinder_compaction.cpp
-               )
+               src/simulations/periodic_bc/periodic_bc_tester.cpp
+               src/engine/periodic_bc_handler.h
+               src/engine/periodic_bc_handler.tpp
+               src/simulations/periodic_bc/periodic_bc_simulation.cpp
+               src/simulations/periodic_bc/filling_periodic_box.cpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")
