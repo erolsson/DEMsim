@@ -113,7 +113,7 @@ DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::vector_to_point(const Vec3& p
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::displacement_this_inc(const Vec3& position) const
+DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::get_displacement_this_increment(const Vec3& position) const
 {
     if (rotation_this_inc_.is_zero())
         return displacement_this_inc_;

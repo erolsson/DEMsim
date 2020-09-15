@@ -46,8 +46,8 @@ DEM::Surface<ForceModel, ParticleType>::Surface(const DEM::ParameterMap& paramet
 template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Surface<ForceModel, ParticleType>::get_tangential_displacement_this_inc(const Vec3& point) const
 {
-    return displacement_this_inc(point)-
-            dot_product(displacement_this_inc(point), get_normal(point))*get_normal(point);
+    return get_displacement_this_increment(point) -
+           dot_product(get_displacement_this_increment(point), get_normal(point))*get_normal(point);
 }
 
 template<typename ForceModel, typename ParticleType>

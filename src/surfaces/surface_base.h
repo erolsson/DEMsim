@@ -44,7 +44,7 @@ namespace DEM {
         // virtual double get_curvature_radius() const = 0;  //  ToDo Implement later
         virtual double distance_to_point(const Vec3& point) const = 0;
         virtual Vec3 vector_to_point(const Vec3& point) const = 0;
-        virtual Vec3 displacement_this_inc(const Vec3& position) const = 0;
+        virtual Vec3 get_displacement_this_increment(const Vec3& position) const = 0;
 
         virtual void move(const Vec3& distance, const Vec3& velocity) = 0;
         virtual void rotate(const Vec3& position, const Vec3& rotation_vector) = 0;
