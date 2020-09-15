@@ -34,6 +34,7 @@ namespace DEM {
     public:
         using ParticlePointer = ParticleType*;
         using PointSurfacePointer = PointSurface<ForceModel, ParticleType>*;
+        using DeformablePointSurfacePointer = DeformablePointSurface<ForceModel, ParticleType>*;
         using CylinderPointer = Cylinder<ForceModel, ParticleType>*;
 
         using OutputPointerType = std::shared_ptr<Output<ForceModel, ParticleType>>;
