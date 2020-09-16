@@ -106,10 +106,6 @@ DEM::Engine<ForceModel, ParticleType>::Engine(const std::string& restart_file_na
         make_surface_from_restart_data(surface_data);
     }
 
-    for (const auto& output_data: keyword_data["*output"]) {
-        make_output_from_restart_data(output_data);
-    }
-
     for (const auto& particle_data: keyword_data["*particle"]) {
         make_particle_from_restart_data(particle_data);
     }
@@ -120,8 +116,11 @@ DEM::Engine<ForceModel, ParticleType>::Engine(const std::string& restart_file_na
     }
 
     if (keyword_data["*periodic bc"].size() > 0 ){
-        periodic_bc_handler_ = std::make_unique<PeriodicBCHandlerType>(*this, particles_, collision_detector_,
-                                                                       contacts_, keyword_data["*periodic bc"]);
+        periodic_bc_handler_ = std::make_unique<PeriodicBCHandlerType>(*this, particles_, collision_detector_,contacts_, keyword_data["*periodic bc"]);
+    }
+
+    for (const auto& output_data: keyword_data["*output"]) {
+        make_output_from_restart_data(output_data);
     }
 
     for (auto& c: contacts_.get_objects()) {
@@ -248,21 +247,21 @@ DEM::Engine<ForceModel, ParticleType>::create_point_surface(const std::vector<Ve
 {
     std::stringstream name_ss;
     name_ss << "point_surface_" << object_id_counter_;
-    return create_point_surface(points, infinite, name_ss.str(), adhesive);
+    return create_point_surface(points, infinite, name_ss.str().c_str(), adhesive);
 }
 
 template<typename ForceModel, typename ParticleType>
-typename Engine<ForceModel, ParticleType>::DeformablePointSurfacePointer
-Engine<ForceModel, ParticleType>::create_deformable_point_surface(const std::vector<Vec3> points, bool adhesive) {
+typename DEM::Engine<ForceModel, ParticleType>::DeformablePointSurfacePointer
+DEM::Engine<ForceModel, ParticleType>::create_deformable_point_surface(const std::vector<Vec3>& points, bool adhesive) {
     std::stringstream name_ss;
     name_ss << "deformable_point_surface_" << object_id_counter_;
-    return create_deformable_point_surface(points, name_ss.str(), adhesive);
+    return create_deformable_point_surface(points, name_ss.str().c_str(), adhesive);
 }
 
 template<typename ForceModel, typename ParticleType>
-typename Engine<ForceModel, ParticleType>::DeformablePointSurfacePointer
-Engine<ForceModel, ParticleType>::create_deformable_point_surface(const std::vector<Vec3> points,
-                                                                  const char* name, bool adhesive) {
+typename DEM::Engine<ForceModel, ParticleType>::DeformablePointSurfacePointer
+DEM::Engine<ForceModel, ParticleType>::create_deformable_point_surface(const std::vector<Vec3>& points,
+                                                                       const char* name, bool adhesive) {
 
     auto dps = new DeformablePointSurface<ForceModel, ParticleType>(object_id_counter_, points, true, name, adhesive,
                                                                     collision_id_counter_);
@@ -565,8 +564,7 @@ void DEM::Engine<ForceModel, ParticleType>::do_step()
 }
 
 template<typename ForceModel, typename ParticleType>
-void DEM::Engine<ForceModel, ParticleType>::make_material_from_restart_data(
-        const DEM::ParameterMap& parameters) {
+void DEM::Engine<ForceModel, ParticleType>::make_material_from_restart_data(const DEM::ParameterMap& parameters) {
     DEM::MaterialBase* mat;
     auto material_type = parameters.get_parameter<std::string>("type");
     if (material_type == "elastic_ideal_plastic_material") {
@@ -781,6 +779,10 @@ void DEM::Engine<ForceModel, ParticleType>::move_surfaces()
             }
         }
         surface->move(distance, velocity);
+        auto deformable_surface = dynamic_cast<DeformablePointSurface<ForceModel, ParticleType>*>(surface);
+        if (deformable_surface != nullptr) {
+            deformable_surface->deform(increment_);
+        }
     }
 }
 

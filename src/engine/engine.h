@@ -63,10 +63,11 @@ namespace DEM {
         PointSurfacePointer create_point_surface(const std::vector<Vec3>& points, bool infinite,
                                                  const char* name, bool adhesive=true);
 
-        DeformablePointSurfacePointer create_deformable_point_surface(const std::vector<Vec3> points,
+        DeformablePointSurfacePointer create_deformable_point_surface(const std::vector<Vec3>& points,
                                                                       bool adhesive=true);
-        DeformablePointSurfacePointer create_deformable_point_surface(const std::vector<Vec3> points,
+        DeformablePointSurfacePointer create_deformable_point_surface(const std::vector<Vec3>& points,
                                                                       const char* name, bool adhesive=true);
+
         CylinderPointer create_cylinder(double radius, const Vec3& axis, const Vec3& base_point, double length,
                                         bool inward=true, bool infinite=false, bool closed_ends=false);
 

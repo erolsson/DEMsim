@@ -182,8 +182,6 @@ class SurfacesPlotter:
             self.bounding_boxes[surface_id] = bounding_boxes.get(surface_id, BoundingBox())
             self.visible_times[surface_id] = visible_times.get(surface_id, lambda t: True)
 
-        print(self.visible_times)
-
     def set_data_file(self, surface_file_name):
         with open(surface_file_name) as data_file:
             data_lines = data_file.readlines()
@@ -191,11 +189,12 @@ class SurfacesPlotter:
         # Inspect the first line
         line = data_lines[0]
         words = line.split(", ")
-
-        id_idx = [i for i in range(len(words)) if words[i].startswith('ID')]
+        print(words)
+        id_idx = [i for i in range(len(words)) if words[i].upper().startswith('ID')]
         for idx in id_idx:
             surface_id = int(words[idx][3:])
             surface_type = words[idx+1][5:]
+
             if surface_type == 'Cylinder':
                 self.plotter_data[surface_id] = PlotObject_(idx+2, idx+10)
                 self.plotters[surface_id] = CylinderPlotter()
@@ -234,7 +233,6 @@ class SurfacesPlotter:
                 plotter_data = self.plotter_data[surface_id]
                 data = data_line[plotter_data.start_idx:plotter_data.end_idx]
                 plotter.plot(data, self.surfaces_colors[surface_id], self.surfaces_opacities[surface_id], t)
-
 
 if __name__ == '__main__':
     simulation_directory = '../results/cyclic_triaxial/test/'

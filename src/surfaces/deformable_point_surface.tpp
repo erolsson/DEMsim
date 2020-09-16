@@ -52,7 +52,7 @@ DEM::DeformablePointSurface<ForceModel, ParticleType>::get_displacement_this_inc
     // Calculating the mid point
     auto mid_point = Vec3 {};
     for (const auto& p: points_) {
-        mid_point += points_;
+        mid_point += p;
     }
     mid_point /= points_.size();
 
@@ -68,8 +68,8 @@ DEM::DeformablePointSurface<ForceModel, ParticleType>::get_displacement_this_inc
     }
 
     // Assuming a rectangular surface, could be changed here later
-    double xi = x/(nodal_coords_x[1] - nodal_coords_x[2]);
-    double eta = y/(nodal_coords_y[1] - nodal_coords_y[2]);
+    double xi = 2*x/(nodal_coords_x[2] - nodal_coords_x[0]);
+    double eta = 2*y/(nodal_coords_y[2] - nodal_coords_y[0]);
 
     std::array<double, 4> N = { 1./4*(1-xi)*(1-eta), 1./4*(1+xi)*(1-eta),
                                 1./4*(1+xi)*(1+eta), 1./4*(1-xi)*(1+eta)};
@@ -79,7 +79,7 @@ DEM::DeformablePointSurface<ForceModel, ParticleType>::get_displacement_this_inc
     double uy = 0;
     for (unsigned i = 0; i!= 4; ++i) {
         ux += dot_product(nodal_displacements_[i], x_axis)*N[i];
-        ux += dot_product(nodal_displacements_[i], y_axis)*N[i];
+        uy += dot_product(nodal_displacements_[i], y_axis)*N[i];
     }
     Vec3 u = ux*x_axis + uy*y_axis;
     return DEM::PointSurface<ForceModel, ParticleType>::get_displacement_this_increment(position) + u;
@@ -89,7 +89,7 @@ template<typename ForceModel, typename ParticleType>
 std::string DEM::DeformablePointSurface<ForceModel, ParticleType>::get_output_string() const
 {
     std::ostringstream stream;
-    stream << DEM::PointSurface<ForceModel, ParticleType>::restart_data();
+    stream << DEM::PointSurface<ForceModel, ParticleType>::get_output_string();
     for (const auto& dp: nodal_displacements_) {
         stream << ", " << dp.x() << ", " << dp.y() << ", " << dp.z();
     }
@@ -114,27 +114,23 @@ std::string DEM::DeformablePointSurface<ForceModel, ParticleType>::restart_data(
 }
 
 template<typename ForceModel, typename ParticleType>
-void DEM::DeformablePointSurface<ForceModel, ParticleType>::move(const DEM::Vec3& distance, const DEM::Vec3& velocity) {
+void DEM::DeformablePointSurface<ForceModel, ParticleType>::deform(std::chrono::duration<double> time_increment) {
     auto x_axis = (points_[1] - points_[0]).normalize();
     auto y_axis = -cross_product(x_axis, get_normal());
-    for (auto& p: points_){
-        p += distance;
-    }
-    displacement_this_inc_ = distance;
-    velocity_ = velocity;
 
     double x = points_[2].x() - points_[0].x();
     double y = points_[2].y() - points_[0].y();
 
     // The nodal displacements if each nodes moves -u/2 and u/2 the total deformation is u
-    double ux = x*strain_x_/2;
-    double uy = y*strain_y_/2;
+    double ux = x*strain_x_/2*time_increment.count();
+    double uy = y*strain_y_/2*time_increment.count();
     nodal_displacements_ = {-ux*x_axis - uy*y_axis,  ux*x_axis - uy*y_axis,
                              ux*x_axis + uy*y_axis, -ux*x_axis + uy*y_axis};
         
-    for (const auto nd: nodal_displacements_) {
-        points_ += nd;
+    for (unsigned i = 0; i != nodal_displacements_.size(); ++i) {
+        points_[i] += nodal_displacements_[i];
     }
+    
     normal_ = calculate_normal();
     update_bounding_box();
 }

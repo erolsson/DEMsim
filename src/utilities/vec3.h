@@ -135,6 +135,14 @@ namespace DEM {
             return *this;
         }
 
+        inline Vec3& operator/=(double factor)
+        {
+            x() /= factor;
+            y() /= factor;
+            z() /= factor;
+            return *this;
+        }
+
         inline Vec3& operator+=(const Vec3& rhs)
         {
             x() += rhs.x();

@@ -49,6 +49,8 @@ namespace DEM {
 
         std::string restart_data() const;
         void set_new_directory(const std::string& directory);
+        void add_particle_to_follow(std::size_t particle_id);
+
     private:
         using OutputFunPtr = void (Output<ForceModel, ParticleType>::*)() const;
         using FuncVec = std::vector<std::pair<bool&, OutputFunPtr>>;
@@ -59,6 +61,7 @@ namespace DEM {
         const Engine<ForceModel, ParticleType>& engine_;
 
         std::string directory_;
+        std::vector<const ParticleType*> particles_to_print_;
 
         FuncVec output_functions_ {{Output::print_particles,           &Output::write_particles},
                                    {Output::print_kinetic_energy,      &Output::write_kinetic_energy},
@@ -85,6 +88,7 @@ namespace DEM {
         void write_periodic_bc() const;
         void write_mirror_particles() const;
         void write_fabric_force_tensor() const;
+        void write_particles_to_follow() const;
     };
 }
 

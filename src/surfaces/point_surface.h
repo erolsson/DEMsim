@@ -40,19 +40,20 @@ namespace DEM {
 
         [[nodiscard]] const std::vector<Vec3>& get_points() const { return points_; }
 
-    private:
+    protected:
         std::vector<Vec3> points_;
-        bool infinite_;
         Vec3 normal_;
-
-        using Surface<ForceModel, ParticleType>::displacement_this_inc_;
-        using Surface<ForceModel, ParticleType>::rotation_this_inc_;
-        using Surface<ForceModel, ParticleType>::rotation_point_;
-        using Surface<ForceModel, ParticleType>::velocity_;
-        using Surface<ForceModel, ParticleType>::bbox_values_;
-
         [[nodiscard]] Vec3 calculate_normal() const;
         void update_bounding_box() override;
+        using Surface<ForceModel, ParticleType>::displacement_this_inc_;
+        using Surface<ForceModel, ParticleType>::velocity_;
+
+    private:
+        bool infinite_;
+
+        using Surface<ForceModel, ParticleType>::rotation_this_inc_;
+        using Surface<ForceModel, ParticleType>::rotation_point_;
+        using Surface<ForceModel, ParticleType>::bbox_values_;
     };
 
 }

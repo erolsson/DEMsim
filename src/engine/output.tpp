@@ -69,7 +69,10 @@ DEM::Output<ForceModel, ParticleType>::Output(const DEM::ParameterMap& parameter
         time_until_output_(parameters.get_parameter<double>("time_until_output")),
         interval_(parameters.get_parameter<double>("interval"))
 {
-
+    auto no_particles_to_print = parameters.get_parameter<std::size_t>("no_particles_to_print");
+    for (std::size_t i = 0; i != no_particles_to_print; ++i) {
+        add_particle_to_follow(parameters.get_parameter<std::size_t>("p_to_print_" + std::to_string(i)));
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -80,6 +83,7 @@ void DEM::Output<ForceModel, ParticleType>::run_output() {
             (this->*(func_pair.second))();
         }
     }
+    write_particles_to_follow();
 }
 
 
@@ -113,8 +117,24 @@ std::string DEM::Output<ForceModel, ParticleType>::restart_data() const {
        << named_print(print_bounding_box, "print_bounding_box") << ", "
        << named_print(print_periodic_bc, "print_periodic_bc") << ", "
        << named_print(print_mirror_particles, "print_mirror_particles") << ", "
-       << named_print(print_fabric_force_tensor, "print_fabric_force_tensor");
+       << named_print(print_fabric_force_tensor, "print_fabric_force_tensor") << ", "
+       << named_print(particles_to_print_.size(), "no_particles_to_print");
+    for (std::size_t i = 0; i != particles_to_print_.size(); ++i) {
+        ss << ", " << named_print(particles_to_print_[i], "p_to_print_" + std::to_string(i));
+    }
     return ss.str();
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::add_particle_to_follow(std::size_t particle_id) {
+    auto p_it = std::find_if(particles_.begin(), particles_.end(),
+                          [particle_id](const auto& p) {return p->get_id() == particle_id; });
+    if (p_it != particles_.end()) {
+        particles_to_print_.push_back(*p_it);
+    }
+    else {
+        throw std::invalid_argument("particle " + std::to_string(particle_id) + " does not exist");
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -274,6 +294,16 @@ void DEM::Output<ForceModel, ParticleType>::set_new_directory(const std::string&
     }
 }
 
+template<typename ForceModel, typename ParticleType>
+void DEM::Output<ForceModel, ParticleType>::write_particles_to_follow() const {
+    for (const auto p: particles_to_print_) {
+        std::string filename = directory_ + "/particle_" + std::to_string(p->get_id()) + ".dou";
+        std::ofstream output_file;
+        output_file.open(filename, std::fstream::app);
+        output_file << current_time_.count() << ", " <<  p->get_output_string() << "\n";
+        output_file.close();
+    }
+}
 
 
 

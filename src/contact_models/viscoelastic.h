@@ -22,19 +22,19 @@ namespace DEM {
         using SurfaceType = Surface<Viscoelastic, ParticleType>;
 
     public:
-        Viscoelastic(ParticleType* particle1, ParticleType* particle2,  std::chrono::duration<double> dt);
+        Viscoelastic(ParticleType* particle1, ParticleType* particle2, std::chrono::duration<double> dt);
         Viscoelastic(ParticleType* particle1, SurfaceType* surface, std::chrono::duration<double>dt );
 
-        Viscoelastic(ParticleType*, ParticleType*,  std::chrono::duration<double>, const ParameterMap& parameters);
+        Viscoelastic(ParticleType*, ParticleType*, std::chrono::duration<double>, const ParameterMap& parameters);
         Viscoelastic(ParticleType*, SurfaceType*, std::chrono::duration<double>, const ParameterMap& parameters);
 
-        void update(double h, const Vec3& dt, const Vec3& rot, const Vec3& normal);
+        void update(double h, const Vec3& dt, const Vec3& drot, const Vec3& normal);
 
         [[nodiscard]] double get_overlap() const { return h_; }
         [[nodiscard]] double get_normal_force() const { return F_; }
         [[nodiscard]] const Vec3& get_tangential_force() const { return FT_; }
         [[nodiscard]] double get_contact_area() const {return area_; }
-        [[nodiscard]] Vec3 get_rolling_resistance_torque() const { return Vec3{};};
+        [[nodiscard]] Vec3 get_rolling_resistance_torque() const;
         [[nodiscard]] bool active() const {return F_ != 0; }
         [[nodiscard]] std::string get_output_string() const;
         [[nodiscard]] std::string restart_data() const;
@@ -82,6 +82,8 @@ namespace DEM {
         Vec3 FT_visc_ {Vec3(0., 0., 0.)};
         Vec3 FT_part_ {Vec3(0., 0., 0.)};
         Vec3 uT_{ Vec3(0., 0., 0.) };
+
+        Vec3 rot_ {Vec3(0., 0., 0.)};
         bool adhesive_ {true};
         bool binder_contact_ {false};
         bool fractured_ {false};

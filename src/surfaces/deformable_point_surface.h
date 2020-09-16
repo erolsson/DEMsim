@@ -23,12 +23,13 @@ namespace DEM {
         [[nodiscard]] std::string restart_data() const override;
 
         using PointSurface<ForceModel, ParticleType>::get_normal;
-        void set_in_plane_strain(double ex, double ey)
+        void set_in_plane_strain_rates(double ex, double ey)
         {
             strain_x_ = ex;
             strain_y_ = ey;
         }
-        void move(const Vec3& distance, const Vec3& velocity) override;
+
+        void deform(std::chrono::duration<double> time_increment);
 
     private:
         std::vector<Vec3> nodal_displacements_;

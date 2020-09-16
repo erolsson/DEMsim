@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(DEMsim)
 
 set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -msse4 -O3 -g -fopenmp")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -msse4 -O0 -g -fopenmp")
 
 add_executable(DEMsim
                src/utilities/contact_matrix.h
@@ -78,6 +78,7 @@ add_executable(DEMsim
                src/simulations/periodic_bc/periodic_bc_simulation.cpp
                src/simulations/periodic_bc/filling_periodic_box.cpp
                src/surfaces/deformable_point_surface.h
-               src/surfaces/deformable_point_surface.tpp)
+               src/surfaces/deformable_point_surface.tpp
+               src/simulations/deformable_surfaces/deformable_surface_tester.cpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")

@@ -18,8 +18,8 @@ DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::v
                                                           std::size_t collision_id) :
         Surface<ForceModel, ParticleType>::Surface(id, collision_id, name, adhesive),
         points_(std::move(points)),
-        infinite_(infinite),
-        normal_(calculate_normal())
+        normal_(calculate_normal()),
+        infinite_(infinite)
 {
     update_bounding_box();
 }
@@ -28,7 +28,8 @@ DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::v
 template<typename ForceModel, typename ParticleType>
 DEM::PointSurface<ForceModel, ParticleType>::PointSurface(const DEM::ParameterMap& parameters) :
     Surface<ForceModel, ParticleType>::Surface(parameters),
-    points_(), infinite_(parameters.get_parameter<bool>("infinite"))
+    points_(),
+    infinite_(parameters.get_parameter<bool>("infinite"))
 {
     auto no_points = parameters.get_parameter<std::size_t>("no_points");
     for (unsigned i = 0; i != no_points; ++i) {
