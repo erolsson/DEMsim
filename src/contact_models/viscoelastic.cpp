@@ -401,9 +401,6 @@ bool DEM::Viscoelastic::create_binder_contact(const ElectrodeMaterial* mat) {
 DEM::Vec3 DEM::Viscoelastic::get_rolling_resistance_torque() const {
     if (binder_contact_) {
         auto a = sqrt(area_/3.1415);
-        if (!rot_.is_zero()) {
-            std::cout << -2*3.1415*a*a*a*tsi0_/3/bt_*rot_ << "\n";
-        }
         return -2*3.1415*a*a*a*tsi0_/3/bt_*rot_;
     }
     else {

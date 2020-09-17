@@ -66,7 +66,7 @@ std::vector<DEM::Vec3> DEM::random_fill_box(double z0, double z1, double box_wid
             position.y() = dist_r(rand_engine);
             position.z() = dist_z(rand_engine);
             //Check if a particle at the chosen position overlaps with an other
-            overlapping = check_overlaps(position, r+bt, particle_positions, radii);
+            overlapping = check_overlaps(position, r + bt, particle_positions, radii);
         }
 
         particle_positions.push_back(position);
@@ -75,14 +75,14 @@ std::vector<DEM::Vec3> DEM::random_fill_box(double z0, double z1, double box_wid
 }
 
 std::vector<DEM::Vec3> DEM::random_fill_box(double x1, double x2, double y1, double y2, double z1, double z2,
-                                       const std::vector<double>& radii) {
+                                       const std::vector<double>& radii, double delta) {
     std::vector<Vec3> particle_positions;
     std::random_device random_device;
     std::default_random_engine rand_engine(0); //(random_device());
     for (auto r : radii) {
-        std::uniform_real_distribution<double> dist_x(x1+r, x2-r);
-        std::uniform_real_distribution<double> dist_y(y1+r, y2-r);
-        std::uniform_real_distribution<double> dist_z(z1+r, z2-r);
+        std::uniform_real_distribution<double> dist_x(x1 + r + delta, x2 - r - delta);
+        std::uniform_real_distribution<double> dist_y(y1 + r + delta, y2 - r - delta);
+        std::uniform_real_distribution<double> dist_z(z1 + r + delta, z2 - r - delta);
 
         bool overlapping = true;
         Vec3 position {};
@@ -91,7 +91,7 @@ std::vector<DEM::Vec3> DEM::random_fill_box(double x1, double x2, double y1, dou
             position.y() = dist_y(rand_engine);
             position.z() = dist_z(rand_engine);
             //Check if a particle at the chosen position overlaps with an other
-            overlapping = check_overlaps(position, r, particle_positions, radii);
+            overlapping = check_overlaps(position, r + delta, particle_positions, radii);
         }
 
         particle_positions.push_back(position);

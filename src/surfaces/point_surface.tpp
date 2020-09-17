@@ -156,6 +156,22 @@ void DEM::PointSurface<ForceModel, ParticleType>::update_bounding_box()
         return v1.z() < v2.z();
     };
 
+    if (infinite_) {
+        bbox_values_ = {-1e99, 1e99, -1e99, 1e99, -1e99, 1e99};
+        if (normal_[0] != 0) {
+            bbox_values_[0] = std::min_element(points_.begin(), points_.end(), x_cmp)->x();
+            bbox_values_[1] = std::max_element(points_.begin(), points_.end(), x_cmp)->x();
+        }
+        if (normal_[1] != 0) {
+            bbox_values_[2] = std::min_element(points_.begin(), points_.end(), y_cmp)->y();
+            bbox_values_[3] = std::max_element(points_.begin(), points_.end(), y_cmp)->y();
+        }
+        if (normal_[2] != 0) {
+            bbox_values_[4] = std::min_element(points_.begin(), points_.end(), z_cmp)->z();
+            bbox_values_[5] = std::max_element(points_.begin(), points_.end(), z_cmp)->z();
+        }
+    }
+
     bbox_values_[0] = std::min_element(points_.begin(), points_.end(), x_cmp)->x();
     bbox_values_[1] = std::max_element(points_.begin(), points_.end(), x_cmp)->x();
 

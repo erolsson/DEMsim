@@ -255,8 +255,8 @@ template<typename ForceModel, typename ParticleType>
 void PeriodicBCHandler<ForceModel, ParticleType>::create_mirror_particles(std::size_t particle_idx) {
     auto particle = simulation_particles_[particle_idx];
     for (unsigned direction = 0; direction != active_directions_.size(); ++direction) {
-        if (active_directions_[direction] && (mirror_particles_.count(particle_idx) == 0
-            || mirror_particles_[particle_idx][direction] == nullptr)) {
+        if ((active_directions_[direction] && (mirror_particles_.count(particle_idx) == 0))
+            || mirror_particles_[particle_idx][direction] == nullptr) {
             const auto d1 = particle->get_position()[direction] - particle->get_radius() - stretch_
                      - boundaries_[direction].min;
             const auto d2 = boundaries_[direction].max - particle->get_radius() - stretch_
@@ -573,6 +573,9 @@ bool PeriodicBCHandler<ForceModel, ParticleType>::has_mirror_particle(const Part
 
 template<typename ForceModel, typename ParticleType>
 bool PeriodicBCHandler<ForceModel, ParticleType>::is_mirror_particle(const ParticleType* particle) const {
+    if (particle == nullptr) {
+        return false;
+    }
     auto it = std::lower_bound(simulation_particles_.begin(),  simulation_particles_.end(), particle->get_id(),
                                [](const auto& p1, const auto& rhs) {return p1->get_id() < rhs; });
     return *it != particle;

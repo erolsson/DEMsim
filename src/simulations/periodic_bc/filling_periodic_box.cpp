@@ -8,8 +8,9 @@
 #include "../../engine/engine.h"
 #include "../../materials/elastic_ideal_plastic_material.h"
 #include "../../utilities/vec3.h"
-
+#include <fenv.h>
 void DEM::filling_periodic_box(const std::string& settings_file_name) {
+    feenableexcept(FE_INVALID | FE_OVERFLOW);
     using namespace DEM;
     using ForceModel = StorakersMesarovicJohnson;
     using ParticleType = SphericalParticle<ForceModel>;
@@ -57,6 +58,7 @@ void DEM::filling_periodic_box(const std::string& settings_file_name) {
     for (std::size_t i=0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), material);
     }
+
 
     auto bottom_surface = simulator.create_point_surface(bottom_points, true , true);
     std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;

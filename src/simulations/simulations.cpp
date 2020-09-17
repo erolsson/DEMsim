@@ -21,7 +21,8 @@ std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
             {"periodic_bc_tester",             DEM::periodic_bc_tester},
             {"periodic_bc_simulation",         DEM::periodic_bc_simulation},
             {"filling_periodic_box",           DEM::filling_periodic_box},
-            {"deformable_surface_tester",      DEM::deformable_surface_tester}
+            {"deformable_surface_tester",      DEM::deformable_surface_tester},
+            {"battery_rve",                    DEM::battery_rve}
             // {"binder_contact_calculator",   DEM::binder_contact_calculator}
     };
 }

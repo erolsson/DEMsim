@@ -79,6 +79,7 @@ add_executable(DEMsim
                src/simulations/periodic_bc/filling_periodic_box.cpp
                src/surfaces/deformable_point_surface.h
                src/surfaces/deformable_point_surface.tpp
-               src/simulations/deformable_surfaces/deformable_surface_tester.cpp)
+               src/simulations/deformable_surfaces/deformable_surface_tester.cpp
+               src/simulations/battery/battery_rve.cpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}")

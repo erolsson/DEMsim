@@ -24,6 +24,7 @@ namespace DEM {
     void periodic_bc_simulation(const std::string& settings_file_name);
     void filling_periodic_box(const std::string& settings_file_name);
     void deformable_surface_tester(const std::string& settings_file_name);
+    void battery_rve(const std::string& settings_file_name);
 
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 
