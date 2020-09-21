@@ -17,7 +17,8 @@ std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
             {"stone_compaction",            DEM::stone_compaction},
             {"electrode_box",               DEM::electrode_box},
             {"electrode_cylinder_filling",  DEM::electrode_cylinder_filling},
-            {"electrode_cylinder_compaction",  DEM::electrode_cylinder_compaction}
+            {"electrode_cylinder_compaction",  DEM::electrode_cylinder_compaction},
+            {"Cathode_mechanical_simulations",  DEM::Cathode_mechanical_simulations},
             // {"binder_contact_calculator",   DEM::binder_contact_calculator}
     };
 }
