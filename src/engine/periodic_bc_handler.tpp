@@ -244,8 +244,8 @@ void PeriodicBCHandler<ForceModel, ParticleType>::move_mirror_particles(Particle
 template<typename ForceModel, typename ParticleType>
 void PeriodicBCHandler<ForceModel, ParticleType>::create_mirror_particles(ParticleType* simulation_particle) {
     for (unsigned direction = 0; direction != active_directions_.size(); ++direction) {
-        if (active_directions_[direction] && (mirror_particles_.count(simulation_particle->get_id() == 0
-             || mirror_particles_[simulation_particle->get_id()][direction] == nullptr))) {
+        if (active_directions_[direction] && (mirror_particles_.count(simulation_particle->get_id()) == 0
+             || mirror_particles_[simulation_particle->get_id()][direction] == nullptr)) {
             const auto d1 = simulation_particle->get_position()[direction] - simulation_particle->get_radius()
                             - stretch_ - boundaries_[direction].min;
             const auto d2 = boundaries_[direction].max - simulation_particle->get_radius() - stretch_
