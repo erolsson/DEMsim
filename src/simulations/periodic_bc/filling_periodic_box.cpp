@@ -50,7 +50,7 @@ void DEM::filling_periodic_box(const std::string& settings_file_name) {
     auto p3 = Vec3( box_side,  box_side, 0);
     auto p4 = Vec3(-box_side,  box_side, 0);
     std::vector<Vec3> bottom_points{p1, p2, p3, p4};
-
+    auto bottom_surface = simulator.create_point_surface(bottom_points, true , true);
     auto particle_positions = random_fill_box(-box_side/2, box_side/2,
                                               -box_side/2, box_side/2,
                                               0, box_side,
@@ -59,8 +59,6 @@ void DEM::filling_periodic_box(const std::string& settings_file_name) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), material);
     }
 
-
-    auto bottom_surface = simulator.create_point_surface(bottom_points, true , true);
     std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;
     auto output1 = simulator.create_output(output_directory, 0.001s);
     output1->print_particles = true;

@@ -155,8 +155,7 @@ template<typename ForceModel, typename ParticleType>
 std::string DEM::Cylinder<ForceModel, ParticleType>::restart_data() const {
     using DEM::named_print;
     std::ostringstream ss;
-    ss << named_print("Cylinder", "type") << ", "
-       << DEM::Surface<ForceModel, ParticleType>::restart_data() << ", "
+    ss << DEM::Surface<ForceModel, ParticleType>::restart_data() << ", "
        << named_print(radius_, "radius") << ", " << named_print(axis_, "axis") << ", "
        << named_print(point_, "point") << ", " << named_print(length_, "length") << ", "
        << named_print(inward_, "inward") << ", " << named_print(infinite_, "infinite") << ","

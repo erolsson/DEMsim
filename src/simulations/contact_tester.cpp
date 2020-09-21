@@ -43,7 +43,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     mat.mu = parameters.get_parameter<double>("mu");
     mat.alpha_i = parameters.get_vector<double>("alpha_i");
     mat.tau_i =parameters.get_vector<double>("tau_i");
-
+    mat.fb = 1.;
 
     auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius-(mat.bt)/2 - 10*tick, 0, 0},
             Vec3{}, &mat, 1);

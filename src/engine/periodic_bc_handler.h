@@ -71,11 +71,11 @@ namespace DEM {
         std::size_t no_active_directions_ = 0;
 
         void move_periodic_boundaries();
-        void move_mirror_particles(std::size_t particle_idx);
-        void create_corner_particles(std::size_t particle_idx);
-        void create_mirror_particles(std::size_t particle_idx);
+        void move_mirror_particles(ParticleType* simulation_particle);
+        void create_corner_particles(ParticleType* simulation_particle);
+        void create_mirror_particles(ParticleType* simulation_particle);
         void remove_mirror_particles(std::size_t particle_idx);
-        void respect_boundaries(std::size_t particle_idx);
+        void respect_boundaries(ParticleType* simulation_particle);
 
         ParticleType* get_mirror_particle(ParticleType* simulation_particle, std::size_t direction);
         ParticleType* get_simulation_particle(std::size_t particle_id);

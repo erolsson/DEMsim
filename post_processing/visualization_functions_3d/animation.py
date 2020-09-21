@@ -20,6 +20,7 @@ class Animation:
         self.start_time = 0
         self.end_time = None
         self.save_frames = False
+        self.frame_times = None
         self.save_directory = ''
         self.image_file_prefix = 'frame'
         self.image_file_extension = 'png'
@@ -40,13 +41,14 @@ class Animation:
         self.surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dou', self.surfaces_colors,
                                                 self.surfaces_opacities, self.plot_order, self.bounding_boxes,
                                                 self.visible_functions)
+        self.initialized = False
 
     def run(self):
         a = self._animation()
         for _ in a:
             pass
 
-    def _animation(self):
+    def initialize(self):
         self.surfaces_plotter.surfaces_opacities = self.surfaces_opacities
         self.surfaces_plotter.surfaces_colors = self.surfaces_colors
         self.surfaces_plotter.plot_order = self.plot_order
@@ -70,9 +72,14 @@ class Animation:
             self.frame_times = self.frame_times[frame_times_np < self.end_time]
         print(self.frame_times)
 
-        n = len(self.frame_times)
         if self.save_frames and not os.path.isdir(self.save_directory):
             os.makedirs(self.save_directory)
+        self.initialized = True
+
+    def _animation(self):
+        if not self.initialized:
+            self.initialize()
+        n = len(self.frame_times)
         for i, t in enumerate(self.frame_times):
             print(i)
             particle_data = np.genfromtxt(self.directory + '/particles_' + t + '.dou', delimiter=',')

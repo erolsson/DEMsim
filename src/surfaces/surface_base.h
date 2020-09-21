@@ -75,6 +75,7 @@ namespace DEM {
         const std::array<ForceAmpPtr, 3>& get_applied_forces() const { return force_control_amplitudes_; }
         void set_force_amplitude(ForceAmpPtr amplitude, char direction);
         [[nodiscard]] virtual std::string restart_data() const;
+        [[nodiscard]] virtual std::string type() const = 0;
     protected:
         Vec3 velocity_{ Vec3(0, 0, 0) };
         Vec3 acceleration_{ Vec3(0, 0, 0) };

@@ -54,8 +54,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     kparticle_=4*tsi0particle_*sqrt(R0_)/3;
     yield_h_ = pow(std::min(mat1->yield_stress, mat2->yield_stress)*R0_*R0_/kparticle_, 2./3);
 
-    double G1 = E1/2/(1+v1);
-    double G2 = E2/2/(1+v2);
+    double G1 = Ep1/2/(1+vp1);
+    double G2 = Ep2/2/(1+vp2);
     kT_ = 8/((2-v1)/G1 + (2-v2)/G2)*0.001*R0_;
 
     for (unsigned i=0; i!=M; ++i)
@@ -100,7 +100,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     kparticle_=4*tsi0particle_*sqrt(R0_)/3;
     yield_h_ = pow(mat1->yield_stress*R0_*R0_/kparticle_, 2./3);
 
-    double G1 = E1/2/(1+v1);
+    double G1 = Ep1/2/(1+vp1);
     kT_ = 8/((2-v1)/G1)*0.001*R0_;
 
     for (unsigned i=0; i!=M; ++i)
@@ -276,10 +276,11 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
     FT_visc_ -= dot_product(FT_visc_, normal)*normal;
     uT_ += dt;
 
-    if (F_visc != 0.0  && !dt.is_zero()) {
+    if (F_visc != 0.0) {
+        /*
         if (F_visc > 0) {
             fractured_ = false;
-        }
+        }*/
         dFT_ = 2*area_*tsi0_*dt/bt_;
         for (unsigned i=0; i!=M; ++i)
         {
@@ -290,7 +291,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
         FT_visc_ += dFT_;
 
         if (FT_visc_.length() > F_visc) { // contact aborted
-            // fractured_ = true;
+            fractured_ = true;
         }
     }
     else {
@@ -326,9 +327,9 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
 std::string DEM::Viscoelastic::get_output_string() const {
     std::stringstream ss;
     ss  << F_ << ", " << F_visc << ", " << F_particle << ", " << hmax_ << ", "
-        << FT_.x() << ", "  << FT_.y() << ", " << FT_.z() << ","
-        << FT_visc_.x() << ", "  << FT_visc_.y() << ", " << FT_visc_.z() << ","
-        << FT_part_.x() << ", "  << FT_part_.y() << ", " << FT_part_.z() << ","
+        << FT_.x() << ", "  << FT_.y() << ", " << FT_.z() << ", "
+        << FT_visc_.x() << ", "  << FT_visc_.y() << ", " << FT_visc_.z() << ", "
+        << FT_part_.x() << ", "  << FT_part_.y() << ", " << FT_part_.z() << ", "
         << binder_contact_ << ", " << bt_;
     return ss.str();
 }
@@ -406,5 +407,4 @@ DEM::Vec3 DEM::Viscoelastic::get_rolling_resistance_torque() const {
     else {
         return DEM::Vec3(0, 0, 0);
     }
-
 }

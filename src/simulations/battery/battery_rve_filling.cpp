@@ -9,7 +9,7 @@
 #include "../../particles/spherical_particle.h"
 #include "../../materials/electrode_material.h"
 
-void DEM::battery_rve(const std::string& settings_file_name) {
+void DEM::battery_rve_filling(const std::string& settings_file_name) {
     using namespace DEM;
     using ForceModel = Viscoelastic;
     using ParticleType = SphericalParticle<ForceModel>;
@@ -51,17 +51,17 @@ void DEM::battery_rve(const std::string& settings_file_name) {
     auto box_side = pow(particle_volume/particle_density_at_cube, 1./3);
     auto box_height = particle_density_at_cube*box_side/particle_density_at_filling;
 
-    auto p1 = Vec3(-box_side, -box_side, 0);
-    auto p2 = Vec3( box_side, -box_side, 0);
-    auto p3 = Vec3( box_side,  box_side, 0);
-    auto p4 = Vec3(-box_side,  box_side, 0);
+    auto p1 = Vec3(-box_side/2, -box_side/2, 0);
+    auto p2 = Vec3( box_side/2, -box_side/2, 0);
+    auto p3 = Vec3( box_side/2,  box_side/2, 0);
+    auto p4 = Vec3(-box_side/2,  box_side/2, 0);
     std::vector<Vec3> bottom_points{p1, p2, p3, p4};
 
 
     auto particle_positions = random_fill_box(-box_side/2, box_side/2, -box_side/2, box_side/2,
                                               0, box_height, particle_radii, mat->bt);
-    simulator.create_deformable_point_surface(bottom_points, "bottom_plate");
-
+    auto bottom_surface = simulator.create_deformable_point_surface(bottom_points, "bottom_plate");
+    std::cout << "Normal of bottom surface: " << bottom_surface->get_normal() << "\n";
     for (std::size_t i = 0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
@@ -81,6 +81,10 @@ void DEM::battery_rve(const std::string& settings_file_name) {
 
     simulator.set_gravity(Vec3(0, 0, -9.82));
     simulator.setup(1.01*mat->bt);
-    EngineType::RunForTime run_for_time(simulator, 0.5s);
+    EngineType::RunForTime run_for_time(simulator, 0.1s);
     simulator.run(run_for_time);
+
+    auto max_velocity = EngineType::ParticleVelocityLess(simulator, 0.01, 1us);
+    simulator.run(max_velocity);
+    simulator.write_restart_file(output_directory + "/filling_state.res");
 }

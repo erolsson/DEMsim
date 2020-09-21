@@ -23,10 +23,10 @@ PeriodicBCHandler<ForceModel, ParticleType>::PeriodicBCHandler(EngineType& engin
                                                                std::vector<ParticleType*>& simulation_particles,
                                                                CollisionDetectorType& collision_detector,
                                                                ContactMatrix<ContactType>& contacts) :
-    engine_(engine),
-    simulation_particles_(simulation_particles),
-    collision_detector_(collision_detector),
-    contacts_(contacts)
+        engine_(engine),
+        simulation_particles_(simulation_particles),
+        collision_detector_(collision_detector),
+        contacts_(contacts)
 {
 
 }
@@ -37,10 +37,10 @@ PeriodicBCHandler<ForceModel, ParticleType>::PeriodicBCHandler(PeriodicBCHandler
                                                                PeriodicBCHandler::CollisionDetectorType& collision_detector,
                                                                ContactMatrix<ContactType>& contacts,
                                                                const std::vector<ParameterMap>& restart_data) :
-    engine_(engine),
-    simulation_particles_(simulation_particles),
-    collision_detector_(collision_detector),
-    contacts_(contacts)
+        engine_(engine),
+        simulation_particles_(simulation_particles),
+        collision_detector_(collision_detector),
+        contacts_(contacts)
 {
     for (const auto& restart_line: restart_data) {
         if (restart_line.get_parameter<std::string>("data") == "stretch") {
@@ -168,19 +168,11 @@ template<typename ForceModel, typename ParticleType>
 void DEM::PeriodicBCHandler<ForceModel, ParticleType>::fulfill_periodic_bc()
 {
     move_periodic_boundaries();
-    for (std::size_t i = 0; i != simulation_particles_.size(); ++i) {
-        move_mirror_particles(i);
-        create_mirror_particles(i);
-        create_corner_particles(i);
-        respect_boundaries(i);
-        /*
-        if (simulation_particles_[i]->get_id() == 40) {
-            if (mirror_particles_.find(40) != mirror_particles_.end() && mirror_particles_[40][1] != nullptr) {
-                std::cout << "Mirror particle at pos " << mirror_particles_[40][1]->get_position()
-                          << " mother particle at: " << simulation_particles_[i]->get_position() << "\n";
-            }
-        }
-         */
+    for (auto& p: simulation_particles_) {
+        move_mirror_particles(p);
+        create_mirror_particles(p);
+        create_corner_particles(p);
+        respect_boundaries(p);
     }
 }
 
@@ -195,7 +187,7 @@ void PeriodicBCHandler<ForceModel, ParticleType>::move_periodic_boundaries() {
 }
 
 template<typename ForceModel, typename ParticleType>
-void PeriodicBCHandler<ForceModel, ParticleType>::move_mirror_particles(std::size_t particle_idx) {
+void PeriodicBCHandler<ForceModel, ParticleType>::move_mirror_particles(ParticleType* simulation_particle) {
     auto calc_bc_velocity = [vel=this->velocities_, dt=engine_.get_time_increment().count()](const auto& axis,
                                                                                              const auto& d) {
         Vec3 boundary_vel = Vec3(0, 0, 0);
@@ -208,14 +200,12 @@ void PeriodicBCHandler<ForceModel, ParticleType>::move_mirror_particles(std::siz
         return boundary_vel;
     };
 
-    auto it = mirror_particles_.find(particle_idx);
+    auto it = mirror_particles_.find(simulation_particle->get_id());
     if (it != mirror_particles_.end()) {
-        auto sim_particle = get_simulation_particle(particle_idx);
-
         for (std::size_t i = 0; i != 7; ++i) {
             auto& mp = (*it).second[i];
             if (mp != nullptr) {
-                Vec3 d = mp->get_position() - sim_particle->get_position();
+                Vec3 d = mp->get_position() - simulation_particle->get_position();
                 Vec3 bc_velocity = Vec3(0, 0, 0);
                 if(i < 3) {
                     bc_velocity = calc_bc_velocity(i, d);
@@ -234,11 +224,11 @@ void PeriodicBCHandler<ForceModel, ParticleType>::move_mirror_particles(std::siz
                 }
 
                 mp->move(bc_velocity);
-                mp->move(sim_particle->get_displacement_this_increment());
-                mp->set_velocity(sim_particle->get_velocity());
+                mp->move(simulation_particle->get_displacement_this_increment());
+                mp->set_velocity(simulation_particle->get_velocity());
 
-                mp->rotate(sim_particle->get_rotation_this_increment());
-                mp->set_angular_velocity(sim_particle->get_angular_velocity());
+                mp->rotate(simulation_particle->get_rotation_this_increment());
+                mp->set_angular_velocity(simulation_particle->get_angular_velocity());
                 for (unsigned j = 0; j != 3; ++j) {
                     if (abs(mp->get_position()[j]) > 2*boundaries_[j].max) {
                         Vec3 new_pos = mp->get_position();
@@ -252,21 +242,20 @@ void PeriodicBCHandler<ForceModel, ParticleType>::move_mirror_particles(std::siz
 }
 
 template<typename ForceModel, typename ParticleType>
-void PeriodicBCHandler<ForceModel, ParticleType>::create_mirror_particles(std::size_t particle_idx) {
-    auto particle = simulation_particles_[particle_idx];
+void PeriodicBCHandler<ForceModel, ParticleType>::create_mirror_particles(ParticleType* simulation_particle) {
     for (unsigned direction = 0; direction != active_directions_.size(); ++direction) {
-        if ((active_directions_[direction] && (mirror_particles_.count(particle_idx) == 0))
-            || mirror_particles_[particle_idx][direction] == nullptr) {
-            const auto d1 = particle->get_position()[direction] - particle->get_radius() - stretch_
-                     - boundaries_[direction].min;
-            const auto d2 = boundaries_[direction].max - particle->get_radius() - stretch_
-                    - particle->get_position()[direction];
+        if (active_directions_[direction] && (mirror_particles_.count(simulation_particle->get_id() == 0
+             || mirror_particles_[simulation_particle->get_id()][direction] == nullptr))) {
+            const auto d1 = simulation_particle->get_position()[direction] - simulation_particle->get_radius()
+                            - stretch_ - boundaries_[direction].min;
+            const auto d2 = boundaries_[direction].max - simulation_particle->get_radius() - stretch_
+                            - simulation_particle->get_position()[direction];
             if (d1 < 0 || d2 < 0) {
-                Vec3 position = particle->get_position();
+                Vec3 position = simulation_particle->get_position();
                 position[direction] -= (boundaries_[direction].max
                                         - boundaries_[direction].min)*d1/(std::abs(d1));
 
-                create_mirror_particle(particle, direction, position);
+                create_mirror_particle(simulation_particle, direction, position);
             }
         }
     }
@@ -278,9 +267,9 @@ void PeriodicBCHandler<ForceModel, ParticleType>::remove_mirror_particles(std::s
     if (mirror_particles_.count(particle->get_id()) > 0) {
         for (std::size_t direction = 0; direction != 3; ++direction) {
             const auto d1 = particle->get_position()[direction] - particle->get_radius() - stretch_
-                      - boundaries_[direction].min;
+                            - boundaries_[direction].min;
             const auto d2 = boundaries_[direction].max - (particle->get_radius() + stretch_
-                      + particle->get_position()[direction]);
+                                                          + particle->get_position()[direction]);
             if (d1 > 0 && d2 > 0) {
                 switch (direction) {
                     case 0:
@@ -311,17 +300,15 @@ void PeriodicBCHandler<ForceModel, ParticleType>::remove_mirror_particles(std::s
 
 
 template<typename ForceModel, typename ParticleType>
-void DEM::PeriodicBCHandler<ForceModel, ParticleType>::respect_boundaries(std::size_t particle_idx) {
+void DEM::PeriodicBCHandler<ForceModel, ParticleType>::respect_boundaries(ParticleType* simulation_particle) {
     std::array<double, 3> d1;
     std::array<double, 3> d2;
     std::array<bool, 3> directions = {false, false, false};
     std::size_t overlapping_directions = 0;
-    ParticleType* particle = nullptr;
     for (std::size_t direction = 0; direction != active_directions_.size(); ++direction) {
         if (active_directions_[direction]) {
-            particle = simulation_particles_[particle_idx];
-            d1[direction] = particle->get_position()[direction] - boundaries_[direction].min;
-            d2[direction] = boundaries_[direction].max - particle->get_position()[direction];
+            d1[direction] = simulation_particle->get_position()[direction] - boundaries_[direction].min;
+            d2[direction] = boundaries_[direction].max - simulation_particle->get_position()[direction];
             if (d1[direction] < 0 || d2[direction] < 0) {
                 directions[direction] = true;
                 ++overlapping_directions;
@@ -351,14 +338,16 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::respect_boundaries(std::s
         for (std::size_t direction = 0; direction != active_directions_.size(); ++direction) {
             if (directions[direction]) {
                 distance_to_move[direction] = -(boundaries_[direction].max
-                                              - boundaries_[direction].min)*d1[direction]/(std::abs(d1[direction]));
+                                                - boundaries_[direction].min)*d1[direction]/(std::abs(d1[direction]));
             }
         }
-        auto mirror_particle = get_mirror_particle(particle, mirror_idx);
+        auto mirror_particle = get_mirror_particle(simulation_particle, mirror_idx);
         mirror_particle->sum_contact_forces();
-        particle->reset_contact_forces();
-        auto p_id = particle->get_id();
-        mirror_particles_[p_id][mirror_idx] = particle;
+        simulation_particle->reset_contact_forces();
+        auto p_id = simulation_particle->get_id();
+        mirror_particles_[p_id][mirror_idx] = simulation_particle;
+        auto particle_idx = (std::find(simulation_particles_.begin(), simulation_particles_.end(), simulation_particle)
+                             - simulation_particles_.begin());
         simulation_particles_[particle_idx] = mirror_particle;
 
         switch (mirror_idx) {
@@ -443,12 +432,11 @@ void PeriodicBCHandler<ForceModel, ParticleType>::remove_mirror_particle(Particl
 }
 
 template<typename ForceModel, typename ParticleType>
-void PeriodicBCHandler<ForceModel, ParticleType>::create_corner_particles(std::size_t particle_idx) {
-    auto particle = simulation_particles_[particle_idx];
-    position_corner_particle(particle, 3, {true, true, false});
-    position_corner_particle(particle, 4, {true, false, true});
-    position_corner_particle(particle, 5, {false, true, true});
-    position_corner_particle(particle, 6, {true, true, true});
+void PeriodicBCHandler<ForceModel, ParticleType>::create_corner_particles(ParticleType* simulation_particle) {
+    position_corner_particle(simulation_particle, 3, {true, true, false});
+    position_corner_particle(simulation_particle, 4, {true, false, true});
+    position_corner_particle(simulation_particle, 5, {false, true, true});
+    position_corner_particle(simulation_particle, 6, {true, true, true});
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -466,7 +454,7 @@ void PeriodicBCHandler<ForceModel, ParticleType>::position_corner_particle(Parti
     if (create) {
         Vec3 position = Vec3(0, 0, 0);
         for (unsigned axis = 0; axis != mirror_directions.size(); ++axis) {
-            position[axis] = !mirror_directions[axis]*simulation_particles_[p_id]->get_position()[axis];
+            position[axis] = !mirror_directions[axis]*simulation_particle->get_position()[axis];
             auto axis_mirior_p = mirror_particles_[p_id][axis];
             if (axis_mirior_p != nullptr) {
                 position[axis] += mirror_directions[axis]*axis_mirior_p->get_position()[axis];

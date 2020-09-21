@@ -43,6 +43,7 @@ namespace DEM {
         [[nodiscard]] const Vec3& get_position() const {
             return point_;
         }
+        [[nodiscard]] std::string type() const override { return "Cylinder"; }
 
     private:
         using Surface<ForceModel, ParticleType>::displacement_this_inc_;

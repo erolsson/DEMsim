@@ -101,8 +101,7 @@ std::string DEM::DeformablePointSurface<ForceModel, ParticleType>::restart_data(
 {
     using DEM::named_print;
     std::ostringstream ss;
-    ss  << named_print("DeformablePointSurface", "type") << ", "
-        << DEM::PointSurface<ForceModel, ParticleType>::restart_data() << ", ";
+    ss  << DEM::PointSurface<ForceModel, ParticleType>::restart_data() << ", ";
     for (unsigned i = 0; i != nodal_displacements_.size(); ++i) {
         std::stringstream pname;
         pname << "d" << i;

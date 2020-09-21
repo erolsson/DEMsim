@@ -30,6 +30,7 @@ namespace DEM {
         }
 
         void deform(std::chrono::duration<double> time_increment);
+        [[nodiscard]] std::string type() const override { return "DeformablePointSurface"; }
 
     private:
         std::vector<Vec3> nodal_displacements_;

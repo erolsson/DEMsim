@@ -39,6 +39,7 @@ namespace DEM {
         [[nodiscard]] std::string restart_data() const override;
 
         [[nodiscard]] const std::vector<Vec3>& get_points() const { return points_; }
+        [[nodiscard]] std::string type() const override {return "PointSurface"; }
 
     protected:
         std::vector<Vec3> points_;

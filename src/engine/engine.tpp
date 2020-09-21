@@ -501,9 +501,7 @@ SurfaceT DEM::Engine<ForceModel, ParticleType>::get_surface(const std::string& s
         error_ss << "Surface " << surface_name << " does not exist";
         throw std::invalid_argument(error_ss.str());
     }
-    else {
 
-    }
     SurfaceT surface = dynamic_cast<SurfaceT>(*it);
     if (surface) {
         return surface;
@@ -591,6 +589,9 @@ void DEM::Engine<ForceModel, ParticleType>::make_surface_from_restart_data(const
     }
     else if (surface_type == "Cylinder") {
         surface = new DEM::Cylinder<ForceModel, ParticleType>(parameters);
+    }
+    else if (surface_type == "DeformablePointSurface") {
+        surface = new DEM::DeformablePointSurface<ForceModel, ParticleType>(parameters);
     }
     else {
         std::ostringstream error_ss;

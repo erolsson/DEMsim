@@ -135,6 +135,7 @@ std::string DEM::Surface<ForceModel, ParticleType>::restart_data() const {
     using DEM::named_print;
     std::ostringstream ss;
     ss << named_print(object_id_, "id") << ", "
+       << named_print(type(), "type") << ", "
        << named_print(name_, "name") << ", "
        << named_print(mass_, "mass") << ", "
        << named_print(velocity_, "v") << ", "
