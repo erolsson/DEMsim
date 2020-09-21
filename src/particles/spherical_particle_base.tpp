@@ -12,9 +12,11 @@
 
 template<typename ForceModel>
 DEM::SphericalParticleBase<ForceModel>::SphericalParticleBase(double radius, const DEM::Vec3& position,
-                                                              const DEM::Vec3& velocity, MaterialBase* material,
-                                                              unsigned id):
-        ParticleBase<ForceModel>(4.*3.1415*radius*radius*radius/3*material->density, position, velocity, material, id),
+                                                              const DEM::Vec3& velocity, const MaterialBase* material,
+                                                              std::size_t object_id, std::size_t collision_id):
+        ParticleBase<ForceModel>(4.*3.1415*radius*radius*radius/3*material->density, position, velocity, material,
+                                 object_id),
+        collision_id_(collision_id),
         radius_(radius),
         inertia_(2*mass_*radius_*radius_/5)
 {
@@ -25,6 +27,7 @@ template<typename ForceModel>
 DEM::SphericalParticleBase<ForceModel>::SphericalParticleBase(const DEM::ParameterMap& parameters,
                                                               DEM::MaterialBase *material):
     ParticleBase<ForceModel>(parameters, material),
+    collision_id_(parameters.get_parameter<std::size_t>("collision_id")),
     radius_(parameters.get_parameter<double>("r")),
     inertia_(parameters.get_parameter<double>("I"))
 {
@@ -80,7 +83,7 @@ void DEM::SphericalParticleBase<ForceModel>::sum_contact_forces(const T& contact
         const auto c = c_data.first;
         const auto dir = c_data.second;
         f_ += (c->get_normal_force() + c->get_tangential_force())*dir;
-        torque_ += (c->get_torque(position_))*dir;
+        torque_ += (c->get_torque(dir))*dir;
     }
 }
 
@@ -96,7 +99,7 @@ std::string DEM::SphericalParticleBase<ForceModel>::get_output_string() const
     std::ostringstream ss;
     ss << id_ << ", " << position_.x() << ", " << position_.y() << ", " << position_.z() << ", ";
     ss << rot_.x() << ", " << rot_.y() << ", " << rot_.z() << ", " << radius_<< ", ";
-    ss << kinetic_energy() << ", " << material_->id;
+    ss << kinetic_energy() << ", " << material_->id << ", " << f_.x() << ", " << f_.y() << ", " << f_.z();
     return ss.str();
 }
 
@@ -118,6 +121,7 @@ std::string DEM::SphericalParticleBase<ForceModel>::restart_data() const {
     using DEM::named_print;
     std::ostringstream ss;
     ss << ParticleBase<ForceModel>::restart_data() << ", "
+       << named_print(collision_id_, "collision_id") << ", "
        << named_print(radius_, "r") << ", "
        << named_print(inertia_, "I");
     return ss.str();

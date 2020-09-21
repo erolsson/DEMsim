@@ -1,0 +1,11 @@
+N=100
+output_dir=../results/periodic_bc_test/sim_1/
+radius_file=../simulations/closed_die_compaction/size_distribution.dat
+filling_density=0.3
+sY=200E6
+E=200E9
+nu=0.3
+mu=0.3
+mu_wall=0.2
+kT=1e7
+aspect_ratio_at_dense=1.

@@ -87,21 +87,21 @@ void DEM::Contact<ForceModel, ParticleType>::update()
     dt = calculate_tangential_displacement_this_inc();
     w = calculate_rotation_this_inc();
     
-    force_model_.update(h, dt, w, normal_);
-    /*
-    std::string filename = "contact.dou";
-    std::ofstream output_file;
-    output_file.open(filename, std::fstream::app);
-    output_file << h << ", " << force_model_.get_normal_force() << ", " << distance_vector.x() << ", "
-                << distance_vector.y() << ", " << distance_vector.z() << "\n";
-
-     output_file.close();
-         */
+    force_model_.update(h, dt, w, get_normal());
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::get_torque(const DEM::Vec3 &point) const {
-    return cross_product(get_position() - point, get_tangential_force()) + force_model_.get_rolling_resistance_torque();
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::get_torque(int direction) const
+{
+    Vec3 point;
+    if (direction == 1) {
+        point = p1_->get_position();
+    }
+    else if (direction == -1) {
+        point = p2_->get_position();
+    }
+    return cross_product(get_position() - point, get_tangential_force())
+        + force_model_.get_rolling_resistance_torque();
 }
 
 
@@ -120,41 +120,60 @@ DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_distance_vector_surf
 template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_tangential_vector_particle() const
 {
-    Vec3 r1 = -normal_*(p1_->get_radius() - get_overlap()/2);
+    Vec3 r1 = -get_normal()*(p1_->get_radius() - get_overlap()/2);
     Vec3 u1 = p1_->get_displacement_this_increment() + cross_product(p1_->get_rotation_this_increment(), r1);
 
-    Vec3 r2 = normal_*(p2_->get_radius() - get_overlap()/2);
+    Vec3 r2 = get_normal()*(p2_->get_radius() - get_overlap()/2);
     Vec3 u2 = p2_->get_displacement_this_increment() + cross_product(p2_->get_rotation_this_increment(), r2);
-    return (u1 - u2) - dot_product((u1 - u2), normal_)*normal_;
+    return (u1 - u2) - dot_product((u1 - u2), get_normal())*get_normal();
 }
 
 template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_tangential_vector_surface() const
 {
-    Vec3 r1 = -normal_*(p1_->get_radius() - get_overlap()/2);
+    Vec3 r1 = -get_normal()*(p1_->get_radius() - get_overlap()/2);
     Vec3 u1 = p1_->get_displacement_this_increment() + cross_product(p1_->get_rotation_this_increment(), r1);
 
-    return u1 - dot_product(u1, normal_)*normal_;
+    Vec3 u2 = surface_->get_displacement_this_increment(p1_->get_position() + r1);
+
+    return (u1 - u2) - dot_product(u1 - u2, get_normal())*get_normal();
 }
 
 template<typename ForceModel, typename ParticleType>
 DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::get_position() const
 {
-    return p1_->get_position() - normal_*(p1_->get_radius() - get_overlap()/position_divider_);
+    return p1_->get_position() - get_normal()*(p1_->get_radius() - get_overlap()/position_divider_);
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_rotation_vector_particle() const {
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_rotation_vector_particle() const
+{
     return p1_->get_rotation_this_increment() - p2_->get_rotation_this_increment();
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_rotation_vector_surface() const {
+DEM::Vec3 DEM::Contact<ForceModel, ParticleType>::calculate_rotation_vector_surface() const
+{
     return p1_->get_rotation_this_increment();
 }
 
 template<typename ForceModel, typename ParticleType>
-std::string DEM::Contact<ForceModel, ParticleType>::get_output_string() const {
+std::pair<std::size_t, size_t> DEM::Contact<ForceModel, ParticleType>::get_id_pair() const
+{
+    std::size_t id2;
+    if (surface_ != nullptr) {
+        id2 = surface_->get_id();
+    }
+    else {
+        id2 = p2_->get_id();
+    }
+    return std::make_pair(p1_->get_id(), id2);
+}
+
+
+template<typename ForceModel, typename ParticleType>
+std::string DEM::Contact<ForceModel, ParticleType>::get_output_string() const
+{
     std::stringstream ss;
     ss << p1_->get_id() << ", ";
     if (p2_ != nullptr) {
@@ -169,7 +188,8 @@ std::string DEM::Contact<ForceModel, ParticleType>::get_output_string() const {
 }
 
 template<typename ForceModel, typename ParticleType>
-std::string DEM::Contact<ForceModel, ParticleType>::restart_data() const {
+std::string DEM::Contact<ForceModel, ParticleType>::restart_data() const
+{
     std::stringstream ss;
     using DEM::named_print;
     if (p2_ != nullptr) {
@@ -183,6 +203,23 @@ std::string DEM::Contact<ForceModel, ParticleType>::restart_data() const {
     ss << force_model_.restart_data();
     return ss.str();
 }
+
+template<typename ForceModel, typename ParticleType>
+Eigen::Matrix<double, 3, 3> DEM::Contact<ForceModel, ParticleType>::get_force_fabric_tensor() const
+{
+    Eigen::Matrix<double, 3, 3> tensor = Eigen::Matrix<double, 3, 3>::Zero();
+    double d = calculate_distance_vector().length();
+    Vec3 fn = get_normal_force();
+    Vec3 ft = get_tangential_force();
+    for (unsigned i = 0; i != 3; ++i) {
+        for (unsigned j = 0; j != 3; ++j) {
+            tensor(i, j) += d*fn[i]*get_normal()[j] + d*get_normal()[i]*ft[j];
+        }
+    }
+    return tensor;
+}
+
+
 
 
 

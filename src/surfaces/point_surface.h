@@ -19,7 +19,7 @@ namespace DEM {
     class PointSurface : public Surface<ForceModel, ParticleType> {
     public:
         PointSurface(std::size_t id, std::vector<Vec3> points, bool infinite, const std::string& name,
-                     bool adhesive=true);
+                     bool adhesive=true, std::size_t collision_id=0);
         PointSurface(const ParameterMap& parameters);
         ~PointSurface() override = default;
 
@@ -30,7 +30,7 @@ namespace DEM {
 
         [[nodiscard]] double distance_to_point(const Vec3& point) const override;
         [[nodiscard]] Vec3 vector_to_point(const Vec3& point) const override;
-        [[nodiscard]] Vec3 displacement_this_inc(const Vec3& position) const override;
+        [[nodiscard]] Vec3 get_displacement_this_increment(const Vec3& position) const override;
 
         void move(const Vec3& distance, const Vec3& velocity) override;
         void rotate(const Vec3& point, const Vec3& rotation_vector) override;
@@ -39,20 +39,22 @@ namespace DEM {
         [[nodiscard]] std::string restart_data() const override;
 
         [[nodiscard]] const std::vector<Vec3>& get_points() const { return points_; }
+        [[nodiscard]] std::string type() const override {return "PointSurface"; }
 
-    private:
+    protected:
         std::vector<Vec3> points_;
-        bool infinite_;
         Vec3 normal_;
-
-        using Surface<ForceModel, ParticleType>::displacement_this_inc_;
-        using Surface<ForceModel, ParticleType>::rotation_this_inc_;
-        using Surface<ForceModel, ParticleType>::rotation_point_;
-        using Surface<ForceModel, ParticleType>::velocity_;
-        using Surface<ForceModel, ParticleType>::bbox_values_;
-
         [[nodiscard]] Vec3 calculate_normal() const;
         void update_bounding_box() override;
+        using Surface<ForceModel, ParticleType>::displacement_this_inc_;
+        using Surface<ForceModel, ParticleType>::velocity_;
+
+    private:
+        bool infinite_;
+
+        using Surface<ForceModel, ParticleType>::rotation_this_inc_;
+        using Surface<ForceModel, ParticleType>::rotation_point_;
+        using Surface<ForceModel, ParticleType>::bbox_values_;
     };
 
 }

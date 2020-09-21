@@ -8,6 +8,8 @@
 #include <chrono>
 #include <memory>
 
+#include "Eigen/Dense"
+
 #include "../surfaces/surface_base.h"
 
 
@@ -35,7 +37,7 @@ namespace DEM {
 
         [[nodiscard]] Vec3 get_normal_force() const { return force_model_.get_normal_force()*get_normal(); }
         [[nodiscard]] Vec3 get_tangential_force() const { return force_model_.get_tangential_force(); }
-        [[nodiscard]] Vec3 get_torque(const Vec3& point) const;
+        [[nodiscard]] Vec3 get_torque(int direction) const;   // 1 for p1 -1 for p2
 
         std::pair<ParticleType*, ParticleType*> get_particles() const  { return std::make_pair(p1_, p2_); }
         const SurfaceType* get_surface() const { return surface_; }
@@ -45,9 +47,12 @@ namespace DEM {
         [[nodiscard]] double get_contact_radius() const { return force_model_.get_contact_area();}
         [[nodiscard]] const Vec3& get_normal() const { return normal_; }
 
+        [[nodiscard]] std::pair<std::size_t, size_t> get_id_pair() const;
+
         void set_increment(std::chrono::duration<double> increment) {force_model_.set_increment(increment); }
         [[nodiscard]] std::string get_output_string() const;
         [[nodiscard]] std::string restart_data() const;
+        Eigen::Matrix<double, 3, 3> get_force_fabric_tensor() const;
 
     private:
         ParticleType* const p1_;

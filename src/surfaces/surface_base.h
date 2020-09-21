@@ -33,17 +33,18 @@ namespace DEM {
     public:
         double max_velocity{0.};
         bool force_control{ false };
-        explicit Surface(std::size_t id, const std::string& name, bool adhesive=false);
+        explicit Surface(std::size_t id, std::size_t collision_id, const std::string& name, bool adhesive=false);
         explicit Surface(const ParameterMap& parameters);
         virtual ~Surface() = default;
-        std::size_t get_id() const { return id_; }
+        std::size_t get_id() const { return object_id_; }
+        std::size_t get_collision_id() const { return collision_id_; }
         const std::string& get_name() const { return name_; }
         virtual Vec3 get_normal(const Vec3& position) const = 0;
 
         // virtual double get_curvature_radius() const = 0;  //  ToDo Implement later
         virtual double distance_to_point(const Vec3& point) const = 0;
         virtual Vec3 vector_to_point(const Vec3& point) const = 0;
-        virtual Vec3 displacement_this_inc(const Vec3& position) const = 0;
+        virtual Vec3 get_displacement_this_increment(const Vec3& position) const = 0;
 
         virtual void move(const Vec3& distance, const Vec3& velocity) = 0;
         virtual void rotate(const Vec3& position, const Vec3& rotation_vector) = 0;
@@ -74,6 +75,7 @@ namespace DEM {
         const std::array<ForceAmpPtr, 3>& get_applied_forces() const { return force_control_amplitudes_; }
         void set_force_amplitude(ForceAmpPtr amplitude, char direction);
         [[nodiscard]] virtual std::string restart_data() const;
+        [[nodiscard]] virtual std::string type() const = 0;
     protected:
         Vec3 velocity_{ Vec3(0, 0, 0) };
         Vec3 acceleration_{ Vec3(0, 0, 0) };
@@ -89,7 +91,8 @@ namespace DEM {
         virtual void update_bounding_box() = 0;
 
     private:
-        std::size_t id_;
+        std::size_t object_id_;
+        std::size_t collision_id_;
         std::string name_;
         double mass_ { 0 };
         bool adhesive_ {false};

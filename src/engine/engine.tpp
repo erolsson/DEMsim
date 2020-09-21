@@ -23,6 +23,7 @@
 #include "../utilities/printing_functions.h"
 #include "collision_detection/collision_detector.h"
 #include "output.h"
+#include "periodic_bc_handler.h"
 #include "../simulations/simulations.h"
 #include "../utilities/file_reading_functions.h"
 
@@ -32,35 +33,39 @@
 
 template<typename ForceModel, typename ParticleType>
 DEM::Engine<ForceModel, ParticleType>::Engine(std::chrono::duration<double> dt) :
-        collision_detector_(particles_, surfaces_, contacts_), increment_{dt}
+        collision_detector_(particles_, surfaces_),
+        increment_{dt}
 {
     // Empty constructor
 }
 
 template<typename ForceModel, typename ParticleType>
 DEM::Engine<ForceModel, ParticleType>::Engine(const std::string& restart_file_name) :
-        collision_detector_(particles_, surfaces_, contacts_) {
+        collision_detector_(particles_, surfaces_) {
     std::ifstream restart_file(restart_file_name);
     std::string data_string;
-    std::map<std::string, std::vector<DEM::ParameterMap>> keyword_data {
-        {"*material", std::vector<DEM::ParameterMap> {} },
-        {"*output",   std::vector<DEM::ParameterMap>{} },
-        {"*surface",  std::vector<DEM::ParameterMap>{} },
-        {"*particle", std::vector<DEM::ParameterMap>{} },
-        {"*contact",  std::vector<DEM::ParameterMap>{} },
+    std::map<std::string,      std::vector<DEM::ParameterMap>> keyword_data {
+        {"*material",           std::vector<DEM::ParameterMap> {} },
+        {"*output",             std::vector<DEM::ParameterMap>{} },
+        {"*surface",            std::vector<DEM::ParameterMap>{} },
+        {"*particle",           std::vector<DEM::ParameterMap>{} },
+        {"*contact",            std::vector<DEM::ParameterMap>{} },
+        {"*collision_detector", std::vector<DEM::ParameterMap>{} },
+        {"*periodic bc",        std::vector<DEM::ParameterMap>{} },
     };
 
     DEM::ParameterMap engine_parameters;
-    std::regex keyword_re ("(\\*.+):(.+)");  // *Word: data
+    std::regex keyword_re ("(\\*.+?):(.+)");  // *Word: data
     std::smatch sm;
     std::size_t line_count = 0;
     while (getline(restart_file, data_string)) {
         ++line_count;
-        data_string.erase(remove_if(data_string.begin(), data_string.end(), isspace), data_string.end());
         if (std::regex_match(data_string, sm, keyword_re)) {
             std::string keyword = sm[1];
             //transforming keyword to lower case
             std::transform(keyword.begin(), keyword.end(), keyword.begin(), ::tolower);
+            std::string data = sm[2];
+            data.erase(remove_if(data.begin(), data.end(), isspace), data.end());
             if (keyword_data.find(keyword) == keyword_data.end()) {
                 std::stringstream error_ss;
                 error_ss << "Unsupported keyword " << keyword << " on line " << line_count << "\n";
@@ -85,11 +90,13 @@ DEM::Engine<ForceModel, ParticleType>::Engine(const std::string& restart_file_na
     time_ = std::chrono::duration<double>(engine_parameters.get_parameter<double>("time"));
     mass_scale_factor_ = engine_parameters.get_parameter<double>("mass_scale_factor");
     bounding_box_stretch_ = engine_parameters.get_parameter<double>("bounding_box_stretch");
-    number_of_objects_ = engine_parameters.get_parameter<double>("number_of_objects");
+    object_id_counter_ = engine_parameters.get_parameter<double>("number_of_objects");
+    collision_id_counter_= engine_parameters.get_parameter<double>("number_of_collision_objects");
+    rotation_= engine_parameters.get_parameter<bool>("rotation");
     gravity_ = {engine_parameters.get_parameter<double>("gravity_x"),
                 engine_parameters.get_parameter<double>("gravity_y"),
                 engine_parameters.get_parameter<double>("gravity_z")};
-    contacts_.resize(number_of_objects_);
+    contacts_.resize(object_id_counter_);
 
     for (const auto& material_data: keyword_data["*material"]) {
         make_material_from_restart_data(material_data);
@@ -99,19 +106,32 @@ DEM::Engine<ForceModel, ParticleType>::Engine(const std::string& restart_file_na
         make_surface_from_restart_data(surface_data);
     }
 
-    for (const auto& output_data: keyword_data["*output"]) {
-        make_output_from_restart_data(output_data);
-    }
-
     for (const auto& particle_data: keyword_data["*particle"]) {
         make_particle_from_restart_data(particle_data);
     }
+    collision_detector_.setup(bounding_box_stretch_);
 
     for (const auto& contact_data: keyword_data["*contact"]) {
         make_contact_from_restart_data(contact_data);
     }
 
-    collision_detector_.setup(bounding_box_stretch_);
+    if (keyword_data["*periodic bc"].size() > 0 ){
+        periodic_bc_handler_ = std::make_unique<PeriodicBCHandlerType>(*this, particles_, collision_detector_,contacts_, keyword_data["*periodic bc"]);
+    }
+
+    for (const auto& output_data: keyword_data["*output"]) {
+        make_output_from_restart_data(output_data);
+    }
+
+    for (auto& c: contacts_.get_objects()) {
+        c->update();
+    }
+
+    for (auto& p: particles_) {
+        p->sum_contact_forces();
+    }
+
+    collision_detector_.restart(keyword_data["*collision_detector"]);
     collision_detector_.do_check();
 }
 
@@ -133,10 +153,13 @@ void DEM::Engine<ForceModel, ParticleType>::setup()
 
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::setup(double bounding_box_stretch) {
-    std::cout << "Number of objects is " << number_of_objects_ << "\n";
+    std::cout << "Number of objects is " << object_id_counter_ << "\n";
     bounding_box_stretch_ = bounding_box_stretch;
-    contacts_.resize(number_of_objects_);
+    contacts_.resize(object_id_counter_);
     collision_detector_.setup(bounding_box_stretch);
+    if (periodic_bc_handler_ != nullptr) {
+        periodic_bc_handler_->set_boundary_stretch(bounding_box_stretch);
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -162,7 +185,7 @@ void DEM::Engine<ForceModel, ParticleType>::run(Condition& condition)
                       <<  velocity_pair.second << std::endl;
         }
     }
-    // Running all outputs in the end od the simulation
+    // Running all outputs in the end of the simulation
     for (auto& o : outputs_) {
         o->run_output();
     }
@@ -187,9 +210,10 @@ typename DEM::Engine<ForceModel, ParticleType>::ParticlePointer
 DEM::Engine<ForceModel, ParticleType>::create_particle(double radius, const Vec3& position,
                                                   const Vec3& velocity, MaterialBase* material)
 {
-    auto p = new ParticleType(radius, position, velocity, material, number_of_objects_);
+    auto p = new ParticleType(radius, position, velocity, material, object_id_counter_, collision_id_counter_);
     particles_.push_back(p);
-    ++number_of_objects_;
+    ++object_id_counter_;
+    ++collision_id_counter_;
     return p;
 }
 
@@ -198,9 +222,11 @@ typename DEM::Engine<ForceModel, ParticleType>::PointSurfacePointer
 DEM::Engine<ForceModel, ParticleType>::create_point_surface(const std::vector<Vec3>& points, bool infinite,
                                                             const std::string& name, bool adhesive)
 {
-    auto ps = new PointSurface<ForceModel, ParticleType>(number_of_objects_, points, infinite, name, adhesive);
+    auto ps = new PointSurface<ForceModel, ParticleType>(object_id_counter_, points, infinite, name, adhesive,
+                                                         collision_id_counter_);
     surfaces_.push_back(ps);
-    ++number_of_objects_;
+    ++object_id_counter_;
+    ++collision_id_counter_;
     return ps;
 }
 
@@ -220,8 +246,29 @@ DEM::Engine<ForceModel, ParticleType>::create_point_surface(const std::vector<Ve
                                                             bool adhesive)
 {
     std::stringstream name_ss;
-    name_ss << "point_surface_" << number_of_objects_;
-    return create_point_surface(points, infinite, name_ss.str(), adhesive);
+    name_ss << "point_surface_" << object_id_counter_;
+    return create_point_surface(points, infinite, name_ss.str().c_str(), adhesive);
+}
+
+template<typename ForceModel, typename ParticleType>
+typename DEM::Engine<ForceModel, ParticleType>::DeformablePointSurfacePointer
+DEM::Engine<ForceModel, ParticleType>::create_deformable_point_surface(const std::vector<Vec3>& points, bool adhesive) {
+    std::stringstream name_ss;
+    name_ss << "deformable_point_surface_" << object_id_counter_;
+    return create_deformable_point_surface(points, name_ss.str().c_str(), adhesive);
+}
+
+template<typename ForceModel, typename ParticleType>
+typename DEM::Engine<ForceModel, ParticleType>::DeformablePointSurfacePointer
+DEM::Engine<ForceModel, ParticleType>::create_deformable_point_surface(const std::vector<Vec3>& points,
+                                                                       const char* name, bool adhesive) {
+
+    auto dps = new DeformablePointSurface<ForceModel, ParticleType>(object_id_counter_, points, true, name, adhesive,
+                                                                    collision_id_counter_);
+    surfaces_.push_back(dps);
+    ++object_id_counter_;
+    ++collision_id_counter_;
+    return dps;
 }
 
 
@@ -231,10 +278,11 @@ DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3
                                                   double length, const std::string& name, bool inward, bool infinite,
                                                   bool closed_ends)
 {
-    auto c = new Cylinder<ForceModel, ParticleType>(number_of_objects_, radius, axis, base_point, length,
-                                                    name, inward, infinite, closed_ends);
+    auto c = new Cylinder<ForceModel, ParticleType>(object_id_counter_, radius, axis, base_point, length,
+                                                    name, inward, infinite, closed_ends, collision_id_counter_);
     surfaces_.push_back(c);
-    ++number_of_objects_;
+    ++object_id_counter_;
+    ++collision_id_counter_;
     return c;
 }
 
@@ -245,7 +293,7 @@ DEM::Engine<ForceModel, ParticleType>::create_cylinder(double radius, const Vec3
                                                        bool closed_ends)
 {
     std::stringstream name_ss;
-    name_ss << "cylinder_" << number_of_objects_;
+    name_ss << "cylinder_" << object_id_counter_;
     return create_cylinder(radius, axis, base_point, length, name_ss.str(), inward, infinite, closed_ends);
 }
 
@@ -321,6 +369,23 @@ DEM::Engine<ForceModel, ParticleType>::remove_viscosity_parameters(std::pair<dou
 {
     viscocity_parameters_.erase(std::remove(viscocity_parameters_.begin(), viscocity_parameters_.end(),
                                                  parameter_pair), viscocity_parameters_.end());
+}
+
+template<typename ForceModel, typename ParticleType>
+[[maybe_unused]] void DEM::Engine<ForceModel, ParticleType>::add_periodic_boundary_condition(char axis,
+                                                                                             double boundary_min,
+                                                                                             double boundary_max) {
+    if (periodic_bc_handler_ == nullptr) {
+        periodic_bc_handler_ = std::make_unique<PeriodicBCHandlerType>(*this, particles_, collision_detector_,
+                                                                       contacts_);
+    }
+    periodic_bc_handler_->add_periodic_bc(axis, boundary_min, boundary_max);
+}
+
+template<typename ForceModel, typename ParticleType>
+[[maybe_unused]] void DEM::Engine<ForceModel, ParticleType>::set_periodic_boundary_condition_strain_rate(
+        char axis, double strain_rate) {
+    periodic_bc_handler_->set_periodic_bc_strain_rate(axis, strain_rate);
 }
 
 //=====================================================================================================================
@@ -436,9 +501,7 @@ SurfaceT DEM::Engine<ForceModel, ParticleType>::get_surface(const std::string& s
         error_ss << "Surface " << surface_name << " does not exist";
         throw std::invalid_argument(error_ss.str());
     }
-    else {
 
-    }
     SurfaceT surface = dynamic_cast<SurfaceT>(*it);
     if (surface) {
         return surface;
@@ -487,19 +550,19 @@ DEM::Engine<ForceModel, ParticleType>::get_particle(std::size_t id) const {
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::do_step()
 {
+    // std::cout << "new step at time " << get_time().count() << "\n";
+    move_particles();
+    move_surfaces();
     collision_detector_.do_check();
     destroy_contacts();
     create_contacts();
     update_contacts();
-    run_output();
     sum_contact_forces();
-    move_particles();
-    move_surfaces();
+    run_output();
 }
 
 template<typename ForceModel, typename ParticleType>
-void DEM::Engine<ForceModel, ParticleType>::make_material_from_restart_data(
-        const DEM::ParameterMap& parameters) {
+void DEM::Engine<ForceModel, ParticleType>::make_material_from_restart_data(const DEM::ParameterMap& parameters) {
     DEM::MaterialBase* mat;
     auto material_type = parameters.get_parameter<std::string>("type");
     if (material_type == "elastic_ideal_plastic_material") {
@@ -526,6 +589,9 @@ void DEM::Engine<ForceModel, ParticleType>::make_surface_from_restart_data(const
     }
     else if (surface_type == "Cylinder") {
         surface = new DEM::Cylinder<ForceModel, ParticleType>(parameters);
+    }
+    else if (surface_type == "DeformablePointSurface") {
+        surface = new DEM::DeformablePointSurface<ForceModel, ParticleType>(parameters);
     }
     else {
         std::ostringstream error_ss;
@@ -580,7 +646,11 @@ void DEM::Engine<ForceModel, ParticleType>::make_contact_from_restart_data(const
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::create_contacts()
 {
+    if (periodic_bc_handler_ != nullptr) {
+        periodic_bc_handler_->create_periodic_bc_contacts();
+    }
     const auto& contacts_to_create = collision_detector_.contacts_to_create();
+    // std::cout << contacts_to_create.size() << " contacts to create after periodic bc\n";
     for (const auto& c_data : contacts_to_create) {
         typename ContactMatrix<Contact<ForceModel, ParticleType>>::PointerType c = nullptr;
         auto id1 = c_data.get_id_pair().first;
@@ -590,19 +660,28 @@ void DEM::Engine<ForceModel, ParticleType>::create_contacts()
         auto s = c_data.surface;
         if (s == nullptr) {
             c = contacts_.create_item_inplace(id1, id2, p1, p2, increment_);
-            p2->add_contact(c, id1, -1.);
         }
         else {
             c = contacts_.create_item_inplace(id1, id2, p1, s, increment_);
-            s->add_contact(c, id1);
         }
-        p1->add_contact(c, id2, 1.);
+        if (c != nullptr) {
+            p1->add_contact(c, id2, 1.);
+            if (p2 != nullptr) {
+                p2->add_contact(c, id1, -1);
+            }
+            else {
+                s->add_contact(c, id1);
+            }
+        }
     }
 }
 
 template<typename ForceModel, typename ParticleType>
 void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
 {
+    if (periodic_bc_handler_ != nullptr) {
+        periodic_bc_handler_->destroy_periodic_bc_contacts();
+    }
     const auto& contacts_to_destroy = collision_detector_.contacts_to_destroy();
     for (const auto& c_data : contacts_to_destroy) {
         auto id1 = c_data.get_id_pair().first;
@@ -610,14 +689,15 @@ void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
         auto p1 = c_data.particle1;
         auto p2 = c_data.particle2;
         auto s = c_data.surface;
-        p1->remove_contact(id2);
-        if (s == nullptr) {
-            p2->remove_contact(id1);
+        if ( contacts_.erase(id1, id2)) {
+            p1->remove_contact(id2);
+            if (s == nullptr) {
+                p2->remove_contact(id1);
+            }
+            else {
+                s->remove_contact(id1);
+            }
         }
-        else {
-            s->remove_contact(id1);
-        }
-        contacts_.erase(id1, id2);
     }
 }
 
@@ -673,6 +753,10 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
             p->rotate(new_rot);
         }
     }
+
+    if (periodic_bc_handler_ != nullptr) {
+        periodic_bc_handler_->fulfill_periodic_bc();
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -696,6 +780,10 @@ void DEM::Engine<ForceModel, ParticleType>::move_surfaces()
             }
         }
         surface->move(distance, velocity);
+        auto deformable_surface = dynamic_cast<DeformablePointSurface<ForceModel, ParticleType>*>(surface);
+        if (deformable_surface != nullptr) {
+            deformable_surface->deform(increment_);
+        }
     }
 }
 
@@ -737,7 +825,9 @@ void DEM::Engine<ForceModel, ParticleType>::write_restart_file(const std::string
     restart_file << "time=" << time_.count() << "\n";
     restart_file << "mass_scale_factor=" << mass_scale_factor_ << std::endl;
     restart_file << "bounding_box_stretch=" << bounding_box_stretch_ << std::endl;
-    restart_file << "number_of_objects=" << number_of_objects_ << std::endl;
+    restart_file << "number_of_objects=" << object_id_counter_ << std::endl;
+    restart_file << "number_of_collision_objects=" << collision_id_counter_ << std::endl;
+    restart_file << "rotation=" << rotation_ << std::endl;
     restart_file << DEM::named_print(gravity_, "gravity") << "\n";
 
     for (const auto& m: materials_) {
@@ -756,25 +846,19 @@ void DEM::Engine<ForceModel, ParticleType>::write_restart_file(const std::string
         restart_file << "*particle: " << p->restart_data() << "\n";
     }
 
-    for (const auto& c: contacts_.get_objects()) {
+    for (const auto& c: contacts_.get_objects_sorted()) {
         restart_file << "*contact: " << c->restart_data() << "\n";
+    }
+
+    for (const auto& collision_restart_data: collision_detector_.restart_data()) {
+        restart_file << "*collision_detector: " << collision_restart_data << "\n";
+    }
+
+    if (periodic_bc_handler_ != nullptr) {
+        for (const auto& periodic_restart_line: periodic_bc_handler_->restart_data()) {
+            restart_file << "*periodic bc: " << periodic_restart_line << "\n";
+        }
     }
 
     restart_file.close();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

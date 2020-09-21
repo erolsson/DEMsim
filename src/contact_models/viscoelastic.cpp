@@ -54,8 +54,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     kparticle_=4*tsi0particle_*sqrt(R0_)/3;
     yield_h_ = pow(std::min(mat1->yield_stress, mat2->yield_stress)*R0_*R0_/kparticle_, 2./3);
 
-    double G1 = E1/2/(1+v1);
-    double G2 = E2/2/(1+v2);
+    double G1 = Ep1/2/(1+vp1);
+    double G2 = Ep2/2/(1+vp2);
     kT_ = 8/((2-v1)/G1 + (2-v2)/G2)*0.001*R0_;
 
     for (unsigned i=0; i!=M; ++i)
@@ -100,7 +100,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     kparticle_=4*tsi0particle_*sqrt(R0_)/3;
     yield_h_ = pow(mat1->yield_stress*R0_*R0_/kparticle_, 2./3);
 
-    double G1 = E1/2/(1+v1);
+    double G1 = Ep1/2/(1+vp1);
     kT_ = 8/((2-v1)/G1)*0.001*R0_;
 
     for (unsigned i=0; i!=M; ++i)
@@ -141,6 +141,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoe
         FT_visc_(parameters.get_vec3("FT_visc")),
         FT_part_(parameters.get_vec3("FT_part")),
         uT_(parameters.get_vec3("uT")),
+        rot_(parameters.get_vec3("rot")),
         adhesive_(parameters.get_parameter<bool>("adhesive")),
         binder_contact_(parameters.get_parameter<bool>("binder_contact")),
         fractured_(parameters.get_parameter<bool>("fractured"))
@@ -185,6 +186,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoel
         FT_visc_(parameters.get_vec3("FT_visc")),
         FT_part_(parameters.get_vec3("FT_part")),
         uT_(parameters.get_vec3("uT")),
+        rot_(parameters.get_vec3("rot")),
         adhesive_(parameters.get_parameter<bool>("adhesive")),
         binder_contact_(parameters.get_parameter<bool>("binder_contact")),
         fractured_(parameters.get_parameter<bool>("fractured"))
@@ -202,7 +204,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoel
     }
 }
 
-void DEM::Viscoelastic::update(double h, const DEM::Vec3& dt,const Vec3& , const DEM::Vec3& normal){
+void DEM::Viscoelastic::update(double h, const DEM::Vec3& dt, const Vec3& drot, const DEM::Vec3& normal){
+    rot_ += drot;
     F_ = update_normal_force(h);
     update_tangential_force(dt, normal);
 }
@@ -222,7 +225,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         if (h > -bt_ && h_ > -bt_) {
             dF_ = 3./2*sqrt(h_ + bt_)*dh;
 
-            area_ = pi * R0_ * (h + bt_);
+            area_ = pi * Rb_ * (h + bt_);
             auto hn32 = pow(h_ + bt_, 3. / 2);
             auto h_32diff = pow(h + bt_, 3. / 2) - hn32;
             for (unsigned i = 0; i != M; ++i) {
@@ -236,6 +239,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
             F_visc = 0;
             dF_ = 0;
             area_ = 0;
+            rot_.set_zero();
             for (unsigned i = 0; i != M; ++i) {
                 ddi_[i] = 0;
                 di_[i] = 0;
@@ -272,10 +276,11 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
     FT_visc_ -= dot_product(FT_visc_, normal)*normal;
     uT_ += dt;
 
-    if (F_visc != 0.0  && !dt.is_zero()) {
+    if (F_visc != 0.0) {
+        /*
         if (F_visc > 0) {
             fractured_ = false;
-        }
+        }*/
         dFT_ = 2*area_*tsi0_*dt/bt_;
         for (unsigned i=0; i!=M; ++i)
         {
@@ -322,9 +327,9 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
 std::string DEM::Viscoelastic::get_output_string() const {
     std::stringstream ss;
     ss  << F_ << ", " << F_visc << ", " << F_particle << ", " << hmax_ << ", "
-        << FT_.x() << ", "  << FT_.y() << ", " << FT_.z() << ","
-        << FT_visc_.x() << ", "  << FT_visc_.y() << ", " << FT_visc_.z() << ","
-        << FT_part_.x() << ", "  << FT_part_.y() << ", " << FT_part_.z() << ","
+        << FT_.x() << ", "  << FT_.y() << ", " << FT_.z() << ", "
+        << FT_visc_.x() << ", "  << FT_visc_.y() << ", " << FT_visc_.z() << ", "
+        << FT_part_.x() << ", "  << FT_part_.y() << ", " << FT_part_.z() << ", "
         << binder_contact_ << ", " << bt_;
     return ss.str();
 }
@@ -355,19 +360,20 @@ std::string DEM::Viscoelastic::restart_data() const {
        << named_print(F_, "F") << ", "
        << named_print(mu_, "mu") << ", "
        << named_print(dF_, "dF") << ", "
-            << named_print(F_visc, "F_visc") << ", "
-            << named_print(F_particle, "F_particle") << ", "
-            << named_print(tsi0_, "tsi0") << ", "
-            << named_print(tsi0particle_, "tsi0particle") << ", "
-            << named_print(dFT_, "dFT") << ", "
-            << named_print(FT_, "FT") << ", "
-            << named_print(FT_visc_, "FT_visc") << ", "
-            << named_print(FT_part_, "FT_part") << ", "
-            << named_print(uT_, "uT") << ", "
-            << named_print(adhesive_, "adhesive") << ", "
-            << named_print(binder_contact_, "binder_contact") << ", "
-            << named_print(fractured_, "fractured") << ", "
-            << named_print(M, "M");
+       << named_print(F_visc, "F_visc") << ", "
+       << named_print(F_particle, "F_particle") << ", "
+       << named_print(tsi0_, "tsi0") << ", "
+       << named_print(tsi0particle_, "tsi0particle") << ", "
+       << named_print(dFT_, "dFT") << ", "
+       << named_print(FT_, "FT") << ", "
+       << named_print(FT_visc_, "FT_visc") << ", "
+       << named_print(FT_part_, "FT_part") << ", "
+       << named_print(uT_, "uT") << ", "
+       << named_print(rot_, "rot") << ", "
+       << named_print(adhesive_, "adhesive") << ", "
+       << named_print(binder_contact_, "binder_contact") << ", "
+       << named_print(fractured_, "fractured") << ", "
+       << named_print(M, "M");
     for (unsigned i=0; i != M; ++i) {
         ss <<  ", "
            << named_print(tau_i[i], "tau_" + std::to_string(i)) << ", "
@@ -391,4 +397,14 @@ bool DEM::Viscoelastic::create_binder_contact(const ElectrodeMaterial* mat) {
         return true;
     }
     return false;
+}
+
+DEM::Vec3 DEM::Viscoelastic::get_rolling_resistance_torque() const {
+    if (binder_contact_) {
+        auto a = sqrt(area_/3.1415);
+        return -2*3.1415*a*a*a*tsi0_/3/bt_*rot_;
+    }
+    else {
+        return DEM::Vec3(0, 0, 0);
+    }
 }

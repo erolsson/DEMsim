@@ -55,40 +55,35 @@ DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox::CylinderTyp
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(const BoundingBox& rhs) :
-        bounding_box_projections{BoundingBoxProjection(this, rhs.bounding_box_projections[0].get_index(), 'b',
-                                                       rhs.bounding_box_projections[0].inward_cylinder()),
-                                 BoundingBoxProjection(this, rhs.bounding_box_projections[1].get_index(), 'e',
-                                                       rhs.bounding_box_projections[1].inward_cylinder()),
-                                 BoundingBoxProjection(this, rhs.bounding_box_projections[2].get_index(), 'b',
-                                                       rhs.bounding_box_projections[2].inward_cylinder()),
-                                 BoundingBoxProjection(this, rhs.bounding_box_projections[3].get_index(), 'e',
-                                                       rhs.bounding_box_projections[3].inward_cylinder()),
-                                 BoundingBoxProjection(this, rhs.bounding_box_projections[4].get_index(), 'b',
-                                                       rhs.bounding_box_projections[4].inward_cylinder()),
-                                 BoundingBoxProjection(this, rhs.bounding_box_projections[5].get_index(), 'e',
-                                                       rhs.bounding_box_projections[5].inward_cylinder())},
-        particle_(rhs.particle_),
-        surface_(rhs.surface_),
-        stretch_(rhs.stretch_),
-        update_function(rhs.update_function)
+DEM::BoundingBox<ForceModel, ParticleType>::BoundingBox(BoundingBox&& rhs) noexcept :
+    bounding_box_projections(std::move(rhs.bounding_box_projections)),
+    particle_(rhs.particle_),
+    surface_(rhs.surface_),
+    stretch_(rhs.stretch_),
+    update_function(rhs.update_function)
 {
-
+    for (auto& bbox : bounding_box_projections) {
+        bbox.set_bounding_box_pointer(this);
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
 DEM::BoundingBox<ForceModel, ParticleType>&
-DEM::BoundingBox<ForceModel, ParticleType>::operator=(const BoundingBox& rhs)
+        DEM::BoundingBox<ForceModel, ParticleType>::operator=(BoundingBox&& rhs) noexcept
 {
-    if (*this != rhs) {  // Avoiding x=x
-        for (unsigned i = 0; i != 6; ++i) {
-            bounding_box_projections[i] = BoundingBoxProjection(this,
-                                                                rhs.bounding_box_projections[i].get_index(),
-                                                                rhs.bounding_box_projections[i].get_position_char(),
-                                                                rhs.bounding_box_projections[i].inward_cylinder());
+    if (this != &rhs) {  // Avoiding x=x
+        bounding_box_projections = std::move(rhs.bounding_box_projections);
+        particle_ = rhs.particle_;
+        surface_ = rhs.surface_;
+        stretch_ = rhs.stretch_;
+        update_function = rhs.update_function;
+
+        for (auto& bbox : bounding_box_projections) {
+            bbox.set_bounding_box_pointer(this);
         }
     }
     return *this;
+
 }
 
 //==================================================================================================================
@@ -97,9 +92,17 @@ DEM::BoundingBox<ForceModel, ParticleType>::operator=(const BoundingBox& rhs)
 
 
 template<typename ForceModel, typename ParticleType>
-std::size_t DEM::BoundingBox<ForceModel, ParticleType>::get_id() const
+std::size_t DEM::BoundingBox<ForceModel, ParticleType>::get_collision_id() const
 {
-    if (surface_ == nullptr) {
+    if (particle_ != nullptr) {
+        return particle_->get_collision_id();
+    }
+    return surface_->get_collision_id();
+}
+
+template<typename ForceModel, typename ParticleType>
+std::size_t DEM::BoundingBox<ForceModel, ParticleType>::get_object_id() const {
+    if (particle_ != nullptr) {
         return particle_->get_id();
     }
     return surface_->get_id();
@@ -140,3 +143,7 @@ void DEM::BoundingBox<ForceModel, ParticleType>::surface_update()
         sign *= -1;
     }
 }
+
+
+
+

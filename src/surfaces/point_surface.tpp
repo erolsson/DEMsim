@@ -14,11 +14,12 @@
 
 template<typename ForceModel, typename ParticleType>
 DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::vector<DEM::Vec3> points, bool infinite,
-                                                          const std::string& name, bool adhesive) :
-        Surface<ForceModel, ParticleType>::Surface(id, name, adhesive),
+                                                          const std::string& name, bool adhesive,
+                                                          std::size_t collision_id) :
+        Surface<ForceModel, ParticleType>::Surface(id, collision_id, name, adhesive),
         points_(std::move(points)),
-        infinite_(infinite),
-        normal_(calculate_normal())
+        normal_(calculate_normal()),
+        infinite_(infinite)
 {
     update_bounding_box();
 }
@@ -27,7 +28,8 @@ DEM::PointSurface<ForceModel, ParticleType>::PointSurface(std::size_t id, std::v
 template<typename ForceModel, typename ParticleType>
 DEM::PointSurface<ForceModel, ParticleType>::PointSurface(const DEM::ParameterMap& parameters) :
     Surface<ForceModel, ParticleType>::Surface(parameters),
-    points_(), infinite_(parameters.get_parameter<bool>("infinite"))
+    points_(),
+    infinite_(parameters.get_parameter<bool>("infinite"))
 {
     auto no_points = parameters.get_parameter<std::size_t>("no_points");
     for (unsigned i = 0; i != no_points; ++i) {
@@ -90,7 +92,7 @@ DEM::Vec3 DEM::PointSurface<ForceModel, ParticleType>::vector_to_point(const Vec
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 DEM::PointSurface<ForceModel, ParticleType>::displacement_this_inc(const Vec3& position) const
+DEM::Vec3 DEM::PointSurface<ForceModel, ParticleType>::get_displacement_this_increment(const Vec3& position) const
 {
     if (rotation_this_inc_.is_zero())
         return displacement_this_inc_;
@@ -154,22 +156,38 @@ void DEM::PointSurface<ForceModel, ParticleType>::update_bounding_box()
         return v1.z() < v2.z();
     };
 
-    bbox_values_[0] = std::min_element(points_.begin(), points_.end(), x_cmp)->x();
-    bbox_values_[1] = std::max_element(points_.begin(), points_.end(), x_cmp)->x();
+    if (infinite_) {
+        bbox_values_ = {-1e99, 1e99, -1e99, 1e99, -1e99, 1e99};
+        if (normal_[0] != 0) {
+            bbox_values_[0] = std::min_element(points_.begin(), points_.end(), x_cmp)->x();
+            bbox_values_[1] = std::max_element(points_.begin(), points_.end(), x_cmp)->x();
+        }
+        if (normal_[1] != 0) {
+            bbox_values_[2] = std::min_element(points_.begin(), points_.end(), y_cmp)->y();
+            bbox_values_[3] = std::max_element(points_.begin(), points_.end(), y_cmp)->y();
+        }
+        if (normal_[2] != 0) {
+            bbox_values_[4] = std::min_element(points_.begin(), points_.end(), z_cmp)->z();
+            bbox_values_[5] = std::max_element(points_.begin(), points_.end(), z_cmp)->z();
+        }
+    }
+    else {
+        bbox_values_[0] = std::min_element(points_.begin(), points_.end(), x_cmp)->x();
+        bbox_values_[1] = std::max_element(points_.begin(), points_.end(), x_cmp)->x();
 
-    bbox_values_[2] = std::min_element(points_.begin(), points_.end(), y_cmp)->y();
-    bbox_values_[3] = std::max_element(points_.begin(), points_.end(), y_cmp)->y();
+        bbox_values_[2] = std::min_element(points_.begin(), points_.end(), y_cmp)->y();
+        bbox_values_[3] = std::max_element(points_.begin(), points_.end(), y_cmp)->y();
 
-    bbox_values_[4] = std::min_element(points_.begin(), points_.end(), z_cmp)->z();
-    bbox_values_[5] = std::max_element(points_.begin(), points_.end(), z_cmp)->z();
+        bbox_values_[4] = std::min_element(points_.begin(), points_.end(), z_cmp)->z();
+        bbox_values_[5] = std::max_element(points_.begin(), points_.end(), z_cmp)->z();
+    }
 }
 
 template<typename ForceModel, typename ParticleType>
 std::string DEM::PointSurface<ForceModel, ParticleType>::restart_data() const {
     using DEM::named_print;
     std::ostringstream ss;
-    ss  << named_print("PointSurface", "type") << ", "
-        << DEM::Surface<ForceModel, ParticleType>::restart_data() << ", "
+    ss  << DEM::Surface<ForceModel, ParticleType>::restart_data() << ", "
         << named_print(points_.size(), "no_points") << ", " ;
     for (unsigned i = 0; i != points_.size(); ++i) {
         std::stringstream pname;

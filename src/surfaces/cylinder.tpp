@@ -12,8 +12,8 @@
 template<typename ForceModel, typename ParticleType>
 DEM::Cylinder<ForceModel, ParticleType>::Cylinder(std::size_t id, double radius, const Vec3& axis,
                                              const Vec3& base_point, double length, const std::string& name,
-                                             bool inward, bool infinite, bool closed_ends) :
-        Surface<ForceModel, ParticleType>::Surface(id, name),
+                                             bool inward, bool infinite, bool closed_ends, std::size_t collision_id) :
+        Surface<ForceModel, ParticleType>::Surface(id, collision_id,  name),
         radius_(radius),
         axis_(axis.normal()),
         point_(base_point),
@@ -113,7 +113,7 @@ DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::vector_to_point(const Vec3& p
 }
 
 template<typename ForceModel, typename ParticleType>
-DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::displacement_this_inc(const Vec3& position) const
+DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::get_displacement_this_increment(const Vec3& position) const
 {
     if (rotation_this_inc_.is_zero())
         return displacement_this_inc_;
@@ -155,8 +155,7 @@ template<typename ForceModel, typename ParticleType>
 std::string DEM::Cylinder<ForceModel, ParticleType>::restart_data() const {
     using DEM::named_print;
     std::ostringstream ss;
-    ss << named_print("Cylinder", "type") << ", "
-       << DEM::Surface<ForceModel, ParticleType>::restart_data() << ", "
+    ss << DEM::Surface<ForceModel, ParticleType>::restart_data() << ", "
        << named_print(radius_, "radius") << ", " << named_print(axis_, "axis") << ", "
        << named_print(point_, "point") << ", " << named_print(length_, "length") << ", "
        << named_print(inward_, "inward") << ", " << named_print(infinite_, "infinite") << ","

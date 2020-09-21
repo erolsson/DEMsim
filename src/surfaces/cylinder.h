@@ -19,7 +19,8 @@ namespace DEM {
     class Cylinder : public Surface<ForceModel, ParticleType> {
     public:
         Cylinder(std::size_t id, double radius, const Vec3& axis, const Vec3& base_point, double length,
-                 const std::string& name, bool inward=true, bool infinite=false, bool closed_ends=false);
+                 const std::string& name, bool inward=true, bool infinite=false, bool closed_ends=false,
+                 std::size_t collision_id=0);
         Cylinder(const ParameterMap& parameters);
         ~Cylinder() override = default;
         using Surface<ForceModel, ParticleType>::get_id;
@@ -28,7 +29,7 @@ namespace DEM {
 
         [[nodiscard]] double distance_to_point(const Vec3& point) const override;
         [[nodiscard]] Vec3 vector_to_point(const Vec3& point) const override;
-        [[nodiscard]] Vec3 displacement_this_inc(const Vec3& position) const override;
+        [[nodiscard]] Vec3 get_displacement_this_increment(const Vec3& position) const override;
 
         void move(const Vec3& distance, const Vec3& velocity) override;
         void rotate(const Vec3& position, const Vec3& rotation_vector) override;
@@ -42,6 +43,7 @@ namespace DEM {
         [[nodiscard]] const Vec3& get_position() const {
             return point_;
         }
+        [[nodiscard]] std::string type() const override { return "Cylinder"; }
 
     private:
         using Surface<ForceModel, ParticleType>::displacement_this_inc_;
