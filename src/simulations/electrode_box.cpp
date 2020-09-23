@@ -29,99 +29,80 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     auto mat = simulator.create_material<ElectrodeMaterial>(4800);
 
     mat->E = parameters.get_parameter<double>("E");
-    mat->kT=parameters.get_parameter<double>("kT");
-    mat->Ep= parameters.get_parameter <double> ("Ep");
+    mat->kT = parameters.get_parameter<double>("kT");
+    mat->Ep = parameters.get_parameter<double>("Ep");
     mat->nu = parameters.get_parameter<double>("nu");
     mat->fb = parameters.get_parameter<double>("fb");
     mat->nup = parameters.get_parameter<double>("nup");
-    mat->mu = parameters.get_parameter<double>("mu");//VAD ?
+    mat->mu = parameters.get_parameter<double>("mu");
     mat->mu_wall = parameters.get_parameter<double>("mu_wall");
-    mat->tau_i=parameters.get_vector<double>( "tau_i" );
-    mat->alpha_i=parameters.get_vector<double>( "alpha_i" );
+    mat->tau_i = parameters.get_vector<double>("tau_i");
+    mat->alpha_i = parameters.get_vector<double>("alpha_i");
     mat->bt = parameters.get_parameter<double>("bt");
+    mat->mu_binder = parameters.get_parameter<double>("mu_binder");
+    auto particle_density_at_filling = parameters.get_parameter<double>("filling_density");
+    auto particle_density_at_cube = parameters.get_parameter<double>("particle_density_at_cube");
     mat->active_particle_height = parameters.get_parameter<double>("active_particle_height");
-
 
     auto particle_radii = read_vector_from_file<double>(particle_file);
     particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);
     std::sort(particle_radii.rbegin(), particle_radii.rend());
 
-    //std::cout << "Number of particles" <<mat->N<< "\n";
-
-    double just_particle_volume=0.;
-    double particle_surface_area= 0.;
-    for(auto& r: particle_radii) {
-        particle_surface_area += 4.*pi*(r)*(r);
-        just_particle_volume += 4.*pi*(r)*(r)*(r)/3.;
+    double particle_volume = 0.;
+    for(const auto& r: particle_radii) {
+        particle_volume += 4.*pi*r*r*r/3.;
     }
+    std::cout << "Volume of simulated particles is " << particle_volume << "\n";
 
-    std::cout << "Volume of simulated particles is " <<just_particle_volume<< "\n";
-    double box_width = 1;
-    double box_height =box_width*2.5;
-    std::cout << "The simulated box has a width of " << box_width << " and a height of "
-              << box_height << "\n";
+    auto box_side = pow(particle_volume/particle_density_at_cube, 1./3);
+    std::cout << "box_side " <<box_side << "\n";
+    auto box_height = particle_density_at_cube*box_side/particle_density_at_filling;
+    std::cout << "box_height " <<box_height << "\n";
+    auto p1 = Vec3(-box_side/2, -box_side/2, 0);
+    auto p2 = Vec3( box_side/2, -box_side/2, 0);
+    auto p3 = Vec3( box_side/2,  box_side/2, 0);
+    auto p4 = Vec3(-box_side/2,  box_side/2, 0);
 
-     auto particle_positions = random_fill_box(0.0, box_height, box_width, particle_radii, mat->bt);
+    auto p5 = Vec3(-box_side/2, -box_side/2, box_height);
+    auto p6 = Vec3( box_side/2, -box_side/2, box_height);
+    auto p7 = Vec3( box_side/2,  box_side/2, box_height);
+    auto p8 = Vec3(-box_side/2,  box_side/2, box_height);
 
-    for (std::size_t i=0; i != particle_positions.size(); ++i) {
+    std::vector<Vec3> bottom_points{p1, p2, p3, p4};
+    std::vector<Vec3> top_points{p8, p7, p6, p5};
+    std::cout << "to and bottom " <<p8 << "\n";
+    auto particle_positions = random_fill_box(-box_side/2, box_side/2, -box_side/2, box_side/2,
+                                              0, box_height, particle_radii, mat->bt);
+    std::cout << "box_height " <<box_height << "\n";
+    auto bottom_surface = simulator.create_deformable_point_surface(bottom_points, "bottom_plate");
+    auto top_surface = simulator.create_point_surface(top_points, true, "top_plate", false);
+    std::cout << "box_height " <<box_height << "\n";
+    std::cout << "Normal of bottom surface: " << bottom_surface->get_normal() << "\n";
+    std::cout << "Normal of bottom surface: " << top_surface->get_normal() << "\n";
+
+    for (std::size_t i = 0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
+    auto filling_output = simulator.create_output(output_directory + "/filling/", 0.001s,
+                                                  "filling_output");
 
-    // Creating The bottom plate surface
-    Vec3 p4(0, 0, 0.);
-    Vec3 p2(0,  box_width, 0.);
-    Vec3 p3(box_width,   0 , 0.);
-    Vec3 p1(box_width,  box_width, 0.);
+    filling_output->print_particles = true;
+    filling_output->print_kinetic_energy = true;
+    filling_output->print_surface_positions = true;
+    filling_output->print_surface_forces = true;
+    filling_output->print_contacts = true;
+    filling_output->print_periodic_bc = true;
+    filling_output->print_mirror_particles = true;
 
-    // Creating The top plate surface
-    Vec3 p5(0, 0, box_height);
-    Vec3 p6(0, box_width, box_height);
-    Vec3 p7(box_width,   0 , box_height);
-    Vec3 p8(box_width,  box_width, box_height);
+    simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);
+    simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
 
-
-    std::vector<Vec3> bottom_points{p4, p3, p2, p1};
-    std::vector<Vec3> top_points{p5, p6, p7, p8};
-    std::vector<Vec3> side_points_1{p8, p6, p1, p2};
-    std::vector<Vec3> side_points_2{ p6, p5,p2, p4};
-    std::vector<Vec3> side_points_3{ p5, p7,p4, p3};
-    std::vector<Vec3> side_points_4{p7, p8, p3, p1};
-    // Testing
-
-    auto bottom_surface = simulator.create_point_surface(bottom_points, true , true);
-    std::cout << "Normal of bottom surface is " << bottom_surface->get_normal() << std::endl;
-
-
-    auto top_surface = simulator.create_point_surface(top_points, true , false);
-    std::cout << "Normal of top surface is " << top_surface->get_normal() << std::endl;
-
-    auto side_surface_1 = simulator.create_point_surface(side_points_1, true, false);
-    std::cout << "Normal of first side surface is " << side_surface_1->get_normal() << std::endl;
-
-    auto side_surface_2 = simulator.create_point_surface(side_points_2, true, false);
-    std::cout << "Normal of second side surface is " << side_surface_2->get_normal() << std::endl;
-
-    auto side_surface_3 = simulator.create_point_surface(side_points_3, true , false);
-    std::cout << "Normal of third side surface is " << side_surface_3->get_normal() << std::endl;
-
-    auto side_surface_4 = simulator.create_point_surface(side_points_4, true, false);
-    std::cout << "Normal of fourth side surface is " << side_surface_4->get_normal() << std::endl;
-
-
-    auto output1 = simulator.create_output(output_directory, 0.01s);
-    output1->print_particles = true;
-    output1->print_kinetic_energy = true;
-    output1->print_surface_positions = true;
-    output1->print_surface_forces = true;
-    output1->print_contacts = true;
-    output1->print_bounding_box = true;
-
-    simulator.set_gravity(Vec3(0, 0, -9.820));
-    simulator.set_mass_scale_factor(1.0);
-    simulator.setup(1.01*mat->bt);      // erolsson: added bounding_box_stretch to setup
+    simulator.set_gravity(Vec3(0, 0, -9.82));
+    simulator.setup(1.01*mat->bt);
     EngineType::RunForTime run_for_time(simulator, 0.1s);
-
     simulator.run(run_for_time);
+
+
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
     simulator.run(max_velocity);
 
@@ -136,6 +117,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
+
     run_for_time.reset(compaction_time);
     simulator.run(run_for_time);
     //EngineType::SurfaceNormalForceWithinInterval  Interval ( simulator, top_surface,47e+6,100e+6, std::chrono::duration<double>(0.01)  );
@@ -153,10 +135,10 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     bbox = simulator.get_bounding_box();
     h = bbox[5];
     std::cout<<"h:"<< h << std::endl;
-    std::cout<<"box_width:"<< box_width << std::endl;
-    std::cout << "Volume of simulated particles is " <<just_particle_volume << "\n";
-    double Prorosity= (1-((just_particle_volume)/ (box_width*box_width*h)))*100;
-    std::cout<<"Prosity is:"<< Prorosity <<std::endl;
+    //std::cout<<"box_width:"<< box_width << std::endl;
+    //std::cout << "Volume of simulated particles is " <<just_particle_volume << "\n";
+   //double Prorosity= (1-((just_particle_volume)/ (box_width*box_width*h)))*100;
+    //std::cout<<"Prosity is:"<< Prorosity <<std::endl;
     std::cout<<"h is:"<< h <<std::endl;
     simulator.write_restart_file(output_directory + "/compact_restart_file.res");
 
