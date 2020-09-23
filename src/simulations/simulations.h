@@ -25,10 +25,13 @@ namespace DEM {
     void filling_periodic_box(const std::string& settings_file_name);
     void deformable_surface_tester(const std::string& settings_file_name);
     void battery_rve_filling(const std::string& settings_file_name);
+    void battery_rve_compaction(const std::string &settings_file_name);
+    void battery_rve_loading(const std::string &settings_file_name);
     void Cathode_mechanical_simulations(const std::string& settings_file_name);
+
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 
-    void battery_rve_compaction(const std::string &settings_file_name);
+
 }
 
 #endif //DEMSIM_SIMULATIONS_H
