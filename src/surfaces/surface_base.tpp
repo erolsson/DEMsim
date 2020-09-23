@@ -6,13 +6,15 @@
 
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include "../utilities/file_reading_functions.h"
 #include "../utilities/printing_functions.h"
 
 template<typename ForceModel, typename ParticleType>
-DEM::Surface<ForceModel, ParticleType>::Surface(std::size_t id, std::size_t collision_id, const std::string& name, bool adhesive) :
-        object_id_(id), collision_id_(collision_id), name_(name), adhesive_(adhesive)
+DEM::Surface<ForceModel, ParticleType>::Surface(std::size_t id, std::size_t collision_id, std::string  name,
+                                                bool adhesive) :
+        object_id_(id), collision_id_(collision_id), name_(std::move(name)), adhesive_(adhesive)
 {
     //Empty constructor
 }
@@ -25,6 +27,7 @@ DEM::Surface<ForceModel, ParticleType>::Surface(const DEM::ParameterMap& paramet
     rotation_this_inc_{ parameters.get_vec3("rot_this_inc")},
     rotation_point_{ parameters.get_vec3("rot_point")},
     object_id_(parameters.get_parameter<std::size_t>("id")),
+    collision_id_(parameters.get_parameter<std::size_t>("collision_id")),
     name_(parameters.get_parameter<std::string>("name")),
     mass_(parameters.get_parameter<double>("mass")),
     adhesive_(false),
@@ -135,6 +138,7 @@ std::string DEM::Surface<ForceModel, ParticleType>::restart_data() const {
     using DEM::named_print;
     std::ostringstream ss;
     ss << named_print(object_id_, "id") << ", "
+       << named_print(collision_id_, "collision_id") << ", "
        << named_print(type(), "type") << ", "
        << named_print(name_, "name") << ", "
        << named_print(mass_, "mass") << ", "

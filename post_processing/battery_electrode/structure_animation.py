@@ -6,7 +6,7 @@ from visualization_functions_3d.animation import Animation
 
 
 def main():
-    simulation_directory = os.path.expanduser('~/DEMsim/results/battery_rve/filling')
+    simulation_directory = os.path.expanduser('~/DEMsim/results/battery_rve/compaction/')
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)
     animation.save_directory = 'animation/imgs/'
@@ -15,7 +15,6 @@ def main():
 
     animation.plot_periodic_bc = True
     animation.mirror_particles = True
-    animation.start_time = 0.
     animation.initialize()
     animation.periodic_bc_plotter.zmin = 0
     animation.periodic_bc_plotter.zmax = 0.1

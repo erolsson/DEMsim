@@ -33,7 +33,7 @@ namespace DEM {
     public:
         double max_velocity{0.};
         bool force_control{ false };
-        explicit Surface(std::size_t id, std::size_t collision_id, const std::string& name, bool adhesive=false);
+        explicit Surface(std::size_t id, std::size_t collision_id, std::string  name, bool adhesive=false);
         explicit Surface(const ParameterMap& parameters);
         virtual ~Surface() = default;
         std::size_t get_id() const { return object_id_; }

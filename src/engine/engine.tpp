@@ -116,7 +116,8 @@ DEM::Engine<ForceModel, ParticleType>::Engine(const std::string& restart_file_na
     }
 
     if (keyword_data["*periodic bc"].size() > 0 ){
-        periodic_bc_handler_ = std::make_unique<PeriodicBCHandlerType>(*this, particles_, collision_detector_,contacts_, keyword_data["*periodic bc"]);
+        periodic_bc_handler_ = std::make_unique<PeriodicBCHandlerType>(*this, particles_, collision_detector_,contacts_,
+                                                                       keyword_data["*periodic bc"]);
     }
 
     for (const auto& output_data: keyword_data["*output"]) {
@@ -861,4 +862,14 @@ void DEM::Engine<ForceModel, ParticleType>::write_restart_file(const std::string
     }
 
     restart_file.close();
+}
+
+template<typename ForceModel, typename ParticleType>
+decltype(auto) DEM::Engine<ForceModel, ParticleType>::get_periodic_boundaries() const {
+    if (periodic_bc_handler_ != nullptr) {
+        return periodic_bc_handler_->get_periodic_boundaries();
+    }
+    else {
+        throw std::logic_error("No periodic boundary conditions active");
+    }
 }

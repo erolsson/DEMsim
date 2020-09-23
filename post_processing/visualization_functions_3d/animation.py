@@ -58,7 +58,7 @@ class Animation:
         if self.plot_periodic_bc:
             self.periodic_bc_plotter = PeriodicBC(self.directory + '/periodic_bc.dou')
 
-        particle_files = glob.glob(self.directory + '/particles_*.dou')
+        particle_files = glob.glob(self.directory + '/particles/particles_*.dou')
         particle_files = [os.path.basename(particle_file) for particle_file in particle_files]
 
         self.frame_times = []
@@ -82,10 +82,11 @@ class Animation:
         n = len(self.frame_times)
         for i, t in enumerate(self.frame_times):
             print(i)
-            particle_data = np.genfromtxt(self.directory + '/particles_' + t + '.dou', delimiter=',')
+            particle_data = np.genfromtxt(self.directory + '/particles/particles_' + t + '.dou', delimiter=',')
             self.spheres_plotter.plot(particle_data)
             if self.mirror_particles:
-                mirror_particle_data = np.genfromtxt(self.directory + '/mirror_particles_' + t + '.dou', delimiter=',')
+                mirror_particle_data = np.genfromtxt(self.directory + '/mirror_particles/mirror_particles_'
+                                                     + t + '.dou', delimiter=',')
                 self.mirror_particles_plotter.plot(mirror_particle_data)
             self.surfaces_plotter.plot(float(t))
             if self.plot_periodic_bc:

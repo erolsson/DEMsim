@@ -107,6 +107,8 @@ namespace DEM {
         [[maybe_unused]] [[nodiscard]] SurfaceT get_surface(const std::string& surface_name) const;
         [[maybe_unused]] [[nodiscard]] OutputPointerType get_output(const std::string& output_name) const;
         [[maybe_unused]] [[nodiscard]] ParticlePointer get_particle(std::size_t id) const;
+        [[maybe_unused]] [[nodiscard]] std::vector<ParticlePointer> get_particles() const { return particles_; };
+        [[maybe_unused]] [[nodiscard]] decltype(auto) get_periodic_boundaries() const;
 
         // Setters
         void set_gravity(const Vec3& g) { gravity_ = g; }
