@@ -1,5 +1,5 @@
 N=500
-output_dir=C:/DEMsim/results/viscoelastic/electrodeheightcondition085
+output_dir=C:/DEMsim/results/viscoelastic/test
 radius_file=C:/DEMsim/pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=340800
