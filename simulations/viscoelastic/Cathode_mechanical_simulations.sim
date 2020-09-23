@@ -1,0 +1,4 @@
+output_dir=C:/DEMsim/results/viscoelastic/Cathode_compaction
+restart_file_name=C:/DEMsim/results/viscoelastic/electrode47-100/compact_restart_file.res
+active_particle_height=0.4
+bt=1.5e-2
