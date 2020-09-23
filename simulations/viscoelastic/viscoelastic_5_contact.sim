@@ -1,5 +1,5 @@
 N=6000
-R=10e-6
+R=0.01
 output_file=../results/viscoelastic/viscoelastic_normal5_contact
 E=1.70e9
 nu=0.5
@@ -7,8 +7,8 @@ nup=0.25
 Ep=142e9
 mu=0.1
 kT=0.47
-tick=1e-10
-bt=1e-6
+tick=4e-7
+bt=0.002
 alpha_i= 0.1,0.065,0.057
 tau_i= 0.1,211,4807
 contact=10

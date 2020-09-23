@@ -9,7 +9,8 @@
 #include "../../particles/spherical_particle.h"
 #include "../../materials/electrode_material.h"
 
-void DEM::battery_rve_filling(const std::string& settings_file_name) {
+void DEM::battery_rve_filling(const std::string& settings_file_name)
+{
     using namespace DEM;
     using ForceModel = Viscoelastic;
     using ParticleType = SphericalParticle<ForceModel>;
@@ -35,6 +36,7 @@ void DEM::battery_rve_filling(const std::string& settings_file_name) {
     mat->tau_i = parameters.get_vector<double>("tau_i");
     mat->alpha_i = parameters.get_vector<double>("alpha_i");
     mat->bt = parameters.get_parameter<double>("bt");
+    mat->mu_binder = parameters.get_parameter<double>("mu_binder");
     auto particle_density_at_filling = parameters.get_parameter<double>("filling_density");
     auto particle_density_at_cube = parameters.get_parameter<double>("particle_density_at_cube");
 
@@ -67,22 +69,23 @@ void DEM::battery_rve_filling(const std::string& settings_file_name) {
     auto particle_positions = random_fill_box(-box_side/2, box_side/2, -box_side/2, box_side/2,
                                               0, box_height, particle_radii, mat->bt);
     auto bottom_surface = simulator.create_deformable_point_surface(bottom_points, "bottom_plate");
-    auto top_surface = simulator.create_deformable_point_surface(top_points, "top_plate");
+    auto top_surface = simulator.create_point_surface(top_points, true, "top_plate", false);
     std::cout << "Normal of bottom surface: " << bottom_surface->get_normal() << "\n";
     std::cout << "Normal of bottom surface: " << top_surface->get_normal() << "\n";
 
     for (std::size_t i = 0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
-    auto output1 = simulator.create_output(output_directory + "/filling/", 0.001s, "output1");
+    auto filling_output = simulator.create_output(output_directory + "/filling/", 0.001s,
+                                                  "filling_output");
 
-    output1->print_particles = true;
-    output1->print_kinetic_energy = true;
-    output1->print_surface_positions = true;
-    output1->print_surface_forces = true;
-    output1->print_contacts = true;
-    output1->print_periodic_bc = true;
-    output1->print_mirror_particles = true;
+    filling_output->print_particles = true;
+    filling_output->print_kinetic_energy = true;
+    filling_output->print_surface_positions = true;
+    filling_output->print_surface_forces = true;
+    filling_output->print_contacts = true;
+    filling_output->print_periodic_bc = true;
+    filling_output->print_mirror_particles = true;
 
     simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);
     simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);

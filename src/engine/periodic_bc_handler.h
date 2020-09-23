@@ -56,6 +56,7 @@ namespace DEM {
         std::string print_periodic_bc() const;
         std::vector<std::string> mirror_particles_output() const;
         std::vector<std::string> restart_data() const;
+        [[nodiscard]] std::array<Interval, 3> get_periodic_boundaries() const { return boundaries_; }
 
     private:
 

@@ -28,7 +28,7 @@ namespace DEM {
 
         // double active_particle_height
 
-        double yield_stress { 1.3600e+09 };
+        double yield_displacement_coeff { 8.59e-3 };
 
         // double N;
 
@@ -39,7 +39,7 @@ namespace DEM {
         double kT;
         double mu{ 0. };
         double mu_wall{ 0. };
-
+        double mu_binder { 0. };
         [[nodiscard]] unsigned M() const { return tau_i.size(); }
 
         double active_particle_height;

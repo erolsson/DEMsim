@@ -15,7 +15,7 @@ DEM::ElectrodeMaterial::ElectrodeMaterial(const ParameterMap& parameters) :
     nup(parameters.get_parameter<double>("nup")),
     fb(parameters.get_parameter<double>("fb")),
     bt(parameters.get_parameter<double>("bt")),
-    yield_stress(parameters.get_parameter<double>("yield_stress")),
+    yield_displacement_coeff(parameters.get_parameter<double>("yield_coeff")),
     tau_i(),
     alpha_i(),
     kT(parameters.get_parameter<double>("kT")),
@@ -38,7 +38,7 @@ std::string DEM::ElectrodeMaterial::restart_data() const {
        << named_print(fb, "fb") << ", "
        << named_print(nup, "nup") << ", "
        << named_print(Ep, "Ep") << ", "
-       << named_print(yield_stress, "yield_stress") << ", "
+       << named_print(yield_displacement_coeff, "yield_coeff") << ", "
        << named_print(bt, "bt") << ", "
        << named_print(kT, "kT") << ", "
        << named_print(mu, "mu") << ", "

@@ -33,7 +33,7 @@ namespace DEM {
         [[nodiscard]] double get_overlap() const { return h_; }
         [[nodiscard]] double get_normal_force() const { return F_; }
         [[nodiscard]] const Vec3& get_tangential_force() const { return FT_; }
-        [[nodiscard]] double get_contact_area() const {return area_; }
+        [[nodiscard]] double get_contact_area() const {return pi*a_*a_; }
         [[nodiscard]] Vec3 get_rolling_resistance_torque() const;
         [[nodiscard]] bool active() const {return F_ != 0; }
         [[nodiscard]] std::string get_output_string() const;
@@ -46,10 +46,11 @@ namespace DEM {
 
         double dt_;   // Time increment
         double kT_;
+        double kT_part_;
         double bt_;
         double h_ {0. };
-        double hmax_ { 0. };
-        double area_ { 0. };
+        double hmax_ { -1e99 };
+        double a_ { 0. }; // Contact radius for binder contact
         static unsigned M;
         double yield_h_ { 1e99 };
         double k_;
@@ -59,7 +60,8 @@ namespace DEM {
         double R0_;
         double Rb_;
         double F_{ 0 };
-        double mu_;
+        double mu_particle_;
+        double mu_binder_;
 
         std::vector<double> tau_i {};
         std::vector<double> alpha_i {};
@@ -71,12 +73,9 @@ namespace DEM {
         std::vector<DEM::Vec3> ddti_ {};
         std::vector<DEM::Vec3> dti_ {};
         double dF_{0.};
-        double F_visc{0.};
-        double F_particle{0.};
+        double F_visc{ 0. };
+        double F_particle{ 0. };
 
-
-        double tsi0_;
-        double tsi0particle_;
         Vec3 dFT_{Vec3(0., 0., 0.)};
         Vec3 FT_{Vec3(0., 0., 0.)};
         Vec3 FT_visc_ {Vec3(0., 0., 0.)};

@@ -45,10 +45,10 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     mat.tau_i =parameters.get_vector<double>("tau_i");
     mat.fb = 1.;
 
-    auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius-(mat.bt)/2 - 10*tick, 0, 0},
+    auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius-(mat.bt)/2 - 1*tick, 0, 0},
             Vec3{}, &mat, 1);
     auto p2 = SphericalParticle<ForceModel>(radius,
-            Vec3{radius+(mat.bt)/2 + 10*tick,0, 0}, Vec3{}, &mat, 1);
+            Vec3{radius+(mat.bt)/2 + 1*tick,0, 0}, Vec3{}, &mat, 1);
     std::cout << "bt model:" <<mat.bt << std::endl;
 
 
@@ -72,6 +72,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                     << c.get_tangential_force().y() << ", "
                     << p1.get_position().y() - p2.get_position().y() << std::endl;
     }
+    /*
     for(unsigned i = 0; i != increments; ++i) {
         p1.move(Vec3{0, -tick/2, 0});
         p2.move(Vec3{0, tick/2, 0});
@@ -100,7 +101,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                     << c.get_tangential_force().y() << ", "
                     << p1.get_position().y() - p2.get_position().y() << std::endl;
     }
-
+    */
     for(unsigned i = 0; i != increments; ++i) {
         p1.move(Vec3{-tick/2, 0, 0});
         p2.move(Vec3{tick/2, 0, 0});
