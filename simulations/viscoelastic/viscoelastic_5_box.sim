@@ -1,5 +1,5 @@
 N=4500
-output_dir=../results/viscoelastic/0923-85
+output_dir=../results/viscoelastic/0923-80
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=1.7e9
 kT=340800
@@ -14,7 +14,7 @@ tau_i=211,4807
 mu=0.7
 mu_wall=0.7
 bindervolume=0.1877
-active_particle_height=0.85
+active_particle_height=0.80
 filling_density=0.1
 particle_density_at_cube=0.65
 mu_binder=1.
