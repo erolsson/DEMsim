@@ -4,8 +4,7 @@ project(DEMsim)
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -msse4 -O3 -g -fopenmp")
 
-
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 add_executable(DEMsim
                src/utilities/contact_matrix.h
@@ -83,6 +82,9 @@ add_executable(DEMsim
                src/surfaces/deformable_point_surface.h
                src/surfaces/deformable_point_surface.tpp
                src/simulations/deformable_surfaces/deformable_surface_tester.cpp
-               src/simulations/battery/battery_rve_filling.cpp)
+               src/simulations/battery/battery_rve_filling.cpp
+               src/simulations/Cathode_mechanical_simulations.cpp
+               src/simulations/battery/battery_rve_compaction.cpp
+               src/simulations/battery/battery_rve_loading.cpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}" Eigen3::Eigen)

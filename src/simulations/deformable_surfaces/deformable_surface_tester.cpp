@@ -6,10 +6,8 @@
 #include "../../engine/engine.h"
 
 #include "../../contact_models/viscoelastic.h"
-#include "fenv.h"
 
 void DEM::deformable_surface_tester(const std::string& settings_file_name) {
-    feenableexcept(FE_INVALID | FE_OVERFLOW);
     using namespace DEM;
     using ForceModel = Viscoelastic;
     using ParticleType = SphericalParticle<ForceModel>;

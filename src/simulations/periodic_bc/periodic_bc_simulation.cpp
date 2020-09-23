@@ -7,10 +7,9 @@
 #include "../../contact_models/storakers_mesarovic_johnson.h"
 #include "../../engine/engine.h"
 #include "../../materials/elastic_ideal_plastic_material.h"
-#include <fenv.h>
 
 void DEM::periodic_bc_simulation(const std::string& settings_file_name) {
-    feenableexcept(FE_INVALID | FE_OVERFLOW);
+    // feenableexcept(FE_INVALID | FE_OVERFLOW);
     using namespace DEM;
     using ForceModel = StorakersMesarovicJohnson;
     using ParticleType = SphericalParticle<ForceModel>;
