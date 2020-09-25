@@ -316,7 +316,7 @@ void DEM::Output<ForceModel, ParticleType>::set_new_directory(const std::string&
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_particles_to_follow() const {
     for (const auto p: particles_to_print_) {
-        std::string filename = directory_ / std::string("particle_" + std::to_string(p->get_id()) + ".dou");
+        fs::path filename = directory_ / fs::path(std::string("particle_" + std::to_string(p->get_id()) + ".dou"));
         std::ofstream output_file;
         output_file.open(filename, std::fstream::app);
         output_file << current_time_.count() << ", " <<  p->get_output_string() << "\n";
