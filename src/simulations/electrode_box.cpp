@@ -83,8 +83,9 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     for (std::size_t i = 0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
-    auto filling_output = simulator.create_output(output_directory + "/filling/", 0.001s,
+    auto filling_output = simulator.create_output(output_directory , 0.001s,
                                                   "filling_output");
+
 
     filling_output->print_particles = true;
     filling_output->print_kinetic_energy = true;
@@ -124,8 +125,6 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     //simulator.run(Interval);
 
 
-
-
     std::cout<<"beginning of unloading"<< std::endl;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
@@ -140,6 +139,15 @@ void DEM::electrode_box(const std::string& settings_file_name) {
    //double Prorosity= (1-((just_particle_volume)/ (box_width*box_width*h)))*100;
     //std::cout<<"Prosity is:"<< Prorosity <<std::endl;
     std::cout<<"h is:"<< h <<std::endl;
+
+
+    //Move the side_lid
+    std::cout<<"Biginning of simulations"<< std::endl;;
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.001);
+    simulator.run(run_for_time);
+
+    // simulator.set_periodic_boundary_condition_strain_rate('y',-1.);
+    //simulator.set_periodic_boundary_condition_strain_rate('z',-2/3.);
     simulator.write_restart_file(output_directory + "/compact_restart_file.res");
 
 }
