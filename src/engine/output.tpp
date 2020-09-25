@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <utility>
 
 #include "Eigen/Dense"
 
@@ -18,11 +19,11 @@
 namespace fs = std::filesystem;
 
 template<typename ForceModel, typename ParticleType>
-DEM::Output<ForceModel, ParticleType>::Output(std::string directory, std::chrono::duration<double> interval,
+DEM::Output<ForceModel, ParticleType>::Output(const std::string& directory, std::chrono::duration<double> interval,
                                               const Engine<ForceModel, ParticleType>& engine,
-                                              const std::string& name,
+                                              std::string  name,
                                               bool remove_old_files) :
-    name_(name),
+    name_(std::move(name)),
     particles_(engine.particles_),
     surfaces_(engine.surfaces_),
     contacts_(engine.contacts_),
@@ -32,7 +33,7 @@ DEM::Output<ForceModel, ParticleType>::Output(std::string directory, std::chrono
     time_until_output_(interval),
     interval_(interval)
 {
-        std::cout << "Creating output: " << directory << std::endl;
+    std::cout << "Creating output: " << directory << std::endl;
     if (!fs::exists(directory_)) {
         fs::create_directories(directory_);
     }
@@ -43,9 +44,9 @@ DEM::Output<ForceModel, ParticleType>::Output(std::string directory, std::chrono
                 fs::remove(iter.path());
             }
         }
-        fs::remove_all(directory_ + "/particles/");
-        fs::remove_all(directory_ + "/contacts/");
-        fs::remove_all(directory_ + "/mirror_particles/");
+        fs::remove_all(directory_ / fs::path("particles"));
+        fs::remove_all(directory_ / fs::path("contacts/"));
+        fs::remove_all(directory_ / fs::path("mirror_particles/"));
     }
 }
 
@@ -67,7 +68,7 @@ DEM::Output<ForceModel, ParticleType>::Output(const DEM::ParameterMap& parameter
         surfaces_(engine.surfaces_),
         contacts_(engine.contacts_),
         engine_(engine),
-        directory_(parameters.get_parameter<std::string>("directory")),
+        directory_(fs::path(parameters.get_parameter<std::string>("directory"))),
         current_time_(engine.get_time()),
         time_until_output_(parameters.get_parameter<double>("time_until_output")),
         interval_(parameters.get_parameter<double>("interval"))
@@ -144,13 +145,13 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_particles() const
 {
     std::ostringstream filename_stream;
-    std::string particle_directory = directory_ + "/particles/";
+    fs::path particle_directory = directory_ / fs::path("particles");
     if (!fs::exists(particle_directory)) {
         fs::create_directories(particle_directory);
     }
-    filename_stream << particle_directory << "particles_" << current_time_.count() << ".dou";
+    filename_stream << "particles_" << current_time_.count() << ".dou";
     std::ofstream output_file;
-    output_file.open(filename_stream.str());
+    output_file.open(particle_directory / fs::path(filename_stream.str()));
     for (const auto& p: particles_) {
         output_file << p->get_output_string() << "\n";
     }
@@ -168,7 +169,7 @@ void DEM::Output<ForceModel, ParticleType>::write_kinetic_energy() const
         rot_e += p->rotational_energy();
     }
 
-    std::string filename = directory_ + "/kinetic_energy.dou";
+    fs::path filename = directory_ / fs::path("kinetic_energy.dou");
     std::ofstream output_file;
     output_file.open(filename, std::fstream::app);
     output_file << transl_e << ", " << rot_e << ", " << transl_e + rot_e << ", " << current_time_.count() << "\n";
@@ -178,7 +179,7 @@ void DEM::Output<ForceModel, ParticleType>::write_kinetic_energy() const
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_surface_positions() const
 {
-    std::string filename = directory_ + "/surface_positions.dou";
+    fs::path filename = directory_ / fs::path("surface_positions.dou");
     std::ofstream output_file;
     output_file.open(filename, std::fstream::app);
     for (auto& surface : surfaces_) {
@@ -192,7 +193,7 @@ void DEM::Output<ForceModel, ParticleType>::write_surface_positions() const
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_surface_forces() const
 {
-    std::string filename = directory_ + "/surface_forces.dou";
+    fs::path filename = directory_ / "surface_forces.dou";
     std::ofstream output_file;
     output_file.open(filename, std::fstream::app);
     for (auto& surface : surfaces_) {
@@ -206,7 +207,7 @@ void DEM::Output<ForceModel, ParticleType>::write_surface_forces() const
 
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_particle_cracks() const {
-    std::string filename = directory_ + "/particle_cracks.dou";
+    fs::path filename = directory_ / "/particle_cracks.dou";
     std::ofstream output_file;
     output_file.open(filename, std::fstream::app);
     for (const auto& particle: particles_) {
@@ -225,13 +226,13 @@ void DEM::Output<ForceModel, ParticleType>::write_particle_cracks() const {
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_contacts() const {
     std::ostringstream filename_stream;
-    std::string contacts_directory = directory_ + "/contacts/";
+    fs::path contacts_directory = directory_ / "contacts";
     if (!fs::exists(contacts_directory)) {
         fs::create_directories(contacts_directory);
     }
-    filename_stream << contacts_directory << "contacts_" << current_time_.count() << ".dou";
+    filename_stream << "contacts_" << current_time_.count() << ".dou";
     std::ofstream output_file;
-    output_file.open(filename_stream.str());
+    output_file.open(contacts_directory / filename_stream.str());
     for (const auto& c: contacts_.get_objects_sorted()) {
         output_file << c->get_output_string() << "\n";
     }
@@ -240,7 +241,7 @@ void DEM::Output<ForceModel, ParticleType>::write_contacts() const {
 
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_bounding_box() const {
-    std::string filename = directory_ + "/bounding_box.dou";
+    fs::path filename = directory_ / "bounding_box.dou";
     std::ofstream output_file;
     output_file.open(filename, std::fstream::app);
     auto bbox = engine_.get_bounding_box();
@@ -254,7 +255,7 @@ void DEM::Output<ForceModel, ParticleType>::write_bounding_box() const {
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_periodic_bc() const {
     if (engine_.periodic_bc_handler_ != nullptr) {
-        std::string filename = directory_ + "/periodic_bc.dou";
+        fs::path filename = directory_ / "periodic_bc.dou";
         std::ofstream output_file;
         output_file.open(filename, std::fstream::app);
         output_file << current_time_.count() << ", " << engine_.periodic_bc_handler_->print_periodic_bc() << "\n";
@@ -266,15 +267,15 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_mirror_particles() const {
     if (engine_.periodic_bc_handler_ != nullptr) {
         auto mirror_particles = engine_.periodic_bc_handler_->mirror_particles_output();
-        std::string mirror_particles_directory = directory_ + "/mirror_particles/";
+        fs::path mirror_particles_directory = directory_ / "mirror_particles/";
         if (!fs::exists(mirror_particles_directory)) {
             fs::create_directories(mirror_particles_directory);
         }
         std::ostringstream filename_stream;
-        filename_stream << mirror_particles_directory << "mirror_particles_" << current_time_.count() << ".dou";
+        filename_stream << "mirror_particles_" << current_time_.count() << ".dou";
 
         std::ofstream output_file;
-        output_file.open(filename_stream.str());
+        output_file.open(mirror_particles_directory / filename_stream.str());
         for (const auto& mp: mirror_particles) {
             output_file << mp << "\n";
         }
@@ -288,7 +289,7 @@ void DEM::Output<ForceModel, ParticleType>::write_fabric_force_tensor() const {
     for (const auto& c: contacts_.get_objects()) {
         force_tensor += c->get_force_fabric_tensor();
     }
-    std::string filename = directory_ + "/force_fabric_tensor.dou";
+    fs::path filename = directory_ / "force_fabric_tensor.dou";
     std::ofstream output_file;
     output_file.open(filename, std::fstream::app);
     output_file << current_time_.count();
@@ -313,7 +314,7 @@ void DEM::Output<ForceModel, ParticleType>::set_new_directory(const std::string&
 template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_particles_to_follow() const {
     for (const auto p: particles_to_print_) {
-        std::string filename = directory_ + "/particle_" + std::to_string(p->get_id()) + ".dou";
+        std::string filename = directory_ / std::string("particle_" + std::to_string(p->get_id()) + ".dou");
         std::ofstream output_file;
         output_file.open(filename, std::fstream::app);
         output_file << current_time_.count() << ", " <<  p->get_output_string() << "\n";

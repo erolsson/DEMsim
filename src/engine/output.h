@@ -6,6 +6,7 @@
 #define DEMSIM_OUTPUT_H
 
 #include <chrono>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -27,8 +28,8 @@ namespace DEM {
         using ContactType = Contact<ForceModel, ParticleType>;;
 
     public:
-        Output(std::string directory, std::chrono::duration<double> interval,
-               const Engine<ForceModel, ParticleType>& engine, const std::string& name, bool remove_old_files=true);
+        Output(const std::string& directory, std::chrono::duration<double> interval,
+               const Engine<ForceModel, ParticleType>& engine, std::string name, bool remove_old_files=true);
         Output(const ParameterMap& parameters, const Engine<ForceModel, ParticleType>& engine);
 
         [[nodiscard]] const std::string& get_name() const { return name_; }
@@ -60,7 +61,7 @@ namespace DEM {
         const ContactMatrix<ContactType>& contacts_;
         const Engine<ForceModel, ParticleType>& engine_;
 
-        std::string directory_;
+        std::filesystem::path directory_;
         std::vector<const ParticleType*> particles_to_print_;
 
         FuncVec output_functions_ {{Output::print_particles,           &Output::write_particles},
