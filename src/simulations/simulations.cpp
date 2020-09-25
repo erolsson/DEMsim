@@ -25,7 +25,7 @@ std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
             {"battery_rve_filling",            DEM::battery_rve_filling},
             {"Cathode_mechanical_simulations", DEM::Cathode_mechanical_simulations},
             {"battery_rve_compaction",         DEM::battery_rve_compaction},
-            {"battery_rve_loading",            DEM::battery_rve_loading},
+            {"battery_rve_loading",            DEM::battery_rve_filling},
 
     };
 }

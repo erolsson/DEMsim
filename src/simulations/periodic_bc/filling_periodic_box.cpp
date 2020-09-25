@@ -10,7 +10,6 @@
 #include "../../utilities/vec3.h"
 #include <fenv.h>
 void DEM::filling_periodic_box(const std::string& settings_file_name) {
-    feenableexcept(FE_INVALID | FE_OVERFLOW);
     using namespace DEM;
     using ForceModel = StorakersMesarovicJohnson;
     using ParticleType = SphericalParticle<ForceModel>;
