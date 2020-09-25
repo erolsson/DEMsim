@@ -7,6 +7,7 @@
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <regex>
 #include <sstream>
 #include <utility>
 
@@ -28,11 +29,12 @@ DEM::Output<ForceModel, ParticleType>::Output(const std::string& directory, std:
     surfaces_(engine.surfaces_),
     contacts_(engine.contacts_),
     engine_(engine),
-    directory_(directory),
     current_time_(engine.get_time()),
     time_until_output_(interval),
     interval_(interval)
 {
+    std::string directory_name = std::regex_replace(directory, std::regex("//"), "/");
+    directory_ = (directory_name);
     std::cout << "Creating output: " << directory << std::endl;
     if (!fs::exists(directory_)) {
         fs::create_directories(directory_);
