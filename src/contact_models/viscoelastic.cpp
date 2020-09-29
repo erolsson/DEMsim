@@ -325,7 +325,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
         FT_part_.set_zero();
     }
     FT_.set_zero();
-    if (fractured_ && !FT_visc_.is_zero() && !dt.is_zero()){
+    if (fractured_ && !uT_.is_zero() && !dt.is_zero()){
         FT_visc_ = (0.5*uT_.normal() + 0.5*dt.normal())*mu_binder_*abs(F_visc);
         // std::cout << fractured_ << "  " << FT_visc_ << "  " << F_visc << "\n";
         for (unsigned i = 0; i != M; ++i) {
