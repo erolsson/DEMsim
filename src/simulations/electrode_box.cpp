@@ -94,6 +94,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     filling_output->print_contacts = true;
     filling_output->print_periodic_bc = true;
     filling_output->print_mirror_particles = true;
+    filling_output->print_fabric_force_tensor=true;//dela på volym= spänningar  ta högsta partikels höjd till volymen
 
     simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);
     simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
@@ -144,7 +145,8 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     //Move the side_lid
     std::cout<<"Biginning of simulations"<< std::endl;;
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.001);
-    simulator.run(run_for_time);
+    EngineType::RunForTime run_for_time_simulate(simulator, 1s);
+    simulator.run(run_for_time_simulate);
 
     // simulator.set_periodic_boundary_condition_strain_rate('y',-1.);
     //simulator.set_periodic_boundary_condition_strain_rate('z',-2/3.);

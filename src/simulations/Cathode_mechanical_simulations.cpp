@@ -24,12 +24,11 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
 
 
     //More compaction
-    EngineType::RunForTime run_for_time(simulator, 0.2s);
-    auto top_surface = simulator.get_surface<EngineType::PointSurfacePointer>("point_surface_4501");
-    double surface_velocity = 0.1;
-    //top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
-    //top_surface->move(-Vec3(0, 0, top_surface->get_points()[0].z()), Vec3(0, 0, -surface_velocity));
-    auto Cathode_output = simulator.get_output("output_0");
+    EngineType::RunForTime run_for_time(simulator, 1s);
+    //auto top_surface = simulator.get_surface<EngineType::PointSurfacePointer>("point_surface_4501");
+    //double surface_velocity = 0.01;
+
+    auto Cathode_output = simulator.get_output("filling_output");
     simulator.remove_output(Cathode_output);
     auto compaction_output = simulator.create_output(output_directory + "/compaction", 0.001s);
     compaction_output->print_particles = true;
@@ -37,29 +36,26 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     compaction_output->print_kinetic_energy = true;
     compaction_output->print_contacts = true;
     compaction_output->print_surface_forces = true;
-    //simulator.run(run_for_time);
+    compaction_output->print_fabric_force_tensor =true;
+
+    //Move the side_lid
+    //simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);
+    //simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
+    std::cout<<"Biginning of simulations"<< std::endl;;
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.001);
+    simulator.run(run_for_time);
+
 
 
     //unload extra compaction
 
     std::cout<<"beginning of unloading"<< std::endl;
-    top_surface->set_velocity(Vec3(0, 0, surface_velocity));
-    EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
-    simulator.run(zero_force);
+    //top_surface->set_velocity(Vec3(0, 0, surface_velocity));
+    //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
+    //simulator.run(run_for_time);
 
-
-    //Viscoelastic_test_compaction
-    auto side_surface = simulator.get_surface<EngineType::PointSurfacePointer>("point_surface_4502");
-    side_surface->set_velocity(Vec3(0,  -surface_velocity,0));
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.001);
     simulator.run(run_for_time);
-
-
-    //unload test
-    std::cout<<"beginning of unloading"<< std::endl;
-    top_surface->set_velocity(Vec3(0, surface_velocity, 0));
-    simulator.run(zero_force);
-
-
     simulator.write_restart_file(output_directory + "/Cathode_final_compacted");
 }
 
