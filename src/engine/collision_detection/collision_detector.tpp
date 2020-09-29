@@ -228,7 +228,7 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::add_particle(ParticleType
     add_bounding_box_projections(bounding_boxes_.back());
     n_ += 2;
     ++collision_id_counter_;
-    current_contacts_.resize(particle->get_collision_id()+1);
+    current_contacts_.resize(particle->get_collision_id() + 1);
 }
 
 template<typename ForceModel, typename ParticleType>
