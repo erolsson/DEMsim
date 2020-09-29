@@ -309,7 +309,6 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
     else {
         rot_.set_zero();
         FT_visc_.set_zero();
-        uT_.set_zero();
         for (unsigned i = 0; i != M; ++i) {
             dti_[i].set_zero();
         }
@@ -317,11 +316,12 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
 
     if (F_particle > 0.0) {
         FT_part_ += kT_part_*dt;
-        if (FT_part_.length() > mu_particle_*F_particle) { // Slip
+        if (FT_part_.length() > mu_particle_*F_particle && !uT_.is_zero() && !dt.is_zero()) { // Slip
             FT_part_ = mu_particle_*F_particle*(0.5*uT_.normal() + 0.5*dt.normal());
         }
     }
     else {
+        uT_.set_zero();
         FT_part_.set_zero();
     }
     FT_.set_zero();
