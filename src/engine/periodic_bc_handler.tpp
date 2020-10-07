@@ -612,9 +612,9 @@ std::vector<std::string> PeriodicBCHandler<ForceModel, ParticleType>::restart_da
     velocity_info << "data=velocity";
     std::string axes = "xyz";
     for (std::size_t dir = 0; dir != boundaries_.size(); ++dir) {
-        boundary_info << ", " << axes[dir] << "min=" << boundaries_[dir].min << ", " << axes[dir] << "max="
-                      << boundaries_[dir].max;
-        velocity_info << ", v" << axes[dir] << "=" << velocities_[dir];
+        boundary_info << ", " << named_print(boundaries_[dir].min, axes.substr(dir, 1) + "min")
+                      << ", " << named_print(boundaries_[dir].max, axes.substr(dir, 1) + "max");
+        velocity_info << ", " << named_print(velocities_[dir], "v" + axes.substr(dir, 1));
     }
     restart_data.push_back(boundary_info.str());
     restart_data.push_back(velocity_info.str());
