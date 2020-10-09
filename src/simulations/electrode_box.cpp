@@ -18,16 +18,13 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     using EngineType = Engine<ForceModel, ParticleType>;
     using namespace std::chrono_literals;
     SimulationParameters parameters(settings_file_name);
-
-
     auto N = parameters.get_parameter<double>("N");
     auto output_directory = parameters.get_parameter<std::string>("output_dir");
     auto particle_file = parameters.get_parameter<std::string>("radius_file");
 
-
     EngineType simulator(1us);
-    auto mat = simulator.create_material<ElectrodeMaterial>(4800);
 
+    auto mat = simulator.create_material<ElectrodeMaterial>(4800);
     mat->E = parameters.get_parameter<double>("E");
     mat->kT = parameters.get_parameter<double>("kT");
     mat->Ep = parameters.get_parameter<double>("Ep");
@@ -44,48 +41,43 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     auto particle_density_at_cube = parameters.get_parameter<double>("particle_density_at_cube");
     mat->active_particle_height = parameters.get_parameter<double>("active_particle_height");
 
+
     auto particle_radii = read_vector_from_file<double>(particle_file);
     particle_radii.assign(particle_radii.begin(), particle_radii.begin()+N);
     std::sort(particle_radii.rbegin(), particle_radii.rend());
-
     double particle_volume = 0.;
     for(const auto& r: particle_radii) {
         particle_volume += 4.*pi*r*r*r/3.;
     }
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
-
     auto box_side = pow(particle_volume/particle_density_at_cube, 1./3);
     std::cout << "box_side " <<box_side << "\n";
     auto box_height = particle_density_at_cube*box_side/particle_density_at_filling;
     std::cout << "box_height " <<box_height << "\n";
+
     auto p1 = Vec3(-box_side/2, -box_side/2, 0);
     auto p2 = Vec3( box_side/2, -box_side/2, 0);
     auto p3 = Vec3( box_side/2,  box_side/2, 0);
     auto p4 = Vec3(-box_side/2,  box_side/2, 0);
-
     auto p5 = Vec3(-box_side/2, -box_side/2, box_height);
     auto p6 = Vec3( box_side/2, -box_side/2, box_height);
     auto p7 = Vec3( box_side/2,  box_side/2, box_height);
     auto p8 = Vec3(-box_side/2,  box_side/2, box_height);
-
     std::vector<Vec3> bottom_points{p1, p2, p3, p4};
     std::vector<Vec3> top_points{p8, p7, p6, p5};
-    std::cout << "to and bottom " <<p8 << "\n";
+
     auto particle_positions = random_fill_box(-box_side/2, box_side/2, -box_side/2, box_side/2,
                                               0, box_height, particle_radii, mat->bt);
-    std::cout << "box_height " <<box_height << "\n";
-    auto bottom_surface = simulator.create_deformable_point_surface(bottom_points, "bottom_plate");
+
+    auto deformable_surface = simulator.create_deformable_point_surface(bottom_points, true);
     auto top_surface = simulator.create_point_surface(top_points, true, "top_plate", false);
-    std::cout << "box_height " <<box_height << "\n";
-    std::cout << "Normal of bottom surface: " << bottom_surface->get_normal() << "\n";
-    std::cout << "Normal of bottom surface: " << top_surface->get_normal() << "\n";
+
+    std::cout << "Normal of top surface: " << top_surface->get_normal() << "\n";
 
     for (std::size_t i = 0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
-    auto filling_output = simulator.create_output(output_directory , 0.001s,
-                                                  "filling_output");
-
+    auto filling_output = simulator.create_output(output_directory , 0.001s);
 
     filling_output->print_particles = true;
     filling_output->print_kinetic_energy = true;
@@ -94,7 +86,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     filling_output->print_contacts = true;
     filling_output->print_periodic_bc = true;
     filling_output->print_mirror_particles = true;
-    filling_output->print_fabric_force_tensor=true;//dela på volym= spänningar  ta högsta partikels höjd till volymen
+    filling_output->print_fabric_force_tensor=true;
 
     simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);
     simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
@@ -103,8 +95,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.setup(1.01*mat->bt);
     EngineType::RunForTime run_for_time(simulator, 0.1s);
     simulator.run(run_for_time);
-
-
+    simulator.set_mass_scale_factor(10.0);
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
     simulator.run(max_velocity);
 
@@ -112,45 +103,51 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     std::cout<<"beginning of compaction"<< std::endl;
     auto bbox = simulator.get_bounding_box();
     double h = bbox[5];
-    std::cout<<"h"<< h << std::endl;
-
     top_surface->move(-Vec3(0, 0, box_height - h-1.1*mat->bt), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
     double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
-
     run_for_time.reset(compaction_time);
+    simulator.set_mass_scale_factor(10.0);
     simulator.run(run_for_time);
-    //EngineType::SurfaceNormalForceWithinInterval  Interval ( simulator, top_surface,47e+6,100e+6, std::chrono::duration<double>(0.01)  );
-    //simulator.run(Interval);
-
+    simulator.write_restart_file(output_directory + "/compact_restart_file.res");
 
     std::cout<<"beginning of unloading"<< std::endl;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
-    EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
-    simulator.run(zero_force);
+    //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
+    simulator.set_mass_scale_factor(10.0);
+    simulator.run(max_velocity);
 
-    std::cout<<"Calculation Porosity"<< std::endl;
+    std::cout<<"Height of the electrode"<< std::endl;
     bbox = simulator.get_bounding_box();
     h = bbox[5];
-    std::cout<<"h:"<< h << std::endl;
-    //std::cout<<"box_width:"<< box_width << std::endl;
-    //std::cout << "Volume of simulated particles is " <<just_particle_volume << "\n";
-   //double Prorosity= (1-((just_particle_volume)/ (box_width*box_width*h)))*100;
-    //std::cout<<"Prosity is:"<< Prorosity <<std::endl;
     std::cout<<"h is:"<< h <<std::endl;
+    simulator.write_restart_file(output_directory + "/unload_restart_file.res");
 
+    std::cout<<"beginning of relaxation"<< std::endl;
+    simulator.set_mass_scale_factor(10.0);
+    EngineType::RunForTime run_for_time_relax(simulator,50s);
+    simulator.run(run_for_time_relax);
+    simulator.write_restart_file(output_directory + "/relax_restart_file.res");
 
-    //Move the side_lid
     std::cout<<"Biginning of simulations"<< std::endl;;
-    simulator.set_periodic_boundary_condition_strain_rate('x',-0.001);
-    EngineType::RunForTime run_for_time_simulate(simulator, 1s);
-    simulator.run(run_for_time_simulate);
+    EngineType::RunForTime run_for_time_compact(simulator,3s);
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
+    simulator.set_mass_scale_factor(10.0);
+    simulator.run(run_for_time_compact);
+    simulator.write_restart_file(output_directory + "/tryck_restart_file.res");
 
-    // simulator.set_periodic_boundary_condition_strain_rate('y',-1.);
-    //simulator.set_periodic_boundary_condition_strain_rate('z',-2/3.);
-    simulator.write_restart_file(output_directory + "/compact_restart_file.res");
+    //unload extra compaction
 
+    std::cout<<"beginning of unloading"<< std::endl;
+    //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
+    simulator.set_periodic_boundary_condition_strain_rate('x',0);
+    deformable_surface -> set_in_plane_strain_rates(0., 0.);
+    simulator.set_mass_scale_factor(10.0);
+    EngineType::RunForTime run_for_time_relax_mechanical(simulator,60s);
+    simulator.run(run_for_time_relax_mechanical);
+    simulator.write_restart_file(output_directory + "/relax_mechanical_restart_file.res");
 }
 
