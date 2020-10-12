@@ -19,16 +19,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     auto restart_file_name = parameters.get_parameter<std::string>("restart_file_name");
     auto output_directory = parameters.get_parameter<std::string>("output_dir");
     auto simulator = EngineType(restart_file_name);
-    //auto mat = simulator.create_material<ElectrodeMaterial>(4800);
-    //mat->active_particle_height = parameters.get_parameter<double>("active_particle_height");
-
-
-    //More compaction
-    EngineType::RunForTime run_for_time(simulator, 1s);
-    //auto top_surface = simulator.get_surface<EngineType::PointSurfacePointer>("point_surface_4501");
-    //double surface_velocity = 0.01;
-
-    auto Cathode_output = simulator.get_output("filling_output");
+    auto Cathode_output = simulator.get_output("output_0");
     simulator.remove_output(Cathode_output);
     auto compaction_output = simulator.create_output(output_directory + "/compaction", 0.001s);
     compaction_output->print_particles = true;
@@ -37,15 +28,39 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     compaction_output->print_contacts = true;
     compaction_output->print_surface_forces = true;
     compaction_output->print_fabric_force_tensor =true;
+    compaction_output->print_periodic_bc = true;
 
-    //Move the side_lid
-    //simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);
-    //simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
+
+    auto top_surface = simulator.get_surface<EngineType::PointSurfacePointer>("top_plate");
+    double surface_velocity = 0.01;
+    //top_surface->set_velocity(Vec3(0, 0, surface_velocity));
+    EngineType::RunForTime run_for_time_unload_compact(simulator,30s);
+    EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
+    simulator.run(run_for_time_unload_compact);
+
+    //std::cout<<"beginning of unloading"<< std::endl;
+
+    //simulator.set_mass_scale_factor(10.0);
+    //top_surface->set_velocity(Vec3(0, 0, surface_velocity));
+    //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
+    //simulator.run(max_velocity);
+
+    //simulator.write_restart_file(output_directory + "/unload_restart_file.res");
+
+    //Beginning of tryckprov
     std::cout<<"Biginning of simulations"<< std::endl;;
-    simulator.set_periodic_boundary_condition_strain_rate('x',-0.001);
-    simulator.run(run_for_time);
+    EngineType::RunForTime run_for_time_compact(simulator,3s);
 
 
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    auto bottom_surface = simulator.get_surface<EngineType::DeformablePointSurfacePointer>("deformable_point_surface_0");
+
+    bottom_surface -> set_in_plane_strain_rates(-0.01, 0.);
+    simulator.set_mass_scale_factor(10.0);
+
+    simulator.run(run_for_time_compact);
+
+    simulator.write_restart_file(output_directory + "/tryck");
 
     //unload extra compaction
 
@@ -54,9 +69,11 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
     //simulator.run(run_for_time);
 
-    simulator.set_periodic_boundary_condition_strain_rate('x',-0.001);
-    simulator.run(run_for_time);
-    simulator.write_restart_file(output_directory + "/Cathode_final_compacted");
+    simulator.set_periodic_boundary_condition_strain_rate('x',0);
+    bottom_surface -> set_in_plane_strain_rates(0., 0.);
+    EngineType::RunForTime run_for_time_relax(simulator,10s);
+    simulator.run(run_for_time_relax);
+    simulator.write_restart_file(output_directory + "/relaxation");
 }
 
 
