@@ -28,7 +28,7 @@ DEM::DeformablePointSurface<ForceModel, ParticleType>::DeformablePointSurface(co
     auto no_points = parameters.get_parameter<std::size_t>("no_points");
     for (unsigned i = 0; i != no_points; ++i) {
         std::ostringstream dp;
-        dp << "p" << i;
+        dp << "d" << i;
         nodal_displacements_.push_back(parameters.get_vec3(dp.str()));
     }
 }

@@ -51,7 +51,7 @@ DEM::Engine<ForceModel, ParticleType>::Engine(const std::string& restart_file_na
         {"*particle",           std::vector<DEM::ParameterMap>{} },
         {"*contact",            std::vector<DEM::ParameterMap>{} },
         {"*collision_detector", std::vector<DEM::ParameterMap>{} },
-        {"*periodic bc",        std::vector<DEM::ParameterMap>{} },
+        {"*periodicbc",         std::vector<DEM::ParameterMap>{} },
     };
 
     DEM::ParameterMap engine_parameters;
@@ -59,6 +59,7 @@ DEM::Engine<ForceModel, ParticleType>::Engine(const std::string& restart_file_na
     std::smatch sm;
     std::size_t line_count = 0;
     while (getline(restart_file, data_string)) {
+        data_string.erase(remove_if(data_string.begin(), data_string.end(), isspace), data_string.end());
         ++line_count;
         if (std::regex_match(data_string, sm, keyword_re)) {
             std::string keyword = sm[1];
@@ -109,29 +110,28 @@ DEM::Engine<ForceModel, ParticleType>::Engine(const std::string& restart_file_na
     for (const auto& particle_data: keyword_data["*particle"]) {
         make_particle_from_restart_data(particle_data);
     }
-    collision_detector_.setup(bounding_box_stretch_);
 
     for (const auto& contact_data: keyword_data["*contact"]) {
         make_contact_from_restart_data(contact_data);
     }
 
-    if (keyword_data["*periodic bc"].size() > 0 ){
+    if (keyword_data["*periodicbc"].size() > 0 ){
         periodic_bc_handler_ = std::make_unique<PeriodicBCHandlerType>(*this, particles_, collision_detector_,contacts_,
-                                                                       keyword_data["*periodic bc"]);
+                                                                       keyword_data["*periodicbc"]);
     }
 
     for (const auto& output_data: keyword_data["*output"]) {
         make_output_from_restart_data(output_data);
     }
-
+    /*
     for (auto& c: contacts_.get_objects()) {
         c->update();
     }
-
+    */
     for (auto& p: particles_) {
         p->sum_contact_forces();
     }
-
+    collision_detector_.setup(bounding_box_stretch_);
     collision_detector_.restart(keyword_data["*collision_detector"]);
     collision_detector_.do_check();
 }

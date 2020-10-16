@@ -85,6 +85,7 @@ add_executable(DEMsim
                src/simulations/battery/battery_rve_filling.cpp
                src/simulations/Cathode_mechanical_simulations.cpp
                src/simulations/battery/battery_rve_compaction.cpp
-               src/simulations/battery/battery_rve_loading.cpp)
+               src/simulations/battery/battery_rve_loading.cpp
+               src/simulations/battery/restart_electrode.cpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}" Eigen3::Eigen)
