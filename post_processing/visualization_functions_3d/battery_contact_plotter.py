@@ -45,7 +45,7 @@ class BatteryContactPlotter:
                 length = particles[obj1].radius - float(contact[5])    # contact[h] = overlap
 
                 q, z0 = np.meshgrid(np.linspace(0, 2*np.pi, self.resolution),
-                                   np.linspace(0, length, self.resolution))
+                                    np.linspace(0, length, self.resolution))
                 x0 = self.binder_radius*np.cos(q)
                 y0 = self.binder_radius*np.sin(q)
 
@@ -54,7 +54,6 @@ class BatteryContactPlotter:
                 else:
                     ex = np.array([1, 0, 0])
                 ey = np.cross(n, ex)
-                print(ex, ey, n)
                 x = x0*ex[0] + y0*ey[0] + z0*n[0] + point_1[0]
                 y = x0*ex[1] + y0*ey[1] + z0*n[1] + point_1[1]
                 z = x0*ex[2] + y0*ey[2] + z0*n[2] + point_1[2]
