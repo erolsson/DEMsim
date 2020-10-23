@@ -11,7 +11,7 @@ from visualization_functions_3d.plotting_functions import SpheresPlotter
 from visualization_functions_3d.plotting_functions import SurfacesPlotter
 from visualization_functions_3d.plotting_functions import BoundingBox
 from visualization_functions_3d.periodic_bc import PeriodicBC
-
+from visualization_functions_3d import colors
 
 class Animation:
     def __init__(self, directory):
@@ -37,7 +37,7 @@ class Animation:
         self.mirror_particles = False
 
         self.spheres_plotter = SpheresPlotter()
-        self.mirror_particles_plotter = SpheresPlotter(color=(192/255, 192/255, 192/255))
+        self.mirror_particles_plotter = SpheresPlotter(color=colors.silver)
         self.surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dou', self.surfaces_colors,
                                                 self.surfaces_opacities, self.plot_order, self.bounding_boxes,
                                                 self.visible_functions)

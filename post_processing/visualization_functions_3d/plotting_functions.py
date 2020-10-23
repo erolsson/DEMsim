@@ -2,13 +2,13 @@ import sys
 
 from collections import namedtuple
 from collections import OrderedDict
-from collections import defaultdict
 from math import pi
 
 import numpy as np
 
 from mayavi import mlab
 
+from visualization_functions_3d import colors
 
 class BoundingBox:
     def __init__(self):
@@ -27,7 +27,7 @@ class BoundingBox:
 
 # Todo, fix unused parameter opacity
 class SpheresPlotter:
-    def __init__(self, opacity=1., color=(184./255, 115./255., 51./255.)):
+    def __init__(self, opacity=1., color=colors.copper):
         self.ms = None
         self.color = color
         self.opacity = opacity
@@ -233,6 +233,7 @@ class SurfacesPlotter:
                 plotter_data = self.plotter_data[surface_id]
                 data = data_line[plotter_data.start_idx:plotter_data.end_idx]
                 plotter.plot(data, self.surfaces_colors[surface_id], self.surfaces_opacities[surface_id], t)
+
 
 if __name__ == '__main__':
     simulation_directory = '../results/cyclic_triaxial/test/'
