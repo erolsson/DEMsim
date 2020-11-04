@@ -248,28 +248,25 @@ double DEM::Viscoelastic::update_normal_force(double h)
     if (binder_contact_) {
 
         if (h > -bt_ && h_ > -bt_) {
-
-            if (h > -bt_ && h_ > -bt_) {
-                dF_ = dh;
-                if (a_ < sqrt(Rb_*(h_ + bt_))) {
-                    a_ = sqrt(Rb_*(h_ + bt_));
-                    fractured_ = false;
-                }
-
-                //auto hn32 = pow(h_ + bt_, 3. / 2);
-                //auto h_32diff = pow(h + bt_, 3. / 2) - hn32;
-                for (unsigned i = 0; i != M; ++i) {
-                    ddi_[i] = bi[i] * dh + ai[i] * (h_+bt_ - di_[i]);
-                    dF_ -= alpha_i[i] * ddi_[i];
-                    di_[i] += ddi_[i];
-                }
-                kB_=(0.3*0.0016*stiff_b_)/(bt_);
-                //std::cout << "a_: " <<a_ ;
-                F_visc += kB_*dF_;
-                //std::cout << "K_: " <<k_ << "\n";
-                //std::cout << "F_visc: " <<F_visc << "\n" ;
-                //std::cout << "KB_: " <<kB_ << "\n";
+            dF_ = dh;
+            if (a_ < sqrt(Rb_*(h_ + bt_))) {
+                a_ = sqrt(Rb_*(h_ + bt_));
+                fractured_ = false;
             }
+
+            //auto hn32 = pow(h_ + bt_, 3. / 2);
+            //auto h_32diff = pow(h + bt_, 3. / 2) - hn32;
+            for (unsigned i = 0; i != M; ++i) {
+                ddi_[i] = bi[i] * dh + ai[i] * (h_+bt_ - di_[i]);
+                dF_ -= alpha_i[i] * ddi_[i];
+                di_[i] += ddi_[i];
+            }
+            kB_=(0.3*0.0016*stiff_b_)/(bt_);
+            //std::cout << "a_: " <<a_ ;
+            F_visc += kB_*dF_;
+            //std::cout << "K_: " <<k_ << "\n";
+            //std::cout << "F_visc: " <<F_visc << "\n" ;
+            //std::cout << "KB_: " <<kB_ << "\n";
         }
         else {
             F_visc = 0;
