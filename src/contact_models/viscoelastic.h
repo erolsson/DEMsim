@@ -54,6 +54,9 @@ namespace DEM {
         static unsigned M;
         double yield_h_ { 1e99 };
         double k_;
+        double stiff_b_;
+        double kB_;
+        double kT_B_;
         double kparticle_;
         //double binder_radii_;
         //double bindervolume_;

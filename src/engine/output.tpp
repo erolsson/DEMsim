@@ -269,7 +269,7 @@ template<typename ForceModel, typename ParticleType>
 void DEM::Output<ForceModel, ParticleType>::write_mirror_particles() const {
     if (engine_.periodic_bc_handler_ != nullptr) {
         auto mirror_particles = engine_.periodic_bc_handler_->mirror_particles_output();
-        fs::path mirror_particles_directory = directory_ / "mirror_particles/";
+        fs::path mirror_particles_directory = directory_ / "mirror_particles";
         if (!fs::exists(mirror_particles_directory)) {
             fs::create_directories(mirror_particles_directory);
         }

@@ -1,8 +1,8 @@
 N=6000
 R=0.01
-output_file=../results/viscoelastic/viscoelastic_normal5_contact
+output_file=C:/DEMsim/results/viscoelastic/viscoelastic_normal5_contact
 E=1.70e9
-nu=0.5
+nu=0.3
 nup=0.25
 Ep=142e9
 mu=0.1

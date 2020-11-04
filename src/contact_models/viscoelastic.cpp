@@ -40,6 +40,11 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     double G2 = E2/2/(1+v2);
 
     kT_ = 1/((2-v1)/G1 + (2-v2)/G2)*Rb_*0.1;
+    kT_B_=E1*0.3*0.0016/(2*(1+v1)*mat1->bt);
+    //std::cout << "KT_B " <<kT_B_;
+
+    stiff_b_=((1-v1)*E1)/(1+v1)/(1-2*v1);
+    //std::cout << "stiffness " << stiff_b_;
 
     double tsi0 = 1. / (((1 - v1 * v1) / E1) + ((1 - v2 * v2) / E2));
     double tsi0particle = 1./(((1-vp1*vp1)/Ep1)+((1-vp2*vp2)/Ep2));
@@ -55,6 +60,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     dt_ = dt.count();  // time increment
 
     k_=4.*tsi0*sqrt(R0_ + bt_)/3; //initial contact stiffness
+    //std::cout << "K_" << k_;
+
     kparticle_=4*tsi0particle*sqrt(R0_)/3;
     yield_h_ = 2*mat1->yield_displacement_coeff*R0_;
 
@@ -88,6 +95,10 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     double G1 = E1/2/(1+v1);
 
     kT_ = 1/((2-v1)/G1)*Rb_*0.01;
+    kT_B_=E1*0.3*0.0016/(2*(1+v1)*mat1->bt);
+    //std::cout << "KT_B " <<kT_B_;
+    stiff_b_=((1-v1)*E1)/(1+v1)/(1-2*v1);
+    //std::cout << "stiffness " << stiff_b_;
 
     double tsi0 = 1. / ((1 - v1 * v1) / E1);
     double tsi0particle = 1./((1-vp1*vp1)/Ep1);
@@ -134,6 +145,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoe
         a_(parameters.get_parameter<double>("a")),
         yield_h_(parameters.get_parameter<double>("yield_h")),
         k_(parameters.get_parameter<double>("k")),
+        kB_(parameters.get_parameter<double>("kB")),
+        kT_B_(parameters.get_parameter<double>("kT_B")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
         R0_(parameters.get_parameter<double>("R0")),
         Rb_(parameters.get_parameter<double>("Rb")),
@@ -152,6 +165,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoe
         adhesive_(parameters.get_parameter<bool>("adhesive")),
         binder_contact_(parameters.get_parameter<bool>("binder_contact")),
         fractured_(parameters.get_parameter<bool>("fractured"))
+
 {
     M = parameters.get_parameter<unsigned>("M");
     for (unsigned i=0; i != M; ++i) {
@@ -179,6 +193,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoel
         a_(parameters.get_parameter<double>("a")),
         yield_h_(parameters.get_parameter<double>("yield_h")),
         k_(parameters.get_parameter<double>("k")),
+        kB_(parameters.get_parameter<double>("kB")),
+        kT_B_(parameters.get_parameter<double>("kT_B_")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
         R0_(parameters.get_parameter<double>("R0")),
         Rb_(parameters.get_parameter<double>("Rb")),
@@ -224,27 +240,36 @@ unsigned DEM::Viscoelastic::M;
 double DEM::Viscoelastic::update_normal_force(double h)
 {
     double dh = h - h_;
-    h_ = h - dh;
+    h_ = h;
     if (h > hmax_) {
         hmax_ = h;
         fractured_ = false;
     }
     if (binder_contact_) {
-        if (h > -bt_ && h_ > -bt_) {
-            dF_ = 3./2*sqrt(h_ + bt_)*dh;
-            if (a_ < sqrt(Rb_*(h_ + bt_))) {
-                a_ = sqrt(Rb_*(h_ + bt_));
-                fractured_ = false;
-            }
 
-            auto hn32 = pow(h_ + bt_, 3. / 2);
-            auto h_32diff = pow(h + bt_, 3. / 2) - hn32;
-            for (unsigned i = 0; i != M; ++i) {
-                ddi_[i] = bi[i] * h_32diff + ai[i] * (hn32 - di_[i]);
-                dF_ -= alpha_i[i] * ddi_[i];
-                di_[i] += ddi_[i];
+        if (h > -bt_ && h_ > -bt_) {
+
+            if (h > -bt_ && h_ > -bt_) {
+                dF_ = dh;
+                if (a_ < sqrt(Rb_*(h_ + bt_))) {
+                    a_ = sqrt(Rb_*(h_ + bt_));
+                    fractured_ = false;
+                }
+
+                //auto hn32 = pow(h_ + bt_, 3. / 2);
+                //auto h_32diff = pow(h + bt_, 3. / 2) - hn32;
+                for (unsigned i = 0; i != M; ++i) {
+                    ddi_[i] = bi[i] * dh + ai[i] * (h_+bt_ - di_[i]);
+                    dF_ -= alpha_i[i] * ddi_[i];
+                    di_[i] += ddi_[i];
+                }
+                kB_=(0.3*0.0016*stiff_b_)/(bt_);
+                //std::cout << "a_: " <<a_ ;
+                F_visc += kB_*dF_;
+                //std::cout << "K_: " <<k_ << "\n";
+                //std::cout << "F_visc: " <<F_visc << "\n" ;
+                //std::cout << "KB_: " <<kB_ << "\n";
             }
-            F_visc += k_*dF_;
         }
         else {
             F_visc = 0;
@@ -252,7 +277,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
             a_ = 0;
             rot_.set_zero();
             for (unsigned i = 0; i != M; ++i) {
-                ddi_[i] = 0;
+
                 di_[i] = 0;
             }
         }
@@ -272,8 +297,8 @@ double DEM::Viscoelastic::update_normal_force(double h)
         }
     }
 
-    h_ += dh;
     // std::cout << "Adhesive: " << adhesive_ << ", Fvisc: " << F_visc << ", fractured: " << fractured_ <<  "\n";
+    //std::cout << ": " <<
     if (adhesive_ && !fractured_) {
         return F_visc + std::max(F_particle, 0.);
     }
@@ -300,7 +325,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
             dFT_ -= alpha_i[i]*ddti_[i];
             dti_[i] += ddti_[i];
         }
-        FT_visc_ += kT_*dFT_;
+        FT_visc_ += kT_B_*dFT_;
 
         if (FT_visc_.length() > mu_binder_*abs(F_visc)) { // contact aborted
             fractured_ = true;
@@ -385,7 +410,10 @@ std::string DEM::Viscoelastic::restart_data() const {
        << named_print(adhesive_, "adhesive") << ", "
        << named_print(binder_contact_, "binder_contact") << ", "
        << named_print(fractured_, "fractured") << ", "
+       << named_print(kB_, "kB") << ", "
+       << named_print(kT_B_, "kT_B_") << ", "
        << named_print(M, "M");
+
     for (unsigned i=0; i != M; ++i) {
         ss <<  ", "
            << named_print(tau_i[i], "tau_" + std::to_string(i)) << ", "
