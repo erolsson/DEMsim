@@ -3,7 +3,8 @@ from mayavi import mlab
 from animation import Animation
 
 if __name__ == '__main__':
-    simulation_directory = '../results/closed_die_compaction/electrode/'
+    simulation_directory = 'C:/DEMsim/results/viscoelastic/cathode1001'
+
     # Doing some inspection to construct a good bounding_box figure
     # dimension_data = dimensions_cylinder(simulation_directory)
     # time = dimension_data[:, 0]
@@ -14,7 +15,7 @@ if __name__ == '__main__':
 
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)
-    animation.save_directory = '../post_processing/proctor/animation/imgs/'
+    animation.save_directory = 'C:/DEMsim/post_processing/Electrode_box/animation3/'
     animation.save_frames = True
     animation.delay = 0.0001
     animation.start_time = 1.6

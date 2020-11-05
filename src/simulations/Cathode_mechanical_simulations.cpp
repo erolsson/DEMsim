@@ -33,47 +33,151 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
 
     auto top_surface = simulator.get_surface<EngineType::PointSurfacePointer>("top_plate");
     double surface_velocity = 0.01;
-    //top_surface->set_velocity(Vec3(0, 0, surface_velocity));
-    EngineType::RunForTime run_for_time_unload_compact(simulator,30s);
+    top_surface->set_velocity(Vec3(0, 0,0));
+    EngineType::RunForTime run_for_time_unload_compact(simulator,5s);
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
+    simulator.set_mass_scale_factor(10.0);
     simulator.run(run_for_time_unload_compact);
+    simulator.write_restart_file(output_directory + "/unload_restart_file.res");
 
-    //std::cout<<"beginning of unloading"<< std::endl;
 
-    //simulator.set_mass_scale_factor(10.0);
-    //top_surface->set_velocity(Vec3(0, 0, surface_velocity));
-    //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
-    //simulator.run(max_velocity);
 
-    //simulator.write_restart_file(output_directory + "/unload_restart_file.res");
 
-    //Beginning of tryckprov
-    std::cout<<"Biginning of simulations"<< std::endl;;
-    EngineType::RunForTime run_for_time_compact(simulator,3s);
+
+
+    //Beginning of tryck
+
+    std::cout<<"Biginning of simulation 1"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_1(simulator,1.75s);
 
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     auto bottom_surface = simulator.get_surface<EngineType::DeformablePointSurfacePointer>("deformable_point_surface_0");
 
     bottom_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    simulator.set_mass_scale_factor(10.0);
 
-    simulator.run(run_for_time_compact);
 
-    simulator.write_restart_file(output_directory + "/tryck");
+    simulator.run(run_for_time_compact_1);
+
+    simulator.write_restart_file(output_directory + "/tryck_1.res");
 
     //unload extra compaction
 
-    std::cout<<"beginning of unloading"<< std::endl;
+    std::cout<<"beginning of unloading 1"<< std::endl;
     //top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
     //simulator.run(run_for_time);
 
-    simulator.set_periodic_boundary_condition_strain_rate('x',0);
-    bottom_surface -> set_in_plane_strain_rates(0., 0.);
-    EngineType::RunForTime run_for_time_relax(simulator,10s);
-    simulator.run(run_for_time_relax);
-    simulator.write_restart_file(output_directory + "/relaxation");
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    bottom_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_1(simulator,1.75s);
+
+    simulator.run(run_for_time_relax_1);
+    simulator.write_restart_file(output_directory + "/relaxation_1.res");
+
+
+
+
+    std::cout<<"Biginning of simulation 2"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_2(simulator,1.9s);
+
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    bottom_surface -> set_in_plane_strain_rates(-0.01, 0.);
+
+
+    simulator.run(run_for_time_compact_2);
+
+    simulator.write_restart_file(output_directory + "/tryck_2.res");
+
+    //unload extra compaction
+
+    std::cout<<"beginning of unloading 2"<< std::endl;
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    bottom_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_2(simulator,1.9s);
+
+    simulator.run(run_for_time_relax_2);
+    simulator.write_restart_file(output_directory + "/relaxation_2.res");
+
+
+
+    std::cout<<"Biginning of simulation 3"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_3(simulator,2.125s);
+
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    bottom_surface -> set_in_plane_strain_rates(-0.01, 0.);
+
+
+    simulator.run(run_for_time_compact_3);
+
+    simulator.write_restart_file(output_directory + "/tryck_3.res");
+
+    //unload extra compaction
+
+    std::cout<<"beginning of unloading 3"<< std::endl;
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    bottom_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_3(simulator,2.125s);
+
+    simulator.run(run_for_time_relax_3);
+    simulator.write_restart_file(output_directory + "/relaxation_3.res");
+
+
+
+
+
+    std::cout<<"Biginning of simulation 4"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_4(simulator,2.43s);
+
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    bottom_surface -> set_in_plane_strain_rates(-0.01, 0.);
+
+
+    simulator.run(run_for_time_compact_4);
+
+    simulator.write_restart_file(output_directory + "/tryck_4.res");
+
+    //unload extra compaction
+
+    std::cout<<"beginning of unloading 4"<< std::endl;
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    bottom_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_4(simulator,2.43s);
+
+    simulator.run(run_for_time_relax_4);
+    simulator.write_restart_file(output_directory + "/relaxation_4.res");
+
+
+
+
+
+
+    std::cout<<"Biginning of simulation 5"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_5(simulator,2.85s);
+
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    bottom_surface -> set_in_plane_strain_rates(-0.01, 0.);
+
+
+    simulator.run(run_for_time_compact_5);
+
+    simulator.write_restart_file(output_directory + "/tryck_5.res");
+
+    //unload extra compaction
+
+    std::cout<<"beginning of unloading 5"<< std::endl;
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    bottom_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_5(simulator,2.85s);
+
+    simulator.run(run_for_time_relax_5);
+    simulator.write_restart_file(output_directory + "/relaxation_5.res");
+
+
 }
 
 

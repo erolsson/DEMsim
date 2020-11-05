@@ -9,7 +9,7 @@
 int main(int argc, char** argv)
 {
     // crashes the program when a floating point exception occurs, good for debugging but works only on linux
-    feenableexcept(FE_INVALID | FE_OVERFLOW);
+    // feenableexcept(FE_INVALID | FE_OVERFLOW);
     if (argc < 2 || DEM::valid_simulations().count(argv[1]) == 0) {
         std::cerr << "Please provide a valid program name as first argument" << '\n';
         return 0;
