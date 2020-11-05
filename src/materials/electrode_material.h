@@ -13,7 +13,7 @@ namespace DEM {
     class ElectrodeMaterial : public MaterialBase {
     public:
         ElectrodeMaterial(unsigned id_number, double density) : MaterialBase(id_number, density) {}
-        ElectrodeMaterial(const ParameterMap& parameters);
+        explicit ElectrodeMaterial(const ParameterMap& parameters);
         ~ElectrodeMaterial() override = default;
         [[nodiscard]] std::string restart_data() const override;
 

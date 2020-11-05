@@ -180,8 +180,12 @@ template<typename ForceModel, typename ParticleType>
 void PeriodicBCHandler<ForceModel, ParticleType>::move_periodic_boundaries() {
     for (unsigned i = 0; i != 3; ++i) {
         if (active_directions_[i]) {
-            boundaries_[i].max += velocities_[i]*engine_.get_time_increment().count();
-            boundaries_[i].min -= velocities_[i]*engine_.get_time_increment().count();
+            double v = velocities_[i];
+            if (v == 0.) {
+                v = strain_rates_[i]*(boundaries_[i].max - boundaries_[i].min)/2;
+            }
+            boundaries_[i].max += v*engine_.get_time_increment().count();
+            boundaries_[i].min -= v*engine_.get_time_increment().count();
         }
     }
 }
@@ -402,9 +406,15 @@ void PeriodicBCHandler<ForceModel, ParticleType>::add_periodic_bc(char axis, dou
 
 
 template<typename ForceModel, typename ParticleType>
+void PeriodicBCHandler<ForceModel, ParticleType>::set_periodic_bc_velocity(char axis, double velocity) {
+    auto axis_idx = direction_idx(axis);
+    velocities_[axis_idx] = velocity;
+}
+
+template<typename ForceModel, typename ParticleType>
 void PeriodicBCHandler<ForceModel, ParticleType>::set_periodic_bc_strain_rate(char axis, double strain_rate) {
     auto axis_idx = direction_idx(axis);
-    velocities_[axis_idx] = strain_rate*(boundaries_[axis_idx].max - boundaries_[axis_idx].min)/2;
+    strain_rates_[axis_idx] = strain_rate;
 }
 
 
