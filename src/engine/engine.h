@@ -89,6 +89,7 @@ namespace DEM {
 
         [[maybe_unused]] void add_periodic_boundary_condition(char axis, double boundary_min, double boundary_max);
         [[maybe_unused]] void set_periodic_boundary_condition_strain_rate(char axis, double strain_rate);
+        [[maybe_unused]] void set_periodic_boundary_condition_velocity(char axis, double velocity);
 
         // Getters
         [[nodiscard]] std::chrono::duration<double> get_time() const { return time_; }

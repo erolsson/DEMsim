@@ -88,6 +88,7 @@ add_executable(DEMsim
                src/simulations/battery/battery_rve_loading.cpp
                src/simulations/battery/restart_electrode.cpp
                src/contact_models/porous_electrode_contact.cpp
-               src/contact_models/porous_electrode_contact.h)
+               src/contact_models/porous_electrode_contact.h
+               src/simulations/porous_electrode/porous_electrode_rve.cpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}" Eigen3::Eigen)
