@@ -72,7 +72,7 @@ DEM::PorousElectrodeContact::update(double h, const DEM::Vec3& dt, const DEM::Ve
             activated_ = true;
             double dF = dh;
             for (unsigned i = 0; i != M; ++i) {
-                ddi_[i] = bi[i]*dh + ai[i]*(h_ + bt_ -di_[i]);
+                ddi_[i] = bi[i]*dh + ai[i]*(h_ + bt_ - di_[i]);
                 dF -= alpha_i[i]*ddi_[i];
                 di_[i] += ddi_[i];
             }
@@ -80,7 +80,7 @@ DEM::PorousElectrodeContact::update(double h, const DEM::Vec3& dt, const DEM::Ve
         }
     }
     if (h_ > 0) {
-        Fparticle_ += kparticle_*sqrt(h_)*dh;
+        // Fparticle_ += kparticle_*sqrt(h_)*dh;
     }
     F_ = std::max(Fparticle_, 0.) + Fvisc_;
 }
@@ -94,6 +94,46 @@ bool DEM::PorousElectrodeContact::create_binder_contact(const DEM::PorousElectro
         return true;
     }
     return false;
+}
+
+DEM::Vec3 DEM::PorousElectrodeContact::get_rolling_resistance_torque() const {
+    return DEM::Vec3();
+}
+
+std::string DEM::PorousElectrodeContact::get_output_string() const {
+    std::stringstream ss;
+    ss  << F_ << ", " << Fvisc_ << ", " << Fparticle_ << ", "
+        << FT_.x() << ", "  << FT_.y() << ", " << FT_.z() << ", "
+        << binder_contact_ << ", " << bt_;
+    return ss.str();
+}
+
+std::string DEM::PorousElectrodeContact::restart_data() const {
+    std::ostringstream ss;
+    ss << named_print(h_, "h") << ", "
+       << named_print(F_, "F") << ", "
+       << named_print(Fvisc_, "Fvisc") << ", "
+       << named_print(Fparticle_, "Fparticle") << ", "
+       << named_print(FT_, "FT") << ", "
+       << named_print(a_, "a") << ", "
+       << named_print(binder_contact_, "binder_contact") << ", "
+       << named_print(activated_, "activated") << ", "
+       << named_print(kparticle_, "kparticle") << ", "
+       << named_print(kbinder_, "kbinder") << ", "
+       << named_print(R0_, "R0") << ", "
+       << named_print(bt_, "bt") << ", "
+       << named_print(br_, "br") << ", "
+       << named_print(dt_, "dt") << ", "
+       << named_print(M, "M");
+    for (unsigned i=0; i != M; ++i) {
+        ss <<  ", "
+           << named_print(alpha_i[i], "alpha_" + std::to_string(i)) << ", "
+           << named_print(ai[i], "a_" + std::to_string(i)) << ", "
+           << named_print(bi[i], "b_" + std::to_string(i)) << ", "
+           << named_print(di_[i], "d_" + std::to_string(i)) << ", "
+           << named_print(ddi_[i], "dd_" + std::to_string(i));
+    }
+    return ss.str();
 }
 
 unsigned DEM::PorousElectrodeContact::M;
