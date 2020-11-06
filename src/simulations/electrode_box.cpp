@@ -87,7 +87,6 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     filling_output->print_periodic_bc = true;
     filling_output->print_mirror_particles = true;
     filling_output->print_fabric_force_tensor=true;
-    filling_output->print_mirror_particles= true;
 
 
     simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);

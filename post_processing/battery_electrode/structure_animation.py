@@ -6,7 +6,7 @@ from visualization_functions_3d.animation import Animation
 
 
 def main():
-    simulation_directory = os.path.expanduser('~/DEMsim/results/battery_rve/compaction/')
+    simulation_directory = os.path.expanduser('~/DEMsim/results/viscoelastic/cathode1021-40ggr_print')
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)
     animation.save_directory = 'animation/imgs/'
