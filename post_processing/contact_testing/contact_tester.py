@@ -11,12 +11,18 @@ plt.rcParams['text.latex.preamble'] = [r"\usepackage{amsmath}"]
 plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
-force_data = np.genfromtxt('../../results/viscoelastic/viscoelastic_normal5_contact',
+force_data = np.genfromtxt('../../results/porous_electrode/contact_testing.dou',
                            delimiter=',')
 
 plt.figure(1)
+Ep = 139e9
+vp = 0.3
+E0 = Ep/(1-vp**2)/2
+R0 = 0.5
 h = force_data[:, 0]
 plt.plot(h, force_data[:, 1], '-')
+# F = 4./3*E0*R0**0.5*h**1.5
+# plt.plot(h, F, '--')
 
 plt.figure(2)
 plt.plot(force_data[:, 1])

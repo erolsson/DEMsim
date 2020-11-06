@@ -41,11 +41,17 @@ void DEM::porous_electrode_rve(const std::string& settings_file_name) {
     auto particle_volume = std::accumulate(particle_radii.begin(), particle_radii.end(), 0.,
                                            [](const auto& r, double vol) {
                                               return vol + 4*pi*r*r*r/3; });
-    auto box_volume = particle_volume/initial_particle_density;
-    auto box_side = pow(box_volume, 1./3);
+    auto initial_box_volume = particle_volume/initial_particle_density;
+    auto box_side = pow(initial_box_volume, 1./3);
 
     auto particle_positions = random_fill_box(-box_side/2, box_side/2, -box_side/2, box_side/2,
                                               -box_side/2, box_side/2,  particle_radii, mat->binder_thickness);
+
+    simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);
+    simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
+    simulator.add_periodic_boundary_condition('z', -box_side/2, box_side/2);
+    auto final_box_volume = particle_volume/electrode_particle_density;
+    auto final_box_side = pow(final_box_volume, 1./3);
 
 
 }
