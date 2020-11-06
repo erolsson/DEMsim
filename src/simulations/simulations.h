@@ -29,6 +29,7 @@ namespace DEM {
     void battery_rve_loading(const std::string &settings_file_name);
     void Cathode_mechanical_simulations(const std::string& settings_file_name);
     void restart_electrode(const std::string& settings_file_name);
+    void porous_electrode_rve(const std::string& settings_file_name);
 
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 

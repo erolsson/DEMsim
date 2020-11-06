@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(DEMsim)
 
 set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -msse4 -O3 -g -fopenmp")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -msse4 -O0 -g -fopenmp")
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
@@ -86,6 +86,9 @@ add_executable(DEMsim
                src/simulations/Cathode_mechanical_simulations.cpp
                src/simulations/battery/battery_rve_compaction.cpp
                src/simulations/battery/battery_rve_loading.cpp
-               src/simulations/battery/restart_electrode.cpp)
+               src/simulations/battery/restart_electrode.cpp
+               src/contact_models/porous_electrode_contact.cpp
+               src/contact_models/porous_electrode_contact.h
+               src/simulations/porous_electrode/porous_electrode_rve.cpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}" Eigen3::Eigen)

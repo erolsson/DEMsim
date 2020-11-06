@@ -389,6 +389,12 @@ template<typename ForceModel, typename ParticleType>
     periodic_bc_handler_->set_periodic_bc_strain_rate(axis, strain_rate);
 }
 
+template<typename ForceModel, typename ParticleType>
+[[maybe_unused]] void DEM::Engine<ForceModel, ParticleType>::set_periodic_boundary_condition_velocity(char axis,
+                                                                                                      double velocity) {
+    periodic_bc_handler_->set_periodic_bc_velocity(axis, velocity);
+}
+
 //=====================================================================================================================
 //                        *** *** *** *** Get simulation data *** *** *** ***
 //=====================================================================================================================

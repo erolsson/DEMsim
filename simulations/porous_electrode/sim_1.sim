@@ -1,0 +1,12 @@
+R=1.
+N=1000
+tick=1e-6
+output_file=../results/porous_electrode/contact_testing.dou
+E_particle=139e9
+v_particle=0.3
+E_binder=0.5e9
+v_binder=0.3
+binder_thickness=0.1
+binder_radius_fraction=0.3
+alpha_i=0.25,0.25
+tau_i=0.001,0.001

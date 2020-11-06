@@ -63,6 +63,12 @@ PeriodicBCHandler<ForceModel, ParticleType>::PeriodicBCHandler(PeriodicBCHandler
                 velocities_[dir] = restart_line.get_parameter<>("v" + axes.substr(dir, 1));
             }
         }
+
+        if (restart_line.get_parameter<std::string>("data") == "strain_rate") {
+            for (std::size_t dir = 0; dir != 3; ++dir) {
+                velocities_[dir] = restart_line.get_parameter<>("e" + axes.substr(dir, 1));
+            }
+        }
         if (restart_line.get_parameter<std::string>("data") == "mirror_particle") {
             auto id = restart_line.get_parameter<std::size_t>("id");
             auto axis = restart_line.get_parameter<std::size_t>("axis");
@@ -180,8 +186,12 @@ template<typename ForceModel, typename ParticleType>
 void PeriodicBCHandler<ForceModel, ParticleType>::move_periodic_boundaries() {
     for (unsigned i = 0; i != 3; ++i) {
         if (active_directions_[i]) {
-            boundaries_[i].max += velocities_[i]*engine_.get_time_increment().count();
-            boundaries_[i].min -= velocities_[i]*engine_.get_time_increment().count();
+            double v = velocities_[i];
+            if (v == 0.) {
+                v = strain_rates_[i]*(boundaries_[i].max - boundaries_[i].min)/2;
+            }
+            boundaries_[i].max += v*engine_.get_time_increment().count();
+            boundaries_[i].min -= v*engine_.get_time_increment().count();
         }
     }
 }
@@ -402,9 +412,15 @@ void PeriodicBCHandler<ForceModel, ParticleType>::add_periodic_bc(char axis, dou
 
 
 template<typename ForceModel, typename ParticleType>
+void PeriodicBCHandler<ForceModel, ParticleType>::set_periodic_bc_velocity(char axis, double velocity) {
+    auto axis_idx = direction_idx(axis);
+    velocities_[axis_idx] = velocity;
+}
+
+template<typename ForceModel, typename ParticleType>
 void PeriodicBCHandler<ForceModel, ParticleType>::set_periodic_bc_strain_rate(char axis, double strain_rate) {
     auto axis_idx = direction_idx(axis);
-    velocities_[axis_idx] = strain_rate*(boundaries_[axis_idx].max - boundaries_[axis_idx].min)/2;
+    strain_rates_[axis_idx] = strain_rate;
 }
 
 
@@ -608,16 +624,20 @@ std::vector<std::string> PeriodicBCHandler<ForceModel, ParticleType>::restart_da
     // Writing boundaries and velocities
     std::ostringstream boundary_info;
     std::ostringstream velocity_info;
+    std::ostringstream strain_rate_info;
     boundary_info << "data=boundary";
     velocity_info << "data=velocity";
+    strain_rate_info << "data=strain_rate";
     std::string axes = "xyz";
     for (std::size_t dir = 0; dir != boundaries_.size(); ++dir) {
         boundary_info << ", " << named_print(boundaries_[dir].min, axes.substr(dir, 1) + "min")
                       << ", " << named_print(boundaries_[dir].max, axes.substr(dir, 1) + "max");
         velocity_info << ", " << named_print(velocities_[dir], "v" + axes.substr(dir, 1));
+        strain_rate_info << ", " << named_print(strain_rates_[dir], "e" + axes.substr(dir, 1));
     }
     restart_data.push_back(boundary_info.str());
     restart_data.push_back(velocity_info.str());
+    restart_data.push_back(strain_rate_info.str());
     restart_data.push_back("data=stretch," + named_print(stretch_, "stretch"));
     for (const auto&[id, mp_array]: mirror_particles_) {
         for (unsigned axis = 0; axis != 7; ++axis) {

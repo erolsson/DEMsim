@@ -50,6 +50,7 @@ namespace DEM {
         void fulfill_periodic_bc();
         void add_periodic_bc(char axis, double boundary_min, double boundary_max);
         void set_periodic_bc_strain_rate(char axis, double strain_rate);
+        void set_periodic_bc_velocity(char axis, double velocity);
         void set_boundary_stretch(double stretch) { stretch_ = stretch; }
         void create_periodic_bc_contacts();
         void destroy_periodic_bc_contacts();
@@ -64,6 +65,7 @@ namespace DEM {
         std::map<std::size_t, std::array<ParticleType*, 7>> mirror_particles_;
         std::array<Interval, 3> boundaries_ {};
         std::array<double, 3> velocities_ {0., 0., 0.};
+        std::array<double, 3> strain_rates_ {0., 0., 0.};
         std::array<bool, 3> active_directions_ {false, false, false};
         EngineType& engine_;
         std::vector<ParticleType*>& simulation_particles_;
