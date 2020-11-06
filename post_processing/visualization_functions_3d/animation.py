@@ -13,6 +13,7 @@ from visualization_functions_3d.plotting_functions import BoundingBox
 from visualization_functions_3d.periodic_bc import PeriodicBC
 from visualization_functions_3d import colors
 
+
 class Animation:
     def __init__(self, directory):
         self.directory = directory
@@ -38,10 +39,10 @@ class Animation:
 
         self.spheres_plotter = SpheresPlotter()
         self.mirror_particles_plotter = SpheresPlotter(color=colors.silver)
-        self.surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dou', self.surfaces_colors,
-                                                self.surfaces_opacities, self.plot_order, self.bounding_boxes,
-                                                self.visible_functions)
+
         self.initialized = False
+        self.surfaces_plotter = None
+        self.view_surfaces = True
 
     def run(self):
         a = self._animation()
@@ -49,11 +50,15 @@ class Animation:
             pass
 
     def initialize(self):
-        self.surfaces_plotter.surfaces_opacities = self.surfaces_opacities
-        self.surfaces_plotter.surfaces_colors = self.surfaces_colors
-        self.surfaces_plotter.plot_order = self.plot_order
-        self.surfaces_plotter.bounding_boxes = self.bounding_boxes
-        self.surfaces_plotter.visible_times = self.visible_functions
+        if self.view_surfaces:
+            self.surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dou', self.surfaces_colors,
+                                                    self.surfaces_opacities, self.plot_order, self.bounding_boxes,
+                                                    self.visible_functions)
+            self.surfaces_plotter.surfaces_opacities = self.surfaces_opacities
+            self.surfaces_plotter.surfaces_colors = self.surfaces_colors
+            self.surfaces_plotter.plot_order = self.plot_order
+            self.surfaces_plotter.bounding_boxes = self.bounding_boxes
+            self.surfaces_plotter.visible_times = self.visible_functions
 
         if self.plot_periodic_bc:
             self.periodic_bc_plotter = PeriodicBC(self.directory + '/periodic_bc.dou')
@@ -88,7 +93,8 @@ class Animation:
                 mirror_particle_data = np.genfromtxt(self.directory + '/mirror_particles/mirror_particles_'
                                                      + t + '.dou', delimiter=',')
                 self.mirror_particles_plotter.plot(mirror_particle_data)
-            self.surfaces_plotter.plot(float(t))
+            if self.surfaces_plotter:
+                self.surfaces_plotter.plot(float(t))
             if self.plot_periodic_bc:
                 self.periodic_bc_plotter.plot(float(t))
 
