@@ -236,61 +236,45 @@ unsigned DEM::Viscoelastic::M;
 double DEM::Viscoelastic::update_normal_force(double h)
 {
     double dh = h - h_;
-    h_ = h - dh;
+    h_ = h;
     if (h > hmax_) {
         hmax_ = h;
-        fractured_ = false;
     }
     if (binder_contact_) {
-
-        if (h > -bt_ && h_ > -bt_) {
-            dF_ = dh;
-
+        if ((h > -bt_) || activated_) {
+            activated_ = true;
+            double dF = dh;
             for (unsigned i = 0; i != M; ++i) {
-                ddi_[i] = bi[i] * dh + ai[i] * (h_+bt_ - di_[i]);
-                dF_ -= alpha_i[i] * ddi_[i];
+                ddi_[i] = bi[i]*dh + ai[i]*(h_ + bt_ - di_[i]);
+                dF -= alpha_i[i]*ddi_[i];
                 di_[i] += ddi_[i];
             }
-
-            F_visc += kB_*dF_;
-
-        }
-        else {
-            F_visc = 0;
-            dF_ = 0;
-            rot_.set_zero();
-            for (unsigned i = 0; i != M; ++i) {
-                ddi_[i] = 0;
-                di_[i] = 0;
-            }
+            F_visc += kB_*dF;
         }
     }
-
-    if (h > 0.0 && h_ > 0.0) {
-        // Particles in contact
-        // If h > yield_h and loading i. e that dh > 0 plastic loading, use stiffness at yield point
-
-        // Otherwise use elastic formulation based on hertz
-
+    if (h_ > 0) {
         if (h > yield_h_ && h >= hmax_) {
             F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
         }
-        else {
-            F_particle += 1.5*kparticle_*sqrt(h_)*dh;
+        else{
+            F_particle += kparticle_*sqrt(h_)*dh;
         }
-    }
-    else {
-        F_particle = 0;
-    }
 
-    h_ += dh;
+    }
+    else{
+        F_particle = 0.;
+    }
+    /*if (adhesive_ && !fractured_) {
+        return F_visc + std::max(F_particle, 0.);
+    }*/
+    return std::max(F_particle, 0.) + F_visc;
+
+}
+
     // std::cout << "Adhesive: " << adhesive_ << ", Fvisc: " << F_visc << ", fractured: " << fractured_ <<  "\n";
     //std::cout << ": " <<
-    if (adhesive_ && !fractured_) {
-        return F_visc + std::max(F_particle, 0.);
-    }
-    return std::max(F_visc, 0.) + std::max(F_particle, 0.);
-}
+
+
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
 
@@ -307,16 +291,16 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
     if (F_visc != 0.0) {
         dFT_ = dt;
         for (unsigned i = 0; i != M; ++i) {
-            ddti_[i] = bi[i]*dt + ai[i]*(uT_-dti_[i]);
-            dFT_ -= alpha_i[i]*ddti_[i];
+            ddti_[i] = bi[i]*dt + ai[i]*(uT_ - dti_[i]);
+            dFT_ -= alpha_i[i] * ddti_[i];
             dti_[i] += ddti_[i];
         }
         FT_visc_ += kT_B_*dFT_;
-        /*
+/*
         if (FT_visc_.length() > mu_binder_*abs(F_visc)) { // contact aborted
             fractured_ = true;
         }
-         */
+*/
     }
     else {
         rot_.set_zero();
@@ -346,6 +330,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
     }
     FT_ -= FT_visc_;
     FT_ -= FT_part_;
+
 }
 
 std::string DEM::Viscoelastic::get_output_string() const {
@@ -418,17 +403,17 @@ bool DEM::Viscoelastic::create_binder_contact(const ElectrodeMaterial* mat) {
     std::default_random_engine rand_engine { random_device() };
     std::uniform_real_distribution<double> distribution{0., 1.};
     double random_value = distribution(rand_engine);
-    if (random_value < mat->fb){
+    if (random_value < mat->fraction_binder_contacts){
         return true;
     }
     return false;
 }
 
 DEM::Vec3 DEM::Viscoelastic::get_rolling_resistance_torque() const {
-    // if (binder_contact_) {
-    //    return -Rb_*Rb_*0.01*kB_*rot_;
+     //if (binder_contact_) {
+     //   return -Rb_*Rb_*0.01*kB_*rot_;
     // }
-    // else {
+     //else {
     return DEM::Vec3(0, 0, 0);
-    // }
+     //}
 }
