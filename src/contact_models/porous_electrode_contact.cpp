@@ -80,7 +80,7 @@ DEM::PorousElectrodeContact::update(double h, const DEM::Vec3& dt, const DEM::Ve
         }
     }
     if (h_ > 0) {
-        // Fparticle_ += kparticle_*sqrt(h_)*dh;
+        Fparticle_ += kparticle_*sqrt(h_)*dh;
     }
     F_ = std::max(Fparticle_, 0.) + Fvisc_;
 }
