@@ -12,7 +12,7 @@ from visualization_functions_3d import colors
 
 class Snapshot:
     def __init__(self, directory, contact_plotter_class=None):
-        self.plot_periodic_bc = False
+        self.plot_periodic_bc = True
         self.periodic_bc_plotter = None
         self.mirror_particles = False
         self.bounding_boxes = defaultdict(BoundingBox)
@@ -25,9 +25,11 @@ class Snapshot:
 
         self.spheres_plotter = SpheresPlotter()
         self.mirror_particles_plotter = SpheresPlotter(color=colors.silver)
-        self.surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dou', self.surfaces_colors,
-                                                self.surfaces_opacities, self.plot_order, self.bounding_boxes,
-                                                self.visible_functions)
+        self.surfaces_plotter = None
+        if os.path.isfile(self.directory + '/surface_positions.dou'):
+            self.surfaces_plotter = SurfacesPlotter(self.directory + '/surface_positions.dou', self.surfaces_colors,
+                                                    self.surfaces_opacities, self.plot_order, self.bounding_boxes,
+                                                    self.visible_functions)
         if contact_plotter_class is not None:
             self.contact_plotter = contact_plotter_class(directory)
         else:
@@ -43,7 +45,8 @@ class Snapshot:
             mirror_particle_data = np.genfromtxt(self.directory + '/mirror_particles/mirror_particles_'
                                                  + str(time) + '.dou', delimiter=',')
             self.mirror_particles_plotter.plot(mirror_particle_data)
-        self.surfaces_plotter.plot(time)
+        if self.surfaces_plotter:
+            self.surfaces_plotter.plot(time)
         if self.plot_periodic_bc:
             self.periodic_bc_plotter.plot(time)
         if self.contact_plotter:
@@ -54,10 +57,12 @@ class Snapshot:
 
 
 def main():
-    snapshot = Snapshot(os.path.expanduser('~/DEMsim/results/battery_rve/electrode_elaheh'),
+    snapshot = Snapshot(os.path.expanduser(r'~/DEMsim/results/porous_electrode/compaction/'),
                         BatteryContactPlotter)
+    snapshot.mirror_particles = True
     snapshot.contact_plotter.color = colors.red
-    snapshot.plot(33.9177)
+    snapshot.contact_plotter.binder_radius = np.sqrt(0.3*0.01**2/np.pi)
+    snapshot.plot(10)
     mlab.show()
 
 

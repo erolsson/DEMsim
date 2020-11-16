@@ -18,6 +18,8 @@ namespace DEM {
         double v_particle = 0;
         double v_binder = 0;
 
+        double mu_particle = 0;
+
         double binder_thickness = 0;
         double binder_radius_fraction;
 

@@ -32,6 +32,7 @@ void DEM::porous_electrode_rve(const std::string& settings_file_name) {
     mat->v_binder = parameters.get_parameter<double>("v_binder");
     mat->E_particle = parameters.get_parameter<double>("E_particle");
     mat->v_particle = parameters.get_parameter<double>("v_particle");
+    mat->mu_particle = parameters.get_parameter<double>("mu_particle");
     mat->binder_thickness = parameters.get_parameter<double>("binder_thickness");
     mat->binder_radius_fraction =parameters.get_parameter<double>("binder_radius_fraction");
     mat->alpha_i = parameters.get_vector<double>("alpha_i");

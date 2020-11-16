@@ -14,7 +14,7 @@ class BatteryContactPlotter:
         self.ms = None
         self.bounding_box = bounding_box
         self.directory = directory
-        self.binder_radius = 0.01
+        self.binder_radius = 0.001
         self.resolution = 20
         self.color = colors.blue
 
@@ -23,26 +23,29 @@ class BatteryContactPlotter:
         particle_data = np.genfromtxt(self.directory + '/particles/particles_' + str(time) + '.dou', delimiter=',')
         periodic_bc_data = np.genfromtxt(self.directory + '/periodic_bc.dou', delimiter=',')
         surfaces = set()
-        with open(self.directory + '/surface_positions.dou', 'r') as surface_data_file:
-            for line in surface_data_file.readlines():
-                data_line = line.split(',')
-                line_time = float(data_line[-1])
-                if time == line_time:
-                    data_line = [word.strip() for word in data_line]
-                    surface_ids = [int(word.split('=')[1]) for word in data_line if word.startswith('ID')]
-                    surfaces.update(surface_ids)
-        periodic_bc = periodic_bc_data[periodic_bc_data[:, 0] == time, 1:]
-        print(periodic_bc)
+        if os.path.isfile(self.directory + '/surface_positions.dou'):
+            with open(self.directory + '/surface_positions.dou', 'r') as surface_data_file:
+                for line in surface_data_file.readlines():
+                    data_line = line.split(',')
+                    line_time = float(data_line[-1])
+                    if time == line_time:
+                        data_line = [word.strip() for word in data_line]
+                        surface_ids = [int(word.split('=')[1]) for word in data_line if word.startswith('ID')]
+                        surfaces.update(surface_ids)
+
         particles = {}
         for p in particle_data:
             particles[int(p[0])] = Particle(position=p[1:4], radius=p[7])
+        contact_data = contact_data[contact_data[:, -2] == 1, :]
         for contact in contact_data:
-            if int(contact[6]) != 0:   # contact[6] is force
+            if float(contact[6]) != 0:   # contact[6] is force
                 obj1 = int(contact[0])
                 obj2 = int(contact[1])
                 point_1 = particles[obj1].position
                 n = -np.array([float(contact[2]), float(contact[3]), float(contact[4])])
                 length = particles[obj1].radius - float(contact[5])    # contact[h] = overlap
+                if obj2 in particles:
+                    length += particles[obj2].radius
 
                 q, z0 = np.meshgrid(np.linspace(0, 2*np.pi, self.resolution),
                                     np.linspace(0, length, self.resolution))
@@ -57,13 +60,12 @@ class BatteryContactPlotter:
                 x = x0*ex[0] + y0*ey[0] + z0*n[0] + point_1[0]
                 y = x0*ex[1] + y0*ey[1] + z0*n[1] + point_1[1]
                 z = x0*ex[2] + y0*ey[2] + z0*n[2] + point_1[2]
-
                 mlab.mesh(x, y, z, color=self.color, transparent=False, reset_zoom=False)
 
 
 def main():
-    contact_plotter = BatteryContactPlotter(os.path.expanduser('~/DEMsim/results/battery_rve/electrode_elaheh/'))
-    contact_plotter.plot(16.4507)
+    contact_plotter = BatteryContactPlotter(os.path.expanduser('~/DEMsim/results/porous_electrode/compaction/'))
+    contact_plotter.plot(10)
     mlab.show()
 
 
