@@ -1,8 +1,8 @@
 R=0.01
 N=100
 tick=1e-6
-output_file=../results/porous_electrode/contact_testing.dou
-output_directory=../results/porous_electrode/
+output_file=C:/DEMsim/results/porous_electrode/contact_testing.dou
+output_directory=C:/DEMsim/results/porous_electrode/
 initial_particle_density=0.25
 electrode_particle_density=0.5
 compaction_time=10.

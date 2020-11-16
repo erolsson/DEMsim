@@ -23,7 +23,6 @@ namespace DEM {
         double Ep;   // Young's modulus for the particles
         double nup;  // Poisson's ratio for the binder material
 
-        double fb;   // Fraction binder contacts
         double bt;   // Binder thickness
 
         // double active_particle_height
@@ -36,6 +35,7 @@ namespace DEM {
         // double contact;
         std::vector<double> tau_i;
         std::vector<double> alpha_i;
+        double fraction_binder_contacts;
         double kT;
         double mu{ 0. };
         double mu_wall{ 0. };

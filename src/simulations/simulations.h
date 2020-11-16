@@ -18,13 +18,13 @@ namespace DEM {
     void proctor_test(const std::string& settings_file_name);
     void stone_compaction(const std::string& settings_file_name);
     void electrode_box(const std::string& settings_file_name);
-    void electrode_cylinder_filling(const std::string& settings_file_name);
+    //void electrode_cylinder_filling(const std::string& settings_file_name);
     void electrode_cylinder_compaction(const std::string& settings_file_name);
     void periodic_bc_tester(const std::string& settings_file_name);
     void periodic_bc_simulation(const std::string& settings_file_name);
     void filling_periodic_box(const std::string& settings_file_name);
-    void deformable_surface_tester(const std::string& settings_file_name);
-    void battery_rve_filling(const std::string& settings_file_name);
+    //void deformable_surface_tester(const std::string& settings_file_name);
+    //void battery_rve_filling(const std::string& settings_file_name);
     void battery_rve_compaction(const std::string &settings_file_name);
     void battery_rve_loading(const std::string &settings_file_name);
     void Cathode_mechanical_simulations(const std::string& settings_file_name);

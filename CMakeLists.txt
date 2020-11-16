@@ -72,8 +72,7 @@ add_executable(DEMsim
                src/materials/electrode_material.cpp
                src/utilities/printing_functions.h
                src/simulations/electrode_box.cpp
-               src/simulations/electrode_cylinder/electrode_cylinder_filling.cpp
-               src/simulations/electrode_cylinder/electrode_cylinder_compaction.cpp
+        src/simulations/electrode_cylinder/electrode_cylinder_compaction.cpp
                src/simulations/periodic_bc/periodic_bc_tester.cpp
                src/engine/periodic_bc_handler.h
                src/engine/periodic_bc_handler.tpp
@@ -81,9 +80,7 @@ add_executable(DEMsim
                src/simulations/periodic_bc/filling_periodic_box.cpp
                src/surfaces/deformable_point_surface.h
                src/surfaces/deformable_point_surface.tpp
-               src/simulations/deformable_surfaces/deformable_surface_tester.cpp
-               src/simulations/battery/battery_rve_filling.cpp
-               src/simulations/Cathode_mechanical_simulations.cpp
+        src/simulations/Cathode_mechanical_simulations.cpp
                src/simulations/battery/battery_rve_compaction.cpp
                src/simulations/battery/battery_rve_loading.cpp
                src/simulations/battery/restart_electrode.cpp

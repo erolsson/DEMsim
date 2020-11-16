@@ -13,11 +13,11 @@ DEM::ElectrodeMaterial::ElectrodeMaterial(const ParameterMap& parameters) :
     nu(parameters.get_parameter<double>("nu")),
     Ep(parameters.get_parameter<double>("Ep")),
     nup(parameters.get_parameter<double>("nup")),
-    fb(parameters.get_parameter<double>("fb")),
     bt(parameters.get_parameter<double>("bt")),
     yield_displacement_coeff(parameters.get_parameter<double>("yield_coeff")),
     tau_i(),
     alpha_i(),
+    fraction_binder_contacts(parameters.get_parameter<double>("fraction_binder_contacts")),
     kT(parameters.get_parameter<double>("kT")),
     mu(parameters.get_parameter<double>("mu")),
     mu_wall(parameters.get_parameter<double>("mu_wall"))
@@ -35,9 +35,9 @@ std::string DEM::ElectrodeMaterial::restart_data() const {
        << MaterialBase::restart_data() << ", "
        << named_print(E, "E") << ", "
        << named_print(nu, "nu") << ", "
-       << named_print(fb, "fb") << ", "
        << named_print(nup, "nup") << ", "
        << named_print(Ep, "Ep") << ", "
+       << named_print(fraction_binder_contacts,"fraction_binder_contacts")<< ", "
        << named_print(yield_displacement_coeff, "yield_coeff") << ", "
        << named_print(bt, "bt") << ", "
        << named_print(kT, "kT") << ", "

@@ -60,6 +60,7 @@ namespace DEM {
         double F_{ 0 };
         double mu_particle_;
         double mu_binder_;
+        bool activated_ = false;
 
         std::vector<double> tau_i {};
         std::vector<double> alpha_i {};
@@ -72,7 +73,7 @@ namespace DEM {
         std::vector<DEM::Vec3> dti_ {};
         double dF_{0.};
         double F_visc{ 0. };
-        double F_particle{ 0. };
+        double F_particle;
 
         Vec3 dFT_{Vec3(0., 0., 0.)};
         Vec3 FT_{Vec3(0., 0., 0.)};
@@ -82,7 +83,7 @@ namespace DEM {
 
         Vec3 rot_ {Vec3(0., 0., 0.)};
         bool adhesive_ {true};
-        bool binder_contact_ {false};
+        bool binder_contact_ ;
         bool fractured_ {false};
 
         double update_normal_force(double h);

@@ -29,7 +29,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     mat->kT = parameters.get_parameter<double>("kT");
     mat->Ep = parameters.get_parameter<double>("Ep");
     mat->nu = parameters.get_parameter<double>("nu");
-    mat->fb = parameters.get_parameter<double>("fb");
+    mat->fraction_binder_contacts= parameters.get_parameter<double>("fraction_binder_contacts");
     mat->nup = parameters.get_parameter<double>("nup");
     mat->mu = parameters.get_parameter<double>("mu");
     mat->mu_wall = parameters.get_parameter<double>("mu_wall");
@@ -93,6 +93,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
 
     simulator.set_gravity(Vec3(0, 0, -9.82));
+    simulator.set_mass_scale_factor(100.0);
     simulator.setup(1.01*mat->bt);
     EngineType::RunForTime run_for_time(simulator, 0.1s);
     simulator.run(run_for_time);
@@ -218,7 +219,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    simulator.set_mass_scale_factor(10.0);
+    simulator.set_mass_scale_factor(1.0);
 
     simulator.run(run_for_time_compact_4);
 
@@ -230,7 +231,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
     EngineType::RunForTime run_for_time_relax_4(simulator,2.43s);
-    simulator.set_mass_scale_factor(10.0);
+    simulator.set_mass_scale_factor(1.0);
     simulator.run(run_for_time_relax_4);
     simulator.write_restart_file(output_directory + "/relaxation_4.res");
 
@@ -257,7 +258,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
     EngineType::RunForTime run_for_time_relax_5(simulator,2.85s);
-    simulator.set_mass_scale_factor(10.0);
+    simulator.set_mass_scale_factor(1.0);
     simulator.run(run_for_time_relax_5);
     simulator.write_restart_file(output_directory + "/relaxation_5.res");
 

@@ -257,14 +257,15 @@ double DEM::Viscoelastic::update_normal_force(double h)
             F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
         }
         else{
-            F_particle += kparticle_*sqrt(h_)*dh;
+            F_particle += 1.5*kparticle_*sqrt(h_)*dh;
         }
 
     }
     else{
         F_particle = 0.;
     }
-    /*if (adhesive_ && !fractured_) {
+    /*
+    if (adhesive_ && !fractured_) {
         return F_visc + std::max(F_particle, 0.);
     }*/
     return std::max(F_particle, 0.) + F_visc;
@@ -328,9 +329,9 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
             dti_[i].set_zero();
         }
     }
-    FT_ -= FT_visc_;
-    FT_ -= FT_part_;
-
+   // FT_ -= FT_visc_;
+  //  FT_ -= FT_part_;
+    FT_.set_zero();
 }
 
 std::string DEM::Viscoelastic::get_output_string() const {

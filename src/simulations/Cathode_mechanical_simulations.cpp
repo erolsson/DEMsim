@@ -32,7 +32,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
 
 
     auto top_surface = simulator.get_surface<EngineType::PointSurfacePointer>("top_plate");
-    double surface_velocity = 0.01;
+    //double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0,0));
     EngineType::RunForTime run_for_time_unload_compact(simulator,5s);
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
