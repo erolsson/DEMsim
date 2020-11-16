@@ -10,8 +10,7 @@
 #include <vector>
 
 #include "../materials/electrode_material.h"
-#include "../utilities/file_reading_functions.h"
-#include "../utilities/printing_functions.h"
+
 
 
 DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::Viscoelastic::ParticleType* particle2,
@@ -29,24 +28,23 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
 
 
     double E1 = mat1->E;
-    double E2 = mat2->E;
+    //double E2 = mat2->E;
     double v1 = mat1->nu;
     double v2 = mat2->nu;
     double vp1 = mat1->nup;
     double vp2 = mat2->nup;
     double Ep2 = mat2->Ep;
     double Ep1 = mat1->Ep;
-    double G1 = E1/2/(1+v1);
-    double G2 = E2/2/(1+v2);
+    bt_ = mat1->bt; //Thickness of the binder disk
 
-    kT_ = 1/((2-v1)/G1 + (2-v2)/G2)*Rb_*0.1;
-    kT_B_=E1*0.3*0.0016/(2*(1+v1)*mat1->bt);
+    kT_B_=E1*0.3*0.0016/(2*(1+v1)*bt_);
     //std::cout << "KT_B " <<kT_B_;
 
     stiff_b_=((1-v1)*E1)/(1+v1)/(1-2*v1);
+    kB_=(0.3*0.0016*stiff_b_)/(bt_);
     //std::cout << "stiffness " << stiff_b_;
 
-    double tsi0 = 1. / (((1 - v1 * v1) / E1) + ((1 - v2 * v2) / E2));
+    //double tsi0 = 1. / (((1 - v1 * v1) / E1) + ((1 - v2 * v2) / E2));
     double tsi0particle = 1./(((1-vp1*vp1)/Ep1)+((1-vp2*vp2)/Ep2));
 
     binder_contact_ = create_binder_contact(mat1);
@@ -56,10 +54,10 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     M = mat1->M();
     tau_i = mat1->tau_i;
     alpha_i = mat1->alpha_i;
-    bt_ = mat1->bt;
+
     dt_ = dt.count();  // time increment
 
-    k_=4.*tsi0*sqrt(R0_ + bt_)/3; //initial contact stiffness
+    //k_=4.*tsi0*sqrt(R0_ + bt_)/3; //initial contact stiffness
     //std::cout << "K_" << k_;
 
     kparticle_=4*tsi0particle*sqrt(R0_)/3;
@@ -92,15 +90,16 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     double v1 = mat1->nu;
     double vp1=mat1->nup;
     double Ep1 = mat1->Ep;
-    double G1 = E1/2/(1+v1);
-
-    kT_ = 1/((2-v1)/G1)*Rb_*0.01;
-    kT_B_=E1*0.3*0.0016/(2*(1+v1)*mat1->bt);
-    //std::cout << "KT_B " <<kT_B_;
+    //double G1 = E1/2/(1+v1);
+    bt_= mat1->bt;
     stiff_b_=((1-v1)*E1)/(1+v1)/(1-2*v1);
+    kT_B_=E1*0.3*0.0016/(2*(1+v1)*bt_);
+    kB_=(0.3*0.0016*stiff_b_)/(bt_);
+
+    //std::cout << "KT_B " <<kT_B_;
     //std::cout << "stiffness " << stiff_b_;
 
-    double tsi0 = 1. / ((1 - v1 * v1) / E1);
+    //double tsi0 = 1. / ((1 - v1 * v1) / E1);
     double tsi0particle = 1./((1-vp1*vp1)/Ep1);
     mu_particle_ = mat1->mu_wall;
     mu_binder_ = mat1->mu_binder;
@@ -109,12 +108,13 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     M = mat1->M();
     tau_i=mat1->tau_i;
     alpha_i=mat1->alpha_i;
-    bt_= mat1->bt;
+
 
     binder_contact_ = create_binder_contact(mat1);
+    //std::cout<< "binder_contact " <<binder_contact_;
 
     dt_ = dt.count();  // time increment
-    k_=4.*tsi0*sqrt(R0_ + bt_)/3; //initial contact stiffness
+    //k_=4.*tsi0*sqrt(R0_ + bt_)/3; //initial contact stiffness
     kparticle_=4*tsi0particle*sqrt(R0_)/3;
     yield_h_ = 2*mat1->yield_displacement_coeff*R0_;
 
@@ -137,14 +137,12 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoe
         id_1(p1->get_id()),
         id_2(p2->get_id()),
         dt_(parameters.get_parameter<double>("dt")),  // Time increment
-        kT_(parameters.get_parameter<double>("kT")),
         kT_part_(parameters.get_parameter<double>("kT_part")),
         bt_(parameters.get_parameter<double>("bt")),
         h_(parameters.get_parameter<double>("h")),
         hmax_(parameters.get_parameter<double>("hmax")),
-        a_(parameters.get_parameter<double>("a")),
         yield_h_(parameters.get_parameter<double>("yield_h")),
-        k_(parameters.get_parameter<double>("k")),
+        //k_(parameters.get_parameter<double>("k")),
         kB_(parameters.get_parameter<double>("kB")),
         kT_B_(parameters.get_parameter<double>("kT_B")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
@@ -185,14 +183,12 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoel
         id_1(p->get_id()),
         id_2(s->get_id()),
         dt_(parameters.get_parameter<double>("dt")),  // Time increment
-        kT_(parameters.get_parameter<double>("kT")),
         kT_part_(parameters.get_parameter<double>("kT_part")),
         bt_(parameters.get_parameter<double>("bt")),
         h_(parameters.get_parameter<double>("h")),
         hmax_(parameters.get_parameter<double>("hmax")),
-        a_(parameters.get_parameter<double>("a")),
         yield_h_(parameters.get_parameter<double>("yield_h")),
-        k_(parameters.get_parameter<double>("k")),
+        //k_(parameters.get_parameter<double>("k")),
         kB_(parameters.get_parameter<double>("kB")),
         kT_B_(parameters.get_parameter<double>("kT_B_")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
@@ -240,7 +236,7 @@ unsigned DEM::Viscoelastic::M;
 double DEM::Viscoelastic::update_normal_force(double h)
 {
     double dh = h - h_;
-    h_ = h;
+    h_ = h - dh;
     if (h > hmax_) {
         hmax_ = h;
         fractured_ = false;
@@ -249,32 +245,22 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
         if (h > -bt_ && h_ > -bt_) {
             dF_ = dh;
-            if (a_ < sqrt(Rb_*(h_ + bt_))) {
-                a_ = sqrt(Rb_*(h_ + bt_));
-                fractured_ = false;
-            }
 
-            //auto hn32 = pow(h_ + bt_, 3. / 2);
-            //auto h_32diff = pow(h + bt_, 3. / 2) - hn32;
             for (unsigned i = 0; i != M; ++i) {
                 ddi_[i] = bi[i] * dh + ai[i] * (h_+bt_ - di_[i]);
                 dF_ -= alpha_i[i] * ddi_[i];
                 di_[i] += ddi_[i];
             }
-            kB_=(0.3*0.0016*stiff_b_)/(bt_);
-            //std::cout << "a_: " <<a_ ;
+
             F_visc += kB_*dF_;
-            //std::cout << "K_: " <<k_ << "\n";
-            //std::cout << "F_visc: " <<F_visc << "\n" ;
-            //std::cout << "KB_: " <<kB_ << "\n";
+
         }
         else {
             F_visc = 0;
             dF_ = 0;
-            a_ = 0;
             rot_.set_zero();
             for (unsigned i = 0; i != M; ++i) {
-
+                ddi_[i] = 0;
                 di_[i] = 0;
             }
         }
@@ -293,7 +279,11 @@ double DEM::Viscoelastic::update_normal_force(double h)
             F_particle += 1.5*kparticle_*sqrt(h_)*dh;
         }
     }
+    else {
+        F_particle = 0;
+    }
 
+    h_ += dh;
     // std::cout << "Adhesive: " << adhesive_ << ", Fvisc: " << F_visc << ", fractured: " << fractured_ <<  "\n";
     //std::cout << ": " <<
     if (adhesive_ && !fractured_) {
@@ -302,9 +292,8 @@ double DEM::Viscoelastic::update_normal_force(double h)
     return std::max(F_visc, 0.) + std::max(F_particle, 0.);
 }
 
-
-
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
+
     uT_ -= dot_product(uT_, normal)*normal;
     FT_part_ -= dot_product(FT_part_, normal)*normal;
     if (!FT_visc_.is_zero()) {
@@ -323,10 +312,11 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
             dti_[i] += ddti_[i];
         }
         FT_visc_ += kT_B_*dFT_;
-
+        /*
         if (FT_visc_.length() > mu_binder_*abs(F_visc)) { // contact aborted
             fractured_ = true;
         }
+         */
     }
     else {
         rot_.set_zero();
@@ -382,13 +372,11 @@ std::string DEM::Viscoelastic::restart_data() const {
     std::ostringstream ss;
     ss << named_print(dt_, "dt") << ", "
        << named_print(bt_, "bt") << ", "
-       << named_print(kT_, "kT") << ", "
        << named_print(kT_part_, "kT_part") << ", "
        << named_print(h_, "h") << ", "
        << named_print(hmax_, "hmax") << ", "
-       << named_print(a_, "a") << ", "
        << named_print(yield_h_, "yield_h") << ", "
-       << named_print(k_, "k") << ", "
+       //<< named_print(k_, "k") << ", "
        << named_print(kparticle_, "kparticle") << ", "
        << named_print(R0_, "R0") << ", "
        << named_print(Rb_, "Rb") << ", "
@@ -437,10 +425,10 @@ bool DEM::Viscoelastic::create_binder_contact(const ElectrodeMaterial* mat) {
 }
 
 DEM::Vec3 DEM::Viscoelastic::get_rolling_resistance_torque() const {
-    if (binder_contact_) {
-        return -Rb_*Rb_*0.01*k_*rot_;
-    }
-    else {
-        return DEM::Vec3(0, 0, 0);
-    }
+    // if (binder_contact_) {
+    //    return -Rb_*Rb_*0.01*kB_*rot_;
+    // }
+    // else {
+    return DEM::Vec3(0, 0, 0);
+    // }
 }

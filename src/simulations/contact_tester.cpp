@@ -72,32 +72,15 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                     << p1.get_position().y() - p2.get_position().y() << std::endl;
     }
 
-    for(unsigned i = 0; i != 4*increments; ++i) {
-        p1.move(Vec3{0, -tick/2, 0});
-        p2.move(Vec3{0, tick/2, 0});
-        c.update();
-        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
-                    << p1.get_position().x() - p2.get_position().x() << ", "
-                    << c.get_tangential_force().y() << ", "
-                    << p1.get_position().y() - p2.get_position().y() << std::endl;
-    }
     for(unsigned i = 0; i != increments; ++i) {
-        p1.move(Vec3{tick/2, 0, 0});
-        p2.move(Vec3{-tick/2, 0, 0});
+        p1.move(Vec3{-tick/2, 0, 0});
+        p2.move(Vec3{tick/2, 0, 0});
         c.update();
         output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
                     << p1.get_position().x() - p2.get_position().x() << ", "
                     << c.get_tangential_force().y() << ", "
                     << p1.get_position().y() - p2.get_position().y() << std::endl;
-    }
-    for(unsigned i = 0; i != increments; ++i) {
-        p1.move(Vec3{0, -tick/2, 0});
-        p2.move(Vec3{0, tick/2, 0});
-        c.update();
-        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
-                    << p1.get_position().x() - p2.get_position().x() << ", "
-                    << c.get_tangential_force().y() << ", "
-                    << p1.get_position().y() - p2.get_position().y() << std::endl;
+
     }
 
 

@@ -3,7 +3,7 @@ from mayavi import mlab
 from animation import Animation
 
 if __name__ == '__main__':
-    simulation_directory = 'C:/DEMsim/results/viscoelastic/cathode1001'
+    simulation_directory = 'C:/DEMsim/results/viscoelastic/cathode1021-40ggr_print'
 
     # Doing some inspection to construct a good bounding_box figure
     # dimension_data = dimensions_cylinder(simulation_directory)

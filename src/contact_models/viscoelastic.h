@@ -33,7 +33,6 @@ namespace DEM {
         [[nodiscard]] double get_overlap() const { return h_; }
         [[nodiscard]] double get_normal_force() const { return F_; }
         [[nodiscard]] const Vec3& get_tangential_force() const { return FT_; }
-        [[nodiscard]] double get_contact_area() const {return pi*a_*a_; }
         [[nodiscard]] Vec3 get_rolling_resistance_torque() const;
         [[nodiscard]] bool active() const {return F_ != 0; }
         [[nodiscard]] std::string get_output_string() const;
@@ -45,12 +44,10 @@ namespace DEM {
         std::size_t id_2;
 
         double dt_;   // Time increment
-        double kT_;
         double kT_part_;
         double bt_;
         double h_ {0. };
         double hmax_ { -1e99 };
-        double a_ { 0. }; // Contact radius for binder contact
         static unsigned M;
         double yield_h_ { 1e99 };
         double k_;
@@ -58,8 +55,6 @@ namespace DEM {
         double kB_;
         double kT_B_;
         double kparticle_;
-        //double binder_radii_;
-        //double bindervolume_;
         double R0_;
         double Rb_;
         double F_{ 0 };
