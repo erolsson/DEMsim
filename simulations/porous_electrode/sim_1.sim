@@ -14,4 +14,5 @@ binder_thickness=0.001
 binder_radius_fraction=0.3
 alpha_i=0.25,0.25
 tau_i=0.001,0.001
-fraction_binder_contacts=1.
+fraction_binder_contacts=0.6
+mu_particle=0.5

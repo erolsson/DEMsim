@@ -28,7 +28,10 @@ namespace DEM {
         PorousElectrodeContact(ParticleType*, SurfaceType*, std::chrono::duration<double>,
                 const ParameterMap& parameters);
 
-        void update(double h, const Vec3& dt, const Vec3& drot, const Vec3& normal);
+        void update(double h, const Vec3& dt, const Vec3& drot, const Vec3& normal) {
+            update_normal_force(h);
+            update_tangential_force(dt, normal);
+        }
 
         [[nodiscard]] double get_overlap() const { return h_; }
         [[nodiscard]] double get_normal_force() const { return F_; }
@@ -42,17 +45,23 @@ namespace DEM {
 
     private:
         double h_ = -1e99;
+        Vec3 uT_ = Vec3(0, 0, 0);
         double F_ = 0;
-        double Fvisc_ = 0;
-        double Fparticle_ = 0;
+        double FNb_ = 0;
+        double FNp_ = 0;
+        Vec3 FTb_ = Vec3(0, 0, 0);
+        Vec3 FTp_ = Vec3(0, 0, 0);
         Vec3 FT_ = Vec3(0, 0, 0);
         double a_ = 0;
 
         bool binder_contact_;
         bool activated_ = false;
 
-        double kparticle_;
-        double kbinder_;
+        double knp_;
+        double knb_;
+        double ktb_;
+        double ktp_;
+        double mup_;
         double R0_;
         double bt_;         // Thickness of the binder disk
         double br_;         // Radius of the binder disk
@@ -66,7 +75,11 @@ namespace DEM {
 
         std::vector<double> di_ {};
         std::vector<double > ddi_ {};
+        std::vector<DEM::Vec3> ddti_ {};
+        std::vector<DEM::Vec3> dti_ {};
 
+        void update_normal_force(double h);
+        void update_tangential_force(const Vec3& dt, const Vec3& normal);
         static bool create_binder_contact(const PorousElectrodeMaterial* mat);
     };
 
