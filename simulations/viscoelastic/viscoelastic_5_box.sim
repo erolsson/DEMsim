@@ -1,5 +1,5 @@
 N=100
-output_dir=..results/viscoelastic/procent65bt9plastic
+output_dir=../results/viscoelastic/procent70bt9plastic
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
@@ -15,4 +15,4 @@ filling_density=0.1
 particle_density_at_cube=0.65
 mu_binder=1.
 binder_radius_fraction=0.3
-fraction_binder_contacts=0.65
+fraction_binder_contacts=0.70
