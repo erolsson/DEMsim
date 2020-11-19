@@ -131,21 +131,22 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
 DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoelastic::ParticleType* p2,
                                 std::chrono::duration<double>, const DEM::ParameterMap& parameters) :
 
-        dt_(parameters.get_parameter<double>("dt")),  // Time increment
+
         kT_part_(parameters.get_parameter<double>("kT_part")),
-        bt_(parameters.get_parameter<double>("bt")),
-        h_(parameters.get_parameter<double>("h")),
-        hmax_(parameters.get_parameter<double>("hmax")),
-        yield_h_(parameters.get_parameter<double>("yield_h")),
-        //k_(parameters.get_parameter<double>("k")),
         kB_(parameters.get_parameter<double>("kB")),
         kT_B_(parameters.get_parameter<double>("kT_B")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
         R0_(parameters.get_parameter<double>("R0")),
-        //Rb_(parameters.get_parameter<double>("Rb")),
-        F_(parameters.get_parameter<double>("F")),
+        bt_(parameters.get_parameter<double>("bt")),
+        h_(parameters.get_parameter<double>("h")),
+        yield_h_(parameters.get_parameter<double>("yield_h")),
+        hmax_(parameters.get_parameter<double>("hmax")),
         mu_particle_(parameters.get_parameter<double>("mu_particle")),
-        //mu_binder_(parameters.get_parameter<double>("mu_binder")),
+        adhesive_(parameters.get_parameter<bool>("adhesive")),
+        binder_contact_(parameters.get_parameter<bool>("binder_contact")),
+        fractured_(parameters.get_parameter<bool>("fractured")),
+        dt_(parameters.get_parameter<double>("dt")),  // Time increment
+        F_(parameters.get_parameter<double>("F")),
         dF_(parameters.get_parameter<double>("dF")),
         F_visc(parameters.get_parameter<double>("F_visc")),
         F_particle(parameters.get_parameter<double>("F_particle")),
@@ -154,10 +155,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoe
         FT_visc_(parameters.get_vec3("FT_visc")),
         FT_part_(parameters.get_vec3("FT_part")),
         uT_(parameters.get_vec3("uT")),
-        rot_(parameters.get_vec3("rot")),
-        adhesive_(parameters.get_parameter<bool>("adhesive")),
-        binder_contact_(parameters.get_parameter<bool>("binder_contact")),
-        fractured_(parameters.get_parameter<bool>("fractured"))
+        rot_(parameters.get_vec3("rot"))
+
 
 {
     M = parameters.get_parameter<unsigned>("M");
@@ -176,21 +175,21 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoe
 DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoelastic::SurfaceType* s,
                                 std::chrono::duration<double>, const DEM::ParameterMap& parameters) :
 
-        dt_(parameters.get_parameter<double>("dt")),  // Time increment
         kT_part_(parameters.get_parameter<double>("kT_part")),
-        bt_(parameters.get_parameter<double>("bt")),
-        h_(parameters.get_parameter<double>("h")),
-        hmax_(parameters.get_parameter<double>("hmax")),
-        yield_h_(parameters.get_parameter<double>("yield_h")),
-        //k_(parameters.get_parameter<double>("k")),
         kB_(parameters.get_parameter<double>("kB")),
-        kT_B_(parameters.get_parameter<double>("kT_B_")),
+        kT_B_(parameters.get_parameter<double>("kT_B")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
         R0_(parameters.get_parameter<double>("R0")),
-        //Rb_(parameters.get_parameter<double>("Rb")),
-        F_(parameters.get_parameter<double>("F")),
+        bt_(parameters.get_parameter<double>("bt")),
+        h_(parameters.get_parameter<double>("h")),
+        yield_h_(parameters.get_parameter<double>("yield_h")),
+        hmax_(parameters.get_parameter<double>("hmax")),
         mu_particle_(parameters.get_parameter<double>("mu_particle")),
-        //mu_binder_(parameters.get_parameter<double>("mu_binder")),
+        adhesive_(parameters.get_parameter<bool>("adhesive")),
+        binder_contact_(parameters.get_parameter<bool>("binder_contact")),
+        fractured_(parameters.get_parameter<bool>("fractured")),
+        dt_(parameters.get_parameter<double>("dt")),  // Time increment
+        F_(parameters.get_parameter<double>("F")),
         dF_(parameters.get_parameter<double>("dF")),
         F_visc(parameters.get_parameter<double>("F_visc")),
         F_particle(parameters.get_parameter<double>("F_particle")),
@@ -199,10 +198,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoel
         FT_visc_(parameters.get_vec3("FT_visc")),
         FT_part_(parameters.get_vec3("FT_part")),
         uT_(parameters.get_vec3("uT")),
-        rot_(parameters.get_vec3("rot")),
-        adhesive_(parameters.get_parameter<bool>("adhesive")),
-        binder_contact_(parameters.get_parameter<bool>("binder_contact")),
-        fractured_(parameters.get_parameter<bool>("fractured"))
+        rot_(parameters.get_vec3("rot"))
 {
     M = parameters.get_parameter<std::size_t>("M");
     for (unsigned i=0; i != M; ++i) {
@@ -247,13 +243,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         }
     }
     if (h_ > 0) {
-        if (h > yield_h_ && h >= hmax_) {
-            F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
-        }
-        else{
-            F_particle += 1.5*kparticle_*sqrt(h_)*dh;
-        }
-
+        F_particle += kparticle_*sqrt(h_)*dh;
     }
     else{
         F_particle = 0.;
