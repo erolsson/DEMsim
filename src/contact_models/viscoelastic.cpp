@@ -55,7 +55,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     //k_=4.*tsi0*sqrt(R0_ + bt_)/3; //initial contact stiffness
     //std::cout << "K_" << k_;
 
-    kparticle_=2*tsi0particle*sqrt(R0_);
+    kparticle_=4*tsi0particle*sqrt(R0_)/3;
     yield_h_ = 2*mat1->yield_displacement_coeff*R0_;
 
 
@@ -243,15 +243,23 @@ double DEM::Viscoelastic::update_normal_force(double h)
         }
     }
     if (h_ > 0) {
-        F_particle += kparticle_*sqrt(h_)*dh;
+        if (h > yield_h_ && h >= hmax_) {
+            F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
+        }
+        else{
+            F_particle += 1.5*kparticle_*sqrt(h_)*dh;
+        }
+
+
     }
-    else{
+    else {
         F_particle = 0.;
     }
-    /*
-    if (adhesive_ && !fractured_) {
-        return F_visc + std::max(F_particle, 0.);
-    }*/
+
+        /*
+        if (adhesive_ && !fractured_) {
+            return F_visc + std::max(F_particle, 0.);
+        }*/
     return std::max(F_particle, 0.) + F_visc;
 
 }

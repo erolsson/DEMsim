@@ -1,10 +1,10 @@
 N=100
-output_dir=..results/viscoelastic/procent65bt9
+output_dir=..results/viscoelastic/procent65bt9plastic
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
 nup=0.25
-Ep=139e9
+Ep=142e9
 bt=0.9e-2
 alpha_i=0.5,0.065,0.057
 tau_i=0.001,211,4807
