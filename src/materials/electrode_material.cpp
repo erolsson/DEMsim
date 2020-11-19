@@ -18,6 +18,7 @@ DEM::ElectrodeMaterial::ElectrodeMaterial(const ParameterMap& parameters) :
     tau_i(),
     alpha_i(),
     fraction_binder_contacts(parameters.get_parameter<double>("fraction_binder_contacts")),
+    binder_radius_fraction(parameters.get_parameter<double>("binder_radius_fraction")),
     kT(parameters.get_parameter<double>("kT")),
     mu(parameters.get_parameter<double>("mu")),
     mu_wall(parameters.get_parameter<double>("mu_wall"))

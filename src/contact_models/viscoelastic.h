@@ -40,28 +40,24 @@ namespace DEM {
         void set_increment(std::chrono::duration<double>);
 
     private:
-        std::size_t id_1;
-        std::size_t id_2;
-
-        double dt_;   // Time increment
         double kT_part_;
-        double bt_;
-        double h_ {0. };
-        double hmax_ { -1e99 };
-        static unsigned M;
-        double yield_h_ { 1e99 };
-        double k_;
-        double stiff_b_;
         double kB_;
         double kT_B_;
         double kparticle_;
         double R0_;
-        double Rb_;
-        double F_{ 0 };
+        double bt_;
+        double h_ = 0.;
+        double yield_h_ = 1e99 ;
+        double hmax_ = -1e99 ;
         double mu_particle_;
-        double mu_binder_;
-        bool activated_ = false;
 
+        bool activated_ = false;
+        bool adhesive_ {true};
+        bool binder_contact_ ;
+        bool fractured_ {false};
+
+        static unsigned M;
+        double dt_;   // Time increment
         std::vector<double> tau_i {};
         std::vector<double> alpha_i {};
         std::vector<double> ai {};
@@ -71,10 +67,11 @@ namespace DEM {
         std::vector<double > ddi_ {};
         std::vector<DEM::Vec3> ddti_ {};
         std::vector<DEM::Vec3> dti_ {};
-        double dF_{0.};
-        double F_visc{ 0. };
-        double F_particle;
 
+        double F_ = 0.;
+        double dF_ = 0.;
+        double F_visc = 0.;
+        double F_particle = 0.;
         Vec3 dFT_{Vec3(0., 0., 0.)};
         Vec3 FT_{Vec3(0., 0., 0.)};
         Vec3 FT_visc_ {Vec3(0., 0., 0.)};
@@ -82,9 +79,7 @@ namespace DEM {
         Vec3 uT_{ Vec3(0., 0., 0.) };
 
         Vec3 rot_ {Vec3(0., 0., 0.)};
-        bool adhesive_ {true};
-        bool binder_contact_ ;
-        bool fractured_ {false};
+
 
         double update_normal_force(double h);
         void update_tangential_force(const Vec3& dt, const Vec3& normal);

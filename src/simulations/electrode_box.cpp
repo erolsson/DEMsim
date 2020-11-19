@@ -26,10 +26,11 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     auto mat = simulator.create_material<ElectrodeMaterial>(4800);
     mat->E = parameters.get_parameter<double>("E");
-    mat->kT = parameters.get_parameter<double>("kT");
+    //mat->kT = parameters.get_parameter<double>("kT");
     mat->Ep = parameters.get_parameter<double>("Ep");
     mat->nu = parameters.get_parameter<double>("nu");
     mat->fraction_binder_contacts= parameters.get_parameter<double>("fraction_binder_contacts");
+    mat->binder_radius_fraction=parameters.get_parameter<double>("binder_radius_fraction");
     mat->nup = parameters.get_parameter<double>("nup");
     mat->mu = parameters.get_parameter<double>("mu");
     mat->mu_wall = parameters.get_parameter<double>("mu_wall");
@@ -93,7 +94,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
 
     simulator.set_gravity(Vec3(0, 0, -9.82));
-    simulator.set_mass_scale_factor(100.0);
+    simulator.set_mass_scale_factor(10.0);
     simulator.setup(1.01*mat->bt);
     EngineType::RunForTime run_for_time(simulator, 0.1s);
     simulator.run(run_for_time);
