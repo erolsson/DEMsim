@@ -1,5 +1,5 @@
 N=100
-output_dir=../results/viscoelastic/procent65bt9new
+output_dir=../results/viscoelastic/procent65bt9height473
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
