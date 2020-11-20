@@ -243,7 +243,14 @@ double DEM::Viscoelastic::update_normal_force(double h)
         }
     }
     if (h_ > 0) {
+        if (h > yield_h_ && h >= hmax_) {
+            F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
+        }
+        else{
             F_particle += 1.5*kparticle_*sqrt(h_)*dh;
+        }
+
+
     }
     else {
         F_particle = 0.;
