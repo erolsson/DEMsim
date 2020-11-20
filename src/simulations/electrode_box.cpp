@@ -129,7 +129,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     std::cout<<"beginning of relaxation"<< std::endl;
 
-    EngineType::RunForTime run_for_time_relax(simulator,5s);
+    EngineType::RunForTime run_for_time_relax(simulator,15s);
     simulator.run(run_for_time_relax);
     simulator.write_restart_file(output_directory + "/relax_restart_file.res");
 
