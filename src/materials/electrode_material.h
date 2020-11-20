@@ -27,7 +27,7 @@ namespace DEM {
 
         // double active_particle_height
 
-        double yield_displacement_coeff { 8.59e-2 };
+        double yield_displacement_coeff { 8.59e-3 };
 
         double N;
 
