@@ -249,19 +249,18 @@ double DEM::Viscoelastic::update_normal_force(double h)
         else{
             F_particle += 1.5*kparticle_*sqrt(h_)*dh;
         }
-
-
     }
     else {
         F_particle = 0.;
     }
 
-        /*
-        if (adhesive_ && !fractured_) {
-            return F_visc + std::max(F_particle, 0.);
-        }*/
-    return std::max(F_particle, 0.) + F_visc;
+    if (!adhesive_ ) {
+        return std::max(F_particle, 0.);
+        }
+    else{
+        return std::max(F_particle, 0.) + F_visc;
 
+    }
 }
 
     // std::cout << "Adhesive: " << adhesive_ << ", Fvisc: " << F_visc << ", fractured: " << fractured_ <<  "\n";
