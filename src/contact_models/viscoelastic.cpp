@@ -22,7 +22,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
 
 
     R0_ = 1. / (1. / particle1->get_radius() + 1. / particle2->get_radius());
-    //Rb_ = 1. / (1. / (particle1->get_radius() + mat1->bt/2) + 1. / (particle2->get_radius() + mat2->bt/2));
+    Rb_ = 1. / (1. / (particle1->get_radius() + mat1->bt/2) + 1. / (particle2->get_radius() + mat2->bt/2));
 
 
     double E1 = mat1->E;
@@ -76,7 +76,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     auto mat1 = dynamic_cast<const ElectrodeMaterial *>(particle1->get_material());
 
     R0_ = particle1->get_radius();
-    //Rb_ = particle1->get_radius() + mat1->bt/2;
+    Rb_ = particle1->get_radius() + mat1->bt/2;
 
     double E1 = mat1->E;
     double v1 = mat1->nu;
@@ -137,6 +137,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoe
         kT_B_(parameters.get_parameter<double>("kT_B")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
         R0_(parameters.get_parameter<double>("R0")),
+        Rb_(parameters.get_parameter<double>("Rb")),
         bt_(parameters.get_parameter<double>("bt")),
         h_(parameters.get_parameter<double>("h")),
         yield_h_(parameters.get_parameter<double>("yield_h")),
@@ -180,6 +181,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoel
         kT_B_(parameters.get_parameter<double>("kT_B")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
         R0_(parameters.get_parameter<double>("R0")),
+        Rb_(parameters.get_parameter<double>("Rb")),
         bt_(parameters.get_parameter<double>("bt")),
         h_(parameters.get_parameter<double>("h")),
         yield_h_(parameters.get_parameter<double>("yield_h")),
@@ -374,10 +376,10 @@ bool DEM::Viscoelastic::create_binder_contact(const ElectrodeMaterial* mat) {
 }
 
 DEM::Vec3 DEM::Viscoelastic::get_rolling_resistance_torque() const {
-     //if (binder_contact_) {
-     //   return -Rb_*Rb_*0.01*kB_*rot_;
-    // }
-     //else {
-    return DEM::Vec3(0, 0, 0);
-     //}
+     if (binder_contact_) {
+         return -Rb_*Rb_*0.01*kB_*rot_;
+     }
+     else {
+         return DEM::Vec3(0, 0, 0);
+         }
 }

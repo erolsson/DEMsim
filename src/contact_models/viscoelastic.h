@@ -45,6 +45,7 @@ namespace DEM {
         double kT_B_;
         double kparticle_;
         double R0_;
+        double Rb_;
         double bt_;
         double h_ = 0.;
         double yield_h_ = 1e99 ;
