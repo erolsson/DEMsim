@@ -57,7 +57,7 @@ def pressures_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/'
+    simulation_directory = '../../results/viscoelastic/procent65bt9height47Eb17/'
 
 
     volume_box = (2*0.172726)**2 * dimensions_box(simulation_directory)
