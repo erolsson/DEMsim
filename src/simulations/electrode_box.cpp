@@ -96,6 +96,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.set_gravity(Vec3(0, 0, -9.82));
     simulator.set_mass_scale_factor(10.0);
     simulator.setup(1.01*mat->bt);
+    simulator.set_rotation(false);
     EngineType::RunForTime run_for_time(simulator, 0.1s);
     simulator.run(run_for_time);
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
@@ -111,14 +112,14 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
     run_for_time.reset(compaction_time);
-
+    simulator.set_rotation(false);
     simulator.run(run_for_time);
     simulator.write_restart_file(output_directory + "/compact_restart_file.res");
 
     std::cout<<"beginning of unloading"<< std::endl;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
-
+    simulator.set_rotation(false);
     simulator.run(max_velocity);
 
     std::cout<<"Height of the electrode"<< std::endl;
@@ -130,6 +131,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     std::cout<<"beginning of relaxation"<< std::endl;
 
     EngineType::RunForTime run_for_time_relax(simulator,15s);
+    simulator.set_rotation(false);
     simulator.run(run_for_time_relax);
     simulator.write_restart_file(output_directory + "/relax_restart_file.res");
 

@@ -86,7 +86,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     bt_= mat1->bt;
     //stiff_b_=((1-v1)*E1)/(1+v1)/(1-2*v1);
     //kT_B_=E1*0.3*0.0016/(2*(1+v1)*bt_);
-    double br_ = mat1->binder_radius_fraction*2*R0_;
+    double br_ = mat1->binder_radius_fraction*R0_;
     double A = DEM::pi*br_*br_;
     kT_B_ = E1/bt_*A/2/(1+v1);
     //kB_=(0.3*0.0016*stiff_b_)/(bt_);
@@ -233,18 +233,18 @@ double DEM::Viscoelastic::update_normal_force(double h)
         hmax_ = h;
     }
     if (binder_contact_) {
-        if ((h > -bt_) || activated_) {
+        if ((h > 0) || activated_) {
             activated_ = true;
             double dF = dh;
             for (unsigned i = 0; i != M; ++i) {
-                ddi_[i] = bi[i]*dh + ai[i]*(h_ + bt_ - di_[i]);
+                ddi_[i] = bi[i]*dh + ai[i]*(h_ + 0 - di_[i]);
                 dF -= alpha_i[i]*ddi_[i];
                 di_[i] += ddi_[i];
             }
             F_visc += kB_*dF;
         }
     }
-    if (h_ > 0) {
+    if (h_ > 0 && !binder_contact_) {
         if (h > yield_h_ && h >= hmax_) {
             F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
         }
@@ -376,10 +376,10 @@ bool DEM::Viscoelastic::create_binder_contact(const ElectrodeMaterial* mat) {
 }
 
 DEM::Vec3 DEM::Viscoelastic::get_rolling_resistance_torque() const {
-     if (binder_contact_) {
-         return -Rb_*Rb_*0.01*kB_*rot_;
-     }
-     else {
+     //if (binder_contact_) {
+     //    return -Rb_*Rb_*0.01*kB_*rot_;
+     //}
+     //else {
          return DEM::Vec3(0, 0, 0);
-         }
+     //    }
 }
