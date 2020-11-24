@@ -57,7 +57,7 @@ class Snapshot:
 
 
 def main():
-    snapshot = Snapshot(os.path.expanduser(r'~/DEMsim/results/porous_electrode/compaction/'),
+    snapshot = Snapshot(os.path.expanduser(r'~/DEMsim/results/viscoelastic/procent65bt4E34Pelle/'),
                         BatteryContactPlotter)
     snapshot.mirror_particles = True
     snapshot.contact_plotter.color = colors.red
