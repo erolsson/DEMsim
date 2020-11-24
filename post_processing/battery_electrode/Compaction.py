@@ -8,12 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 matplotlib.style.use('classic')
-plt.rc('text', usetex=True)
-plt.rc('font', serif='Computer Modern Roman')
-plt.rcParams.update({'font.size': 20})
-plt.rcParams['text.latex.preamble'] = [r"\usepackage{amsmath}"]
-plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
-                  'monospace': ['Computer Modern Typewriter']})
+
 
 
 def particle_volume():
@@ -59,9 +54,11 @@ def pressures_box(data_directory):
 if __name__ == '__main__':
     simulation_directory = '../../results/viscoelastic/procent65bt9height47Eb17/'
 
-
     volume_box = (2*0.172726)**2 * dimensions_box(simulation_directory)
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
-    pressures = pressures_box(simulation_directory )
-    plt.plot(pressures,porosity*100)
+    pressures = pressures_box(simulation_directory)
+    plt.plot(pressures, porosity*100)
+    plt.xlabel("Pressure [Pa]")
+    plt.ylabel("Porosity")
     plt.show()
+
