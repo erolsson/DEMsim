@@ -26,7 +26,7 @@ def dimensions_box(data_directory):
         id_idx.sort(key=lambda x: first_line[x+1])
         wall_data = np.genfromtxt(data_directory + '/surface_positions.dou', delimiter=', ')
         data = np.zeros((wall_data.shape[0], 1))
-        data[1:79700, 0] = wall_data[1:79700,  id_idx[0]+32]
+        data = wall_data[1:79700,  id_idx[0]+32]
         print(data)
         return data
     else:
