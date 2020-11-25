@@ -112,7 +112,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
     run_for_time.reset(compaction_time);
-    simulator.set_rotation(false);
+    //simulator.set_rotation(false);
     simulator.run(run_for_time);
     simulator.write_restart_file(output_directory + "/compact_restart_file.res");
 
@@ -134,6 +134,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     //simulator.set_rotation(false);
     simulator.run(run_for_time_relax);
     simulator.write_restart_file(output_directory + "/relax_restart_file.res");
+
 
 
 }
