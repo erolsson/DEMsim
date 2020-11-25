@@ -137,7 +137,5 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     //Beginning of tryck
 
-
-
 }
 
