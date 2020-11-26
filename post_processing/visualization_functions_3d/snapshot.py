@@ -57,12 +57,12 @@ class Snapshot:
 
 
 def main():
-    snapshot = Snapshot(os.path.expanduser(r'~/DEMsim/results/viscoelastic/procent65bt4E34Pelle/'),
+    snapshot = Snapshot('C:/DEMsim/results/viscoelastic/Pelle/',
                         BatteryContactPlotter)
     snapshot.mirror_particles = True
     snapshot.contact_plotter.color = colors.red
     snapshot.contact_plotter.binder_radius = np.sqrt(0.3*0.01**2/np.pi)
-    snapshot.plot(10)
+    snapshot.plot(101.342)
     mlab.show()
 
 

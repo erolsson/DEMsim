@@ -1,4 +1,4 @@
-N=1000
+N=100
 output_dir=../results/viscoelastic/procent65bt4E34Pelle
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
