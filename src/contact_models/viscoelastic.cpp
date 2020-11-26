@@ -271,7 +271,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
-    if (activated_) {
+    if (F_visc > 0.) {
         FT_visc_ -= dot_product(FT_visc_, normal)*normal;
         uT_ -= dot_product(uT_, normal)*normal;
         uT_ += dt;
@@ -286,7 +286,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
     }
     FT_ = -FT_visc_;
 
-    if (F_particle > 0) {
+    if (F_particle > 0. ) {
         FT_part_ += kT_B_*dt;
         if (FT_part_.length() > mu_particle_*F_particle) {
             FT_part_ = mu_particle_*F_particle*FT_part_.normal();
@@ -296,7 +296,6 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
         FT_part_.set_zero();
     }
     FT_ -= FT_part_;
-    //FT_.set_zero();
 
 }
 
