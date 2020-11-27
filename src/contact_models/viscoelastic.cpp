@@ -234,11 +234,11 @@ double DEM::Viscoelastic::update_normal_force(double h)
         hmax_ = h;
     }
     if (binder_contact_) {
-        if ((h > 0) || activated_) {
+        if ((h > -bt_) || activated_) {
             activated_ = true;
             double dF = dh;
             for (unsigned i = 0; i != M; ++i) {
-                ddi_[i] = bi[i]*dh + ai[i]*(h_ + 0 - di_[i]);
+                ddi_[i] = bi[i]*dh + ai[i]*(h_ + bt_- di_[i]);
                 dF -= alpha_i[i]*ddi_[i];
                 di_[i] += ddi_[i];
             }
