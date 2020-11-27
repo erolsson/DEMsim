@@ -259,16 +259,16 @@ double DEM::Viscoelastic::update_normal_force(double h)
     }
 
     if (!adhesive_ && !material->adhesive) {
-        return std::max(F_particle, 0.) + F_visc;
+        return std::max(F_particle, 0.) + std::max(F_visc, 0.);
     }
     else {
-        return std::max(F_particle, 0.) + std::max(F_visc, 0.);
+        return std::max(F_particle, 0.) + F_visc;
     }
 }
 
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
-    if (F_visc != 0) {
+    if ((F_visc != 0 && material->adhesive && adhesive_) || F_visc > 0) {
         FT_visc_ -= dot_product(FT_visc_, normal)*normal;
         uT_ -= dot_product(uT_, normal)*normal;
         uT_ += dt;
@@ -293,7 +293,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
         FT_part_.set_zero();
     }
     FT_ -= FT_part_;
-
+    FT_.set_zero();
 
 }
 
