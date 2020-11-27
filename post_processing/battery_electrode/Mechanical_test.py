@@ -26,9 +26,10 @@ def box_height(data_directory):
 
 
 def pressures_box(data_directory):
-    file = np.genfromtxt(data_directory + '/force_fabric_tensor.dou', delimiter=', ')
-    first_line = file.readlines()[0]
-    first_line = first_line.split(', ')
+    force_data = np.genfromtxt(data_directory + '/force_fabric_tensor.dou', delimiter=', ')
+    with open(data_directory + '/force_fabric_tensor.dou', 'r') as position_data_file:
+        first_line = position_data_file.readlines()[0]
+        first_line = first_line.split(', ')
 
     surface_tensor = first_line[:, 2]
     print(surface_tensor)
