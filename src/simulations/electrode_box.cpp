@@ -67,6 +67,8 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     std::vector<Vec3> bottom_points{p1, p2, p3, p4};
     std::vector<Vec3> top_points{p8, p7, p6, p5};
 
+    simulator.set_rotation(false);
+
     auto particle_positions = random_fill_box(-box_side/2, box_side/2, -box_side/2, box_side/2,
                                               0, box_height, particle_radii, mat->bt);
 
@@ -109,7 +111,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     top_surface->move(-Vec3(0, 0, box_height - h-1.01*mat->bt), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
     double surface_velocity = 0.01;
-    mat-> adhesive = false;
+    mat-> adhesive = true;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
     run_for_time.reset(compaction_time);
@@ -120,8 +122,10 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     std::cout<<"beginning of unloading"<< std::endl;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
-    //simulator.set_rotation(false);
+    // simulator.set_rotation(false);
+    mat-> adhesive = true;
     simulator.run(max_velocity);
+
 
     std::cout<<"Height of the electrode"<< std::endl;
     bbox = simulator.get_bounding_box();
