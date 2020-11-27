@@ -40,6 +40,7 @@ namespace DEM {
         void set_increment(std::chrono::duration<double>);
 
     private:
+        const static ElectrodeMaterial* material;
         double kT_part_;
         double kB_;
         double kT_B_;

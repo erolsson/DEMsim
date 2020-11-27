@@ -65,4 +65,5 @@ void DEM::battery_rve_compaction(const std::string& settings_file_name)
     auto max_velocity = EngineType::ParticleVelocityLess(simulator, 0.01, 1us);
     simulator.run(max_velocity);
     simulator.write_restart_file(output_directory + "/compaction_state.res");
+
 }

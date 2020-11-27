@@ -19,7 +19,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     //extracting from material
     auto mat1 = dynamic_cast<const ElectrodeMaterial *>(particle1->get_material());
     auto mat2 = dynamic_cast<const ElectrodeMaterial *>(particle2->get_material());
-
+    material = mat1;
 
     R0_ = 1. / (1. / particle1->get_radius() + 1. / particle2->get_radius());
     Rb_ = 1. / (1. / (particle1->get_radius() + mat1->bt/2) + 1. / (particle2->get_radius() + mat2->bt/2));
@@ -74,7 +74,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
 DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM::Viscoelastic::SurfaceType * surface,
                                 std::chrono::duration<double>dt){
     auto mat1 = dynamic_cast<const ElectrodeMaterial *>(particle1->get_material());
-
+    material = mat1;
     R0_ = particle1->get_radius();
     Rb_ = particle1->get_radius() + mat1->bt/2;
 
@@ -256,22 +256,17 @@ double DEM::Viscoelastic::update_normal_force(double h)
         F_particle = 0.;
     }
 
-    if (!adhesive_ ) {
+    if (!adhesive_ && material->adhesive) {
+        return std::max(F_particle, 0.) + F_visc;
+    }
+    else {
         return std::max(F_particle, 0.) + std::max(F_visc, 0.);
-        }
-    else{
-        return std::max(F_particle, 0.) + std::max(F_visc, 0.);
-
     }
 }
 
-    // std::cout << "Adhesive: " << adhesive_ << ", Fvisc: " << F_visc << ", fractured: " << fractured_ <<  "\n";
-    //std::cout << ": " <<
-
-
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
-    if (activated_) {
+    if (F_visc != 0) {
         FT_visc_ -= dot_product(FT_visc_, normal)*normal;
         uT_ -= dot_product(uT_, normal)*normal;
         uT_ += dt;
