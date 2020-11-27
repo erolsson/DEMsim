@@ -222,6 +222,7 @@ void DEM::Viscoelastic::update(double h, const DEM::Vec3& dt, const Vec3& drot, 
 }
 
 unsigned DEM::Viscoelastic::M;
+const DEM::ElectrodeMaterial* DEM::Viscoelastic::material;
 
 
 //Normal force
