@@ -62,7 +62,7 @@ def main():
     snapshot.mirror_particles = True
     snapshot.contact_plotter.color = colors.red
     snapshot.contact_plotter.binder_radius = np.sqrt(0.3*0.01**2/np.pi)
-    snapshot.plot(101.342)
+    snapshot.plot(16.316)
     mlab.show()
 
 

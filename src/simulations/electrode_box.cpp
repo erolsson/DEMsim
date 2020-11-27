@@ -95,7 +95,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     simulator.set_gravity(Vec3(0, 0, -9.82));
     simulator.set_mass_scale_factor(10.0);
-    simulator.setup(1.01*mat->bt);
+    simulator.setup(1.0*mat->bt);
     simulator.set_rotation(false);
     EngineType::RunForTime run_for_time(simulator, 0.1s);
     simulator.run(run_for_time);
@@ -106,7 +106,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     std::cout<<"beginning of compaction"<< std::endl;
     auto bbox = simulator.get_bounding_box();
     double h = bbox[5];
-    top_surface->move(-Vec3(0, 0, box_height - h), Vec3(0, 0, 0));
+    top_surface->move(-Vec3(0, 0, box_height - h-1.01*mat->bt), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
     double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));

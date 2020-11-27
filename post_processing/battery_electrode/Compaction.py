@@ -52,7 +52,7 @@ def pressures_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/procent65bt4E34PelleutanFT/'
+    simulation_directory = '../../results/viscoelastic/procent65bt4E34PelleUtanFT/'
 
     volume_box = (2*0.172726)**2 * dimensions_box(simulation_directory)
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
