@@ -189,6 +189,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
     EngineType::RunForTime run_for_time_relax_2(simulator,1.9s);
+    mat-> adhesive = true;
     simulator.run(run_for_time_relax_2);
     simulator.write_restart_file(output_directory + "/relaxation_2.res");
 
