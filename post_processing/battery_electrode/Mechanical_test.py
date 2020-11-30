@@ -8,11 +8,12 @@ matplotlib.style.use('classic')
 
 
 def dimensions_box(data_directory):
-    file = np.genfromtxt(data_directory + '/periodic_bc.dou',  delimiter=', ')
+    file = open(data_directory + '/periodic_bc.dou',  'r')
     first_line = file.readlines()[0]
     first_line = first_line.split(', ')
+    id_idx = [i for i in range(len(first_line))]
 
-    data = first_line[:,  3]
+    data = file[:,  id_idx[2]]
     print(data)
     return data
 

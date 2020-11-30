@@ -26,7 +26,7 @@ def dimensions_box(data_directory):
         id_idx.sort(key=lambda x: first_line[x+1])
         wall_data = np.genfromtxt(data_directory + '/surface_positions.dou', delimiter=', ')
         data = np.zeros((wall_data.shape[0], 1))
-        data = wall_data[1:79700,  id_idx[0]+32]
+        data = wall_data[1:19464,  id_idx[0]+32]
         print(data)
         return data
     else:
@@ -44,7 +44,7 @@ def pressures_box(data_directory):
 
     surface_indices = [i for i, surface_type in enumerate(surface_types) if surface_type == 'PointSurface']
 
-    surface1_force = force_data[1:79700, surface_indices[0]+1]
+    surface1_force = force_data[1:19464, surface_indices[0]+1]
 
     p = surface1_force/(0.34*0.34)
     print(p)
@@ -52,7 +52,7 @@ def pressures_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/procent65bt4E34PelleUtanFT/'
+    simulation_directory = '../../results/viscoelastic/procent65bt4E34height45/'
 
     volume_box = (2*0.172726)**2 * dimensions_box(simulation_directory)
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
