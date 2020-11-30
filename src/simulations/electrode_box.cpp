@@ -113,7 +113,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     double surface_velocity = 0.01;
     mat-> adhesive = true;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
-    std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
+    std::chrono::duration<double> compaction_time {((h - mat->active_particle_height+mat->bt) / surface_velocity)};
     run_for_time.reset(compaction_time);
     //simulator.set_rotation(false);
     simulator.run(run_for_time);
