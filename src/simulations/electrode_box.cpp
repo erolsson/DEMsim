@@ -123,7 +123,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
     // simulator.set_rotation(false);
-    mat-> adhesive = true;
+    //mat-> adhesive = true;
     simulator.run(max_velocity);
 
 
@@ -137,7 +137,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     EngineType::RunForTime run_for_time_relax(simulator,15s);
     //simulator.set_rotation(false);
-    mat-> adhesive = true;
+    //mat-> adhesive = true;
     simulator.run(run_for_time_relax);
     simulator.write_restart_file(output_directory + "/relax_restart_file.res");
 
@@ -164,7 +164,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
     EngineType::RunForTime run_for_time_relax_1(simulator,1.75s);
-    mat-> adhesive = true;
+    //mat-> adhesive = true;
     simulator.run(run_for_time_relax_1);
     simulator.write_restart_file(output_directory + "/relaxation_1.res");
 
@@ -178,7 +178,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
 
-    mat-> adhesive = true;
+    //mat-> adhesive = true;
     simulator.run(run_for_time_compact_2);
 
     simulator.write_restart_file(output_directory + "/tryck_2.res");
@@ -189,7 +189,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
     EngineType::RunForTime run_for_time_relax_2(simulator,1.9s);
-    mat-> adhesive = true;
+    //mat-> adhesive = true;
     simulator.run(run_for_time_relax_2);
     simulator.write_restart_file(output_directory + "/relaxation_2.res");
 
