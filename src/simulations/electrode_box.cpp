@@ -94,7 +94,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);
     simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
-    mat-> adhesive = false;
+    //mat-> adhesive = false;
     simulator.set_gravity(Vec3(0, 0, -9.82));
     simulator.set_mass_scale_factor(10.0);
     simulator.setup(1.0*mat->bt);
