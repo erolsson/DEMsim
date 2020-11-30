@@ -45,7 +45,7 @@ namespace DEM {
         [[nodiscard]] unsigned M() const { return tau_i.size(); }
 
         double active_particle_height;
-        bool adhesive = true;
+        bool adhesive = false;
     };
 }
 #endif
