@@ -247,7 +247,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         if (F_visc > 0) {
             fractured_ = false;
         }
-        if (F_visc < 0 && !material->adhesive && !adhesive_) {
+        if (F_visc < 0 && (!material->adhesive || !adhesive_)) {
             fractured_ = true;
         }
     }
