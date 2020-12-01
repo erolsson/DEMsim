@@ -97,7 +97,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     mat-> adhesive = false;
     simulator.set_gravity(Vec3(0, 0, -9.82));
     simulator.set_mass_scale_factor(10.0);
-    simulator.setup(1.0*mat->bt);
+    simulator.setup(1.01*mat->bt);
     simulator.set_rotation(false);
     EngineType::RunForTime run_for_time(simulator, 0.1s);
     simulator.run(run_for_time);
