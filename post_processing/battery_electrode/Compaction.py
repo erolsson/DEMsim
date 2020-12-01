@@ -10,7 +10,6 @@ import matplotlib
 matplotlib.style.use('classic')
 
 
-
 def particle_volume():
     p_volume = 0.0267963
     return p_volume
@@ -27,7 +26,7 @@ def dimensions_box(data_directory):
         wall_data = np.genfromtxt(data_directory + '/surface_positions.dou', delimiter=', ')
         data = np.zeros((wall_data.shape[0], 1))
         data = wall_data[1:19464,  id_idx[0]+32]
-        print(data)
+
         return data
     else:
         raise ValueError("A box could not be defined from the data in " + data_directory +
@@ -47,12 +46,12 @@ def pressures_box(data_directory):
     surface1_force = force_data[1:19464, surface_indices[0]+1]
 
     p = surface1_force/(0.34*0.34)
-    print(p)
+
     return p
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/procent65bt4E34height45/'
+    simulation_directory = '../../results/viscoelastic/procent70bt4E34height40particle100eller/'
 
     volume_box = (2*0.172726)**2 * dimensions_box(simulation_directory)
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)

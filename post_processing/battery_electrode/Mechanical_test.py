@@ -13,7 +13,7 @@ def dimensions_box(data_directory):
     first_line = first_line.split(', ')
     id_idx = [i for i in range(len(first_line))]
 
-    data = file[:,  id_idx[2]]
+    data = file[:,  2]
     print(data)
     return data
 
