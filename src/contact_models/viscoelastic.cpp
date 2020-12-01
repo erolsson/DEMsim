@@ -244,7 +244,15 @@ double DEM::Viscoelastic::update_normal_force(double h)
             }
             F_visc += kB_*dF;
         }
+        if (F_visc > 0) {
+            fractured_ = false;
+        }
+        if (F_visc < 0 && !material->adhesive && !adhesive_) {
+            fractured_ = true;
+        }
     }
+
+
     if (h_ > 0 && !binder_contact_) {
         activated_ = false;
         if (h > yield_h_ && h >= hmax_) {
@@ -258,11 +266,11 @@ double DEM::Viscoelastic::update_normal_force(double h)
         F_particle = 0.;
     }
 
-    if (adhesive_ && material->adhesive) {
+    if (adhesive_ && material->adhesive && !fractured_) {
         return std::max(F_particle, 0.) + F_visc;
     }
     else {
-        return std::max(F_particle, 0.) + std::max(F_visc, 0.);;
+        return std::max(F_particle, 0.) + std::max(F_visc, 0.);
     }
 }
 
