@@ -48,6 +48,7 @@ def Time(data_directory):
 
         return time
 
+
 def pressures_box(data_directory):
     force_data = np.genfromtxt(data_directory + '/surface_forces.dou', delimiter=', ')
     with open(data_directory + '/surface_positions.dou', 'r') as position_data_file:
@@ -58,7 +59,7 @@ def pressures_box(data_directory):
 
     surface_indices = [i for i, surface_type in enumerate(surface_types) if surface_type == 'PointSurface']
 
-    surface1_force = force_data[:, surface_indices[0]+1]
+    surface1_force = force_data[:, surface_indices[0]+6]
 
     p = surface1_force/(0.34*0.34)
 
