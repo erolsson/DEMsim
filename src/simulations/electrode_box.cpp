@@ -121,10 +121,10 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     std::cout<<"beginning of unloading"<< std::endl;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
-    //EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
+    EngineType::SurfaceNormalForceLess zero_force(top_surface, 0.);
     // simulator.set_rotation(false);
-    //mat-> adhesive = true;
-    simulator.run(max_velocity);
+    mat-> adhesive = true;
+    simulator.run(zero_force);
 
 
     std::cout<<"Height of the electrode"<< std::endl;
