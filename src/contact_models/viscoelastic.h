@@ -56,7 +56,7 @@ namespace DEM {
         bool activated_ = false;
         bool adhesive_ {true};
         bool binder_contact_ ;
-        bool fractured_ {false};
+        bool fractured_ {true};
 
         static unsigned M;
         double dt_;   // Time increment
@@ -86,6 +86,7 @@ namespace DEM {
         double update_normal_force(double h);
         void update_tangential_force(const Vec3& dt, const Vec3& normal);
         static bool create_binder_contact(const ElectrodeMaterial* mat);
+        bool adhesive() const;
     };
 }
 

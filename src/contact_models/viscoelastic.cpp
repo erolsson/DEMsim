@@ -247,7 +247,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         if (F_visc > 0) {
             fractured_ = false;
         }
-        if (F_visc < 0 && (!material->adhesive || !adhesive_)) {
+        if (F_visc < 0 && !adhesive()) {
             fractured_ = true;
         }
     }
@@ -266,7 +266,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         F_particle = 0.;
     }
 
-    if (adhesive_ && material->adhesive && !fractured_) {
+    if (adhesive() && !fractured_) {
         return std::max(F_particle, 0.) + F_visc;
     }
     else {
@@ -388,4 +388,8 @@ DEM::Vec3 DEM::Viscoelastic::get_rolling_resistance_torque() const {
      //else {
          return DEM::Vec3(0, 0, 0);
      //    }
+}
+
+bool DEM::Viscoelastic::adhesive() const {
+    return adhesive_ && material->adhesive;
 }
