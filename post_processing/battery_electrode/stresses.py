@@ -15,7 +15,7 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 
 
 def main():
-    directory = os.path.expanduser("~/DEMsim/results/Battery")
+    directory = os.path.expanduser("~/DEMsim/results/battery_rve/Cathod")
     periodic_box = np.genfromtxt(directory + "/periodic_bc.dou", delimiter=',')
     idx = periodic_box[:, 1] != periodic_box[0, 1]
     force_fabric_tensor = np.genfromtxt(directory + "/force_fabric_tensor.dou", delimiter=',')
@@ -37,11 +37,11 @@ def main():
     max_stress_idx = np.argmax(stresses[:, 0])
     print(time[max_stress_idx], stresses[max_stress_idx, 0]/1e6)
     plt.figure(0)
-    plt.plot(stresses[:, 0]/1e6)
+    plt.plot(time, stresses[:, 0]/1e6)
     plt.figure(1)
-    plt.plot(stresses[:, 4]/1e6)
+    plt.plot(time, stresses[:, 4]/1e6)
     plt.figure(2)
-    plt.plot(stresses[:, 8]/1e6)
+    plt.plot(time, stresses[:, 8]/1e6)
 
     plt.figure(3)
     plt.plot(exx)
