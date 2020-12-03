@@ -1,5 +1,5 @@
 N=100
-output_dir=../results/viscoelastic/newfunctionmedfriction
+output_dir=../results/viscoelastic/fixadbugg
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
