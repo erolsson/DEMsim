@@ -108,6 +108,7 @@ void DEM::StorakersMesarovicJohnson::update_normal_force(double h)
     h_ = h;
     if (h_ > h_max_) {  // Plastic loading
         F_ = k_*h_;
+        //std::cout << "F: " << F_ <<  "  h: " << h  << "\n" ;
         a_ = sqrt(1.43*R0_*h_);
         a_max_ = a_;
         hu_max_ = ku_*a_max_;

@@ -61,7 +61,7 @@ namespace DEM {
 
     private:
 
-        double stretch_ = 0;
+        double stretch_ = 1e-9;
         std::map<std::size_t, std::array<ParticleType*, 7>> mirror_particles_;
         std::array<Interval, 3> boundaries_ {};
         std::array<double, 3> velocities_ {0., 0., 0.};

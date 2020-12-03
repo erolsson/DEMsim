@@ -175,10 +175,10 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::fulfill_periodic_bc()
 {
     move_periodic_boundaries();
     for (auto& p: simulation_particles_) {
+        respect_boundaries(p);
         move_mirror_particles(p);
         create_mirror_particles(p);
         create_corner_particles(p);
-        respect_boundaries(p);
     }
 }
 
@@ -187,8 +187,9 @@ void PeriodicBCHandler<ForceModel, ParticleType>::move_periodic_boundaries() {
     for (unsigned i = 0; i != 3; ++i) {
         if (active_directions_[i]) {
             double v = velocities_[i];
-            if (v == 0.) {
+            if (strain_rates_[i] != 0.) {
                 v = strain_rates_[i]*(boundaries_[i].max - boundaries_[i].min)/2;
+                velocities_[i] = v;
             }
             boundaries_[i].max += v*engine_.get_time_increment().count();
             boundaries_[i].min -= v*engine_.get_time_increment().count();
@@ -240,7 +241,7 @@ void PeriodicBCHandler<ForceModel, ParticleType>::move_mirror_particles(Particle
                 mp->rotate(simulation_particle->get_rotation_this_increment());
                 mp->set_angular_velocity(simulation_particle->get_angular_velocity());
                 for (unsigned j = 0; j != 3; ++j) {
-                    if (abs(mp->get_position()[j]) > 2*boundaries_[j].max) {
+                    if (abs(mp->get_position()[j]) > 2*boundaries_[j].max && active_directions_[j]) {
                         Vec3 new_pos = mp->get_position();
                         new_pos[j] -= 4*boundaries_[j].max*mp->get_position()[j]/abs(mp->get_position()[j]);
                         mp->set_position(new_pos);
@@ -269,6 +270,7 @@ void PeriodicBCHandler<ForceModel, ParticleType>::create_mirror_particles(Partic
             }
         }
     }
+
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -344,7 +346,6 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::respect_boundaries(Partic
         else {
             mirror_idx = 6;
         }
-
         for (std::size_t direction = 0; direction != active_directions_.size(); ++direction) {
             if (directions[direction]) {
                 distance_to_move[direction] = -(boundaries_[direction].max
@@ -490,8 +491,8 @@ void PeriodicBCHandler<ForceModel, ParticleType>::create_periodic_bc_contacts() 
         auto p1 = c_data.particle1;
         auto p2 = c_data.particle2;
         auto s = c_data.surface;
-        // if ((!is_mirror_particle(p1) || !is_mirror_particle(p2)) && !(is_mirror_particle(p1) && s != nullptr) ) {
-        if (true ) {
+        if ((!is_mirror_particle(p1) || !is_mirror_particle(p2)) && !(is_mirror_particle(p1) && s != nullptr) ) {
+        // if (true ) {
             if (s == nullptr) {
                 c = contacts_.create_item_inplace(id1, id2, p1, p2, engine_.get_time_increment());
             }
