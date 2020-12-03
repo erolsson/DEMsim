@@ -276,7 +276,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
-    if (activated_ && ((F_visc != 0 && adhesive()) || F_visc > 0)) {
+    if (activated_ && ((F_visc != 0 ) || F_visc > 0)) {
         FT_visc_ -= dot_product(FT_visc_, normal)*normal;
         uT_ -= dot_product(uT_, normal)*normal;
         uT_ += dt;
@@ -302,7 +302,6 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
     }
     FT_ -= FT_part_;
     //FT_.set_zero();
-
 }
 
 std::string DEM::Viscoelastic::get_output_string() const {
