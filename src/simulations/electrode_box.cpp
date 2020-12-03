@@ -148,9 +148,8 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     //auto bottom_surface = simulator.get_surface<EngineType::DeformablePointSurfacePointer>("deformable_point_surface_0");
-
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    //mat-> adhesive = true;
+    mat-> adhesive = true;
     simulator.run(run_for_time_compact_1);
 
     simulator.write_restart_file(output_directory + "/tryck_1.res");
