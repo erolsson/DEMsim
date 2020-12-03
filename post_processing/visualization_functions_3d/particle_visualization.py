@@ -3,7 +3,7 @@ from mayavi import mlab
 from animation import Animation
 
 if __name__ == '__main__':
-    simulation_directory = 'C:/results/11-12-plasticity'
+    simulation_directory = 'C:/DEMsim/results/viscoelastic/newfunction'
 
     # Doing some inspection to construct a good bounding_box figure
     # dimension_data = dimensions_cylinder(simulation_directory)
@@ -15,10 +15,10 @@ if __name__ == '__main__':
 
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)
-    animation.save_directory = 'C:/DEMsim/post_processing/Electrode_box/animation3/'
+    animation.save_directory = 'C:/DEMsim/post_processing/Electrode_box/newfunction/'
     animation.save_frames = True
     animation.delay = 0.0001
-    animation.start_time = 3.00
+    animation.start_time = 20.00
     """
     animation.surfaces_colors[0] = (0., 1., 0.)
     animation.surfaces_colors[5001] = (1., 0., 0.)
