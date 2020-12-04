@@ -42,7 +42,7 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/procent70bt4E34height45/'
+    simulation_directory = '../../results/viscoelastic/fixadbugg'
     box_width = 0.172726
     box_height = 0.55
     strain = (box_width - dimensions_box(simulation_directory))[23528:33530]/box_width
