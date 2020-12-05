@@ -1,5 +1,5 @@
 N=2000
-output_dir=../results/viscoelastic/2000-mekaniska
+output_dir=../results/viscoelastic/2000-visko
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
