@@ -144,31 +144,5 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
 
 
-
-
-
-
-    std::cout<<"Biginning of simulation 5"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_5(simulator,0.02s);
-
-
-    simulator.set_periodic_boundary_condition_strain_rate('x',-1.0);
-    deformable_surface -> set_in_plane_strain_rates(-1.0, 0.);
-    simulator.set_mass_scale_factor(10.0);
-    mat-> adhesive = true;
-    simulator.run(run_for_time_compact_5);
-
-    simulator.write_restart_file(output_directory + "/tryck_5.res");
-
-    //unload extra compaction
-
-    std::cout<<"beginning of unloading 5"<< std::endl;
-    simulator.set_periodic_boundary_condition_strain_rate('x',0.);
-    deformable_surface -> set_in_plane_strain_rates(0., 0.);
-    EngineType::RunForTime run_for_time_relax_5(simulator,15s);
-    simulator.set_mass_scale_factor(10.0);
-    mat-> adhesive = true;
-    simulator.run(run_for_time_relax_5);
-    simulator.write_restart_file(output_directory + "/relaxation_5.res");
 }
 
