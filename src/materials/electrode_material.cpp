@@ -40,6 +40,7 @@ std::string DEM::ElectrodeMaterial::restart_data() const {
        << named_print(Ep, "Ep") << ", "
        << named_print(fraction_binder_contacts,"fraction_binder_contacts")<< ", "
        << named_print(yield_displacement_coeff, "yield_coeff") << ", "
+       << named_print(binder_radius_fraction, "binder_radius_fraction") << ", "
        << named_print(bt, "bt") << ", "
        << named_print(kT, "kT") << ", "
        << named_print(mu, "mu") << ", "

@@ -42,13 +42,13 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../results/viscoelastic/100-visko'
+    simulation_directory = 'C:/DEMsim/results/viscoelastic/100-visko'
     box_width = 0.172726
     box_height = 0.6
-    strain = (box_width - dimensions_box(simulation_directory))[:]/box_width
+    strain = (box_width - dimensions_box(simulation_directory))[1:847435]/box_width
     Stress = pressures_box(simulation_directory)/(box_width * box_height * box_width *2)
-    stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
-                                                               dimensions_box(simulation_directory)[:] *2)
+    stress = pressures_box(simulation_directory)[1:847435]/(box_width * box_height *
+                                                               dimensions_box(simulation_directory)[1:847435] *2)
     time = time_box(simulation_directory)
     plt.plot(time, Stress)
     plt.xlabel("time[s]")
