@@ -45,7 +45,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     top_surface->set_velocity(Vec3(0, 0,-surface_velocity));
     EngineType::RunForTime run_for_time_compact(simulator,30s);
     simulator.run(run_for_time_compact);
-    simulator.write_restart_file(output_directory + "/minimum-height.res");
+    simulator.write_restart_file(output_directory + "/minimum_height.res");
 
 
 
@@ -55,12 +55,12 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     // simulator.set_rotation(false);
     simulator.run(zero_force);
 
-    EngineType::RunForTime run_for_time_relax(simulator,15s);
+    EngineType::RunForTime run_for_time_relax(simulator,10s);
     //simulator.set_rotation(false);
     mat-> adhesive = true;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     simulator.run(run_for_time_relax);
-    simulator.write_restart_file(output_directory + "/new-porosity.res");
+    simulator.write_restart_file(output_directory + "/new_porosity.res");
 
 
 }
