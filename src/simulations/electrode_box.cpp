@@ -80,7 +80,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
     for (std::size_t i = 0; i != particle_positions.size(); ++i) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), mat);
     }
-    auto filling_output = simulator.create_output(output_directory , 0.001s);
+    auto filling_output = simulator.create_output(output_directory , 0.005s);
 
     filling_output->print_particles = true;
     filling_output->print_kinetic_energy = true;
@@ -135,7 +135,7 @@ void DEM::electrode_box(const std::string& settings_file_name) {
 
     std::cout<<"beginning of relaxation"<< std::endl;
 
-    EngineType::RunForTime run_for_time_relax(simulator,15s);
+    EngineType::RunForTime run_for_time_relax(simulator,10s);
     //simulator.set_rotation(false);
     mat-> adhesive = true;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
