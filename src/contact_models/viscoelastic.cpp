@@ -130,8 +130,6 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
 
 DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoelastic::ParticleType* p2,
                                 std::chrono::duration<double>, const DEM::ParameterMap& parameters) :
-
-
         kT_part_(parameters.get_parameter<double>("kT_part")),
         kB_(parameters.get_parameter<double>("kB")),
         kT_B_(parameters.get_parameter<double>("kT_B_")),
@@ -160,6 +158,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoe
 
 
 {
+    material = dynamic_cast<const ElectrodeMaterial *>(p1->get_material());
     M = parameters.get_parameter<unsigned>("M");
     for (unsigned i=0; i != M; ++i) {
         tau_i.push_back(parameters.get_parameter<double>("tau_" + std::to_string(i)));
@@ -203,6 +202,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoel
         uT_(parameters.get_vec3("uT")),
         rot_(parameters.get_vec3("rot"))
 {
+    material = dynamic_cast<const ElectrodeMaterial *>(p->get_material());
     M = parameters.get_parameter<std::size_t>("M");
     for (unsigned i=0; i != M; ++i) {
         tau_i.push_back(parameters.get_parameter<double>("tau_" + std::to_string(i)));

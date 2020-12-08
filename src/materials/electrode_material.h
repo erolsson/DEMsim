@@ -29,7 +29,7 @@ namespace DEM {
 
         double yield_displacement_coeff { 8.59e-3 };
 
-        double N;
+        double N=0.;
 
 
         // double contact;
@@ -44,7 +44,7 @@ namespace DEM {
 
         [[nodiscard]] unsigned M() const { return tau_i.size(); }
 
-        double active_particle_height;
+        double active_particle_height=0.;
         bool adhesive = true;
     };
 }

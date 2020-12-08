@@ -10,6 +10,7 @@
 DEM::ElectrodeMaterial::ElectrodeMaterial(const ParameterMap& parameters) :
     DEM::MaterialBase(parameters),
     E(parameters.get_parameter<double>("E")),
+    adhesive(parameters.get_parameter<bool>("adhesive")),
     nu(parameters.get_parameter<double>("nu")),
     Ep(parameters.get_parameter<double>("Ep")),
     nup(parameters.get_parameter<double>("nup")),
@@ -36,6 +37,7 @@ std::string DEM::ElectrodeMaterial::restart_data() const {
        << MaterialBase::restart_data() << ", "
        << named_print(E, "E") << ", "
        << named_print(nu, "nu") << ", "
+       << named_print(adhesive, "adhesive") << ", "
        << named_print(nup, "nup") << ", "
        << named_print(Ep, "Ep") << ", "
        << named_print(fraction_binder_contacts,"fraction_binder_contacts")<< ", "
