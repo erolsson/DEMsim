@@ -405,8 +405,10 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::respect_boundaries(Partic
 template<typename ForceModel, typename ParticleType>
 void PeriodicBCHandler<ForceModel, ParticleType>::add_periodic_bc(char axis, double boundary_min, double boundary_max) {
     auto axis_idx = direction_idx(axis);
-    active_directions_[axis_idx] = true;
-    ++no_active_directions_;
+    if (active_directions_[axis_idx] == false) {
+        active_directions_[axis_idx] = true;
+        ++no_active_directions_;
+    }
     boundaries_[axis_idx].min = boundary_min;
     boundaries_[axis_idx].max = boundary_max;
 }
