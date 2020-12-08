@@ -15,7 +15,8 @@ std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
             {"cyclic_triaxial",                DEM::cyclic_triaxial},
             {"proctor_test",                   DEM::proctor_test},
             {"stone_compaction",               DEM::stone_compaction},
-            {"electrode_box",                  DEM::electrode_box},
+            {"electrode_compaction",            DEM::electrode_compaction},
+            {"electrode_mechanical_test",       DEM::electrode_mechanical_test},
             //{"electrode_cylinder_filling",     DEM::electrode_cylinder_filling},
             {"electrode_cylinder_compaction",  DEM::electrode_cylinder_compaction},
             {"periodic_bc_tester",             DEM::periodic_bc_tester},
@@ -28,6 +29,7 @@ std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
             //{"battery_rve_loading",            DEM::battery_rve_filling},
             {"restart_electrode",              DEM::restart_electrode},
             {"porous_electrode_rve",           DEM::porous_electrode_rve}
+
     };
 }
 
