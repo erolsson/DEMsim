@@ -10,7 +10,6 @@
 DEM::ElectrodeMaterial::ElectrodeMaterial(const ParameterMap& parameters) :
     DEM::MaterialBase(parameters),
     E(parameters.get_parameter<double>("E")),
-    adhesive(parameters.get_parameter<bool>("adhesive")),
     nu(parameters.get_parameter<double>("nu")),
     Ep(parameters.get_parameter<double>("Ep")),
     nup(parameters.get_parameter<double>("nup")),
@@ -22,7 +21,8 @@ DEM::ElectrodeMaterial::ElectrodeMaterial(const ParameterMap& parameters) :
     binder_radius_fraction(parameters.get_parameter<double>("binder_radius_fraction")),
     kT(parameters.get_parameter<double>("kT")),
     mu(parameters.get_parameter<double>("mu")),
-    mu_wall(parameters.get_parameter<double>("mu_wall"))
+    mu_wall(parameters.get_parameter<double>("mu_wall")),
+    adhesive(parameters.get_parameter<bool>("adhesive"))
 {
     auto M = parameters.get_parameter<std::size_t>("M");
     for (std::size_t i = 0; i != M; ++i) {
@@ -37,7 +37,6 @@ std::string DEM::ElectrodeMaterial::restart_data() const {
        << MaterialBase::restart_data() << ", "
        << named_print(E, "E") << ", "
        << named_print(nu, "nu") << ", "
-       << named_print(adhesive, "adhesive") << ", "
        << named_print(nup, "nup") << ", "
        << named_print(Ep, "Ep") << ", "
        << named_print(fraction_binder_contacts,"fraction_binder_contacts")<< ", "
@@ -47,7 +46,8 @@ std::string DEM::ElectrodeMaterial::restart_data() const {
        << named_print(kT, "kT") << ", "
        << named_print(mu, "mu") << ", "
        << named_print(mu_wall, "mu_wall") << ", "
-       << named_print(M(), "M");
+       << named_print(M(), "M")
+       << named_print(adhesive, "adhesive") << ", ";
 
     for (std::size_t i = 0; i != M(); ++i) {
         ss << ", " << named_print(tau_i[i], "tau_"+ std::to_string(i)) << ", "
