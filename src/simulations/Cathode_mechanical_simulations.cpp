@@ -22,7 +22,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     auto mat = simulator.create_material<ElectrodeMaterial>(4800);
     auto Cathode_output = simulator.get_output("output_0");
     simulator.remove_output(Cathode_output);
-    auto compaction_output = simulator.create_output(output_directory + "/new-porosity", 0.001s);
+    auto compaction_output = simulator.create_output(output_directory + "/new_porosity", 0.001s);
     compaction_output->print_particles = true;
     compaction_output->print_surface_positions = true;
     compaction_output->print_kinetic_energy = true;
@@ -31,7 +31,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     compaction_output->print_fabric_force_tensor =true;
     compaction_output->print_periodic_bc = true;
     compaction_output->print_mirror_particles= true;
-    mat-> adhesive = true;
+    //mat-> adhesive = true;
     auto top_surface = simulator.get_surface<EngineType::PointSurfacePointer>("top_plate");
     //double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0,0));
@@ -57,7 +57,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
 
     EngineType::RunForTime run_for_time_relax(simulator,10s);
     //simulator.set_rotation(false);
-    mat-> adhesive = true;
+   // mat-> adhesive = true;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     simulator.run(run_for_time_relax);
     simulator.write_restart_file(output_directory + "/new_porosity.res");
