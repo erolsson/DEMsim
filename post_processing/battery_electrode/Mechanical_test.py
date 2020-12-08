@@ -45,10 +45,10 @@ if __name__ == '__main__':
     simulation_directory = 'C:/DEMsim/results/viscoelastic/100-relaxation'
     box_width = 0.172726
     box_height = 0.6
-    strain = (box_width - dimensions_box(simulation_directory))[:]/box_width
+    strain = (box_width - dimensions_box(simulation_directory))[101767:111769]/box_width
     Stress = pressures_box(simulation_directory)/(box_width * box_height * box_width *2)
-    stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
-                                                               dimensions_box(simulation_directory)[:] *2)
+    stress = pressures_box(simulation_directory)[101767:111769]/(box_width * box_height *
+                                                               dimensions_box(simulation_directory)[101767:111769] *2)
     #inkompresibelt på binder, isotropiskt material
     # inelastic strain
     time = time_box(simulation_directory)
