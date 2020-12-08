@@ -49,6 +49,8 @@ if __name__ == '__main__':
     Stress = pressures_box(simulation_directory)/(box_width * box_height * box_width *2)
     stress = pressures_box(simulation_directory)[1:847435]/(box_width * box_height *
                                                                dimensions_box(simulation_directory)[1:847435] *2)
+    #inkompresibelt på binder, isotropiskt material
+    # inelastic strain
     time = time_box(simulation_directory)
     plt.plot(time, Stress)
     plt.xlabel("time[s]")
