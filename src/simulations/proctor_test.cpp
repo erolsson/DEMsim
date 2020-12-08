@@ -169,7 +169,8 @@ void DEM::proctor_test(const std::string& settings_file_name) {
                                                           &run_for_time_falling});
             simulator.run(run_condition);
 
-            hammer->move(Vec3(0, 0, -1.01*hammer_height) - hammer->get_position(), Vec3(0, 0, 0));
+            hammer->move(Vec3(0, 0, -1.01*hammer_height) - hammer->get_position(),
+                         Vec3(0, 0, 0));
             simulator.remove_force_control_on_surface(hammer, 'z');
 
             simulator.run(max_velocity);

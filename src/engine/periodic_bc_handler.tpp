@@ -423,6 +423,7 @@ void PeriodicBCHandler<ForceModel, ParticleType>::set_periodic_bc_velocity(char 
 template<typename ForceModel, typename ParticleType>
 void PeriodicBCHandler<ForceModel, ParticleType>::set_periodic_bc_strain_rate(char axis, double strain_rate) {
     auto axis_idx = direction_idx(axis);
+    velocities_[axis_idx] = 0;
     strain_rates_[axis_idx] = strain_rate;
 }
 
