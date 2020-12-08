@@ -17,7 +17,7 @@ namespace DEM {
     void cyclic_triaxial(const std::string& settings_file_name);
     void proctor_test(const std::string& settings_file_name);
     void stone_compaction(const std::string& settings_file_name);
-    void electrode_box(const std::string& settings_file_name);
+    void electrode_compaction(const std::string& settings_file_name);
     //void electrode_cylinder_filling(const std::string& settings_file_name);
     void electrode_cylinder_compaction(const std::string& settings_file_name);
     void periodic_bc_tester(const std::string& settings_file_name);
@@ -34,6 +34,7 @@ namespace DEM {
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 
 
+    void electrode_mechanical_test(const std::string &settings_file_name);
 }
 
 #endif //DEMSIM_SIMULATIONS_H

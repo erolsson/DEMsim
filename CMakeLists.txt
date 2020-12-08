@@ -71,7 +71,7 @@ add_executable(DEMsim
                src/materials/electrode_material.h
                src/materials/electrode_material.cpp
                src/utilities/printing_functions.h
-               src/simulations/electrode_box.cpp
+        src/simulations/Electrode_compaction.cpp
         src/simulations/electrode_cylinder/electrode_cylinder_compaction.cpp
                src/simulations/periodic_bc/periodic_bc_tester.cpp
                src/engine/periodic_bc_handler.h
@@ -86,6 +86,6 @@ add_executable(DEMsim
                src/simulations/battery/restart_electrode.cpp
                src/contact_models/porous_electrode_contact.cpp
                src/contact_models/porous_electrode_contact.h
-               src/simulations/porous_electrode/porous_electrode_rve.cpp)
+               src/simulations/porous_electrode/porous_electrode_rve.cpp src/simulations/Electrode_mechanical_test.cpp)
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}" Eigen3::Eigen)
