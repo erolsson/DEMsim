@@ -1,4 +1,4 @@
-output_dir=C:/DEMsim/results/viscoelastic
-restart_file_name=C:/DEMsim/results/viscoelastic/100-relaxation_tat/relax_restart_file.res
+output_dir=../results/viscoelastic
+restart_file_name=../results/viscoelastic/100-relaxation_tat/relax_restart_file.res
 active_particle_height=0.4
 bt=0.4e-2
