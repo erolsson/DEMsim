@@ -35,6 +35,8 @@ namespace DEM {
 
 
     void electrode_mechanical_test(const std::string &settings_file_name);
+
+    void compression_and_tensile_testing(const std::string &settings_file_name);
 }
 
 #endif //DEMSIM_SIMULATIONS_H
