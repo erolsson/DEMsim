@@ -33,7 +33,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     compaction_output->print_mirror_particles= true;
     //mat-> adhesive = true;
     auto top_surface = simulator.get_surface<EngineType::PointSurfacePointer>("top_plate");
-    auto deformable_surface = simulator.get_surface<EngineType::DeformablePointSurfacePointer>("DeformablePointSurface");
+    auto deformable_surface = simulator.get_surface<EngineType::DeformablePointSurfacePointer>("deformable_point_surface_0");
     //double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0,0));
     EngineType::RunForTime run_for_time_unload_compact(simulator,3s);
