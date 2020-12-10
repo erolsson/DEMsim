@@ -141,7 +141,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoe
         yield_h_(parameters.get_parameter<double>("yield_h")),
         hmax_(parameters.get_parameter<double>("hmax")),
         mu_particle_(parameters.get_parameter<double>("mu_particle")),
-        adhesive_(parameters.get_parameter<bool>("adhesive")),
+        adhesive_(parameters.get_parameter<bool>("adhesive_")),
         binder_contact_(parameters.get_parameter<bool>("binder_contact")),
         fractured_(parameters.get_parameter<bool>("fractured")),
         dt_(parameters.get_parameter<double>("dt")),  // Time increment
@@ -187,7 +187,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoel
         hmax_(parameters.get_parameter<double>("hmax")),
         mu_particle_(parameters.get_parameter<double>("mu_particle")),
         activated_(parameters.get_parameter<bool>("activated")),
-        adhesive_(parameters.get_parameter<bool>("adhesive")),
+        adhesive_(parameters.get_parameter<bool>("adhesive_")),
         binder_contact_(parameters.get_parameter<bool>("binder_contact")),
         fractured_(parameters.get_parameter<bool>("fractured")),
         dt_(parameters.get_parameter<double>("dt")),  // Time increment
@@ -351,7 +351,7 @@ std::string DEM::Viscoelastic::restart_data() const {
        << named_print(uT_, "uT") << ", "
        << named_print(rot_, "rot") << ", "
        << named_print(activated_, "activated") << ", "
-       << named_print(adhesive_, "adhesive") << ", "
+       << named_print(adhesive_, "adhesive_") << ", "
        << named_print(binder_contact_, "binder_contact") << ", "
        << named_print(fractured_, "fractured") << ", "
        << named_print(kB_, "kB") << ", "

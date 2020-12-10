@@ -143,7 +143,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
 
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_4(simulator,0.002s);
+    EngineType::RunForTime run_for_time_compact_4(simulator,0.004s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-1.0);
     deformable_surface -> set_in_plane_strain_rates(-1.0, 0.);
