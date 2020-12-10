@@ -291,6 +291,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
         FT_visc_ += kT_B_*dFT_;
     }
     else {
+        uT_.set_zero();
         FT_visc_.set_zero();
         for (unsigned i = 0; i != M; ++i) {
             dti_[i].set_zero();
