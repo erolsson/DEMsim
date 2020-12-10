@@ -158,7 +158,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.);
     deformable_surface -> set_in_plane_strain_rates(0., 0.);
-    EngineType::RunForTime run_for_time_relax_4(simulator,10s);
+    EngineType::RunForTime run_for_time_relax_4(simulator,30s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_4);
