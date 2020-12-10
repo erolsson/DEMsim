@@ -134,7 +134,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
 
     std::cout << "beginning of relaxation" << std::endl;
 
-    EngineType::RunForTime run_for_time_relax(simulator, 10s);
+    EngineType::RunForTime run_for_time_relax(simulator, 5s);
     //simulator.set_rotation(false);
     mat->adhesive = true;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
