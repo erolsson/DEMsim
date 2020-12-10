@@ -66,7 +66,7 @@ PeriodicBCHandler<ForceModel, ParticleType>::PeriodicBCHandler(PeriodicBCHandler
 
         if (restart_line.get_parameter<std::string>("data") == "strain_rate") {
             for (std::size_t dir = 0; dir != 3; ++dir) {
-                velocities_[dir] = restart_line.get_parameter<>("e" + axes.substr(dir, 1));
+                strain_rates_[dir] = restart_line.get_parameter<>("e" + axes.substr(dir, 1));
             }
         }
         if (restart_line.get_parameter<std::string>("data") == "mirror_particle") {
@@ -489,14 +489,18 @@ void PeriodicBCHandler<ForceModel, ParticleType>::create_periodic_bc_contacts() 
     auto& contacts_to_create = collision_detector_.contacts_to_create();
     for (auto& c_data : contacts_to_create) {
         typename ContactMatrix<Contact<ForceModel, ParticleType>>::PointerType c = nullptr;
-        const auto id1 = c_data.get_id_pair().first;
-        const auto id2 = c_data.get_id_pair().second;
+        std::size_t id1 = c_data.get_id_pair().first;
+        std::size_t id2 = c_data.get_id_pair().second;
         auto p1 = c_data.particle1;
         auto p2 = c_data.particle2;
         auto s = c_data.surface;
         if ((!is_mirror_particle(p1) || !is_mirror_particle(p2)) && !(is_mirror_particle(p1) && s != nullptr) ) {
         // if (true ) {
             if (s == nullptr) {
+                if (is_mirror_particle(p1)) {
+                    std::swap(p1, p2);
+                    std::swap(id1, id2);
+                }
                 c = contacts_.create_item_inplace(id1, id2, p1, p2, engine_.get_time_increment());
             }
             else {
@@ -636,8 +640,14 @@ std::vector<std::string> PeriodicBCHandler<ForceModel, ParticleType>::restart_da
     for (std::size_t dir = 0; dir != boundaries_.size(); ++dir) {
         boundary_info << ", " << named_print(boundaries_[dir].min, axes.substr(dir, 1) + "min")
                       << ", " << named_print(boundaries_[dir].max, axes.substr(dir, 1) + "max");
-        velocity_info << ", " << named_print(velocities_[dir], "v" + axes.substr(dir, 1));
+
         strain_rate_info << ", " << named_print(strain_rates_[dir], "e" + axes.substr(dir, 1));
+        if (strain_rates_[dir] != 0.) {
+            velocity_info << ", " << named_print(0, "v" + axes.substr(dir, 1));
+        }
+        else {
+            velocity_info << ", " << named_print(velocities_[dir], "v" + axes.substr(dir, 1));
+        }
     }
     restart_data.push_back(boundary_info.str());
     restart_data.push_back(velocity_info.str());
