@@ -57,12 +57,12 @@ class Snapshot:
 
 
 def main():
-    snapshot = Snapshot('C:/DEMsim/results/viscoelastic/100-/',
+    snapshot = Snapshot('C:/DEMsim/results/viscoelastic/new_porosity/',
                         BatteryContactPlotter)
     snapshot.mirror_particles = True
     snapshot.contact_plotter.color = colors.red
     snapshot.contact_plotter.binder_radius = np.sqrt(0.3*0.01**2/np.pi)
-    snapshot.plot(102.34)
+    snapshot.plot(129.235)
     mlab.show()
 
 
