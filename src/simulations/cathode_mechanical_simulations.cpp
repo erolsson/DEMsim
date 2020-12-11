@@ -22,7 +22,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     auto mat = simulator.create_material<ElectrodeMaterial>(4800);
     auto Cathode_output = simulator.get_output("output_0");
     simulator.remove_output(Cathode_output);
-    auto compaction_output = simulator.create_output(output_directory + "/mechanical_properties", 0.005s);
+    auto compaction_output = simulator.create_output(output_directory + "/fixar_porosity", 0.005s);
     compaction_output->print_particles = true;
     compaction_output->print_surface_positions = true;
     compaction_output->print_kinetic_energy = true;
@@ -45,9 +45,9 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
 
     double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0,-surface_velocity));
-    EngineType::RunForTime run_for_time_compact(simulator,10s);
+    EngineType::RunForTime run_for_time_compact(simulator,30s);
     simulator.run(run_for_time_compact);
-    simulator.write_restart_file(output_directory + "/minimum_height.res");
+    //simulator.write_restart_file(output_directory + "/minimum_height.res");
 
 
 
@@ -64,58 +64,6 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     simulator.run(run_for_time_relax);
     simulator.write_restart_file(output_directory + "/new_porosity.res");
 
-
-    std::cout<<"Height of the electrode"<< std::endl;
-    auto bbox = simulator.get_bounding_box();
-    bbox = simulator.get_bounding_box();
-    double h = bbox[5];
-    std::cout<<"h is:"<< h <<std::endl;
-
-    std::cout<<"Biginning of simulation 3"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_3(simulator,3s);
-
-    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
-    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    //simulator.set_mass_scale_factor(10.0);
-    mat-> adhesive = true;
-    simulator.run(run_for_time_compact_3);
-
-    simulator.write_restart_file(output_directory + "/tryck_4.res");
-
-    //unload extra compaction
-
-    std::cout<<"beginning of unloading 3"<< std::endl;
-    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
-    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_3(simulator,3s);
-    //simulator.set_mass_scale_factor(1.0);
-    mat-> adhesive = true;
-    simulator.run(run_for_time_relax_3);
-    simulator.write_restart_file(output_directory + "/relaxation_4.res");
-
-
-
-    std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_4(simulator,5s);
-
-    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
-    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    //simulator.set_mass_scale_factor(10.0);
-    mat-> adhesive = true;
-    simulator.run(run_for_time_compact_4);
-
-    simulator.write_restart_file(output_directory + "/tryck_4.res");
-
-    //unload extra compaction
-
-    std::cout<<"beginning of unloading 4"<< std::endl;
-    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
-    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_4(simulator,5s);
-    //simulator.set_mass_scale_factor(1.0);
-    mat-> adhesive = true;
-    simulator.run(run_for_time_relax_4);
-    simulator.write_restart_file(output_directory + "/relaxation_4.res");
 
 
 }

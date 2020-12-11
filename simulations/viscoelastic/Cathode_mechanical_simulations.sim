@@ -1,4 +1,4 @@
-output_dir=../results/viscoelastic/mechanical_properties
-restart_file_name=../results/viscoelastic/check_force_tensor-test_new/relax_restart_file.res
+output_dir=../results/viscoelastic/fixing_porosity
+restart_file_name=../results/viscoelastic/mechanical_properties/relax_restart_file.res
 active_particle_height=0.4
 bt=0.4e-2
