@@ -45,10 +45,10 @@ if __name__ == '__main__':
     simulation_directory = '../../results/viscoelastic/mechanical_properties/mechanical_properties/'
     box_width = 0.172726
     box_height = 0.733144
-    strain = (box_width - dimensions_box(simulation_directory))[80432:864516]/box_width
+    strain = (box_width - dimensions_box(simulation_directory))[:]/box_width
     Stress = pressures_box(simulation_directory)[:]/(box_width * box_height * box_width *2)
-    stress = pressures_box(simulation_directory)[80432:864516]/(box_width * box_height *
-                                                               dimensions_box(simulation_directory)[80432:864516] *2)
+    stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
+                                                               dimensions_box(simulation_directory)[:] *2)
     #inkompresibelt på binder, isotropiskt material
     # inelastic strain
     time = time_box(simulation_directory)[:]
