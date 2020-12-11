@@ -22,7 +22,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     auto mat = simulator.create_material<ElectrodeMaterial>(4800);
     auto Cathode_output = simulator.get_output("output_0");
     simulator.remove_output(Cathode_output);
-    auto compaction_output = simulator.create_output(output_directory + "/new_porosity", 0.001s);
+    auto compaction_output = simulator.create_output(output_directory + "/mechanical_properties", 0.005s);
     compaction_output->print_particles = true;
     compaction_output->print_surface_positions = true;
     compaction_output->print_kinetic_energy = true;
@@ -36,11 +36,12 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     auto deformable_surface = simulator.get_surface<EngineType::DeformablePointSurfacePointer>("deformable_point_surface_0");
     //double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0,0));
-    EngineType::RunForTime run_for_time_unload_compact(simulator,3s);
+    EngineType::RunForTime run_for_time_unload_compact(simulator,1s);
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
     simulator.set_mass_scale_factor(10.0);
+    mat-> adhesive = true;
     simulator.run(run_for_time_unload_compact);
-    simulator.write_restart_file(output_directory + "/stability_check.res");
+    //simulator.write_restart_file(output_directory + "/stability_check.res");
 
     double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0,-surface_velocity));
@@ -56,18 +57,49 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     // simulator.set_rotation(false);
     simulator.run(zero_force);
 
-    EngineType::RunForTime run_for_time_relax(simulator,20s);
+    EngineType::RunForTime run_for_time_relax(simulator,5s);
     //simulator.set_rotation(false);
    // mat-> adhesive = true;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     simulator.run(run_for_time_relax);
     simulator.write_restart_file(output_directory + "/new_porosity.res");
 
-    std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_4(simulator,0.004s);
 
-    simulator.set_periodic_boundary_condition_strain_rate('x',-1.0);
-    deformable_surface -> set_in_plane_strain_rates(-1., 0.);
+    std::cout<<"Height of the electrode"<< std::endl;
+    auto bbox = simulator.get_bounding_box();
+    bbox = simulator.get_bounding_box();
+    double h = bbox[5];
+    std::cout<<"h is:"<< h <<std::endl;
+
+    std::cout<<"Biginning of simulation 3"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_3(simulator,3s);
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
+    //simulator.set_mass_scale_factor(10.0);
+    mat-> adhesive = true;
+    simulator.run(run_for_time_compact_3);
+
+    simulator.write_restart_file(output_directory + "/tryck_4.res");
+
+    //unload extra compaction
+
+    std::cout<<"beginning of unloading 3"<< std::endl;
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_3(simulator,3s);
+    //simulator.set_mass_scale_factor(1.0);
+    mat-> adhesive = true;
+    simulator.run(run_for_time_relax_3);
+    simulator.write_restart_file(output_directory + "/relaxation_4.res");
+
+
+
+    std::cout<<"Biginning of simulation 4"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_4(simulator,5s);
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
     //simulator.set_mass_scale_factor(10.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_compact_4);
@@ -77,14 +109,13 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     //unload extra compaction
 
     std::cout<<"beginning of unloading 4"<< std::endl;
-    simulator.set_periodic_boundary_condition_strain_rate('x',0.);
-    deformable_surface -> set_in_plane_strain_rates(0., 0.);
-    EngineType::RunForTime run_for_time_relax_4(simulator,10s);
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_4(simulator,5s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_4);
     simulator.write_restart_file(output_directory + "/relaxation_4.res");
-
 
 
 }
