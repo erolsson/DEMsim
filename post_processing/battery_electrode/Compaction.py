@@ -67,7 +67,7 @@ def pressures_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/porosity_53relaxation_test/fixar_porosity/'
+    simulation_directory = '../../resultsviscoelastic/porosity_53mechanical_test/'
 
     volume_box = (0.345452)**2 * dimensions_box(simulation_directory)[:]
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
