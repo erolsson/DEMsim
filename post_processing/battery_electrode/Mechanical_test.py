@@ -42,7 +42,7 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../resultsviscoelastic/porosity_53mechanical_test/fixar_porosity'
+    simulation_directory = '../../results/viscoelastic/porosity_53mechanical_test/fixar_porosity'
     box_width = 0.172726
     box_height = 0.733144
     strain = (box_width - dimensions_box(simulation_directory))[:]/box_width
