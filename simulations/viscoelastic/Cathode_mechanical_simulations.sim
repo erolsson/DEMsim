@@ -1,4 +1,4 @@
-output_dir=../results/viscoelastic/correct_porosity
-restart_file_name=../results/viscoelastic/fixing_porosity/new_porosity.res
+output_dir=../results/viscoelastic/new_porosity_4000
+restart_file_name=../results/viscoelastic/4000-porosity/relax_restart_file.res
 active_particle_height=0.4
 bt=0.4e-2

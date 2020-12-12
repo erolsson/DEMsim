@@ -45,7 +45,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
 
     double surface_velocity = 0.01;
     top_surface->set_velocity(Vec3(0, 0,-surface_velocity));
-    EngineType::RunForTime run_for_time_compact(simulator,40s);
+    EngineType::RunForTime run_for_time_compact(simulator,50s);
     simulator.run(run_for_time_compact);
     //simulator.write_restart_file(output_directory + "/minimum_height.res");
 
