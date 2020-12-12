@@ -125,7 +125,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     mat->adhesive = true;
     simulator.run(zero_force);
 
-    EngineType::RunForTime run_for_time_relax(simulator,15s);
+    EngineType::RunForTime run_for_time_relax(simulator,10s);
     //simulator.set_rotation(false);
     // mat-> adhesive = true;
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
@@ -275,7 +275,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     simulator.write_restart_file(output_directory + "/relaxation_8.res");
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_9(simulator,1.20s);
+    EngineType::RunForTime run_for_time_compact_9(simulator,1.15s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -290,7 +290,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_9(simulator,1.20s);
+    EngineType::RunForTime run_for_time_relax_9(simulator,1.15s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_9);
