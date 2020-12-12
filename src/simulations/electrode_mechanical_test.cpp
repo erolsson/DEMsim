@@ -139,7 +139,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     simulator.write_restart_file(output_directory + "/unload_restart_file.res");
 
     std::cout<<"Biginning of simulation 2"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_2(simulator,0.225s);
+    EngineType::RunForTime run_for_time_compact_2(simulator,1.0s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -154,14 +154,14 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_2(simulator,0.225s);
+    EngineType::RunForTime run_for_time_relax_2(simulator,1.0s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_2);
     simulator.write_restart_file(output_directory + "/relaxation_2.res");
 
     std::cout<<"Biginning of simulation 3"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_3(simulator,0.34s);
+    EngineType::RunForTime run_for_time_compact_3(simulator,1.10s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -176,7 +176,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_3(simulator,0.34s);
+    EngineType::RunForTime run_for_time_relax_3(simulator,1.10s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_3);
@@ -184,7 +184,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
 
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_5(simulator,0.51s);
+    EngineType::RunForTime run_for_time_compact_5(simulator,1.23s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -199,7 +199,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_5(simulator,0.51s);
+    EngineType::RunForTime run_for_time_relax_5(simulator,1.23s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_5);
@@ -207,7 +207,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
 
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_6(simulator,0.7s);
+    EngineType::RunForTime run_for_time_compact_6(simulator,1.41s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -222,7 +222,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_6(simulator,0.7s);
+    EngineType::RunForTime run_for_time_relax_6(simulator,1.41s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_6);
@@ -230,7 +230,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
 
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_7(simulator,0.85s);
+    EngineType::RunForTime run_for_time_compact_7(simulator,1.65s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -245,7 +245,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_7(simulator,0.85s);
+    EngineType::RunForTime run_for_time_relax_7(simulator,1.65s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_7);
@@ -253,7 +253,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
 
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_8(simulator,1.02s);
+    EngineType::RunForTime run_for_time_compact_8(simulator,2.0s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -268,14 +268,14 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_8(simulator,1.02s);
+    EngineType::RunForTime run_for_time_relax_8(simulator,2.0s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_8);
     simulator.write_restart_file(output_directory + "/relaxation_8.res");
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_9(simulator,1.15s);
+    EngineType::RunForTime run_for_time_compact_9(simulator,3.0s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -283,17 +283,95 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     mat-> adhesive = true;
     simulator.run(run_for_time_compact_9);
 
-    simulator.write_restart_file(output_directory + "/tryck_9.res");
 
     //unload extra compaction
 
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_9(simulator,1.15s);
+    EngineType::RunForTime run_for_time_relax_9(simulator,3.0s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_9);
+    std::cout<<"Biginning of simulation 4"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_10(simulator,4.0s);
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
+    //simulator.set_mass_scale_factor(10.0);
+    mat-> adhesive = true;
+    simulator.run(run_for_time_compact_10);
+
+
+    //unload extra compaction
+
+    std::cout<<"beginning of unloading 4"<< std::endl;
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_10(simulator,4.0s);
+    //simulator.set_mass_scale_factor(1.0);
+    mat-> adhesive = true;
+    simulator.run(run_for_time_relax_10);
+
+    std::cout<<"Biginning of simulation 4"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_11(simulator,5.0s);
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
+    //simulator.set_mass_scale_factor(10.0);
+    mat-> adhesive = true;
+    simulator.run(run_for_time_compact_11);
+
+
+    //unload extra compaction
+
+    std::cout<<"beginning of unloading 4"<< std::endl;
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_11(simulator,5.0s);
+    //simulator.set_mass_scale_factor(1.0);
+    mat-> adhesive = true;
+    simulator.run(run_for_time_relax_11);
+
+    std::cout<<"Biginning of simulation 4"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_12(simulator,6.0s);
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
+    //simulator.set_mass_scale_factor(10.0);
+    mat-> adhesive = true;
+    simulator.run(run_for_time_compact_12);
+
+
+    //unload extra compaction
+
+    std::cout<<"beginning of unloading 4"<< std::endl;
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_12(simulator,6.0s);
+    //simulator.set_mass_scale_factor(1.0);
+    mat-> adhesive = true;
+    simulator.run(run_for_time_relax_12);
+
+    std::cout<<"Biginning of simulation 4"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_13(simulator,7.0s);
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
+    //simulator.set_mass_scale_factor(10.0);
+    mat-> adhesive = true;
+    simulator.run(run_for_time_compact_13);
+
+
+    //unload extra compaction
+
+    std::cout<<"beginning of unloading 4"<< std::endl;
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_13(simulator,7.0s);
+    //simulator.set_mass_scale_factor(1.0);
+    mat-> adhesive = true;
+    simulator.run(run_for_time_relax_13);
     simulator.write_restart_file(output_directory + "/relaxation_9.res");
 
 }

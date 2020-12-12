@@ -54,7 +54,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     //simulator.write_restart_file(output_directory + "/new_porosity.res");
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_4(simulator,0.17s);
+    EngineType::RunForTime run_for_time_compact_4(simulator,1.0s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -69,14 +69,14 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_4(simulator,0.17s);
+    EngineType::RunForTime run_for_time_relax_4(simulator,1.0s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_4);
     simulator.write_restart_file(output_directory + "/relaxation_4.res");
 
     std::cout<<"Biginning of simulation 2"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_2(simulator,0.225s);
+    EngineType::RunForTime run_for_time_compact_2(simulator,1.10s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -91,14 +91,14 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_2(simulator,0.225s);
+    EngineType::RunForTime run_for_time_relax_2(simulator,1.10s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_2);
     simulator.write_restart_file(output_directory + "/relaxation_2.res");
 
     std::cout<<"Biginning of simulation 3"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_3(simulator,0.34s);
+    EngineType::RunForTime run_for_time_compact_3(simulator,1.23s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -113,7 +113,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     std::cout<<"beginning of unloading 4"<< std::endl;
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_3(simulator,0.34s);
+    EngineType::RunForTime run_for_time_relax_3(simulator,1.23s);
     //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_4);
