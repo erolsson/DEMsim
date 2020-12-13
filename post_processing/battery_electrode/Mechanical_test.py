@@ -51,7 +51,7 @@ def pressures_box_yy(data_directory):
     id_idx = [i for i in range(len(first_line))]
     force_data = np.genfromtxt(data_directory + '/force_fabric_tensor.dou', delimiter=', ')
     force = np.zeros((force_data.shape[0], 1))
-    force = force_data[:,  id_idx[0]+4]
+    force = force_data[:,  id_idx[0]+4]+ force_data[:,id_idx[0]+1]
     return force
 
 def time_box(data_directory):
