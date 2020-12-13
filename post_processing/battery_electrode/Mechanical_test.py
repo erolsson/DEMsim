@@ -79,7 +79,7 @@ if __name__ == '__main__':
     #inkompresibelt på binder, isotropiskt material
     # inelastic strain
     epsilon_zz = position_zz(simulation_directory)[:]-box_height
-    nu = -E*epsilon_zz(simulation_directory)[:]/(Stress*Stress_y)
+    nu = -E*epsilon_zz(simulation_directory)[:]/(Stress+Stress_y)
     time = time_box(simulation_directory)[:]
     plt.plot(time, Stress)
     plt.xlabel("time[s]")
