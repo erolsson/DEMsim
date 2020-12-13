@@ -44,11 +44,11 @@ def time_box(data_directory):
 if __name__ == '__main__':
     simulation_directory = '../../results/viscoelastic/100-mechanical_test/'
     box_width = 0.212311
-    box_height = 0.63
-    strain = (box_width - dimensions_box(simulation_directory))[:]/box_width
+    box_height = 0.528
+    strain = (box_width - dimensions_box(simulation_directory))[283631:303631]/box_width
     Stress = pressures_box(simulation_directory)[:]/(box_width * box_height * box_width *2)
-    stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
-                                                               dimensions_box(simulation_directory)[:] *2)
+    stress = pressures_box(simulation_directory)[283631:303631]/(box_width * box_height *
+                                                               dimensions_box(simulation_directory)[283631:303631] *2)
     #inkompresibelt på binder, isotropiskt material
     # inelastic strain
     time = time_box(simulation_directory)[:]
