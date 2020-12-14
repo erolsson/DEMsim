@@ -84,7 +84,7 @@ if __name__ == '__main__':
     print(position_zz(simulation_directory)[5344:19081])
     print(epsilon_zz)
     total_stress = Stress+Stress_y
-    nu = -(E*epsilon_zz)/total_stress
+    nu = -(E*epsilon_zz)/ total_stress
     print(nu)
     time = time_box(simulation_directory)[5344:19081]
     plt.plot(time, Stress)
