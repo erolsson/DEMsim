@@ -67,25 +67,26 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/100-relaxation_test/'
-    box_width = 0.212311
+    simulation_directory = 'C:/DEMsim/results/viscoelastic/4000-porosity_relaxation/'
+    box_width = 0.212311 * 2
     box_height = 0.594471
-    surface_height = 0.631954
-    E = 0.1e9
-    strain = (box_width - dimensions_box(simulation_directory)[5682:19081])/box_width
-    Stress = pressures_box(simulation_directory)[5682:19081]/(box_width * box_height * box_width *2)
-    Stress_y = pressures_box_yy(simulation_directory)[5682:19081]/(box_width * box_height * box_width *2)
-    stress = pressures_box(simulation_directory)[5682:19081]/(box_width * box_height *
-                                                               dimensions_box(simulation_directory)[5682:19081] *2)
+    surface_height = 0.899473
+    E = 2e9
+    strain = (box_width - dimensions_box(simulation_directory)[:])/box_width
+    Stress = pressures_box(simulation_directory)[:]/(box_width * surface_height * box_width *2)
+    Stress_y = pressures_box_yy(simulation_directory)[:]/(box_width * box_height * box_width *2)
+    stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
+                                                               dimensions_box(simulation_directory)[:] *2)
 
     #inkompresibelt på binder, isotropiskt material
     # inelastic strain
-    epsilon_zz = -(position_zz(simulation_directory)[5682:19081]-surface_height)/surface_height
+    epsilon_zz = -(position_zz(simulation_directory)[:]-surface_height)/surface_height
+    print(position_zz(simulation_directory)[:])
     print(epsilon_zz)
     total_stress = Stress+Stress_y
     nu = -(E*epsilon_zz)/total_stress
     print(nu)
-    time = time_box(simulation_directory)[5682:19081]
+    time = time_box(simulation_directory)[:]
     plt.plot(time, Stress)
     plt.xlabel("time[s]")
     plt.ylabel("Stress [Pa]")

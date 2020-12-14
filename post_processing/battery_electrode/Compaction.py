@@ -67,12 +67,12 @@ def pressures_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/100-relaxation_test/'
+    simulation_directory = '../../results/viscoelastic/4000-porosity_relaxation/'
 
-    volume_box = (0.212311*2)**2 * dimensions_box(simulation_directory)[1:283631]
+    volume_box = (0.212311*2)**2 * dimensions_box(simulation_directory)[:]
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
-    pressures = pressures_box(simulation_directory)[1:283631]
-    time = Time(simulation_directory)[1:283631]
+    pressures = pressures_box(simulation_directory)[:]
+    time = Time(simulation_directory)[:]
     plt.plot(pressures, porosity*100)
     plt.xlabel("Pressure [Pa]")
     plt.ylabel("Porosity")
