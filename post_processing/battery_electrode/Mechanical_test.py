@@ -15,7 +15,7 @@ def dimensions_box(data_directory):
     wall_data = np.genfromtxt(data_directory + '/periodic_bc.dou', delimiter=', ')
     data = np.zeros((wall_data.shape[0], 1))
     data = wall_data[:,  id_idx[0]+2]
-    print(data)
+    #print(data)
     return data
 
 
@@ -29,9 +29,10 @@ def position_zz(data_directory):
         id_idx.sort(key=lambda x: first_line[x+1])
         wall_data = np.genfromtxt(data_directory + '/surface_positions.dou', delimiter=', ')
         time = np.zeros((wall_data.shape[0], 1))
-        time = wall_data[:, id_idx[0]+42]
+        time = wall_data[:, id_idx[0]+32]
 
-        return time
+    return time
+
 
 
 def pressures_box(data_directory):
@@ -51,7 +52,7 @@ def pressures_box_yy(data_directory):
     id_idx = [i for i in range(len(first_line))]
     force_data = np.genfromtxt(data_directory + '/force_fabric_tensor.dou', delimiter=', ')
     force = np.zeros((force_data.shape[0], 1))
-    force = force_data[:,  id_idx[0]+4]+ force_data[:,id_idx[0]+1]
+    force = force_data[:,  id_idx[0]+4]
     return force
 
 def time_box(data_directory):
@@ -66,22 +67,25 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/100-mechanical_test/'
+    simulation_directory = '../../results/viscoelastic/100_relaxation_test'
     box_width = 0.212311
-    box_height = 0.528
-    E = 1e9
-    strain = (box_width - dimensions_box(simulation_directory))[:]/box_width
-    Stress = pressures_box(simulation_directory)[:]/(box_width * box_height * box_width *2)
-    Stress_y = pressures_box_yy(simulation_directory)[:]/(box_width * box_height * box_width *2)
-    stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
-                                                               dimensions_box(simulation_directory)[:] *2)
+    box_height = 0.594471
+    surface_height = 0.631954
+    E = 0.1e9
+    strain = (box_width - dimensions_box(simulation_directory)[5682:19081])/box_width
+    Stress = pressures_box(simulation_directory)[5682:19081]/(box_width * box_height * box_width *2)
+    Stress_y = pressures_box_yy(simulation_directory)[5682:19081]/(box_width * box_height * box_width *2)
+    stress = pressures_box(simulation_directory)[5682:19081]/(box_width * box_height *
+                                                               dimensions_box(simulation_directory)[5682:19081] *2)
 
     #inkompresibelt på binder, isotropiskt material
     # inelastic strain
-    epsilon_zz = position_zz(simulation_directory)[:]-box_height
-    total_stress = Stress(simulation_directory)[:]+Stress_y(simulation_directory)[:]
-    nu = -E*epsilon_zz(simulation_directory)[:]/(total_stress[:])
-    time = time_box(simulation_directory)[:]
+    epsilon_zz = -(position_zz(simulation_directory)[5682:19081]-surface_height)/surface_height
+    print(epsilon_zz)
+    total_stress = Stress+Stress_y
+    nu = -(E*epsilon_zz)/total_stress
+    print(nu)
+    time = time_box(simulation_directory)[5682:19081]
     plt.plot(time, Stress)
     plt.xlabel("time[s]")
     plt.ylabel("Stress [Pa]")
@@ -90,9 +94,15 @@ if __name__ == '__main__':
     plt.xlabel("Strain")
     plt.ylabel("Stress [Pa]")
     plt.show()
-    plt.plot(time, nu)
-    plt.xlabel("Strain")
-    plt.ylabel("Stress [Pa]")
+    plt.plot(time, Stress_y)
+    plt.xlabel("Time")
+    plt.ylabel("Stress_y[Pa]")
 
+    plt.show()
+    plt.plot(time, nu)
+    plt.xlabel("Time")
+    plt.ylabel("nu")
+
+    plt.show()
 
 
