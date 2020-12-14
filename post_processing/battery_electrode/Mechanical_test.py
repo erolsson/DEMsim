@@ -68,8 +68,8 @@ def time_box(data_directory):
 
 if __name__ == '__main__':
     simulation_directory = 'C:/DEMsim/results/viscoelastic/4000-porosity_relaxation/'
-    box_width = 0.212311 * 2
-    box_height = 0.594471
+    box_width = 0.726136 * 2
+    box_height = 1.60915
     surface_height = 0.899473
     E = 2e9
     strain = (box_width - dimensions_box(simulation_directory)[:])/box_width
