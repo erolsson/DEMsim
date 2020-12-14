@@ -67,7 +67,7 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = 'C:/DEMsim/results/viscoelastic/4000-porosity_relaxation/'
+    simulation_directory = '../../results/viscoelastic/4000-porosity_relaxation/'
     box_width = 0.726136 * 2
     box_height = 1.60915
     surface_height = 0.899473
