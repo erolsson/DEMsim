@@ -67,7 +67,7 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/100_relaxation_test'
+    simulation_directory = '../../results/viscoelastic/100-relaxation_test/'
     box_width = 0.212311
     box_height = 0.594471
     surface_height = 0.631954
