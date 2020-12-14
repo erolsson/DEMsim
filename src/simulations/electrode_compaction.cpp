@@ -149,7 +149,7 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-1.0);
     deformable_surface -> set_in_plane_strain_rates(-1.0, 0.);
-    //simulator.set_mass_scale_factor(10.0);
+    simulator.set_mass_scale_factor(100.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_compact_3);
 
