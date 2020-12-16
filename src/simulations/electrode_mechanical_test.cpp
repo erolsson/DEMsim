@@ -213,7 +213,7 @@ void DEM::electrode_mechanical_test(const std::string& settings_file_name) {
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
     //simulator.set_mass_scale_factor(10.0);
     mat-> adhesive = true;
-    simulator.run(run_for_time_compact_5;
+    simulator.run(run_for_time_compact_5);
 
     simulator.write_restart_file(output_directory + "/tryck.res");
 
