@@ -1,4 +1,4 @@
-output_dir=../results/viscoelastic/New-4000-drag
-restart_file_name=../results/viscoelastic/4000-porosity_relaxation/unload_restart_file.res
+output_dir=../../results/viscoelastic/New-4000-relaxation
+restart_file_name=../../results/viscoelastic/New_parameters_4000-drag/unload_restart_file.res
 active_particle_height=0.4
 bt=0.3e-2
