@@ -53,6 +53,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     simulator.run(run_for_time_relax);
     //simulator.write_restart_file(output_directory + "/new_porosity.res");
 
+
     std::cout<<"Biginning of simulation 2"<< std::endl;
     EngineType::RunForTime run_for_time_compact_2(simulator,1.625s);
 
@@ -74,7 +75,6 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_2);
     //simulator.write_restart_file(output_directory + "/relaxation_2.res");
-
 
 }
 
