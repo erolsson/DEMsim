@@ -1,5 +1,5 @@
 N=4000
-output_dir=../results/viscoelastic/New_parameters_4000-tryck
+output_dir=../results/viscoelastic/New_parameters_4000-relaxation-dynamic
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
