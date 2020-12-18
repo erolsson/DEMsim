@@ -52,7 +52,7 @@ def pressures_box_yy(data_directory):
     id_idx = [i for i in range(len(first_line))]
     force_data = np.genfromtxt(data_directory + '/force_fabric_tensor.dou', delimiter=', ')
     force = np.zeros((force_data.shape[0], 1))
-    force = force_data[:,  id_idx[0]+4]
+    force = force_data[:,  id_idx[0]+5]
     return force
 
 def time_box(data_directory):
@@ -67,14 +67,17 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/4000-porosity/'
-    box_width = 0.726136 * 2
-    box_height = 1.60915
+    simulation_directory = '../../results/viscoelastic'
+    box_width = 0.726136 *2
+    box_height = 1.60026
     surface_height = 0.899473
     E = 2e9
-    strain = (box_width - dimensions_box(simulation_directory)[:])/box_width
+    print(dimensions_box(simulation_directory))
+    strain = ( 2* dimensions_box(simulation_directory)[:]-box_width)/box_width
     Stress = pressures_box(simulation_directory)[:]/(box_width * surface_height * box_width *2)
-    Stress_y = pressures_box_yy(simulation_directory)[:]/(box_width * box_height * box_width *2)
+    Stress_y = pressures_box_yy(simulation_directory)[:]/(box_width * box_height *
+                                                               dimensions_box(simulation_directory)[:] *2)
+
     stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
                                                                dimensions_box(simulation_directory)[:] *2)
 
