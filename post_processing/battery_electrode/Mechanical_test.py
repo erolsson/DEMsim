@@ -67,7 +67,7 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic'
+    simulation_directory = '../../results/viscoelastic/New_parameters_4000-tryck/'
     box_width = 0.726136 *2
     box_height = 1.60026
     surface_height = 0.899473
@@ -89,14 +89,7 @@ if __name__ == '__main__':
     total_stress = Stress+Stress_y
     nu = -(E*epsilon_zz)/ total_stress
     print(nu)
-    epsilon = 0.003
-    t = np.arange(5000)
-    relaxation = 0.117+0.065 * np.exp(-1*t/211)+ 0.057* np.exp(-1*t/4807)
-    Sigma_DEM = 0.239+0.272*np.exp(-1*t/211)+0.2385*np.exp(-1*t/4807)
-    Sigma = relaxation *epsilon
-    plt.plot(t,Sigma)
-    plt.plot(t,Sigma_DEM)
-    plt.show()
+
     time = time_box(simulation_directory)[:]
     plt.plot(time, Stress)
     plt.xlabel("time[s]")
