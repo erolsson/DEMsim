@@ -69,28 +69,28 @@ def time_box(data_directory):
 if __name__ == '__main__':
     simulation_directory = '../../results/viscoelastic/New_parameters_4000-tryck/'
     box_width = 0.726136 *2
-    box_height = 1.60026
+    box_height = 1.70201
     surface_height = 0.899473
     E = 2e9
     print(dimensions_box(simulation_directory))
-    strain = ( 2* dimensions_box(simulation_directory)[:]-box_width)/box_width
-    Stress = pressures_box(simulation_directory)[:]/(box_width * surface_height * box_width *2)
-    Stress_y = pressures_box_yy(simulation_directory)[:]/(box_width * box_height *
-                                                               dimensions_box(simulation_directory)[:] *2)
+    strain = -( 2* dimensions_box(simulation_directory)[7454:9982]-box_width)/box_width
+    Stress = pressures_box(simulation_directory)[7454:9982]/(box_width * surface_height * box_width *2)
+    Stress_y = pressures_box_yy(simulation_directory)[7454:9982]/(box_width * box_height *
+                                                               dimensions_box(simulation_directory)[7454:9982] *2)
 
     stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
-                                                               dimensions_box(simulation_directory)[:] *2)
+                                                               dimensions_box(simulation_directory)[7454:9982] *2)
 
     #inkompresibelt på binder, isotropiskt material
     # inelastic strain
-    epsilon_zz = -(position_zz(simulation_directory)[:]-surface_height)/surface_height
-    print(position_zz(simulation_directory)[:])
+    epsilon_zz = -(position_zz(simulation_directory)[7454:9982]-surface_height)/surface_height
+    print(position_zz(simulation_directory)[7454:9982])
     print(epsilon_zz)
     total_stress = Stress+Stress_y
     nu = -(E*epsilon_zz)/ total_stress
     print(nu)
 
-    time = time_box(simulation_directory)[:]
+    time = time_box(simulation_directory)[7454:9982]
     plt.plot(time, Stress)
     plt.xlabel("time[s]")
     plt.ylabel("Stress [Pa]")
