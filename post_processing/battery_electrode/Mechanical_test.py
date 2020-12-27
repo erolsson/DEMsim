@@ -67,7 +67,7 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/New_parameters_4000-tryck/'
+    simulation_directory = '../../results/viscoelastic/New_parameters_4000-relaxation/'
     box_width = 0.726136 *2
     box_height = 1.70201
     surface_height = 0.899473
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
                                                                dimensions_box(simulation_directory)[:] *2)
 
-    #inkompresibelt på binder, isotropiskt material
+    #inkompresibelt på binder, isotropiskt material+
     # inelastic strain
     epsilon_zz = -(position_zz(simulation_directory)[:]-surface_height)/surface_height
     print(position_zz(simulation_directory)[:])
