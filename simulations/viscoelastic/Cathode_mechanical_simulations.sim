@@ -1,4 +1,4 @@
-output_dir=../../results/viscoelastic/New-parameters-4000-relaxation
+output_dir=../../results/viscoelastic/New_parameters_4000-tryck/
 restart_file_name=../../results/viscoelastic/New_parameters_4000-drag/unload_restart_file.res
 active_particle_height=0.4
 bt=0.3e-2
