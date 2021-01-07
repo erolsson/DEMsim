@@ -99,7 +99,7 @@ if __name__ == '__main__':
     t = np.arange(300)
     relaxation = 0.117+0.065 * np.exp(-1*t/211)+ 0.057* np.exp(-1*t/4807)
     #Sigma_DEM = 0.239+0.272*np.exp(-1*t/211)+0.2385*np.exp(-1*t/4807)
-    Sigma = relaxation *epsilon*0.8e9
+    Sigma = relaxation *epsilon*1e9
     plt.plot(t,Sigma)
     plt.show()
 
