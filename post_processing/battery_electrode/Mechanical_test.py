@@ -81,6 +81,7 @@ if __name__ == '__main__':
     stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
                                                                dimensions_box(simulation_directory)[:] *2)
 
+
     #inkompresibelt på binder, isotropiskt material+
     # inelastic strain
     epsilon_zz = -(position_zz(simulation_directory)[:]-surface_height)/surface_height
@@ -95,10 +96,11 @@ if __name__ == '__main__':
     plt.xlabel("time[s]")
     plt.ylabel("Stress [Pa]")
     epsilon = 0.003
+    E_0= Stress[0:0]/epsilon
     t = np.arange(300)
     relaxation = 0.117+0.065 * np.exp(-1*t/211)+ 0.057* np.exp(-1*t/4807)
     #Sigma_DEM = 0.239+0.272*np.exp(-1*t/211)+0.2385*np.exp(-1*t/4807)
-    Sigma = relaxation *epsilon
+    Sigma = relaxation *epsilon*E_0
     plt.plot(t,Sigma)
     plt.show()
 
