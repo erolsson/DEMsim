@@ -92,7 +92,7 @@ if __name__ == '__main__':
     print(nu)
 
     time = time_box(simulation_directory)[7800:56147]
-    plt.plot(time, Stress)
+    plt.plot(time, Stress, label="DEM")
     plt.xlabel("time[s]")
     plt.ylabel("Stress [Pa]")
     epsilon = 0.003
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     relaxation = 0.117+0.065 * np.exp(-1*t/211)+ 0.057* np.exp(-1*t/4807)
     #Sigma_DEM = 0.239+0.272*np.exp(-1*t/211)+0.2385*np.exp(-1*t/4807)
     Sigma = relaxation *epsilon*0.9e9
-    plt.plot(t,Sigma)
+    plt.plot(t,Sigma, label="Theory")
     plt.show()
 
     plt.plot(strain, stress)
