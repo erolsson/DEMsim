@@ -43,6 +43,12 @@ template<typename ForceModel, typename ParticleType>
 DEM::Engine<ForceModel, ParticleType>::Engine(const std::string& restart_file_name) :
         collision_detector_(particles_, surfaces_) {
     std::ifstream restart_file(restart_file_name);
+    if (!restart_file.good()) {
+        std::stringstream error_ss;
+        error_ss << "The restart file" << restart_file_name << " is not found\n";
+        throw std::invalid_argument(error_ss.str());
+    }
+
     std::string data_string;
     std::map<std::string,      std::vector<DEM::ParameterMap>> keyword_data {
         {"*material",           std::vector<DEM::ParameterMap> {} },

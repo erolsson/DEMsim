@@ -718,7 +718,3 @@ void PeriodicBCHandler<ForceModel, ParticleType>::handle_mirror_particles_add_co
     }
 
 }
-
-
-
-
