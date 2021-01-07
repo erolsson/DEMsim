@@ -67,31 +67,31 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/New_parameters_4000-relaxation/'
+    simulation_directory = '../../results/viscoelastic/New_parameters_4000-relaxation-dynamic/'
     box_width = 0.726136 *2
     box_height = 1.70201
     surface_height = 0.899473
     E = 2e9
     print(dimensions_box(simulation_directory))
-    strain = -( 2* dimensions_box(simulation_directory)[7800:56147]-box_width)/box_width
-    Stress = pressures_box(simulation_directory)[7800:56147]/(box_width * surface_height * box_width *2)
-    Stress_y = pressures_box_yy(simulation_directory)[7800:56147]/(box_width * box_height *
+    strain = -( 2* dimensions_box(simulation_directory)[7151:55479]-box_width)/box_width
+    Stress = pressures_box(simulation_directory)[7151:55479]/(box_width * surface_height * box_width *2)
+    Stress_y = pressures_box_yy(simulation_directory)[7151:55479]/(box_width * box_height *
                                                                dimensions_box(simulation_directory)[7800:56147] *2)
 
-    stress = pressures_box(simulation_directory)[7800:56147]/(box_width * box_height *
-                                                               dimensions_box(simulation_directory)[7800:56147] *2)
+    stress = pressures_box(simulation_directory)[7151:55479]/(box_width * box_height *
+                                                               dimensions_box(simulation_directory)[7151:55479] *2)
 
 
     #inkompresibelt på binder, isotropiskt material+
     # inelastic strain
-    epsilon_zz = -(position_zz(simulation_directory)[7800:56147]-surface_height)/surface_height
-    print(position_zz(simulation_directory)[7800:56147])
+    epsilon_zz = -(position_zz(simulation_directory)[7151:55479]-surface_height)/surface_height
+    print(position_zz(simulation_directory)[7151:55479])
     print(epsilon_zz)
     total_stress = Stress+Stress_y
     nu = -(E*epsilon_zz)/ total_stress
     print(nu)
 
-    time = time_box(simulation_directory)[7800:56147]
+    time = time_box(simulation_directory)[7151:55479]
     plt.plot(time, Stress, label='DEM')
     plt.xlabel("time[s]")
     plt.ylabel("Stress [Pa]")
