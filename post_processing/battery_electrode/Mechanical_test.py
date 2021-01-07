@@ -94,7 +94,6 @@ if __name__ == '__main__':
     plt.plot(time, Stress)
     plt.xlabel("time[s]")
     plt.ylabel("Stress [Pa]")
-    plt.show()
     plt.hold(True)
     epsilon = 0.003
     t = np.arange(5000)
