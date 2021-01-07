@@ -78,7 +78,7 @@ if __name__ == '__main__':
     Stress_y = pressures_box_yy(simulation_directory)[7800:56147]/(box_width * box_height *
                                                                dimensions_box(simulation_directory)[7800:56147] *2)
 
-    stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
+    stress = pressures_box(simulation_directory)[7800:56147]/(box_width * box_height *
                                                                dimensions_box(simulation_directory)[7800:56147] *2)
 
 
