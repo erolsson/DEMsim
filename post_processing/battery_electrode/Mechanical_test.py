@@ -75,7 +75,7 @@ if __name__ == '__main__':
     print(dimensions_box(simulation_directory))
     strain = -( 2* dimensions_box(simulation_directory)[:]-box_width)/box_width
     Stress = pressures_box(simulation_directory)[7800:56147]/(box_width * surface_height * box_width *2)
-    Stress_y = pressures_box_yy(simulation_directory)[]/(box_width * box_height *
+    Stress_y = pressures_box_yy(simulation_directory)[:]/(box_width * box_height *
                                                                dimensions_box(simulation_directory)[:] *2)
 
     stress = pressures_box(simulation_directory)[:]/(box_width * box_height *
