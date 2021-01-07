@@ -67,7 +67,7 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/New_parameters_4000-relaxation-dynamic/'
+    simulation_directory = '../../results/viscoelastic/New_parameters_4000-tryck/'
     box_width = 0.726136 *2
     surface_height = 1.70 # when the mechanical testing begins
     E = 2e9
