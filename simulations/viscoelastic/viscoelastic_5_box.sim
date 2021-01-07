@@ -1,6 +1,6 @@
 N=4000
-output_dir=C:/DEMsim/results/viscoelastic/nya_radiii
-radius_file=C:/DEMsim/pre_processing/viscoelastic/radie.dat
+output_dir=../results/viscoelastic/nya_radiii
+radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
 nup=0.25
