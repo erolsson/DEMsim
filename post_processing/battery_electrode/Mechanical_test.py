@@ -96,7 +96,8 @@ if __name__ == '__main__':
     plt.xlabel("time[s]")
     plt.ylabel("Stress [Pa]")
     epsilon = 0.003
-    E_0= Stress[0:0]/epsilon
+    Stress_0= Stress[0:0]
+    E_0=Stress_0/epsilon
     t = np.arange(300)
     relaxation = 0.117+0.065 * np.exp(-1*t/211)+ 0.057* np.exp(-1*t/4807)
     #Sigma_DEM = 0.239+0.272*np.exp(-1*t/211)+0.2385*np.exp(-1*t/4807)
