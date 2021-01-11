@@ -206,6 +206,21 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
     EngineType::RunForTime run_for_time_relax_5(simulator,1.40s);
     simulator.run(run_for_time_relax_5);
 
+    std::cout<<"Biginning of simulation 3"<< std::endl;
+    EngineType::RunForTime run_for_time_compact_6(simulator,1.65s);
+
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
+    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
+    simulator.run(run_for_time_compact_6);
+
+    std::cout<<"beginning of unloading 4"<< std::endl;
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
+    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_relax_7(simulator,1.65s);
+    simulator.run(run_for_time_relax_7);
+
+    simulator.write_restart_file(output_directory + "/final.res");
+
 
 }
 
