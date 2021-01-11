@@ -39,7 +39,6 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     top_surface->set_velocity(Vec3(0, 0,surface_velocity));
     EngineType::RunForTime run_for_time_unload_compact(simulator,15s);
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
-    simulator.set_mass_scale_factor(10.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_unload_compact);
 
