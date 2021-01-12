@@ -61,15 +61,15 @@ def pressures_box(data_directory):
 
     surface1_force = force_data[:, surface_indices[0]+6]
 
-    p = surface1_force/(0.345452*0.345452)
+    p = surface1_force/(0.726136*0.726136)
 
     return p
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/nya_radiii/'
+    simulation_directory = '../../results/viscoelastic/More-compact-tryck-restart/extra-compacted/'
 
-    volume_box = (0.600461*2)**2 * dimensions_box(simulation_directory)[:]
+    volume_box = (0.726136*2)**2 * dimensions_box(simulation_directory)[:]
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
     pressures = pressures_box(simulation_directory)[:]
     time = Time(simulation_directory)[:]
