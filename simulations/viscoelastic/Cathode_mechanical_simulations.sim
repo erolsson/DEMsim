@@ -1,4 +1,4 @@
-output_dir=/scratch/users/elaheh/DEMsim/results/viscoelastic/More-compact-tryck-restart
-restart_file_name=/scratch/users/elaheh/DEMsim/results/viscoelastic/More-compact-tryck/compact_restart_file.res
+output_dir=/scratch/users/elaheh/DEMsim/results/viscoelastic/Mass-scaling-bt3h81
+restart_file_name=/scratch/users/elaheh/DEMsim/results/viscoelastic/81height3bt/relax_restart_file.res
 active_particle_height=0.4
 bt=0.3e-2
