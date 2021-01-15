@@ -35,7 +35,8 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
 
     auto top_surface = simulator.get_surface<EngineType::PointSurfacePointer>("top_plate");
     auto deformable_surface = simulator.get_surface<EngineType::DeformablePointSurfacePointer>("deformable_point_surface_0");
-
+    EngineType::RunForTime run_for_time_pause(simulator,5.0s);
+    simulator.run(run_for_time_pause);
 
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
