@@ -1,5 +1,5 @@
 N=4000
-output_dir=../results/viscoelastic/81height2bt
+output_dir=../results/viscoelastic/81height6bt
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
