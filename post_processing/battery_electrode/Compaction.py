@@ -11,7 +11,7 @@ matplotlib.style.use('classic')
 
 
 def particle_volume():
-    p_volume = 1.07204
+    p_volume = 0.0190131
     return p_volume
 
 
