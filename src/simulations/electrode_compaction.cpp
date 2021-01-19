@@ -96,7 +96,7 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
     simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
     mat-> adhesive = false;
     simulator.set_gravity(Vec3(0, 0, -9.82));
-    simulator.set_mass_scale_factor(10.0);
+    simulator.set_mass_scale_factor(1.0);
     simulator.setup(1.01*mat->bt);
     simulator.set_rotation(false);
     EngineType::RunForTime run_for_time(simulator, 0.1s);
@@ -145,6 +145,7 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
     EngineType::RunForTime run_for_time_compact_4(simulator,1.0s);
+    simulator.set_mass_scale_factor(10.0);
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
     simulator.run(run_for_time_compact_4);
@@ -153,7 +154,6 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
     EngineType::RunForTime run_for_time_relax_4(simulator,1.0s);
-    //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_4);
 
@@ -178,7 +178,6 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    //simulator.set_mass_scale_factor(10.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_compact_3);
 
@@ -186,7 +185,6 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
     simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
     deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
     EngineType::RunForTime run_for_time_relax_3(simulator,1.23s);
-    //simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_3);
 
