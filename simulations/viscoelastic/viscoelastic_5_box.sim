@@ -1,6 +1,6 @@
 N=100
-output_dir=../results/viscoelastic/68hbt2-100
-radius_file=../pre_processing/viscoelastic/radie.out
+output_dir=C:/DEMsim/results/viscoelastic/68hbt2-100
+radius_file=C:/DEMsim/pre_processing/viscoelastic/radie.out
 E=3.4e9
 nu=0.3
 nup=0.25
