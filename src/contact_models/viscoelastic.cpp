@@ -39,7 +39,6 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     kB_ = (1 - v1)/(1 + v1)/(1 - 2*v1)*E1/bt_*A;
     double G1p = Ep1/2/(1+vp1);
     //double G2p = Ep2/2/(1+vp2);
-    kT_part_ = 8*G1p*0.001*R0_/(2-vp1);
     double tsi0particle = 1./(((1-vp1*vp1)/Ep1)+((1-vp2*vp2)/Ep2));
 
     binder_contact_ = create_binder_contact(mat1);
@@ -115,7 +114,6 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     yield_h_ = 2*mat1->yield_displacement_coeff*R0_;
 
     double G1p = Ep1/2/(1+vp1);
-    kT_part_ = 8*G1p*0.001*R0_/(2-vp1);
 
     for (unsigned i=0; i!=M; ++i)
     {
@@ -130,7 +128,6 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
 
 DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoelastic::ParticleType* p2,
                                 std::chrono::duration<double>, const DEM::ParameterMap& parameters) :
-        kT_part_(parameters.get_parameter<double>("kT_part")),
         kB_(parameters.get_parameter<double>("kB")),
         kT_B_(parameters.get_parameter<double>("kT_B_")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
@@ -175,7 +172,6 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p1, DEM::Viscoe
 DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoelastic::SurfaceType* s,
                                 std::chrono::duration<double>, const DEM::ParameterMap& parameters) :
 
-        kT_part_(parameters.get_parameter<double>("kT_part")),
         kB_(parameters.get_parameter<double>("kB")),
         kT_B_(parameters.get_parameter<double>("kT_B_")),
         kparticle_(parameters.get_parameter<double>("kparticle")),
@@ -337,7 +333,6 @@ std::string DEM::Viscoelastic::restart_data() const {
     std::ostringstream ss;
     ss << named_print(dt_, "dt") << ", "
        << named_print(bt_, "bt") << ", "
-       << named_print(kT_part_, "kT_part") << ", "
        << named_print(h_, "h") << ", "
        << named_print(hmax_, "hmax") << ", "
        << named_print(yield_h_, "yield_h") << ", "
