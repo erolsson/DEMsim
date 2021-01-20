@@ -1,6 +1,6 @@
 N=100
-output_dir=C:/DEMsim/results/viscoelastic/34hbt8-100
-radius_file=C:/DEMsim/pre_processing/viscoelastic/radie.dat
+output_dir=../results/viscoelastic/34hbt8-100
+radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
 nup=0.25
