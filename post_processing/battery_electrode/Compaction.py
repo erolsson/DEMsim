@@ -11,7 +11,7 @@ matplotlib.style.use('classic')
 
 
 def particle_volume():
-    p_volume = 0.0190131
+    p_volume = 0.0106772
     return p_volume
 
 
@@ -61,7 +61,7 @@ def pressures_box(data_directory):
 
     surface1_force = force_data[:, surface_indices[0]+6]
 
-    p = surface1_force/(0.189364*0.189364)
+    p = surface1_force/(0.156231*0.156231)
 
     return p
 
@@ -69,7 +69,7 @@ def pressures_box(data_directory):
 if __name__ == '__main__':
     simulation_directory = '../../results/viscoelastic/68hbt2-100/'
 
-    volume_box = (0.189364*2)**2 * dimensions_box(simulation_directory)[:]
+    volume_box = (0.156231*2)**2 * dimensions_box(simulation_directory)[:]
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
     pressures = pressures_box(simulation_directory)[:]
     time = Time(simulation_directory)[:]
