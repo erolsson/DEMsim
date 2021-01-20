@@ -11,6 +11,6 @@ cdf_data[:, 1] = (cdf_data[:, 0]/rmax)**0.5
 
 distr = NumberDistribution(cdf_data)
 v = 116.43*(25.4*2)**2*np.pi*0.8
-print distr.number_of_particles_for_volume(v, min_size=1)
+print(distr.number_of_particles_for_volume(v, min_size=1))
 sizes = distr.generate(30000, min_size=1., max_size=8)
 np.savetxt('../simulations/proctor_test/fuller.dat', sizes/1000)

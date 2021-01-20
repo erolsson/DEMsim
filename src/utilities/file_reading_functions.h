@@ -101,6 +101,11 @@ namespace DEM {
     template<typename DataType>
     std::vector<DataType> read_vector_from_file(const std::string& filename) {
         std::ifstream data_file(filename);
+        if (!data_file.good()) {
+            std::stringstream error_ss;
+            error_ss << "The file" << filename << " is not found\n";
+            throw std::invalid_argument(error_ss.str());
+        }
         std::string data_string;
         std::vector<DataType> data;
 
