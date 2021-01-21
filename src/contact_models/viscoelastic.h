@@ -44,6 +44,7 @@ namespace DEM {
         double kT_part_;
         double kB_;
         double kT_B_;
+        double kT_;
         double kparticle_;
         double R0_;
         // double Rb_;

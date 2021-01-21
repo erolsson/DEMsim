@@ -27,6 +27,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
 
     double E1 = mat1->E;
     double v1 = mat1->nu;
+    double E2 = mat1->E;
+    double v2 = mat1->nu;
     double vp1 = mat1->nup;
     double vp2 = mat2->nup;
     double Ep2 = mat2->Ep;
@@ -35,6 +37,10 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     double br_ = mat1 -> binder_radius_fraction*2*R0_; //radius of the binder link
     double A = DEM::pi*br_*br_;
     kT_B_ = E1/bt_*A/2/(1+v1);
+
+    double G1 = E1/2/(1+v1);
+    double G2 = E2/2/(1+v2);
+    kT_ = 8/((2-v1)/G1 + (2-v2)/G2)*0.001*R0_;
     //std::cout << "KT_B " <<kT_B_;
     kB_ = (1 - v1)/(1 + v1)/(1 - 2*v1)*E1/bt_*A;
     double G1p = Ep1/2/(1+vp1);
@@ -90,6 +96,8 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     kT_B_ = E1/bt_*A/2/(1+v1);
     //kB_=(0.3*0.0016*stiff_b_)/(bt_);
     kB_ = (1 - v1)/(1 + v1)/(1 - 2*v1)*E1/bt_*A;
+    double G1 = E1/2/(1+v1);
+    kT_ = 8/((2-v1)/G1)*0.001*R0_;
 
     //std::cout << "KT_B " <<kT_B_;
     //std::cout << "stiffness " << stiff_b_;
@@ -297,7 +305,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::
 
     if (F_particle > 0) {
         FT_part_ -= dot_product(FT_part_, normal)*normal;
-        FT_part_ += kT_B_*dt;
+        FT_part_ += kT_*dt;
         if (FT_part_.length() > mu_particle_*F_particle) {
             FT_part_ = mu_particle_*F_particle*FT_part_.normal();
         }
