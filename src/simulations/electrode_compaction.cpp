@@ -145,7 +145,7 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
     EngineType::RunForTime run_for_time_compact_4(simulator,1.0s);
-    simulator.set_mass_scale_factor(100.0);
+    //simulator.set_mass_scale_factor(100.0);
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
     simulator.run(run_for_time_compact_4);
