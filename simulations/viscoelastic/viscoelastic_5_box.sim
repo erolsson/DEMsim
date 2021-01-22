@@ -1,5 +1,5 @@
 N=100
-output_dir=../results/viscoelastic/utan-binder-ny
+output_dir=../results/viscoelastic/22hbt3-ny
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
