@@ -15,4 +15,4 @@ filling_density=0.15
 particle_density_at_cube=0.35
 mu_binder=1.
 binder_radius_fraction=0.3
-fraction_binder_contacts=0
+fraction_binder_contacts=0.0
