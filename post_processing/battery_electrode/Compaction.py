@@ -60,7 +60,6 @@ def pressures_box(data_directory):
     surface_indices = [i for i, surface_type in enumerate(surface_types) if surface_type == 'PointSurface']
 
     surface1_force = force_data[:, surface_indices[0]+6]
-
     p = surface1_force/(0.159255*0.159255)
 
     return p
