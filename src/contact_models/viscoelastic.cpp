@@ -119,7 +119,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1, DEM:
     dt_ = dt.count();  // time increment
     //k_=4.*tsi0*sqrt(R0_ + bt_)/3; //initial contact stiffness
     kparticle_=4*tsi0particle*sqrt(R0_)/3;
-    yield_h_ = 2*mat1->yield_displacement_coeff*R0_;
+    yield_h_ = mat1->yield_displacement_coeff*R0_;
 
     double G1p = Ep1/2/(1+vp1);
 
@@ -258,7 +258,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
     }
 
 
-    if (h_ > 0 && !binder_contact_) {
+    if (h_ > 0) {
         activated_ = false;
         if (h > yield_h_ && h >= hmax_) {
             F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
@@ -281,7 +281,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3 &dt, const DEM::Vec3 &normal) {
-    if (F_visc != 0. && activated_) {
+    if (F_visc != 0. && activated_ && adhesive()) {
         FT_visc_ -= dot_product(FT_visc_, normal)*normal;
         uT_ -= dot_product(uT_, normal)*normal;
         uT_ += dt;
