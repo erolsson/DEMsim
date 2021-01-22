@@ -11,7 +11,7 @@ matplotlib.style.use('classic')
 
 
 def particle_volume():
-    p_volume = 0.0267963
+    p_volume = 0.0113094
     return p_volume
 
 
@@ -61,7 +61,7 @@ def pressures_box(data_directory):
 
     surface1_force = force_data[:, surface_indices[0]+6]
 
-    p = surface1_force/(0.172726*0.172726)
+    p = surface1_force/(0.159255*0.159255)
 
     return p
 
@@ -69,7 +69,7 @@ def pressures_box(data_directory):
 if __name__ == '__main__':
     simulation_directory = '../../results/viscoelastic/utan-binder-ny/'
 
-    volume_box = (0.172726*2)**2 * dimensions_box(simulation_directory)[:]
+    volume_box = (0.159255*2)**2 * dimensions_box(simulation_directory)[:]
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
     pressures = pressures_box(simulation_directory)[:]
     time = Time(simulation_directory)[:]
