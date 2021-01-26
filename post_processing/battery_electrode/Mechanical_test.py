@@ -79,6 +79,7 @@ if __name__ == '__main__':
 
     stress = pressures_box(simulation_directory)[2300:4870]/(box_width * position_zz(simulation_directory)[2300:4870] *
                                                               dimensions_box(simulation_directory)[2300:4870] *2)
+    np.savetxt('stress.dat', stress)
 
 
     #inkompresibelt på binder, isotropiskt material+
