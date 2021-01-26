@@ -69,7 +69,7 @@ def time_box(data_directory):
 if __name__ == '__main__':
     simulation_directory = '../../results/viscoelastic/24hbt8-ny/'
     box_width = 0.159255 *2
-    surface_height = 1.197 # when the mechanical testing begins
+    surface_height = 0.24 # when the mechanical testing begins
     E = 2e9
     print(dimensions_box(simulation_directory))
     strain = -( 2* dimensions_box(simulation_directory)[2300:4870]-box_width)/box_width
@@ -77,20 +77,20 @@ if __name__ == '__main__':
     Stress_y = pressures_box_yy(simulation_directory)[2300:4870]/(box_width * position_zz(simulation_directory)[2300:4870] *
                                                                    dimensions_box(simulation_directory)[2300:4870] *2)
 
-    stress = pressures_box(simulation_directory)[:]/(box_width * position_zz(simulation_directory)[2300:4870] *
+    stress = pressures_box(simulation_directory)[2300:4870]/(box_width * position_zz(simulation_directory)[2300:4870] *
                                                               dimensions_box(simulation_directory)[2300:4870] *2)
 
 
     #inkompresibelt på binder, isotropiskt material+
     # inelastic strain
-    epsilon_zz = -(position_zz(simulation_directory)[:]-surface_height)/surface_height
-    print(position_zz(simulation_directory)[:])
+    epsilon_zz = -(position_zz(simulation_directory)[2300:4870]-surface_height)/surface_height
+    print(position_zz(simulation_directory)[2300:4870])
     print(epsilon_zz)
     total_stress = Stress+Stress_y
     nu = -(E*epsilon_zz)/ total_stress
     print(nu)
 
-    time = time_box(simulation_directory)[:]
+    time = time_box(simulation_directory)[2300:4870]
     plt.plot(time, stress)
     plt.xlabel("time[s]")
     plt.ylabel("Stress [Pa]")
