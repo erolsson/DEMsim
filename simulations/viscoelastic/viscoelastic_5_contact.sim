@@ -1,6 +1,6 @@
 N=6000
 R=0.03
-output_file=C:/DEMsim/results/viscoelastic/viscoelastic_normal5
+output_file=C:/DEMsim/results/viscoelastic/contact_force_control
 E=3.4e9
 nu=0.3
 nup=0.25
@@ -11,4 +11,4 @@ kT=0.5
 tick=4e-6
 alpha_i=0.5,0.136,0.119
 tau_i=0.001,211,4807
-fraction_binder_contacts=2
+fraction_binder_contacts=0
