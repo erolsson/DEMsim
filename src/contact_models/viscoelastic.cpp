@@ -253,6 +253,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
 
     if (h_ > 0) {
+        activated_= false;
         if (h > yield_h_ && h >= hmax_) {
             F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
         }
@@ -307,7 +308,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3& dt, const DEM::
         FT_part_.set_zero();
     }
     FT_ -= FT_part_;
-    FT_.set_zero();
+    //FT_.set_zero();
 }
 
 std::string DEM::Viscoelastic::get_output_string() const {
