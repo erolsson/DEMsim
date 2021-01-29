@@ -259,6 +259,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
 
     if (h_ > 0) {
+        activated_= false;
         if (h > yield_h_ && h >= hmax_) {
             F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
         }
