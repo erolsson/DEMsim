@@ -40,6 +40,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     mat.Ep=parameters.get_parameter<double>("Ep");
     mat.nup=parameters.get_parameter<double>("nup");
     mat.bt =parameters.get_parameter<double>("bt");
+    mat.binder_radius_fraction=parameters.get_parameter<double>("binder_radius_fraction");
     std::cout << "bt:" << mat.bt << std::endl;
     //mat.unloading_exponent = parameters.get_parameter<double>("unloading_exponent");
     mat.alpha_i = parameters.get_vector<double>("alpha_i");
@@ -68,6 +69,15 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     for(unsigned i = 0; i != increments; ++i) {
         p1.move(Vec3{tick/2,0 , 0});
         p2.move(Vec3{-tick/2,0 , 0});
+        c.update();
+        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
+                    << p2.get_position().x() - p1.get_position().x() << ", "
+                    << c.get_tangential_force().y() << ", "
+                    << p1.get_position().y() - p2.get_position().y() << std::endl;
+    }
+    for(unsigned i = 0; i != increments; ++i) {
+        p1.move(Vec3{-tick/2,0 , 0});
+        p2.move(Vec3{tick/2,0 , 0});
         c.update();
         output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
                     << p2.get_position().x() - p1.get_position().x() << ", "
