@@ -275,7 +275,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         return std::max(F_particle, 0.) + F_visc;
     }
     else {
-        return std::max(F_particle, 0.) ;
+        return std::max(F_particle, 0.) + std::max(F_visc, 0.);
     }
 }
 
@@ -314,7 +314,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3& dt, const DEM::
         FT_part_.set_zero();
     }
     FT_ -= FT_part_;
-    //FT_.set_zero();
+    FT_.set_zero();
 }
 
 std::string DEM::Viscoelastic::get_output_string() const {
