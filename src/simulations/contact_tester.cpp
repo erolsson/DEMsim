@@ -46,7 +46,7 @@ void DEM::contact_tester(const std::string& settings_file_name) {
     mat.alpha_i = parameters.get_vector<double>("alpha_i");
     mat.tau_i =parameters.get_vector<double>("tau_i");
     mat.fraction_binder_contacts =parameters.get_parameter<double>("fraction_binder_contacts");
-
+    mat.binder_radius_fraction = parameters.get_parameter<double>("binder_radius_fraction");
     auto p1 = SphericalParticle<ForceModel>(radius, Vec3{-radius-(mat.bt)/2-tick/2 ,0 , 0},
                                             Vec3{}, &mat, 1);
     auto p2 = SphericalParticle<ForceModel>(radius,
@@ -75,6 +75,16 @@ void DEM::contact_tester(const std::string& settings_file_name) {
                     << c.get_tangential_force().y() << ", "
                     << p1.get_position().y() - p2.get_position().y() << std::endl;
     }
+    for(unsigned i = 0; i != increments; ++i) {
+        p1.move(Vec3{-tick/2,0 , 0});
+        p2.move(Vec3{tick/2,0 , 0});
+        c.update();
+        output_file << c.get_overlap() << ", " << c.get_normal_force().x() << ", "
+                    << p2.get_position().x() - p1.get_position().x() << ", "
+                    << c.get_tangential_force().y() << ", "
+                    << p1.get_position().y() - p2.get_position().y() << std::endl;
+    }
+
     for(unsigned i = 0; i != increments; ++i) {
         p1.move(Vec3{-tick/2,0 , 0});
         p2.move(Vec3{tick/2,0 , 0});
