@@ -55,9 +55,9 @@ namespace DEM {
         double mu_particle_;
 
         bool activated_ = false;
-        bool adhesive_ {true};
+        bool adhesive_ = true;
         bool binder_contact_ ;
-        bool fractured_ {true};
+        bool fractured_ = true;
 
         static unsigned M;
         double dt_;   // Time increment

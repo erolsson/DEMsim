@@ -247,18 +247,16 @@ double DEM::Viscoelastic::update_normal_force(double h)
                 dF -= alpha_i[i]*ddi_[i];
                 di_[i] += ddi_[i];
             }
+
             F_visc += kB_*dF;
         }
-
-        else {
+        else if (h < -bt_ ){
             F_visc = 0;
             for (unsigned i = 0; i != M; ++i) {
                 di_[i] = 0;
             }
         }
     }
-
-
     if (h_ > 0) {
         if (h > yield_h_ && h >= hmax_) {
             F_particle += 1.5*kparticle_*sqrt(yield_h_)*dh;
