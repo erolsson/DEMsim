@@ -54,7 +54,7 @@ namespace DEM {
         double hmax_ = -1e99 ;
         double mu_particle_;
 
-        bool activated_ = false;
+        bool bonded_ = false;
         bool adhesive_ = true;
         bool binder_contact_ ;
         bool fractured_ = true;

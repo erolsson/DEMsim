@@ -190,7 +190,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType* p, DEM::Viscoel
         yield_h_(parameters.get_parameter<double>("yield_h")),
         hmax_(parameters.get_parameter<double>("hmax")),
         mu_particle_(parameters.get_parameter<double>("mu_particle")),
-        activated_(parameters.get_parameter<bool>("activated")),
+        bonded_(parameters.get_parameter<bool>("activated")),
         adhesive_(parameters.get_parameter<bool>("adhesive_")),
         binder_contact_(parameters.get_parameter<bool>("binder_contact")),
         fractured_(parameters.get_parameter<bool>("fractured")),
@@ -239,8 +239,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         hmax_ = h;
     }
     if (binder_contact_) {
-        if ((h > -bt_) || activated_) {
-            activated_ = true;
+        if ((h > -bt_) || bonded_) {
             double dF = dh;
             for (unsigned i = 0; i != M; ++i) {
                 ddi_[i] = bi[i]*dh + ai[i]*(h_ + bt_- di_[i]);
@@ -250,11 +249,14 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
             F_visc += kB_*dF;
         }
-        else if (h < -bt_ ){
+        else if (h < -bt_ && !bonded_){
             F_visc = 0;
             for (unsigned i = 0; i != M; ++i) {
                 di_[i] = 0;
             }
+        }
+        if (F_visc > 0 && adhesive()) {
+            bonded_ = true;
         }
     }
     if (h_ > 0) {
@@ -269,7 +271,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         F_particle = 0.;
     }
 
-    if (adhesive()) {
+    if (adhesive() && bonded_) {
         return std::max(F_particle, 0.) + F_visc;
     }
     else {
@@ -279,7 +281,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3& dt, const DEM::Vec3& normal) {
-    if (F_visc != 0. && activated_ && adhesive()) {
+    if (F_visc != 0. && bonded_ && adhesive()) {
         FT_visc_ -= dot_product(FT_visc_, normal)*normal;
         uT_ -= dot_product(uT_, normal)*normal;
         uT_ += dt;
@@ -350,15 +352,15 @@ std::string DEM::Viscoelastic::restart_data() const {
        << named_print(mu_particle_, "mu_particle") << ", "
        //<< named_print(mu_binder_, "mu_binder") << ", "
        << named_print(dF_, "dF") << ", "
-       << named_print(F_visc, "F_visc") << ", "
-       << named_print(F_particle, "F_particle") << ", "
-       << named_print(dFT_, "dFT") << ", "
-       << named_print(FT_, "FT") << ", "
-       << named_print(FT_visc_, "FT_visc") << ", "
-       << named_print(FT_part_, "FT_part") << ", "
-       << named_print(uT_, "uT") << ", "
-       << named_print(rot_, "rot") << ", "
-       << named_print(activated_, "activated") << ", "
+                                                   << named_print(F_visc, "F_visc") << ", "
+                                                   << named_print(F_particle, "F_particle") << ", "
+                                                   << named_print(dFT_, "dFT") << ", "
+                                                   << named_print(FT_, "FT") << ", "
+                                                   << named_print(FT_visc_, "FT_visc") << ", "
+                                                   << named_print(FT_part_, "FT_part") << ", "
+                                                   << named_print(uT_, "uT") << ", "
+                                                   << named_print(rot_, "rot") << ", "
+                                                   << named_print(bonded_, "activated") << ", "
        << named_print(adhesive_, "adhesive_") << ", "
        << named_print(binder_contact_, "binder_contact") << ", "
        << named_print(fractured_, "fractured") << ", "
