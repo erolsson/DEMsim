@@ -272,10 +272,10 @@ double DEM::Viscoelastic::update_normal_force(double h)
     }
 
     if (adhesive()) {
-        return std::max(F_particle, 0.) + F_visc;
+        return std::max(F_particle, 0.) +  std::max(F_visc, 0.);
     }
     else {
-        return std::max(F_particle, 0.) + std::max(F_visc, 0.);
+        return std::max(F_particle, 0.) ;
     }
 }
 
