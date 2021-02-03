@@ -66,7 +66,7 @@ def pressures_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/20hbt8mechanicaltests/'
+    simulation_directory = '../../results/viscoelastic/20hbt8mechanicaltests01/'
 
     volume_box = (0.159255*2)**2 * dimensions_box(simulation_directory)[:]
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
