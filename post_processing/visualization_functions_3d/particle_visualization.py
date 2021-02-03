@@ -3,7 +3,7 @@ from mayavi import mlab
 from animation import Animation
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/periodic_bc_test/sim_1/'
+    simulation_directory = '../../results/elaheh/20hbt8mechanicaltests01/'
 
     # Doing some inspection to construct a good bounding_box figure
     # dimension_data = dimensions_cylinder(simulation_directory)
