@@ -249,7 +249,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
             F_visc += kB_*dF;
         }
-        else if (h < -bt_ && !bonded_){
+        else {
             F_visc = 0;
             for (unsigned i = 0; i != M; ++i) {
                 di_[i] = 0;
