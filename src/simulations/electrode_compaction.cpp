@@ -51,7 +51,7 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
         particle_volume += 4.*pi*r*r*r/3.;
     }
     std::cout << "Volume of simulated particles is " << particle_volume << "\n";
-    auto box_side = pow(particle_volume/particle_density_at_cube, 1./3);
+    auto box_side = pow(particle_volume*2, 1./3);
     std::cout << "box_side " <<box_side << "\n";
     auto box_height = particle_density_at_cube*box_side/particle_density_at_filling;
     std::cout << "box_height " <<box_height << "\n";
