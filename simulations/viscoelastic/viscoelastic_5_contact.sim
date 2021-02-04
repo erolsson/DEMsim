@@ -1,4 +1,4 @@
-N=1000
+N=2000
 R=0.03
 output_file=C:/DEMsim/results/viscoelastic/contact_force_control
 E=3.4e9
