@@ -36,6 +36,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
     bt_ = mat1 -> bt; //Thickness of the binder link
     double br_ = mat1 -> binder_radius_fraction*2*R0_; //radius of the binder link
     double A = DEM::pi*br_*br_;
+    // std::cout << "E1: " << E1 << " bt: " << bt_ << " A: " << A << "  vf:"  << (1 - v1)/(1 + v1)/(1 - 2*v1) << "\n";
     kT_B_ = E1/bt_*A/2/(1+v1);
 
     double G1 = Ep1/2/(1+vp1);
@@ -242,7 +243,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         if ((h > -bt_) || bonded_) {
             double dF = dh;
             for (unsigned i = 0; i != M; ++i) {
-                ddi_[i] = bi[i]*dh + ai[i]*(h_ + bt_- di_[i]);
+                ddi_[i] = bi[i]*dh + ai[i]*(h_ + bt_ - di_[i]);
                 dF -= alpha_i[i]*ddi_[i];
                 di_[i] += ddi_[i];
             }
@@ -268,6 +269,9 @@ double DEM::Viscoelastic::update_normal_force(double h)
     }
     else {
         F_particle = 0.;
+    }
+    if (F_visc != 0 || F_particle != 0) {
+         // std::cout << "Fvisc: " << F_visc << "  F particle: " << F_particle << "\n";
     }
 
     if (adhesive() && bonded_) {

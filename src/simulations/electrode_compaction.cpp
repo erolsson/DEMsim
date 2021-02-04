@@ -94,9 +94,9 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
 
     simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);
     simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
-    mat-> adhesive = false;
+    mat->adhesive = false;
     simulator.set_gravity(Vec3(0, 0, -9.82));
-    simulator.set_mass_scale_factor(10.0);
+    simulator.set_mass_scale_factor(1.0);
     simulator.setup(1.01*mat->bt);
     simulator.set_rotation(false);
     EngineType::RunForTime run_for_time(simulator, 0.1s);

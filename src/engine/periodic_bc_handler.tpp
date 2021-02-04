@@ -179,6 +179,7 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::fulfill_periodic_bc()
         move_mirror_particles(p);
         create_mirror_particles(p);
         create_corner_particles(p);
+        // remove_mirror_particles(p);
     }
 }
 
@@ -274,8 +275,7 @@ void PeriodicBCHandler<ForceModel, ParticleType>::create_mirror_particles(Partic
 }
 
 template<typename ForceModel, typename ParticleType>
-void PeriodicBCHandler<ForceModel, ParticleType>::remove_mirror_particles(std::size_t particle_idx) {
-    auto particle = simulation_particles_[particle_idx];
+void PeriodicBCHandler<ForceModel, ParticleType>::remove_mirror_particles(ParticleType* particle) {
     if (mirror_particles_.count(particle->get_id()) > 0) {
         for (std::size_t direction = 0; direction != 3; ++direction) {
             const auto d1 = particle->get_position()[direction] - particle->get_radius() - stretch_
@@ -445,6 +445,13 @@ void PeriodicBCHandler<ForceModel, ParticleType>::remove_mirror_particle(Particl
                                                                          std::size_t direction) {
     auto p = mirror_particles_[simulation_particle->get_id()][direction];
     if (p != nullptr) {
+        for (auto& c: p->get_contacts().get_objects()) {
+            if (c.first->get_particles().first == p ||
+                (c.first->get_particles().second != nullptr && c.first->get_particles().second == p)) {
+                std::cout << "Problem with mp\n";
+                return;
+            }
+        }
         collision_detector_.remove_particle(p);
         delete p;
         mirror_particles_[simulation_particle->get_id()][direction] = nullptr;

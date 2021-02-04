@@ -77,7 +77,7 @@ namespace DEM {
         void move_mirror_particles(ParticleType* simulation_particle);
         void create_corner_particles(ParticleType* simulation_particle);
         void create_mirror_particles(ParticleType* simulation_particle);
-        void remove_mirror_particles(std::size_t particle_idx);
+        void remove_mirror_particles(ParticleType* particle);
         void respect_boundaries(ParticleType* simulation_particle);
 
         ParticleType* get_mirror_particle(ParticleType* simulation_particle, std::size_t direction);

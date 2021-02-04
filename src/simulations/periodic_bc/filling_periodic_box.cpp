@@ -27,8 +27,8 @@ void DEM::filling_periodic_box(const std::string& settings_file_name) {
     material->E = parameters.get_parameter<double>("E");;
     material->sY = parameters.get_parameter<double>("sY");;
     material->nu = parameters.get_parameter<double>("nu");
-    material->mu = parameters.get_parameter<double>("mu");
-    material->mu_wall = parameters.get_parameter<double>("mu_wall");
+    material->mu = parameters.get_parameter<double>("mu")*0;
+    material->mu_wall = parameters.get_parameter<double>("mu_wall")*0;
     material->kT = parameters.get_parameter<double>("kT");
 
     auto particle_radii = read_vector_from_file<double>(particle_file);
