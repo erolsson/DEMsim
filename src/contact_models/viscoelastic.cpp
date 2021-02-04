@@ -246,11 +246,10 @@ double DEM::Viscoelastic::update_normal_force(double h)
                 dF -= alpha_i[i]*ddi_[i];
                 di_[i] += ddi_[i];
             }
-
             F_visc += kB_*dF;
         }
         else {
-            F_visc = 0;
+            F_visc = 0;    // Useless comment
             for (unsigned i = 0; i != M; ++i) {
                 di_[i] = 0;
             }
@@ -281,7 +280,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
 
 
 void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3& dt, const DEM::Vec3& normal) {
-    if (F_visc != 0. && bonded_ && adhesive()) {
+    if (F_visc != 0. && adhesive()) {
         FT_visc_ -= dot_product(FT_visc_, normal)*normal;
         uT_ -= dot_product(uT_, normal)*normal;
         uT_ += dt;
@@ -352,15 +351,15 @@ std::string DEM::Viscoelastic::restart_data() const {
        << named_print(mu_particle_, "mu_particle") << ", "
        //<< named_print(mu_binder_, "mu_binder") << ", "
        << named_print(dF_, "dF") << ", "
-                                                   << named_print(F_visc, "F_visc") << ", "
-                                                   << named_print(F_particle, "F_particle") << ", "
-                                                   << named_print(dFT_, "dFT") << ", "
-                                                   << named_print(FT_, "FT") << ", "
-                                                   << named_print(FT_visc_, "FT_visc") << ", "
-                                                   << named_print(FT_part_, "FT_part") << ", "
-                                                   << named_print(uT_, "uT") << ", "
-                                                   << named_print(rot_, "rot") << ", "
-                                                   << named_print(bonded_, "activated") << ", "
+       << named_print(F_visc, "F_visc") << ", "
+       << named_print(F_particle, "F_particle") << ", "
+       << named_print(dFT_, "dFT") << ", "
+       << named_print(FT_, "FT") << ", "
+       << named_print(FT_visc_, "FT_visc") << ", "
+       << named_print(FT_part_, "FT_part") << ", "
+       << named_print(uT_, "uT") << ", "
+       << named_print(rot_, "rot") << ", "
+       << named_print(bonded_, "activated") << ", "
        << named_print(adhesive_, "adhesive_") << ", "
        << named_print(binder_contact_, "binder_contact") << ", "
        << named_print(fractured_, "fractured") << ", "

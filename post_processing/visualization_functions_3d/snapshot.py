@@ -36,6 +36,8 @@ class Snapshot:
             self.contact_plotter = None
 
     def plot(self, time):
+        if time.is_integer():
+            time = int(time)
         if self.plot_periodic_bc:
             self.periodic_bc_plotter = PeriodicBC(self.directory + '/periodic_bc.dou')
 
@@ -57,12 +59,12 @@ class Snapshot:
 
 
 def main():
-    snapshot = Snapshot('C:/DEMsim/results/viscoelastic',
+    snapshot = Snapshot('../../results/elaheh/20hbt8mechanicaltests01/',
                         BatteryContactPlotter)
     snapshot.mirror_particles = True
     snapshot.contact_plotter.color = colors.red
     snapshot.contact_plotter.binder_radius = np.sqrt(0.3*0.01**2/np.pi)
-    snapshot.plot(134.69)
+    snapshot.plot(1.11)
     mlab.show()
 
 

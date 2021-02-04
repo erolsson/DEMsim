@@ -494,30 +494,26 @@ void PeriodicBCHandler<ForceModel, ParticleType>::create_periodic_bc_contacts() 
         auto p1 = c_data.particle1;
         auto p2 = c_data.particle2;
         auto s = c_data.surface;
-        if ((!is_mirror_particle(p1) || !is_mirror_particle(p2)) && !(is_mirror_particle(p1) && s != nullptr) ) {
-        // if (true ) {
-            if (s == nullptr) {
-                if (is_mirror_particle(p1)) {
-                    std::swap(p1, p2);
-                    std::swap(id1, id2);
-                }
-                c = contacts_.create_item_inplace(id1, id2, p1, p2, engine_.get_time_increment());
+        if (s == nullptr) {
+            if (is_mirror_particle(p1) && !is_mirror_particle(p2)) {
+                std::swap(p1, p2);
+                std::swap(id1, id2);
+            }
+            c = contacts_.create_item_inplace(id1, id2, p1, p2, engine_.get_time_increment());
+        }
+        else {
+            c = contacts_.create_item_inplace(id1, id2, p1, s, engine_.get_time_increment());
+        }
+        if (c != nullptr) {
+            p1->add_contact(c, id2, 1.);
+            if (p2 != nullptr) {
+                p2->add_contact(c, id1, -1);
             }
             else {
-                c = contacts_.create_item_inplace(id1, id2, p1, s, engine_.get_time_increment());
+                s->add_contact(c, id1);
             }
-            if (c != nullptr) {
-                p1->add_contact(c, id2, 1.);
-                if (p2 != nullptr) {
-                    p2->add_contact(c, id1, -1);
-                }
-                else {
-                    s->add_contact(c, id1);
-                }
-
-                handle_mirror_particles_add_contact(c, id1, id2, p1, 1);
-                handle_mirror_particles_add_contact(c, id2, id1, p2, -1);
-            }
+            handle_mirror_particles_add_contact(c, id1, id2, p1, 1);
+            handle_mirror_particles_add_contact(c, id2, id1, p2, -1);
         }
     }
     contacts_to_create.clear();
