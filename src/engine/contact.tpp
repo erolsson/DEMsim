@@ -213,7 +213,7 @@ Eigen::Matrix<double, 3, 3> DEM::Contact<ForceModel, ParticleType>::get_force_fa
     Vec3 ft = get_tangential_force();
     for (unsigned i = 0; i != 3; ++i) {
         for (unsigned j = 0; j != 3; ++j) {
-            tensor(i, j) += d*fn[i]*get_normal()[j] + d*get_normal()[i]*ft[j];
+            tensor(i, j) += d*fn[i]*get_normal()[j] - d*get_normal()[i]*ft[j];
         }
     }
     return tensor;

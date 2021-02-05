@@ -37,14 +37,14 @@ def get_contact_data(time, directory, contact_pair):
 
 
 def main():
-    directory = os.path.expanduser('~/DEMsim/results/elaheh/20hbt8mechanicaltests01/')
+    directory = os.path.expanduser('~/DEMsim/results/elaheh/cubic_box_FT/')
     contact_files = glob.glob(directory + '/contacts/*.dou')
     times = []
     for contact_filename in contact_files:
         time = contact_filename[len(directory + '/contacts/contacts_'):-4]
         times.append(float(time))
     times = np.array(sorted(times))
-    contact_data = np.array([get_contact_data(t, directory + '/contacts/', contact_pair=(17, 1)) for t in times])
+    contact_data = np.array([get_contact_data(t, directory + '/contacts/', contact_pair=(22, 33)) for t in times])
     idx = contact_data[:, 0] == 1
     plt.figure(0)
     plt.plot(contact_data[idx, 1], contact_data[idx, 5], '-*')
