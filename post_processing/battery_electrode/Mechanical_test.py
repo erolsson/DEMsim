@@ -67,18 +67,34 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/cubic_box-100/'
-    box_width = 0.448928*2
-    surface_height = 0.85 # when the mechanical testing begins
+    simulation_directory = '../../results/viscoelastic/cubic_box/'
+    box_width = 0.141403*2
+    surface_height =  0.48568 # when the mechanical testing begins
     E = 2e9
     print(dimensions_box(simulation_directory))
     strain = -( 2* dimensions_box(simulation_directory)[:]-box_width)/box_width
     Stress = pressures_box(simulation_directory)[:]/(box_width * surface_height * box_width *2)
     Stress_y = pressures_box_yy(simulation_directory)[:]/(box_width * position_zz(simulation_directory)[:] *
                                                                    dimensions_box(simulation_directory)[:] *2)
-
+    start_presure=1315
     stress = pressures_box(simulation_directory)[:]/(box_width * position_zz(simulation_directory)[:] *
                                                               dimensions_box(simulation_directory)[:] *2)
+    stress1 = pressures_box(simulation_directory)[1315:start_presure+400]-pressures_box(start_presure) /(box_width * position_zz(simulation_directory)[1315:start_presure+400] *
+                                                     dimensions_box(simulation_directory)[1315:start_presure+400] *2)
+    strain1 = -( 2* dimensions_box(simulation_directory)[1315:start_presure+400]-box_width)/box_width
+
+    stress2 = pressures_box(simulation_directory)[start_presure+400:start_presure+400+440]-pressures_box(start_presure+400)/(box_width * position_zz(simulation_directory)[start_presure+400:start_presure+400+440] *
+                                                     dimensions_box(simulation_directory)[start_presure+400:start_presure+400+440] *2)
+    strain2 = -( 2* dimensions_box(simulation_directory)[start_presure+400:start_presure+400+440]-box_width)/box_width
+
+    stress3 = pressures_box(simulation_directory)[start_presure+400+440:start_presure+400+440+480]-pressures_box(start_presure+400+440)/(box_width * position_zz(simulation_directory)[start_presure+400+440:start_presure+400+440+480] *
+                                                     dimensions_box(simulation_directory)[start_presure+400+440:start_presure+400+440+480] *2)
+    strain3 = -( 2* dimensions_box(simulation_directory)[start_presure+400+440:start_presure+400+440+480]-box_width)/box_width
+
+    stress4 = pressures_box(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+560]-pressures_box(start_presure+400+440+480)/(box_width * position_zz(simulation_directory)[start_presure+400+440+480+560] *
+                                                     dimensions_box(simulation_directory)[start_presure+400+440+480+560] *2)
+    strain4 = -( 2* dimensions_box(simulation_directory)[start_presure+400+440+480+560]-box_width)/box_width
+
     np.savetxt('stress.dat', stress)
 
 
@@ -97,7 +113,11 @@ if __name__ == '__main__':
     plt.ylabel("Stress [Pa]")
     plt.show()
 
-    plt.plot(strain, stress)
+    plt.plot(strain1, stress1)
+    plt.plot(strain2, stress2)
+    plt.plot(strain3, stress3)
+    plt.plot(strain4, stress4)
+
     plt.xlabel("Strain")
     plt.ylabel("Stress [Pa]")
     plt.show()
