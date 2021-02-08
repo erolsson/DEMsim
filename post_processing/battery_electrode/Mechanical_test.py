@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
     stress4 = pressures_box(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+560]-pressures_box(simulation_directory)[start_presure+400+440+480]/(box_width * position_zz(simulation_directory)[start_presure+400+440+480+560] *
                                                      dimensions_box(simulation_directory)[start_presure+400+440+480+560] *2)
-    strain4 = -( 2* dimensions_box(simulation_directory)[start_presure+400+440+480+560]-box_width)/box_width
+    strain4 = -( 2* dimensions_box(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+560]-box_width)/box_width
 
     np.savetxt('stress.dat', stress)
 
