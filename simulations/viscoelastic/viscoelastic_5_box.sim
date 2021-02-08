@@ -1,5 +1,5 @@
 N=100
-output_dir=../results/viscoelastic/cubic_box-100_h28-bt8
+output_dir=../results/viscoelastic/cubic_box-100_h28-bt8-drag
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
