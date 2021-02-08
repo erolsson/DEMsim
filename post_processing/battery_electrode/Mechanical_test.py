@@ -79,19 +79,19 @@ if __name__ == '__main__':
     start_presure=1315
     stress = pressures_box(simulation_directory)[:]/(box_width * position_zz(simulation_directory)[:] *
                                                               dimensions_box(simulation_directory)[:] *2)
-    stress1 = pressures_box(simulation_directory)[1315:start_presure+400]-pressures_box(start_presure) /(box_width * position_zz(simulation_directory)[1315:start_presure+400] *
-                                                     dimensions_box(simulation_directory)[1315:start_presure+400] *2)
-    strain1 = -( 2* dimensions_box(simulation_directory)[1315:start_presure+400]-box_width)/box_width
+    stress1 = pressures_box(simulation_directory)[start_presure:start_presure+400]-pressures_box(simulation_directory)[start_presure] /(box_width * position_zz(simulation_directory)[start_presure:start_presure+400] *
+                                                     dimensions_box(simulation_directory)[start_presure:start_presure+400] *2)
+    strain1 = -( 2* dimensions_box(simulation_directory)[start_presure:start_presure+400]-box_width)/box_width
 
-    stress2 = pressures_box(simulation_directory)[start_presure+400:start_presure+400+440]-pressures_box(start_presure+400)/(box_width * position_zz(simulation_directory)[start_presure+400:start_presure+400+440] *
+    stress2 = pressures_box(simulation_directory)[start_presure+400:start_presure+400+440]-pressures_box(simulation_directory)[start_presure+400]/(box_width * position_zz(simulation_directory)[start_presure+400:start_presure+400+440] *
                                                      dimensions_box(simulation_directory)[start_presure+400:start_presure+400+440] *2)
     strain2 = -( 2* dimensions_box(simulation_directory)[start_presure+400:start_presure+400+440]-box_width)/box_width
 
-    stress3 = pressures_box(simulation_directory)[start_presure+400+440:start_presure+400+440+480]-pressures_box(start_presure+400+440)/(box_width * position_zz(simulation_directory)[start_presure+400+440:start_presure+400+440+480] *
+    stress3 = pressures_box(simulation_directory)[start_presure+400+440:start_presure+400+440+480]-pressures_box(simulation_directory)[start_presure+400+440]/(box_width * position_zz(simulation_directory)[start_presure+400+440:start_presure+400+440+480] *
                                                      dimensions_box(simulation_directory)[start_presure+400+440:start_presure+400+440+480] *2)
     strain3 = -( 2* dimensions_box(simulation_directory)[start_presure+400+440:start_presure+400+440+480]-box_width)/box_width
 
-    stress4 = pressures_box(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+560]-pressures_box(start_presure+400+440+480)/(box_width * position_zz(simulation_directory)[start_presure+400+440+480+560] *
+    stress4 = pressures_box(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+560]-pressures_box(simulation_directory)[start_presure+400+440+480]/(box_width * position_zz(simulation_directory)[start_presure+400+440+480+560] *
                                                      dimensions_box(simulation_directory)[start_presure+400+440+480+560] *2)
     strain4 = -( 2* dimensions_box(simulation_directory)[start_presure+400+440+480+560]-box_width)/box_width
 
