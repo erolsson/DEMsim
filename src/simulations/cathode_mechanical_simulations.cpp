@@ -22,7 +22,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     auto mat = simulator.create_material<ElectrodeMaterial>(4800);
     auto Cathode_output = simulator.get_output("output_0");
     simulator.remove_output(Cathode_output);
-    auto compaction_output = simulator.create_output(output_directory + "/extra-compacted", 0.005s);
+    auto compaction_output = simulator.create_output(output_directory + "/relaxation", 0.005s);
     compaction_output->print_particles = true;
     compaction_output->print_surface_positions = true;
     compaction_output->print_kinetic_energy = true;
@@ -40,89 +40,24 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
 
 
     std::cout<<"Biginning of simulation 4"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_4(simulator,1.0s);
-    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
-    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
+    EngineType::RunForTime run_for_time_compact_4(simulator,0.01s);
+    simulator.set_periodic_boundary_condition_strain_rate('x',-1.0);
+    deformable_surface -> set_in_plane_strain_rates(-1.0, 0.);
     simulator.run(run_for_time_compact_4);
 
     std::cout<<"beginning of unloading 4"<< std::endl;
-    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
-    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_4(simulator,1.0s);
-    simulator.set_mass_scale_factor(10.0);
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.0);
+    deformable_surface -> set_in_plane_strain_rates(0.0, 0.);
+    EngineType::RunForTime run_for_time_relax_4(simulator,300.0s);
+    simulator.set_mass_scale_factor(1.0);
     mat-> adhesive = true;
     simulator.run(run_for_time_relax_4);
 
 
 
-    std::cout<<"Biginning of simulation 2"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_2(simulator,1.10s);
-    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
-    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    simulator.run(run_for_time_compact_2);
-    std::cout<<"beginning of unloading 4"<< std::endl;
-    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
-    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_2(simulator,1.10s);
-    simulator.run(run_for_time_relax_2);
 
 
 
-
-    std::cout<<"Biginning of simulation 3"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_3(simulator,1.23s);
-
-    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
-    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    simulator.set_mass_scale_factor(10.0);
-    mat-> adhesive = true;
-    simulator.run(run_for_time_compact_3);
-
-    std::cout<<"beginning of unloading 4"<< std::endl;
-    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
-    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_3(simulator,1.23s);
-    simulator.set_mass_scale_factor(10.0);
-    mat-> adhesive = true;
-    simulator.run(run_for_time_relax_3);
-
-
-
-
-    std::cout<<"Biginning of simulation 3"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_5(simulator,1.40s);
-
-    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
-    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    simulator.set_mass_scale_factor(10.0);
-    simulator.run(run_for_time_compact_5);
-
-    std::cout<<"beginning of unloading 4"<< std::endl;
-    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
-    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    simulator.set_mass_scale_factor(10.0);
-    EngineType::RunForTime run_for_time_relax_5(simulator,1.40s);
-    simulator.run(run_for_time_relax_5);
-
-
-
-
-    std::cout<<"Biginning of simulation 3"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_6(simulator,1.65s);
-
-    simulator.set_periodic_boundary_condition_strain_rate('x',0.01);
-    deformable_surface -> set_in_plane_strain_rates(0.01, 0.);
-    simulator.set_mass_scale_factor(10.0);
-    simulator.run(run_for_time_compact_6);
-
-    std::cout<<"beginning of unloading 4"<< std::endl;
-    simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
-    deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
-    EngineType::RunForTime run_for_time_relax_7(simulator,1.65s);
-    simulator.set_mass_scale_factor(10.0);
-    simulator.run(run_for_time_relax_7);
-
-    simulator.write_restart_file(output_directory + "/final.res");
 
 }
 
