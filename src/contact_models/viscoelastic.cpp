@@ -258,6 +258,9 @@ double DEM::Viscoelastic::update_normal_force(double h)
         if (F_visc > 0 && adhesive()) {
             bonded_ = true;
         }
+        if (h < -1.5*bt_){
+            F_visc =0.;
+        }
     }
     if (h_ > 0) {
         if (h > yield_h_ && h >= hmax_) {
@@ -269,9 +272,6 @@ double DEM::Viscoelastic::update_normal_force(double h)
     }
     else {
         F_particle = 0.;
-    }
-    if (F_visc != 0 || F_particle != 0) {
-         // std::cout << "Fvisc: " << F_visc << "  F particle: " << F_particle << "\n";
     }
 
     if (adhesive() && bonded_) {
@@ -317,7 +317,7 @@ void DEM::Viscoelastic::update_tangential_force(const DEM::Vec3& dt, const DEM::
         FT_part_.set_zero();
     }
     FT_ -= FT_part_;
-    //FT_.set_zero();
+
 }
 
 std::string DEM::Viscoelastic::get_output_string() const {
