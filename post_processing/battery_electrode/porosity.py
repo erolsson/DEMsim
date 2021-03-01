@@ -41,11 +41,9 @@ def main():
     surface_positions = np.genfromtxt(directory + 'surface_positions.dou', delimiter=',')
     box_height = surface_positions[surface_positions[:, -1] == time_for_test, -2]
     volume = box_side**2*box_height
-    print(volume)
     porosity = 1 - calculate_occupied_volume(time_for_test, directory)/volume
     plt.plot(time, porosity)
 
-    plt.figure(2)
     plt.show()
 
 
