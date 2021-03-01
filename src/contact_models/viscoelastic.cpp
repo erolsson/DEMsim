@@ -258,9 +258,7 @@ double DEM::Viscoelastic::update_normal_force(double h)
         if (F_visc > 0 && adhesive()) {
             bonded_ = true;
         }
-        if (h < -1.5*bt_){
-            F_visc =0.;
-        }
+
     }
     if (h_ > 0) {
         if (h > yield_h_ && h >= hmax_) {

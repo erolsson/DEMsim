@@ -1,5 +1,5 @@
 N=100
-output_dir=../results/viscoelastic/cubic_box-100-binder-fracture
+output_dir=../results/viscoelastic/cubic_box-100-increased-binder-radius
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
@@ -14,6 +14,6 @@ active_particle_height=0.28
 filling_density=0.15
 particle_density_at_cube=0.39
 mu_binder=1.
-binder_radius_fraction=0.3
+binder_radius_fraction=0.5
 fraction_binder_contacts=0.6
 
