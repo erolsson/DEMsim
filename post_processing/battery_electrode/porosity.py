@@ -14,26 +14,35 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
 
+def calculate_occupied_volume(time, simulation_directory):
+    particles = np.genfromtxt(simulation_directory + 'particles/particles_' + str(time) + '.dou', delimiter=',')
+    r = particles[:, 7]
+    v_part = np.sum(4*np.pi*r**3/3)
+
+    contacts = np.genfromtxt(simulation_directory + 'contacts/contacts_' + str(time) + '.dou', delimiter=',')
+    binder_contacts = contacts[contacts[:, -2] == 1, :]
+    max_overlap = binder_contacts[:, 10]
+    bt = binder_contacts[:, -1]
+    activated_binder_contacts = binder_contacts[max_overlap > bt, :]
+    br = activated_binder_contacts[:, -1]
+    # assuming a cylindric binder volume with radius
+    rb = 0.3*0.03
+    v_binder = np.sum(rb*rb*np.pi*bt)
+
+    return v_binder + v_part
+
+
 def main():
-    directory = os.path.expanduser('~/DEMsim/results/elaheh/20hbt8mechanicaltests01/')
+    time_for_test = 14.7
+    directory = os.path.expanduser('~/DEMsim/results/elaheh/cubic_box-100_h28-bt8-drag/')
     box_edges = np.genfromtxt(directory + 'periodic_bc.dou', delimiter=',')
     time = box_edges[:, 0]
     box_side = 2*box_edges[:, 1]
     surface_positions = np.genfromtxt(directory + 'surface_positions.dou', delimiter=',')
-    box_height = surface_positions[:, -2]
+    box_height = surface_positions[surface_positions[:, -1] == time_for_test, -2]
     volume = box_side**2*box_height
-    particles = np.genfromtxt(directory + 'particles/particles_0.1.dou', delimiter=',')
-    r = particles[:, 7]
-    v_part = np.sum(4*np.pi*r**3/3)
-    relative_density = v_part/volume
-
-    surface_forces = np.genfromtxt(directory + 'surface_forces.dou', delimiter=',')
-    f = surface_forces[:, 6]
-    plt.figure(0)
-    plt.plot(relative_density, f/box_side**2/1e6)
-    plt.ylabel('Stress [MPa]')
-    plt.figure(1)
-    plt.plot(time, f)
+    porosity = 1 - calculate_occupied_volume(time_for_test, directory)/volume
+    plt.plot(time, porosity)
 
     plt.show()
 
