@@ -34,7 +34,7 @@ def calculate_occupied_volume(time, simulation_directory):
 
 def main():
     time_for_test = 14.7
-    directory = os.path.expanduser('~/DEMsim/results/elaheh/cubic_box-100_h28-bt8-drag/')
+    directory = os.path.expanduser('../../results/viscoelastic/cubic_box-100-bt-R01/')
     box_edges = np.genfromtxt(directory + 'periodic_bc.dou', delimiter=',')
     time = box_edges[:, 0]
     box_side = 2*box_edges[:, 1]
