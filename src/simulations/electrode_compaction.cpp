@@ -154,7 +154,7 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
     std::cout<<"Cycle 1 finished"<< std::endl;
 
     simulator.run(run_for_time_relax_4);
-    EngineType::RunForTime run_for_time_compact_2(simulator,1.10s);
+    EngineType::RunForTime run_for_time_compact_2(simulator,0.6s);
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
     simulator.run(run_for_time_compact_2);
@@ -165,7 +165,7 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
     simulator.run(run_for_time_relax_2);
     std::cout<<"Cycle 2finished"<< std::endl;
 
-    EngineType::RunForTime run_for_time_compact_3(simulator,1.23s);
+    EngineType::RunForTime run_for_time_compact_3(simulator,0.68s);
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
     simulator.run(run_for_time_compact_3);
@@ -177,7 +177,7 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
     simulator.run(run_for_time_relax_3);
 
 
-    EngineType::RunForTime run_for_time_compact_5(simulator,1.40s);
+    EngineType::RunForTime run_for_time_compact_5(simulator,0.785s);
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
     simulator.run(run_for_time_compact_5);
@@ -190,7 +190,7 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
 
 
     std::cout<<"Cycle 4 finished"<< std::endl;
-    EngineType::RunForTime run_for_time_compact_6(simulator,1.65s);
+    EngineType::RunForTime run_for_time_compact_6(simulator,0.95s);
 
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.01);
     deformable_surface -> set_in_plane_strain_rates(-0.01, 0.);
@@ -204,8 +204,6 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
 
     simulator.write_restart_file(output_directory + "/final.res");
 
-
-
-
+    
 }
 
