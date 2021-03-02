@@ -1,5 +1,5 @@
 N=3200
-output_dir=../results/viscoelastic/cubic_box-3200-bt03R3-h90
+output_dir=../results/viscoelastic/cubic_box-3200-bt03R3-h90-tryck
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
