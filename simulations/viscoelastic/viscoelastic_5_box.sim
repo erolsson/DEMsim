@@ -1,5 +1,5 @@
 N=3200
-output_dir=../results/viscoelastic/cubic_box-3200-bt03R3-h80-tryck
+output_dir=../results/viscoelastic/compression-tension-cubic_box-3200-bt01R-br05
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
@@ -10,10 +10,10 @@ alpha_i=0.5,0.136,0.119
 tau_i=0.0001,211,4807
 mu=0.5
 mu_wall=0.5
-active_particle_height=0.80
+active_particle_height=0.82
 filling_density=0.15
 particle_density_at_cube=0.39
 mu_binder=1.
-binder_radius_fraction=0.3
+binder_radius_fraction=0.5
 fraction_binder_contacts=0.6
 
