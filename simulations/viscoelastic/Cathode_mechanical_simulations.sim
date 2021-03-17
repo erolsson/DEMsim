@@ -1,4 +1,4 @@
-output_dir=/scratch/users/elaheh/DEMsim/results/viscoelastic/compaction-correct
+output_dir=/scratch/users/elaheh/DEMsim/results/viscoelastic/tension-correct
 restart_file_name=/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-cubic_box-3200-bt01R-br05/unload_restart_file.res
 active_particle_height=0.4
-bt=0.3e-2
+bt=0.3
