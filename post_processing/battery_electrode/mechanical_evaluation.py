@@ -111,8 +111,8 @@ def plot_mechanical_data_for_simulation(directory):
     particle_contacts = np.array(multi_processer(job_list, delay=0., timeout=3600))
     particle_contact_per_particle = particle_contacts/no_particles
     e = np.interp(np.array(contact_times), time[time > t_start], linear_strain)
-    plt.figure(3)
 
+    plt.figure(3)
     plt.plot(e, particle_contact_per_particle, 'k', lw=2)
 
 
