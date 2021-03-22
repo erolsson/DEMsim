@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-from scipy.signal import argrelmax
 
 import matplotlib.pyplot as plt
 import matplotlib
