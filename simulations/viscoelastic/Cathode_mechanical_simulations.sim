@@ -1,4 +1,4 @@
-output_dir=/scratch/users/elaheh/DEMsim/results/viscoelastic/relaxation-test
-restart_file_name=/scratch/users/elaheh/DEMsim/results/viscoelastic/cubic_box-100_h28-bt8-tryck/relax_restart_file.res
+output_dir=/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bt01Rbr05
+restart_file_name=/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-cubic_box-3200-bt01R-br05-E34/unload_restart_file.res
 active_particle_height=0.4
-bt=0.8e-2
+bt=0.3
