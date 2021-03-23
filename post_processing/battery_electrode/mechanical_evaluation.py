@@ -8,6 +8,11 @@ import matplotlib
 from multiprocesser.multiprocesser import multi_processer
 
 matplotlib.style.use('classic')
+plt.rc('text', usetex=True)
+plt.rc('font', serif='Computer Modern Roman')
+plt.rcParams.update({'font.size': 20})
+plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
+                  'monospace': ['Computer Modern Typewriter']})
 
 
 def get_contact_output_times(directory):
@@ -92,6 +97,13 @@ def plot_mechanical_data_for_simulation(directory):
                 plt.figure(2)
                 plt.plot(e0, E/1e9, 'kx', ms=12, mew=2)
 
+                e0_exp_comp = np.array([-0.01,-0.011,-0.0123,-0.0141,-0.0165])
+                E_exp_comp = np.array([1.20, 1.43, 1.51, 1.55, 1.99])
+                plt.plot(e0_exp_comp, E_exp_comp, 'bo', ms=12,  label='Experiment')
+                e0_exp_ten = np.array([0.01,0.011,0.0123,0.0141,0.0165])
+                E_exp_ten = np.array([0.95, 0.78, 0.84, 0.76, 1.06])
+                plt.plot(e0_exp_ten, E_exp_ten, 'bo', ms=12, label='Experiment')
+                plt.legend(['DEM ', 'Experiment'], loc='upper right')
 
     contact_times = get_contact_output_times(directory)
     particles = np.genfromtxt(directory + '/particles/particles_' + str(contact_times[0]) + '.dou',
@@ -111,12 +123,11 @@ def plot_mechanical_data_for_simulation(directory):
     plt.plot(e, particle_contact_per_particle, 'k', lw=2)
 
 
-
 def main():
-    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/tension-E34bt01Rbr05/unload_restart_file/')
+    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bt01Rbr05/unload_restart_file/')
     plot_mechanical_data_for_simulation(directory)
 
-    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bt01Rbr05/unload_restart_file/')
+    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/tension-E34bt01Rbr05/unload_restart_file/')
     plot_mechanical_data_for_simulation(directory)
 
     plt.figure(0)
@@ -131,16 +142,16 @@ def main():
     plt.figure(2)
     plt.xlabel('Strain [-]')
     plt.ylabel('$E$ [GPa]')
-    e0_exp_comp = [1,1.1,1.23,1.41,1.65]*-1
-    E_exp_comp = [1.20, 1.43, 1.51, 1.55, 1.99]
-    plt.plot(e0_exp_comp, E_exp_comp, 'bo', ms=12, new=2)
-    e0_exp_ten = [1,1.1,1.23,1.41,1.65]
-    E_exp_ten = [0.95, 0.78, 0.84, 0.76, 1.06]
-    plt.plot(e0_exp_ten, E_exp_ten, 'bo', ms=12, new=2)
 
     plt.figure(3)
     plt.xlabel('Strain [-]')
     plt.ylabel('Particle contacts / Particle [-]')
+
+
+
+
+
+
 
     plt.show()
 
