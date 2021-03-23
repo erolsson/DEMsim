@@ -107,7 +107,7 @@ def plot_mechanical_data_for_simulation(directory):
     e = np.interp(np.array(contact_times), time[time > t_start], linear_strain)
 
     plt.figure(3)
-    plt.plot(e, particle_contact_per_particle, 'k', lw=2)
+    plt.plot(e, particle_contact_per_particle, 'kx', ms=12, new=2)
 
 
 def main():
