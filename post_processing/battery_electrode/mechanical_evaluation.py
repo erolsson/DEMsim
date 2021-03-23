@@ -11,9 +11,6 @@ matplotlib.style.use('classic')
 plt.rc('text', usetex=True)
 plt.rc('font', serif='Computer Modern Roman')
 plt.rcParams.update({'font.size': 20})
-plt.rcParams['text.latex.preamble'] = [r"\usepackage{amsmath}"]
-plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
-                  'monospace': ['Computer Modern Typewriter']})
 
 
 def get_contact_output_times(directory):
@@ -117,10 +114,10 @@ def plot_mechanical_data_for_simulation(directory):
 
 
 def main():
-    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/tension-E34bt01Rbr05/unload_restart_file/')
+    directory = os.path.expanduser('C:/DEMsim/results/E34br05bt003/20210323compression/')
     plot_mechanical_data_for_simulation(directory)
 
-    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bt01Rbr05/unload_restart_file/')
+    directory = os.path.expanduser('C:/DEMsim/results/tension-E34bt01Rbr05/unload_restart_file/')
     plot_mechanical_data_for_simulation(directory)
 
     plt.figure(0)
