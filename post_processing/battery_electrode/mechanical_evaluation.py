@@ -95,7 +95,7 @@ def plot_mechanical_data_for_simulation(directory):
                 E_exp_comp = [1.20, 1.43, 1.51, 1.55, 1.99]
                 plt.plot(e0_exp_comp, E_exp_comp, 'bo', ms=12, new=2)
                 e0_exp_ten = [1,1.1,1.23,1.41,1.65]
-                E_exp_ten = [0.1, 0.95, 0.78, 0.84, 0.76, 1.06]
+                E_exp_ten = [0.95, 0.78, 0.84, 0.76, 1.06]
                 plt.plot(e0_exp_ten, E_exp_ten, 'bo', ms=12, new=2)
 
     contact_times = get_contact_output_times(directory)
