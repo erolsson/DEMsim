@@ -8,10 +8,6 @@ import matplotlib
 from multiprocesser.multiprocesser import multi_processer
 
 matplotlib.style.use('classic')
-plt.rc('text', usetex=True)
-plt.rc('font', serif='Computer Modern Roman')
-plt.rcParams.update({'font.size': 20})
-
 
 
 def get_contact_output_times(directory):
@@ -139,6 +135,9 @@ def main():
     plt.ylabel('Particle contacts / Particle [-]')
 
     plt.show()
+
+
+
 
 
 if __name__ == '__main__':
