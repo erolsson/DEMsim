@@ -29,7 +29,7 @@ def plot_mechanical_data_for_simulation(directory):
     # Finding the point where the compaction force has decreased to zero after its maximum value
     # The thickness at this point will be the thickness of the electrode t0
     idx = np.logical_and(compaction_force == 0, time > time[np.argmax(compaction_force)])
-    t0 = t[idx][0]
+    t0 = 0.882022
 
     t_start = time[d == d0][-1]
     volume = (d*w*t0)[time > t_start]
@@ -87,10 +87,10 @@ def plot_mechanical_data_for_simulation(directory):
 
 
 def main():
-    directory = os.path.expanduser(r'~/DEMsim/results/elaheh/cubic_box-100_h28-bt8-tryck/')
+    directory = os.path.expanduser(r'C:/DEMsim/results/relaxaiton/')
     plot_mechanical_data_for_simulation(directory)
 
-    directory = os.path.expanduser(r'~/DEMsim/results/elaheh/cubic_box-100_h28-bt8-drag/')
+    directory = os.path.expanduser(r'C:/DEMsim/results/relaxaiton/')
     plot_mechanical_data_for_simulation(directory)
 
     plt.figure(0)
