@@ -6,7 +6,7 @@ import math
 mu = 3e-2
 variance = 0
 sigma = math.sqrt(variance)
-x = np.linspace(mu - 0*sigma, mu + 0*sigma, 4000)
+x = np.linspace(mu - 0*sigma, mu + 0*sigma, 5000)
 plt.plot(x, stats.norm.pdf(x, mu, sigma))
 print(x)
 

@@ -32,26 +32,25 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/New_parameters_4000-relaxation-dynamic/'
-    box_width = 0.726136 *2
-    box_height = 1.70201
-    surface_height = 0.899473
-    E = 2e9
+    simulation_directory = 'C:/DEMsim/results/relaxaiton'
+    box_width = 0.448928 *2
+    surface_height = 0.882022
+    E = 1.6e9
 
-    Stress = pressures_box(simulation_directory)[7151:55479]/(box_width * surface_height * box_width *2)
-
+    Stress = pressures_box(simulation_directory)[:]/(box_width * surface_height * box_width *2)
 
 
-    time = time_box(simulation_directory)[7151:55479]
-    plt.plot(time, Stress, label='DEM')
+
+    time = time_box(simulation_directory)[:]
+    plt.plot(time, Stress/1e6, label='DEM')
     plt.xlabel("time[s]")
-    plt.ylabel("Stress [Pa]")
-    epsilon = 0.003
-    t = np.arange(39,300)
+    plt.ylabel("Stress [MPa]")
+    epsilon = 0.0175
+    t = np.arange(14,300)
     relaxation = 0.117+0.065 * np.exp(-1*t/211)+ 0.057* np.exp(-1*t/4807)
     #Sigma_DEM = 0.239+0.272*np.exp(-1*t/211)+0.2385*np.exp(-1*t/4807)
-    Sigma = relaxation *epsilon*0.9e9
-    plt.plot(t,Sigma, label='Theory')
+    Sigma = relaxation *epsilon*3e9
+    plt.plot(t,Sigma/1e6, label='Theory')
     plt.legend()
     plt.show()
 

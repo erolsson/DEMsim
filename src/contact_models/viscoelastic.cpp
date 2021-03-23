@@ -63,6 +63,7 @@ DEM::Viscoelastic::Viscoelastic(DEM::Viscoelastic::ParticleType *particle1,DEM::
 
     kparticle_=4*tsi0particle*sqrt(R0_)/3;
     yield_h_ = 2*mat1->yield_displacement_coeff*R0_;
+    std::cout << " yild" << yield_h_;
 
 
 

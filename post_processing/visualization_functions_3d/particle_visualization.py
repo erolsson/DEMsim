@@ -3,7 +3,7 @@ from mayavi import mlab
 from animation import Animation
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/20hbt8mechanicaltests01/'
+    simulation_directory = '../../results/viscoelastic/cubic_box'
 
     # Doing some inspection to construct a good bounding_box figure
     # dimension_data = dimensions_cylinder(simulation_directory)
@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     mlab.figure(size=(1920, 1200), bgcolor=(1., 1., 1.))
     animation = Animation(simulation_directory)
-    animation.save_directory = '../../results/periodic_bc_test/sim_1/imgs'
+    animation.save_directory = '../../results/viscoelastic/cubic_box_animation'
     animation.save_frames = True
     animation.delay = 0.01
     animation.start_time = 0.

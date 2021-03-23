@@ -1,13 +1,14 @@
 
 import numpy as np
-
+from sympy import symbols, solve
 import matplotlib.pyplot as plt
 import matplotlib
+from sympy import symbols
 
 matplotlib.style.use('classic')
 
 
-def dimensions_box(data_directory):
+def dimensions_xx(data_directory):
     with open(data_directory + '/periodic_bc.dou', 'r') as periodic_bc:
         first_line = periodic_bc.readlines()[0]
         first_line = first_line.split(', ')
@@ -19,7 +20,7 @@ def dimensions_box(data_directory):
     return data
 
 
-def position_zz(data_directory):
+def dimensions_zz(data_directory):
     with open(data_directory + '/surface_positions.dou', 'r') as periodic_bc:
         first_line = periodic_bc.readlines()[0]
         first_line = first_line.split(', ')
@@ -28,31 +29,41 @@ def position_zz(data_directory):
     if surface_types.count('ID=') == 0 and surface_types.count('PointSurface') == 2:
         id_idx.sort(key=lambda x: first_line[x+1])
         wall_data = np.genfromtxt(data_directory + '/surface_positions.dou', delimiter=', ')
-        time = np.zeros((wall_data.shape[0], 1))
-        time = wall_data[:, id_idx[0]+32]
+        Height = np.zeros((wall_data.shape[0], 1))
+        Height = wall_data[:, id_idx[0]+32]
 
-    return time
+    return Height
 
 
 
-def pressures_box(data_directory):
+def pressures_xx(data_directory):
     with open(data_directory + '/force_fabric_tensor.dou', 'r') as force_fabric_tensor:
         first_line = force_fabric_tensor.readlines()[0]
         first_line = first_line.split(', ')
     id_idx = [i for i in range(len(first_line))]
     force_data = np.genfromtxt(data_directory + '/force_fabric_tensor.dou', delimiter=', ')
     force = np.zeros((force_data.shape[0], 1))
-    force = force_data[:,  id_idx[0]+1]
+    force = force_data[:,  1]
     return force
 
-def pressures_box_yy(data_directory):
+def pressures_yy(data_directory):
     with open(data_directory + '/force_fabric_tensor.dou', 'r') as force_fabric_tensor:
         first_line = force_fabric_tensor.readlines()[0]
         first_line = first_line.split(', ')
     id_idx = [i for i in range(len(first_line))]
     force_data = np.genfromtxt(data_directory + '/force_fabric_tensor.dou', delimiter=', ')
     force = np.zeros((force_data.shape[0], 1))
-    force = force_data[:,  id_idx[0]+5]
+    force = force_data[:,  5]
+    return force
+
+def pressures_zz(data_directory):
+    with open(data_directory + '/force_fabric_tensor.dou', 'r') as force_fabric_tensor:
+        first_line = force_fabric_tensor.readlines()[0]
+        first_line = first_line.split(', ')
+    id_idx = [i for i in range(len(first_line))]
+    force_data = np.genfromtxt(data_directory + '/force_fabric_tensor.dou', delimiter=', ')
+    force = np.zeros((force_data.shape[0], 1))
+    force = force_data[:, 9]
     return force
 
 def time_box(data_directory):
@@ -67,53 +78,144 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '../../results/viscoelastic/cubic_box_FT/'
-    box_width = 0.141403*2
-    surface_height =  0.48568 # when the mechanical testing begins
-    E = 2e9
-    print(dimensions_box(simulation_directory))
-    strain = -( 2* dimensions_box(simulation_directory)[:]-box_width)/box_width
-    Stress = pressures_box(simulation_directory)[:]/(box_width * surface_height * box_width *2)
-    Stress_y = pressures_box_yy(simulation_directory)[:]/(box_width * position_zz(simulation_directory)[:] *
-                                                                   dimensions_box(simulation_directory)[:] *2)
-    start_presure=1315
-    stress = pressures_box(simulation_directory)[:]/(box_width * position_zz(simulation_directory)[:] *
-                                                              dimensions_box(simulation_directory)[:] *2)
-    stress1 = pressures_box(simulation_directory)[start_presure:start_presure+400]-pressures_box(simulation_directory)[start_presure] /(box_width * position_zz(simulation_directory)[start_presure:start_presure+400] *
-                                                     dimensions_box(simulation_directory)[start_presure:start_presure+400] *2)
-    strain1 = -( 2* dimensions_box(simulation_directory)[start_presure:start_presure+400]-box_width)/box_width
+    simulation_directory = 'C:/DEMsim/results/compression-tension'
+    #165 495  775 1003 1249 1460 1669 1819 1919
+    lln=3061
+    cln=1919+25
 
-    stress2 = pressures_box(simulation_directory)[start_presure+400:start_presure+400+440]-pressures_box(simulation_directory)[start_presure+400]/(box_width * position_zz(simulation_directory)[start_presure+400:start_presure+400+440] *
-                                                     dimensions_box(simulation_directory)[start_presure+400:start_presure+400+440] *2)
-    strain2 = -( 2* dimensions_box(simulation_directory)[start_presure+400:start_presure+400+440]-box_width)/box_width
+    start=lln-cln
 
-    stress3 = pressures_box(simulation_directory)[start_presure+400+440:start_presure+400+440+480]-pressures_box(simulation_directory)[start_presure+400+440]/(box_width * position_zz(simulation_directory)[start_presure+400+440:start_presure+400+440+480] *
-                                                     dimensions_box(simulation_directory)[start_presure+400+440:start_presure+400+440+480] *2)
-    strain3 = -( 2* dimensions_box(simulation_directory)[start_presure+400+440:start_presure+400+440+480]-box_width)/box_width
+    volym= dimensions_xx(simulation_directory)[start:start+20]*dimensions_xx(simulation_directory)[1]*dimensions_zz(simulation_directory)[start:start+20]*4
+    time = time_box(simulation_directory)[start:start+20]
+    sigma_x = pressures_xx(simulation_directory)[start:start+20]/volym
+    delta_sigma_x=(sigma_x[:]-sigma_x[0])
+    sigma_y = pressures_yy(simulation_directory)[start:start+20]/volym
+    delta_sigma_y=sigma_y[:]-sigma_y[0]
+    sigma_z= (pressures_zz(simulation_directory)[start:start+20])/volym
+    delta_sigma_z=sigma_z[:]-sigma_z[0]
+    print(delta_sigma_z)
+    print(delta_sigma_y)
+    print(delta_sigma_x)
 
-    stress4 = pressures_box(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+560]-pressures_box(simulation_directory)[start_presure+400+440+480]/(box_width * position_zz(simulation_directory)[start_presure+400+440+480+560] *
-                                                     dimensions_box(simulation_directory)[start_presure+400+440+480+560] *2)
-    strain4 = -( 2* dimensions_box(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+560]-box_width)/box_width
-
-    np.savetxt('stress.dat', stress)
+    nu = delta_sigma_y/(delta_sigma_x+delta_sigma_z)
 
 
-    #inkompresibelt på binder, isotropiskt material+
-    # inelastic strain
-    epsilon_zz = -(position_zz(simulation_directory)[:]-surface_height)/surface_height
-    print(position_zz(simulation_directory)[:])
-    print(epsilon_zz)
-    total_stress = Stress+Stress_y
-    nu = -(E*epsilon_zz)/ total_stress
+    epsilon_x = (dimensions_xx(simulation_directory)[start:start+20]-dimensions_xx(simulation_directory)[start-1] )/dimensions_xx(simulation_directory)[start-1]
+    print(epsilon_x)
+    delta_epsilon_x= (epsilon_x[:]-epsilon_x[0])
+
+    sigma=sigma_x[1:19]- nu[1:19]*(sigma_y[1:19]+sigma_z[1:19])
+    delta_sigma= -(sigma-sigma[0])
+    print(delta_sigma)
+
+
+    E = (delta_sigma/delta_epsilon_x[1:19])
     print(nu)
+    print (E)
+    plt.plot(delta_epsilon_x[1:19],nu[1:19])
 
-    time = time_box(simulation_directory)[:]
-    plt.plot(time, stress)
+    plt.xlabel("delta_strain")
+    plt.ylabel("nu")
+    plt.show()
+    end= 1000
+
+    volym_tot = dimensions_xx(simulation_directory)[end:start]*dimensions_xx(simulation_directory)[1]*dimensions_zz(simulation_directory)[end:start]*4
+    stress = pressures_xx(simulation_directory)[end:start]/volym_tot
+    tid = time_box(simulation_directory)[end:start]
+    strain = (dimensions_xx(simulation_directory)[end:start]-dimensions_xx(simulation_directory)[start-1] )/dimensions_xx(simulation_directory)[start-1]
+    plt.plot(strain,stress/10**6,label='DEM')
+    plt.xlabel("strain")
+    plt.ylabel("stress x-direction[MPa]")
+    plt.xlabel("delta_strain")
+    plt.ylabel("E")
+    plt.show()
+
+
+
+
+
+    volym_tot = dimensions_xx(simulation_directory)[end:start]*dimensions_xx(simulation_directory)[1]*dimensions_zz(simulation_directory)[end:start]*4
+    stress = pressures_xx(simulation_directory)[end:start]/volym_tot
+    tid = time_box(simulation_directory)[end:start]
+    strain = -(dimensions_xx(simulation_directory)[end:start]-dimensions_xx(simulation_directory)[3200] )/dimensions_xx(simulation_directory)[3200]
+    plt.plot(strain,stress/10**6,label='DEM')
+    plt.xlabel("strain")
+    plt.ylabel("stress x-direction[MPa]")
+
+
+
+    plt.show()
+
+
+
+
+
+
+
+    sigma_x_tot = pressures_xx(simulation_directory)[1277:1297]/(dimensions_xx(simulation_directory)[1277] *2* dimensions_zz(simulation_directory)[1277:1297] *
+                                                              dimensions_xx(simulation_directory)[1277:1297] *2)
+    strain = -( dimensions_xx(simulation_directory)[1277:1297]-dimensions_xx(simulation_directory)[1277])/dimensions_xx(simulation_directory)[1277]
+
+    plt.plot(strain,sigma_x_tot)
+    plt.xlabel("Strain")
+    plt.ylabel("Stress [Pa]")
+    plt.show()
+
+    time_tot = time_box(simulation_directory)[1277:1297]
+
+
+    plt.plot(time_tot, sigma_x_tot)
     plt.xlabel("time[s]")
     plt.ylabel("Stress [Pa]")
     plt.show()
 
-    plt.plot(strain1, stress1)
+    quit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    start_presure=5321
+
+    stress1 = pressures_xx(simulation_directory)[start_presure:start_presure+200]/(dimensions_xx(simulation_directory)[1277]  * dimensions_zz(simulation_directory)[start_presure:start_presure+200] *
+                                                                                    dimensions_xx(simulation_directory)[start_presure:start_presure+200] *2)
+    strain1 = -( 2* dimensions_xx(simulation_directory)[start_presure:start_presure+200]-dimensions_xx(simulation_directory)[1277] )/dimensions_xx(simulation_directory)[1277]
+
+    stress2 = pressures_xx(simulation_directory)[start_presure+400:start_presure+400+220]/(dimensions_xx(simulation_directory)[1277]  * dimensions_zz(simulation_directory)[start_presure+400:start_presure+400+220] *
+                                                                                            dimensions_xx(simulation_directory)[start_presure+400:start_presure+400+220] *2)
+    strain2 = -( 2* dimensions_xx(simulation_directory)[start_presure+400:start_presure+400+220]-dimensions_xx(simulation_directory)[1277] )/dimensions_xx(simulation_directory)[1277]
+
+    stress3 = pressures_xx(simulation_directory)[start_presure+400+440:start_presure+400+440+240]/(dimensions_xx(simulation_directory)[1277]  * dimensions_zz(simulation_directory)[start_presure+400+440:start_presure+400+440+240] *
+                                                                                                    dimensions_xx(simulation_directory)[start_presure+400+440:start_presure+400+440+240] *2)
+    strain3 = -( 2* dimensions_xx(simulation_directory)[start_presure+400+440:start_presure+400+440+240]-dimensions_xx(simulation_directory)[1277] )/dimensions_xx(simulation_directory)[1277]
+
+    stress4 = pressures_xx(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+280]/(dimensions_xx(simulation_directory)[1277]  * dimensions_zz(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+280] *
+                                                                                                            dimensions_xx(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+280] *2)
+    strain4 = -( 2* dimensions_xx(simulation_directory)[start_presure+400+440+480:start_presure+400+440+480+280]-dimensions_xx(simulation_directory)[1277] )/dimensions_xx(simulation_directory)[1277]
+
+    plt.plot(strain1, stress1[1277:1297]-stress1[0])
     plt.plot(strain2, stress2)
     plt.plot(strain3, stress3)
     plt.plot(strain4, stress4)
@@ -121,14 +223,7 @@ if __name__ == '__main__':
     plt.xlabel("Strain")
     plt.ylabel("Stress [Pa]")
     plt.show()
-    plt.plot(time, Stress_y)
-    plt.xlabel("Time")
-    plt.ylabel("Stress_y[Pa]")
 
-    plt.show()
-    plt.plot(time, nu)
-    plt.xlabel("Time")
-    plt.ylabel("nu")
 
     plt.show()
 

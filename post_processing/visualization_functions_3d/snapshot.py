@@ -1,8 +1,9 @@
 from collections import defaultdict
 import os
 
-import numpy as np
+
 from mayavi import mlab
+import numpy as np
 
 from visualization_functions_3d.plotting_functions import SpheresPlotter, SurfacesPlotter, BoundingBox
 from visualization_functions_3d.periodic_bc import PeriodicBC
@@ -59,12 +60,12 @@ class Snapshot:
 
 
 def main():
-    snapshot = Snapshot('../../results/elaheh/20hbt8mechanicaltests01/',
+    snapshot = Snapshot('C:/DEMsim/results/cubic_box-3200-bt03R3-h90-tryck',
                         BatteryContactPlotter)
     snapshot.mirror_particles = True
     snapshot.contact_plotter.color = colors.red
-    snapshot.contact_plotter.binder_radius = np.sqrt(0.3*0.01**2/np.pi)
-    snapshot.plot(1.11)
+    snapshot.contact_plotter.binder_radius = (0.3*0.01**2/3.14)**(0.5)
+    snapshot.plot(14.11)
     mlab.show()
 
 
