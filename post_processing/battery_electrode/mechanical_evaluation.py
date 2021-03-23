@@ -1,9 +1,11 @@
+import glob
 import os
 
 import numpy as np
 
 import matplotlib.pyplot as plt
 import matplotlib
+from multiprocesser.multiprocesser import multi_processer
 
 matplotlib.style.use('classic')
 plt.rc('text', usetex=True)
@@ -14,39 +16,50 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
 
+def get_contact_output_times(directory):
+    contact_files = glob.glob(directory + '/contacts/contacts*.dou')
+    contact_times = []
+    for contact_file in contact_files:
+        contact_time = contact_file.replace(directory + '/contacts/contacts_', '').replace('.dou', '')
+        contact_times.append(float(contact_time))
+    return sorted(contact_times)
+
+
+def calculate_particle_contacts(directory, time):
+    contact_data = np.genfromtxt(directory + '/contacts/contacts_' + str(time) + '.dou', delimiter=',')
+    particle_contacts = contact_data[np.logical_and(contact_data[:, -2] == 0, contact_data[:, 8] > 0), 1]
+    surface_idx = {0, 1}
+    values = particle_contacts*0 + 2  # Each contact belong to two particles
+    for surface_id in surface_idx:
+        values[particle_contacts == surface_id] -= 1    # ... except if it is a surface contact
+    return np.sum(values)
+
+
 def plot_mechanical_data_for_simulation(directory):
     periodic_bc = np.genfromtxt(directory + 'periodic_bc.dou', delimiter=',')
-    surface_forces = np.genfromtxt(directory + 'surface_forces.dou', delimiter=',')
     surface_positions = np.genfromtxt(directory + 'surface_positions.dou', delimiter=',')
     force_fabric_tensor = np.genfromtxt(directory + 'force_fabric_tensor.dou', delimiter=',')
     time = surface_positions[:, -1]
-    t = surface_positions[:, -2]
     d = 2*periodic_bc[:, 2]
     d0 = d[0]
     w = 2*periodic_bc[:, 4]
-    compaction_force = surface_forces[:, -2]
 
     # Finding the point where the compaction force has decreased to zero after its maximum value
     # The thickness at this point will be the thickness of the electrode t0
-    idx = np.logical_and(compaction_force == 0, time > time[np.argmax(compaction_force)])
-    t0 = 0.882022
+    t0 = 0.880421
 
     t_start = time[d == d0][-1]
     volume = (d*w*t0)[time > t_start]
     sxx = force_fabric_tensor[time > t_start, 1]/volume
-    sxx -= sxx[0]
-
     syy = force_fabric_tensor[time > t_start, 5]/volume
-    syy -= syy[0]
-
     szz = force_fabric_tensor[time > t_start, 9]/volume
-    szz -= szz[0]
+
     sxx *= -1
     syy *= -1
     szz *= -1
 
     linear_strain = (d[time > t_start] - d0)/d0
-    time_mechanical = time[time > t_start]
+
     plt.figure(0)
     if sxx[-1] > 0:
         plt.plot(linear_strain, sxx/1e6, 'r', lw=2, label=r'$\sigma_{xx}$')
@@ -75,22 +88,39 @@ def plot_mechanical_data_for_simulation(directory):
             dszz = szz[idx1] - szz[idx[0]]
 
             dexx = e1 - e0
-            if dsxx != 0:
+            if dexx != 0:
 
                 v = dsyy/(dsxx + dszz)
                 plt.figure(1)
-                plt.plot(e0, v, 'x', ms=12, mew=2)
+                plt.plot(e0, v, 'kx', ms=12, mew=2)
 
                 E = (dsxx - v*(dsyy + dszz))/dexx
                 plt.figure(2)
-                plt.plot(e0, E/1e9, 'x', ms=12, mew=2)
+                plt.plot(e0, E/1e9, 'kx', ms=12, mew=2)
+
+    contact_times = get_contact_output_times(directory)
+    particles = np.genfromtxt(directory + '/particles/particles_' + str(contact_times[0]) + '.dou',
+                              delimiter=',')
+    no_particles = particles.shape[0]
+
+    job_list = []
+    contact_times = np.array(contact_times)
+    contact_times = contact_times[contact_times > t_start]
+    for c_time in contact_times:
+        job_list.append((calculate_particle_contacts, [directory, c_time], {}))
+    particle_contacts = np.array(multi_processer(job_list, delay=0., timeout=3600))
+    particle_contact_per_particle = particle_contacts/no_particles
+    e = np.interp(np.array(contact_times), time[time > t_start], linear_strain)
+
+    plt.figure(3)
+    plt.plot(e, particle_contact_per_particle, 'k', lw=2)
 
 
 def main():
-    directory = os.path.expanduser(r'C:/DEMsim/results/relaxaiton/')
+    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bt01Rbr05/unload_restart_file/')
     plot_mechanical_data_for_simulation(directory)
 
-    directory = os.path.expanduser(r'C:/DEMsim/results/relaxaiton/')
+    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bt01Rbr05/unload_restart_file/')
     plot_mechanical_data_for_simulation(directory)
 
     plt.figure(0)
@@ -105,6 +135,10 @@ def main():
     plt.figure(2)
     plt.xlabel('Strain [-]')
     plt.ylabel('$E$ [GPa]')
+
+    plt.figure(3)
+    plt.xlabel('Strain [-]')
+    plt.ylabel('Particle contacts / Particle [-]')
 
     plt.show()
 
