@@ -12,4 +12,4 @@ tick=4e-7
 binder_radius_fraction=0.3
 alpha_i=0.5,0.136,0.119
 tau_i=0.0001,211,4807
-fraction_binder_contacts=0
+fraction_binder_contacts=1
