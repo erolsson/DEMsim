@@ -125,6 +125,13 @@ def main():
     directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/tension-E34bt01Rbr05/unload_restart_file/')
     plot_mechanical_data_for_simulation(directory)
 
+    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E24bt01Rbr05/')
+    plot_mechanical_data_for_simulation(directory)
+
+    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/tension-E24bt01Rbr05/unload_restart_file/')
+    plot_mechanical_data_for_simulation(directory)
+
+
     plt.figure(0)
     plt.xlabel('Strain [-]')
     plt.ylabel('Stress [MPa]')
