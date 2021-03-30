@@ -11,7 +11,7 @@ matplotlib.style.use('classic')
 
 
 def particle_volume():
-    p_volume = 0.0113094
+    p_volume = 0.361901
     return p_volume
 
 
@@ -66,7 +66,7 @@ def pressures_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bt003Rbr05/'
+    simulation_directory = '/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-cubic_box-3200-bt01R-br05-E34/'
 
     volume_box = (0.448928*2)**2 * dimensions_box(simulation_directory)[:]
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
