@@ -66,7 +66,7 @@ def pressures_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = '/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-cubic_box-3200-bt01R-br05-E34/'
+    simulation_directory = '/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bthalf01Rbr05/'
 
     volume_box = (0.448928*2)**2 * dimensions_box(simulation_directory)[:]
     porosity = (1-(particle_volume()*(1+0.07/(0.33+0.07)))/volume_box)
