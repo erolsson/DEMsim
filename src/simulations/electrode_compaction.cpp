@@ -110,7 +110,7 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
     double h = bbox[5];
     top_surface->move(-Vec3(0, 0, box_height - h-1.01*mat->bt), Vec3(0, 0, 0));
     std::cout<<"h"<< h<< std::endl;
-    double surface_velocity = -0.043;
+    double surface_velocity = 0.043;
     mat-> adhesive = true;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
     std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
