@@ -41,6 +41,9 @@ class Snapshot:
             time = int(time)
         if self.plot_periodic_bc:
             self.periodic_bc_plotter = PeriodicBC(self.directory + '/periodic_bc.dou')
+            self.periodic_bc_zmin = 0
+            self.periodic_bc_zmax = 75
+
 
         particle_data = np.genfromtxt(self.directory + '/particles/particles_' + str(time) + '.dou', delimiter=',')
         self.spheres_plotter.plot(particle_data)
@@ -60,12 +63,12 @@ class Snapshot:
 
 
 def main():
-    snapshot = Snapshot('C:/DEMsim/results/cubic_box-3200-bt03R3-h90-tryck',
+    snapshot = Snapshot('C:/DEMsim/results/experimental',
                         BatteryContactPlotter)
     snapshot.mirror_particles = True
     snapshot.contact_plotter.color = colors.red
     snapshot.contact_plotter.binder_radius = (0.3*0.01**2/3.14)**(0.5)
-    snapshot.plot(14.11)
+    snapshot.plot(2.49)
     mlab.show()
 
 
