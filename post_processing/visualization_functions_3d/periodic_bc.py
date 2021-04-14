@@ -26,7 +26,7 @@ class PeriodicBC:
         times = data_lines[:, 0]
         self.data = OrderedDict(zip(times, data_lines[:, 1:]))
 
-    def plot(self, t=0):
+    def plot(self, t=0.):
         if t is None:
             data = self.data[list(self.data.keys())[self.counter]]
             self.counter += 1
