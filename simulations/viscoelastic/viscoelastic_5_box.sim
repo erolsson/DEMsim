@@ -1,7 +1,7 @@
 N=3200
-output_dir=../results/viscoelastic/compression-E34bt02Rbr05
+output_dir=../results/viscoelastic/compression-E34bt2Rbr05
 radius_file=../pre_processing/viscoelastic/radie.dat
-E=6.8e9
+E=3.4e9
 nu=0.3
 nup=0.25
 Ep=142e9
