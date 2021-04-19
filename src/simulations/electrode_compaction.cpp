@@ -113,13 +113,14 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
     double surface_velocity = 0.043;
     mat-> adhesive = true;
     top_surface->set_velocity(Vec3(0, 0, 0.-surface_velocity));
-    std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
-    run_for_time.reset(compaction_time);
-    simulator.run(run_for_time);
-    //EngineType::SurfaceNormalForceLess calendering_force(top_surface, 7.24e7);
-    // simulator.set_rotation(false);
+    simulator.set_mass_scale_factor(10.0);
+    //std::chrono::duration<double> compaction_time {((h - mat->active_particle_height) / surface_velocity)};
+    //run_for_time.reset(compaction_time);
+    //simulator.run(run_for_time);
+    EngineType::SurfaceNormalForceLess calendering_force(top_surface, 7.24e7*box_side*box_side);
+    simulator.set_rotation(false);
     mat-> adhesive = true;
-    //simulator.run(calendering_force);
+    simulator.run(calendering_force);
     simulator.write_restart_file(output_directory + "/compact_restart_file.res");
 
     std::cout<<"beginning of unloading"<< std::endl;
@@ -144,6 +145,52 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
     top_surface->set_velocity(Vec3(0, 0, surface_velocity));
     simulator.run(run_for_time_relax);
     simulator.write_restart_file(output_directory + "/relax_restart_file.res");
+
+    EngineType::RunForTime run_for_time_compact_10(simulator,0.03s);
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.043);
+    deformable_surface -> set_in_plane_strain_rates(-0.043, 0.);
+    simulator.run(run_for_time_compact_10);
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.043);
+    deformable_surface -> set_in_plane_strain_rates(0.043, 0.);
+    EngineType::RunForTime run_for_time_relax_10(simulator,0.03s);
+    simulator.run(run_for_time_relax_10);
+
+    EngineType::RunForTime run_for_time_compact_9(simulator,0.06s);
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.043);
+    deformable_surface -> set_in_plane_strain_rates(-0.043, 0.);
+    simulator.run(run_for_time_compact_9);
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.043);
+    deformable_surface -> set_in_plane_strain_rates(0.043, 0.);
+    EngineType::RunForTime run_for_time_relax_9(simulator,0.03s);
+    simulator.run(run_for_time_relax_9);
+
+    EngineType::RunForTime run_for_time_compact_8(simulator,0.087s);
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.043);
+    deformable_surface -> set_in_plane_strain_rates(-0.043, 0.);
+    simulator.run(run_for_time_compact_8);
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.043);
+    deformable_surface -> set_in_plane_strain_rates(0.043, 0.);
+    EngineType::RunForTime run_for_time_relax_8(simulator,0.06s);
+    simulator.run(run_for_time_relax_8);
+
+    EngineType::RunForTime run_for_time_compact_7(simulator,0.11s);
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.043);
+    deformable_surface -> set_in_plane_strain_rates(-0.043, 0.);
+    simulator.run(run_for_time_compact_7);
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.043);
+    deformable_surface -> set_in_plane_strain_rates(0.043, 0.);
+    EngineType::RunForTime run_for_time_relax_7(simulator,0.087s);
+    simulator.run(run_for_time_relax_7);
+
+    EngineType::RunForTime run_for_time_compact_6(simulator,0.145s);
+    simulator.set_periodic_boundary_condition_strain_rate('x',-0.043);
+    deformable_surface -> set_in_plane_strain_rates(-0.043, 0.);
+    simulator.run(run_for_time_compact_6);
+    simulator.set_periodic_boundary_condition_strain_rate('x',0.043);
+    deformable_surface -> set_in_plane_strain_rates(0.043, 0.);
+    EngineType::RunForTime run_for_time_relax_6(simulator,0.116s);
+    simulator.run(run_for_time_relax_6);
+
 
 
 
