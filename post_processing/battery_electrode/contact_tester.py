@@ -30,9 +30,10 @@ def plot_mechanical_data_for_contact(directory):
     R= 3e-2
     F=4*E_0_part*R**(1/2)*h**(3/2)/3
     plt.plot(h/bt,Fp/E_0_part/R**2, 'b', ms=12 , linestyle='--', label='$F_{particle}$ ')
-    plt.plot(h/bt,force/E_0_part/R**2, 'b', ms=12 ,  label='$F_{Tot}$ ')
+    plt.plot(h/bt,force/E_0_part/R**2, 'b', ms=12 ,  label='$F_{particle}$+$F_{binder}$ ')
     plt.plot(h/bt, F/E_0_part/R**2, 'k', ms=12, label='Hertz contact theory')
     plt.xlim(-1, max(h/bt))
+    plt.axvline(x= 0.01,ls='--', color='r')
 
 
 
@@ -44,7 +45,7 @@ def main():
     plt.figure(0)
 
     plt.xlabel('$ h/ b{t}$ [-]')
-    plt.ylabel('Contact Force [-] ')
+    plt.ylabel('$ Contact Force / E_{Particle} R_{Particle}^2 $ [-] ')
     plt.legend(loc='best')
 
 

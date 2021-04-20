@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -6,52 +7,59 @@ import matplotlib
 matplotlib.style.use('classic')
 
 
+def epsilon_box_compression(simulation_directory_compression):
+
+    force_data = np.genfromtxt(simulation_directory_compression + '/force_fabric_tensor.dou', delimiter=', ')
+    time= force_data[1007:,0]-14.0543
+    pressures_box= force_data[1007:, 1]
+
+    Stress_compression= (pressures_box[:]/pressures_box[0])+0.01
+    print(Stress_compression)
+
+    plt.plot(time, Stress_compression, 'b', label='DEM data-Compression')
+    plt.xlabel("time[s]")
+    plt.ylabel("Stress")
+
+    epsilon = 0.0175
+    t = np.arange(0,215)
+    relaxation_compression = 0.344+0.097 * np.exp(-1*t/283)+ 0.074* np.exp(-1*t/6770)
+    Sigma_compression = relaxation_compression/relaxation_compression[0]
+
+    plt.plot(t,Sigma_compression, 'bx',label='Fit for Prony series-Compression')
+
+
+def epsilon_box_tension(simulation_directory_tension):
+
+    force_data = np.genfromtxt(simulation_directory_tension + '/force_fabric_tensor.dou', delimiter=', ')
+    time= force_data[1007:,0]-14.0543
+    pressures_box= force_data[1007:, 1]
+    Stress_tension= pressures_box[:]/pressures_box[0]
+
+    plt.plot(time, Stress_tension, 'r',label='DEM data-Tension')
+    plt.xlabel("time[s]")
+    plt.ylabel("Normalized Stress ")
+    epsilon = 0.0175
+    t = np.arange(0,215)
+    relaxation_tension = 0.117+0.065 * np.exp(-1*t/211)+ 0.057* np.exp(-1*t/4807)
+    Sigma_tension = relaxation_tension /relaxation_tension[0]
+
+    plt.plot(t,Sigma_tension, 'rx',label='Fit for Prony series-Tension')
 
 
 
-def pressures_box(data_directory):
-    with open(data_directory + '/force_fabric_tensor.dou', 'r') as force_fabric_tensor:
-        first_line = force_fabric_tensor.readlines()[0]
-        first_line = first_line.split(', ')
-    id_idx = [i for i in range(len(first_line))]
-    force_data = np.genfromtxt(data_directory + '/force_fabric_tensor.dou', delimiter=', ')
-    force = np.zeros((force_data.shape[0], 1))
-    force = force_data[:,  id_idx[0]+1]
-    return force
-
-
-def time_box(data_directory):
-    with open(data_directory + '/force_fabric_tensor.dou', 'r') as force_fabric_tensor:
-        first_line = force_fabric_tensor.readlines()[0]
-        first_line = first_line.split(', ')
-    id_idx = [i for i in range(len(first_line))]
-    force_data = np.genfromtxt(data_directory + '/force_fabric_tensor.dou', delimiter=', ')
-    time = np.zeros((force_data.shape[0], 1))
-    time = force_data[:,  id_idx[0]]
-    return time
 
 
 if __name__ == '__main__':
-    simulation_directory = 'C:/DEMsim/results/relaxaiton'
-    box_width = 0.448928 *2
-    surface_height = 0.882022
-    E = 1.6e9
-
-    Stress = pressures_box(simulation_directory)[:]/(box_width * surface_height * box_width *2)
 
 
+    simulation_directory = os.path.expanduser(r'C:/DEMsim/results/relaxation-compression/')
+    epsilon_box_compression(simulation_directory)
 
-    time = time_box(simulation_directory)[:]
-    plt.plot(time, Stress/1e6, label='DEM')
-    plt.xlabel("time[s]")
-    plt.ylabel("Stress [MPa]")
-    epsilon = 0.0175
-    t = np.arange(14,300)
-    relaxation = 0.117+0.065 * np.exp(-1*t/211)+ 0.057* np.exp(-1*t/4807)
-    #Sigma_DEM = 0.239+0.272*np.exp(-1*t/211)+0.2385*np.exp(-1*t/4807)
-    Sigma = relaxation *epsilon*3e9
-    plt.plot(t,Sigma/1e6, label='Theory')
-    plt.legend()
+    simulation_directory_tension= os.path.expanduser(r'C:/DEMsim/results/relaxation-tension/')
+    epsilon_box_tension(simulation_directory_tension)
+
+    plt.legend(loc='upper right', numpoints =1)
     plt.show()
+
 
 

@@ -10,25 +10,6 @@ from multiprocesser.multiprocesser import multi_processer
 matplotlib.style.use('classic')
 
 
-def get_contact_output_times(directory):
-    contact_files = glob.glob(directory + '/contacts/contacts*.dou')
-    contact_times = []
-    for contact_file in contact_files:
-        contact_time = contact_file.replace(directory + '/contacts/contacts_', '').replace('.dou', '')
-        contact_times.append(float(contact_time))
-    return sorted(contact_times)
-
-
-def calculate_particle_contacts(directory, time):
-    contact_data = np.genfromtxt(directory + '/contacts/contacts_' + str(time) + '.dou', delimiter=',')
-    particle_contacts = contact_data[np.logical_and(contact_data[:, -2] == 0, contact_data[:, 8] > 0), 1]
-    surface_idx = {0, 1}
-    values = particle_contacts*0 + 2  # Each contact belong to two particles
-    for surface_id in surface_idx:
-        values[particle_contacts == surface_id] -= 1    # ... except if it is a surface contact
-    return np.sum(values)
-
-
 def plot_mechanical_data_for_simulation(directory):
     periodic_bc = np.genfromtxt(directory + 'periodic_bc.dou', delimiter=',')
     surface_positions = np.genfromtxt(directory + 'surface_positions.dou', delimiter=',')
@@ -40,7 +21,7 @@ def plot_mechanical_data_for_simulation(directory):
 
     # Finding the point where the compaction force has decreased to zero after its maximum value
     # The thickness at this point will be the thickness of the electrode t0
-    t0 = 0.880421
+    t0 = 0.650098
 
     t_start = time[d == d0][-1]
     volume = (d*w*t0)[time > t_start]
@@ -94,42 +75,23 @@ def plot_mechanical_data_for_simulation(directory):
 
                 e0_exp_comp = np.array([-0.01,-0.011,-0.0123,-0.0141,-0.0165])
                 E_exp_comp = np.array([1.20, 1.43, 1.51, 1.55, 1.99])
-                plt.plot(e0_exp_comp, E_exp_comp, 'bo', ms=12,  label='Experiment')
+                plt.plot(e0_exp_comp, E_exp_comp, 'bo', ms=12)
                 e0_exp_ten = np.array([0.01,0.011,0.0123,0.0141,0.0165])
                 E_exp_ten = np.array([0.95, 0.78, 0.84, 0.76, 1.06])
-                plt.plot(e0_exp_ten, E_exp_ten, 'bo', ms=12, label='Experiment')
-                plt.legend(['DEM ', 'Experiment'], loc='upper right')
+                plt.plot(e0_exp_ten, E_exp_ten, 'bo', ms=12)
 
-    contact_times = get_contact_output_times(directory)
-    particles = np.genfromtxt(directory + '/particles/particles_' + str(contact_times[0]) + '.dou',
-                              delimiter=',')
-    no_particles = particles.shape[0]
 
-    job_list = []
-    contact_times = np.array(contact_times)
-    contact_times = contact_times[contact_times > t_start]
-    for c_time in contact_times:
-        job_list.append((calculate_particle_contacts, [directory, c_time], {}))
-    particle_contacts = np.array(multi_processer(job_list, delay=0., timeout=3600))
-    particle_contact_per_particle = particle_contacts/no_particles
-    e = np.interp(np.array(contact_times), time[time > t_start], linear_strain)
-
-    plt.figure(3)
-    plt.plot(e, particle_contact_per_particle, 'k', lw=2)
 
 
 def main():
-    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bt01Rbr05/unload_restart_file/')
+
+    directory = os.path.expanduser(r'C:/DEMsim/results/Compression-E34br05bt01/')
     plot_mechanical_data_for_simulation(directory)
 
-    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/tension-E34bt01Rbr05/unload_restart_file/')
+
+    directory = os.path.expanduser(r'C:/DEMsim/results/tension-E34bt01Rbr05/')
     plot_mechanical_data_for_simulation(directory)
 
-    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E24bt01Rbr05/')
-    plot_mechanical_data_for_simulation(directory)
-
-    directory = os.path.expanduser(r'/scratch/users/elaheh/DEMsim/results/viscoelastic/tension-E24bt01Rbr05/unload_restart_file/')
-    plot_mechanical_data_for_simulation(directory)
 
 
     plt.figure(0)
@@ -144,16 +106,7 @@ def main():
     plt.figure(2)
     plt.xlabel('Strain [-]')
     plt.ylabel('$E$ [GPa]')
-
-    plt.figure(3)
-    plt.xlabel('Strain [-]')
-    plt.ylabel('Particle contacts / Particle [-]')
-
-
-
-
-
-
+    plt.legend(['DEM','EXP'], loc='upper right')
 
     plt.show()
 
