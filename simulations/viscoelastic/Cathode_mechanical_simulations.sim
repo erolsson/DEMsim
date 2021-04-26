@@ -1,4 +1,4 @@
-output_dir=/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bt01Rbr05
-restart_file_name=/scratch/users/elaheh/DEMsim/results/viscoelastic/mechanical-test-experimental-5-cykles-E34bt01Rbr05/unload_restart_file.res
+output_dir=/scratch/users/elaheh/DEMsim/results/viscoelastic/compression-E34bt005Rbr05
+restart_file_name=/scratch/users/elaheh/DEMsim/results/viscoelastic/tension-E34bt005Rbr05-not-relaxation/unload_restart_file.res
 active_particle_height=0.4
 bt=0.3
