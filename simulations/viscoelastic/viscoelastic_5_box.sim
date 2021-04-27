@@ -1,5 +1,5 @@
 N=3200
-output_dir=../results/viscoelastic/compression-E34bt01Rbr05
+output_dir=../results/viscoelastic/tension-E34bt01Rbr05
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
