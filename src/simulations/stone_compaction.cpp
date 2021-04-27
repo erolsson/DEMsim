@@ -42,7 +42,8 @@ void DEM::stone_compaction(const std::string& settings_file_name) {
     auto compaction_velocity = parameters.get_parameter<double>("compaction_velocity");
     auto compaction_distance = parameters.get_parameter<double>("compaction_distance");
 
-    auto particle_radii = read_vector_from_file<double>(particle_file);
+    // auto particle_radii = read_vector_from_file<double>(particle_file);
+    auto particle_radii = std::vector<double>(1e4, 0.013/2);
 
     double main_cylinder_height = 0.11643;
     double main_cylinder_radius = 0.0254*2;
