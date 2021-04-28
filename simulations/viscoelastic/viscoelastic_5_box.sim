@@ -1,5 +1,5 @@
 N=3200
-output_dir=../results/viscoelastic/relaxation-compression-E34bt01fraction04
+output_dir=../results/viscoelastic/relaxation-compression-E34bt01fraction08
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
