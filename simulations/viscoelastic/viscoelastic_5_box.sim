@@ -1,5 +1,5 @@
 N=3200
-output_dir=../results/viscoelastic/relaxation-tension-E34bt01fraction04
+output_dir=../results/viscoelastic/relaxation-compression-E34bt01fraction04
 radius_file=../pre_processing/viscoelastic/radie.dat
 E=3.4e9
 nu=0.3
@@ -15,4 +15,4 @@ filling_density=0.15
 particle_density_at_cube=0.39
 mu_binder=1.
 binder_radius_fraction=0.5
-fraction_binder_contacts=0.4
+fraction_binder_contacts=0.8

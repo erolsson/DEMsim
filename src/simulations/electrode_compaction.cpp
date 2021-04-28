@@ -149,8 +149,8 @@ void DEM::electrode_compaction(const std::string& settings_file_name) {
 
 
     EngineType::RunForTime run_for_time_compact_10(simulator,0.007925s);
-    simulator.set_periodic_boundary_condition_strain_rate('x',1.0);
-    deformable_surface -> set_in_plane_strain_rates(1.0, 0.);
+    simulator.set_periodic_boundary_condition_strain_rate('x',-1.0);
+    deformable_surface -> set_in_plane_strain_rates(-1.0, 0.);
     simulator.run(run_for_time_compact_10);
     simulator.set_periodic_boundary_condition_strain_rate('x',0.0);
     deformable_surface -> set_in_plane_strain_rates(0.0, 0.);
