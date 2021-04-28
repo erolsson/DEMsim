@@ -63,12 +63,12 @@ class Snapshot:
 
 def main():
     mlab.figure(size=(1024, 768), bgcolor=(1., 1., 1.), fgcolor=(0, 0., 0.))
-    snapshot = Snapshot('C:/DEMsim/results/experimental',
+    snapshot = Snapshot('C:/DEMsim/results/E34bt005rb05/Compression/',
                         BatteryContactPlotter)
     snapshot.mirror_particles = False
     snapshot.contact_plotter.color = colors.red
     snapshot.contact_plotter.binder_radius = 0.5*0.03
-    snapshot.plot(1.38)
+    snapshot.plot(5.99194)
 
     mlab.show()
 
