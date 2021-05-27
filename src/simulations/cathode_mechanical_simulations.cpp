@@ -9,6 +9,8 @@
 #include "../materials/electrode_material.h"
 #include "../utilities/vec3.h"
 
+//Re-starts the electrode after Calendering process
+
 void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) {
     using namespace DEM;
     using ForceModel = Viscoelastic;
@@ -38,6 +40,7 @@ void DEM::Cathode_mechanical_simulations(const std::string &settings_file_name) 
     EngineType::RunForTime run_for_time_pause(simulator,2.0s);
     simulator.run(run_for_time_pause);
 
+    //Starts the Mechanical simulations
 
     EngineType::RunForTime run_for_time_compact_10(simulator,0.0433s);
     simulator.set_periodic_boundary_condition_strain_rate('x',-0.043);

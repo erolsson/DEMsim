@@ -83,6 +83,7 @@ def plot_mechanical_data_for_simulation(directory):
     plt.plot(e0_vec, E_vec, '--kx',ms= 12, mew=2)
     return e0_vec[0],E_vec[0]
 
+# Experimental data
 #                e0_exp_comp = np.array([-0.01,-0.011,-0.0123,-0.0141,-0.0165])
  #               E_exp_comp = np.array([1.20, 1.43, 1.51, 1.55, 1.99])
   #              plt.plot(e0_exp_comp, E_exp_comp, 'bo', ms=12)

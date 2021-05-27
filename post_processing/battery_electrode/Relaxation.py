@@ -85,18 +85,17 @@ if __name__ == '__main__':
     simulation_directory_tension2= os.path.expanduser(r'C:/DEMsim/results/relaxation-tension/E34bt01fraction04/')
     epsilon_box_tension2(simulation_directory_tension2)
 
+
     epsilon = 0.003544
     t = np.arange(0,215)
     relaxation_compression = 0.344+0.097 * np.exp(-1*t/283)+ 0.074* np.exp(-1*t/6770)
     Sigma_compression = relaxation_compression/relaxation_compression[0]
-
     plt.plot(t,Sigma_compression, 'bx',label='Fit for Prony series-Compression')
 
     epsilon = 0.003544
     t = np.arange(0,215)
     relaxation_tension = 0.117+0.065 * np.exp(-1*t/211)+ 0.057* np.exp(-1*t/4807)
     Sigma_tension = relaxation_tension/relaxation_tension[0]
-
     plt.plot(t,Sigma_tension, 'rx',label='Fit for Prony series-Tension')
 
     plt.legend(loc='upper right', numpoints=1)

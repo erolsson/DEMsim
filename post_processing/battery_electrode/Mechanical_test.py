@@ -56,6 +56,7 @@ def pressures_yy(data_directory):
     force = force_data[:,  5]
     return force
 
+
 def pressures_zz(data_directory):
     with open(data_directory + '/force_fabric_tensor.dou', 'r') as force_fabric_tensor:
         first_line = force_fabric_tensor.readlines()[0]
@@ -65,6 +66,7 @@ def pressures_zz(data_directory):
     force = np.zeros((force_data.shape[0], 1))
     force = force_data[:, 9]
     return force
+
 
 def time_box(data_directory):
     with open(data_directory + '/force_fabric_tensor.dou', 'r') as force_fabric_tensor:
