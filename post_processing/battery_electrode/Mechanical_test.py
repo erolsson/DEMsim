@@ -56,6 +56,7 @@ def pressures_yy(data_directory):
     force = force_data[:,  5]
     return force
 
+
 def pressures_zz(data_directory):
     with open(data_directory + '/force_fabric_tensor.dou', 'r') as force_fabric_tensor:
         first_line = force_fabric_tensor.readlines()[0]
@@ -65,6 +66,7 @@ def pressures_zz(data_directory):
     force = np.zeros((force_data.shape[0], 1))
     force = force_data[:, 9]
     return force
+
 
 def time_box(data_directory):
     with open(data_directory + '/force_fabric_tensor.dou', 'r') as force_fabric_tensor:
@@ -78,14 +80,15 @@ def time_box(data_directory):
 
 
 if __name__ == '__main__':
-    simulation_directory = 'C:/DEMsim/results/experimental'
+    simulation_directory = 'C:/DEMsim/results/E34bt005rb05/Tension/'
 
 
     sigma_x_tot = pressures_xx(simulation_directory)[:]/(dimensions_xx(simulation_directory)[1] *2* dimensions_zz(simulation_directory)[:] *
                                                                       dimensions_xx(simulation_directory)[:] *2)
     strain = -( dimensions_xx(simulation_directory)[:]-dimensions_xx(simulation_directory)[1])/dimensions_xx(simulation_directory)[1]
 
-    plt.plot(strain,sigma_x_tot/10e6)
+    tid=time_box(simulation_directory)[:]
+    plt.plot(tid,sigma_x_tot/10e6,'kx')
     plt.xlabel("Strain")
     plt.ylabel("Stress [MPa]")
     plt.show()
