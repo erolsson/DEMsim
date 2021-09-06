@@ -3,7 +3,8 @@
 //
 
 #include "../simulations.h"
-
+/*
 void DEM::battery_rve_loading(const std::string& settings_file_name) {
 
 }
+ */

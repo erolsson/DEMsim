@@ -40,7 +40,6 @@ add_executable(DEMsim
                src/surfaces/point_surface.tpp
                src/particles/spherical_particle.tpp
                src/engine/output.tpp
-               src/engine/settings.h
                src/utilities/filling_functions.h
                src/utilities/filling_functions.cpp
                src/simulations/gyratory_compaction.cpp

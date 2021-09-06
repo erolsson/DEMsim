@@ -402,7 +402,7 @@ DEM::Vec3 DEM::Viscoelastic::get_rolling_resistance_torque() const {
      //    return -Rb_*Rb_*0.01*kB_*rot_;
      //}
      //else {
-         return DEM::Vec3(0, 0, 0);
+         return {0, 0, 0};
      //    }
 }
 
