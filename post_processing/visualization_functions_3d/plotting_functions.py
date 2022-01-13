@@ -189,7 +189,7 @@ class SurfacesPlotter:
         # Inspect the first line
         line = data_lines[0]
         words = line.split(", ")
-        print(words)
+
         id_idx = [i for i in range(len(words)) if words[i].upper().startswith('ID')]
         for idx in id_idx:
             surface_id = int(words[idx][3:])

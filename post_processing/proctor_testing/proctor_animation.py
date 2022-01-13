@@ -1,6 +1,6 @@
 from mayavi import mlab
 
-from post_processing.animation import Animation
+from visualization_functions_3d.animation import Animation
 
 if __name__ == '__main__':
     simulation_directory = '../results/proctor/animation'

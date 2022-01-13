@@ -19,12 +19,15 @@ class BatteryContactPlotter:
         self.color = colors.blue
 
     def plot(self, time):
-        contact_data = np.genfromtxt(self.directory + '/contacts/contacts_' + str(time) + '.dou', delimiter=',')
-        particle_data = np.genfromtxt(self.directory + '/particles/particles_' + str(time) + '.dou', delimiter=',')
+        contact_data = np.genfromtxt(self.directory / ('contacts/contacts_' + str(time) + '.dou'), delimiter=',')
+        particle_data = np.genfromtxt(self.directory / ('particles/particles_' + str(time) + '.dou'), delimiter=',')
         mirror_particle_data = {}
-        if os.path.isfile(self.directory + '/mirror_particles/mirror_particles_' + str(time) + '.dou'):
-            mirror_particle_array = np.genfromtxt(self.directory + '/mirror_particles/mirror_particles_'
-                                                  + str(time) + '.dou', delimiter=',')
+        if os.path.isfile(self.directory / ('mirror_particles/mirror_particles_' + str(time) + '.dou')):
+            mirror_particle_array = np.genfromtxt(
+                self.directory / ('mirror_particles/mirror_particles_'
+                                  + str(time) + '.dou'), delimiter=',')
+            if len(mirror_particle_array.shape) == 1:
+                mirror_particle_array = np.expand_dims(mirror_particle_array, axis=0)
             for mp in mirror_particle_array:
                 mp_id = int(mp[0])
                 if mp_id not in mirror_particle_data:
@@ -32,8 +35,8 @@ class BatteryContactPlotter:
                 mirror_particle_data[mp_id].append(Particle(position=mp[1:4], radius=mp[7]))
 
         surfaces = set()
-        if os.path.isfile(self.directory + '/surface_positions.dou'):
-            with open(self.directory + '/surface_positions.dou', 'r') as surface_data_file:
+        if os.path.isfile(self.directory / 'surface_positions.dou'):
+            with open(self.directory / 'surface_positions.dou', 'r') as surface_data_file:
                 for line in surface_data_file.readlines():
                     data_line = line.split(',')
                     line_time = float(data_line[-1])
