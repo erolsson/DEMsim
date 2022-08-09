@@ -338,7 +338,7 @@ DEM::Engine<ForceModel, ParticleType>::set_force_control_on_surface(DEM::Surface
                                                                     char direction, bool global_time)
 {
     if (direction == 'x' || direction == 'y' || direction == 'z') {
-        auto amp = std::make_shared<DEM::Amplitude>(std::bind(&Engine::get_time, this), global_time);
+        auto amp = std::make_shared<DEM::Amplitude>([](){ return 0.; });
         surface->set_force_amplitude(amp, direction);
         return amp;
     }

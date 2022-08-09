@@ -7,6 +7,7 @@
 # include "../materials/elastic_bonded_material.h"
 # include "../engine/engine.h"
 # include "../utilities/filling_functions.h"
+# include "../utilities/amplitude.h"
 
 void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     using namespace DEM;
@@ -112,18 +113,28 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
 
     bbox = simulator.get_bounding_box();
     top_surface->move(Vec3(0, 0, -(gas_height - bbox[5])), Vec3());
-    top_surface->set_velocity(Vec3(0, 0, -0.001));
-    EngineType::SurfaceNormalForceLess surface_force(top_surface, compaction_force);
+    top_surface->set_mass(1e-3);
+
+    auto t0 = simulator.get_time();
+    auto amp_func = [compaction_force, &simulator, t0]() {
+        auto time = simulator.get_time() -t0;
+        if(time < 2s) {
+            return -compaction_force*time/2s;
+        }
+        return -compaction_force;
+    };
+
+    auto amp = std::make_shared<DEM::Amplitude>(amp_func);
+    top_surface->set_force_amplitude(amp, 'z');
+    run_for_time.reset(2s);
     auto output2 = simulator.create_output(output_directory + "/compaction", 0.001s);
     output2->print_kinetic_energy = true;
     output2->print_surface_positions = true;
     output2->print_surface_forces = true;
 
-    simulator.run(surface_force);
-
-    top_surface->rest();
-    top_cylinder->set_velocity(Vec3(0.0025/60, 0, 0));
-    run_for_time.reset(240s);
+    simulator.run(run_for_time);
+    top_cylinder->set_velocity(Vec3(0.025/60, 0, 0));
+    run_for_time.reset(24s);
 
     auto output3 = simulator.create_output(output_directory + "/shear_test", 0.001s);
     output3->print_kinetic_energy = true;

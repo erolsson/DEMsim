@@ -79,8 +79,8 @@ void DEM::gyratory_compaction(const std::string& settings_file_name){
 
     top_surface->set_mass(cylinder_radius*cylinder_radius*0.005*7200); // Steel plate 5 mm thick
     std::cout << "Mass of upper plate" << top_surface->get_mass() << "\n";
-    auto fz = simulator.set_force_control_on_surface(top_surface, 'z');
-    fz->constant_term(-1.0);
+    //auto fz = simulator.set_force_control_on_surface(top_surface, 'z');
+    //fz->constant_term(-1.0);
 
     auto output1 = simulator.create_output(output_directory, 0.01s);
     output1->print_particles = true;
