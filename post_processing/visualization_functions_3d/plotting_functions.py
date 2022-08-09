@@ -10,6 +10,7 @@ from mayavi import mlab
 
 from visualization_functions_3d import colors
 
+
 class BoundingBox:
     def __init__(self):
         self.x_min = lambda t: -1e99

@@ -45,6 +45,7 @@ class Snapshot:
             time = int(time)
 
         particle_data = np.genfromtxt(self.directory / ('particles/particles_' + str(time) + '.dou'), delimiter=',')
+        particle_data = particle_data[0:1, :]
         self.spheres_plotter.plot(particle_data)
         if self.mirror_particles:
             mirror_particle_data = np.genfromtxt(self.directory / ('mirror_particles/mirror_particles_'
@@ -63,12 +64,13 @@ class Snapshot:
 
 def main():
     mlab.figure(size=(1024, 768), bgcolor=(1., 1., 1.), fgcolor=(0, 0., 0.))
-    snapshot = Snapshot('C:/DEMsim/results/E34bt005rb05/Compression/',
-                        BatteryContactPlotter)
+    snapshot = Snapshot(os.path.expanduser('~/DEMsim/results/battery_rve/Cathod'))
     snapshot.mirror_particles = False
-    snapshot.contact_plotter.color = colors.red
-    snapshot.contact_plotter.binder_radius = 0.5*0.03
-    snapshot.plot(5.99194)
+    snapshot.plot_periodic_bc = False
+    snapshot.surfaces_plotter = None
+    # snapshot.contact_plotter.color = colors.red
+    # snapshot.contact_plotter.binder_radius = 0.5*0.03
+    snapshot.plot(0.1)
 
     mlab.show()
 

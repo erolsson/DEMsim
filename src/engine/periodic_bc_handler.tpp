@@ -334,7 +334,7 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::respect_boundaries(Partic
         if (overlapping_directions == 1) {
             mirror_idx = std::find(directions.begin(), directions.end(), true) - directions.begin();
         }
-        else if (directions[0] == true && directions[1] == true) {
+        else if (directions[0] && directions[1]) {
             mirror_idx = 3;
         }
         else if (directions[0] == true && directions[2] == true) {
@@ -405,7 +405,7 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::respect_boundaries(Partic
 template<typename ForceModel, typename ParticleType>
 void PeriodicBCHandler<ForceModel, ParticleType>::add_periodic_bc(char axis, double boundary_min, double boundary_max) {
     auto axis_idx = direction_idx(axis);
-    if (active_directions_[axis_idx] == false) {
+    if (!active_directions_[axis_idx]) {
         active_directions_[axis_idx] = true;
         ++no_active_directions_;
     }

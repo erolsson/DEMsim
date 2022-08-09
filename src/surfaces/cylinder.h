@@ -21,7 +21,7 @@ namespace DEM {
         Cylinder(std::size_t id, double radius, const Vec3& axis, const Vec3& base_point, double length,
                  const std::string& name, bool inward=true, bool infinite=false, bool closed_ends=false,
                  std::size_t collision_id=0);
-        Cylinder(const ParameterMap& parameters);
+        explicit Cylinder(const ParameterMap& parameters);
         ~Cylinder() override = default;
         using Surface<ForceModel, ParticleType>::get_id;
         using Surface<ForceModel, ParticleType>::restart_data;
@@ -63,7 +63,7 @@ namespace DEM {
         // To allow fast functions for a common case, currently only z-aligned is supported in the collision detector!!!
         bool z_aligned_;
 
-        void update_bounding_box();
+        void update_bounding_box() override;
     };
 }
 

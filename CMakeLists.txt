@@ -87,6 +87,11 @@ add_executable(DEMsim
                src/contact_models/porous_electrode_contact.h
                src/simulations/porous_electrode/porous_electrode_rve.cpp
                src/simulations/electrode_mechanical_test.cpp
-        )
+               src/materials/elastic_bonded_material.h
+               src/materials/elastic_bonded_material.cpp
+               src/contact_models/hertz_with_bonds.h
+               src/contact_models/hertz_with_bonds.cpp
+               src/simulations/asphalt_shear_box.cpp
+               )
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}" Eigen3::Eigen)

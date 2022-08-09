@@ -52,6 +52,21 @@ void DEM::periodic_bc_simulation(const std::string& settings_file_name) {
         simulator.create_particle(particle_radii[i], particle_positions[i], Vec3(0,0,0), material);
     }
     auto output1 = simulator.create_output(output_directory, 0.001s, "output1");
+
+    auto p1 = Vec3(-box_side/2, -box_side/2, -box_height/2);
+    auto p2 = Vec3( box_side/2, -box_side/2, -box_height/2);
+    auto p3 = Vec3( box_side/2,  box_side/2, -box_height/2);
+    auto p4 = Vec3(-box_side/2,  box_side/2, -box_height/2);
+    auto p5 = Vec3(-box_side/2, -box_side/2, box_height/2);
+    auto p6 = Vec3( box_side/2, -box_side/2, box_height/2);
+    auto p7 = Vec3( box_side/2,  box_side/2, box_height/2);
+    auto p8 = Vec3(-box_side/2,  box_side/2, box_height/2);
+    std::vector<Vec3> bottom_points{p1, p2, p3, p4};
+    std::vector<Vec3> top_points{p8, p7, p6, p5};
+
+    auto top_surface = simulator.create_point_surface(top_points, true, "top_plate", false);
+    auto bottom_surface = simulator.create_point_surface(bottom_points, true, "bottom_plate", false);
+
     output1->print_particles = true;
     output1->print_kinetic_energy = true;
     output1->print_surface_positions = true;
@@ -60,14 +75,14 @@ void DEM::periodic_bc_simulation(const std::string& settings_file_name) {
     output1->print_periodic_bc = true;
     output1->print_mirror_particles = true;
     output1->print_fabric_force_tensor = true;
-
+    simulator.set_gravity(Vec3(0, 0, -9.82));
     simulator.add_periodic_boundary_condition('x', -box_side/2, box_side/2);
     simulator.add_periodic_boundary_condition('y', -box_side/2, box_side/2);
-    simulator.add_periodic_boundary_condition('z', -box_height/2, box_height/2);
+    // simulator.add_periodic_boundary_condition('z', -box_height/2, box_height/2);
 
     //simulator.set_periodic_boundary_condition_strain_rate('x',-1.);
     // simulator.set_periodic_boundary_condition_strain_rate('y',-1.);
-    simulator.set_periodic_boundary_condition_strain_rate('z',-2/3.);
+    // simulator.set_periodic_boundary_condition_strain_rate('z',-2/3.);
 
     simulator.set_mass_scale_factor(1.);
 

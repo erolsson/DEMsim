@@ -26,6 +26,7 @@ namespace DEM {
     void Cathode_mechanical_simulations(const std::string& settings_file_name);
     void restart_electrode(const std::string& settings_file_name);
     void porous_electrode_rve(const std::string& settings_file_name);
+    void asphalt_shear_box(const std::string& settings_file_name);
 
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 
@@ -34,4 +35,4 @@ namespace DEM {
 
 }
 
-#endif //DEMSIM_SIMULATIONS_H
+#endif //SIMULATIONS_H
