@@ -134,7 +134,7 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     output2->print_surface_forces = true;
 
     simulator.run(run_for_time);
-    top_cylinder->set_velocity(Vec3(0.25/60, 0, 0));
+    top_cylinder->set_velocity(Vec3(0.025/60, 0, 0));
     run_for_time.reset(24s);
 
     auto output3 = simulator.create_output(output_directory + "/shear_test", 0.001s);
