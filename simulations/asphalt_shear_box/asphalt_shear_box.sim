@@ -5,3 +5,4 @@ mu=0.3
 mu_wall=0.3
 output_dir=../results/asphalt_shear_box/big_small/
 pressure=1e5
+yield_stress=500e3

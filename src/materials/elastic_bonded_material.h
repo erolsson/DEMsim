@@ -16,6 +16,7 @@ namespace DEM {
         ~ElasticBondedMaterial() override = default;
         double E { 0. };
         double nu { 0. };
+        double sY { 1e20 };
         double kT{ 0. };
         double mu { 0. };
         double mu_wall { 0. };

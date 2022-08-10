@@ -37,6 +37,8 @@ namespace DEM {
         double k_bond_;
         double c_bond_;
         double R0_;
+        double ky_;
+        double hy_;
 
         double kT_;
         double mu_;
