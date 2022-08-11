@@ -27,7 +27,7 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     material->mu_wall = parameters.get_parameter<double>("mu_wall");
     material->kT = parameters.get_parameter<double>("kT");
     auto pressure = parameters.get_parameter<double>("pressure");
-
+    auto shear_velocity = parameters.get_parameter<double>("shear_velocity");
     double cylinder_diameter = 0.1;
     double cylinder_height = 0.035;
     double cylinder_volume = pi*cylinder_diameter*cylinder_diameter/4*cylinder_height;
@@ -143,7 +143,8 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     double z_max = (*top_particle)->get_position().z();
     bottom_cylinder->set_length(z_max);
     top_cylinder->set_point(Vec3(0, 0, z_max));
-    top_cylinder->set_velocity(Vec3(0.025/60, 0, 0));
+    top_cylinder->set_velocity(Vec3(shear_velocity/60, 0, 0));
+    top_surface->set_velocity(Vec3(shear_velocity/60., 0, 0));
     run_for_time.reset(24s);
 
     auto output3 = simulator.create_output(output_directory + "/shear_test", 0.001s);
