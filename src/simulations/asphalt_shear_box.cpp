@@ -74,9 +74,9 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     std::vector<double> radii_1 = std::vector<double>(n1, radius_1);
     std::vector<double> radii_2 = std::vector<double>(n2, radius_2);
     auto positions_1 = random_fill_cylinder(0, gas_height, cylinder_diameter/2, radii_1);
-
+    std::vector<ParticleType*> particles_1 {};
     for (std::size_t i = 0; i != radii_1.size(); ++i) {
-        simulator.create_particle(radii_1[i], positions_1[i], Vec3(0,0,0), material);
+        particles_1.push_back(simulator.create_particle(radii_1[i], positions_1[i], Vec3(0,0,0), material));
     }
 
     auto output1 = simulator.create_output(output_directory, 0.001s);
@@ -98,9 +98,9 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
 
     auto bbox = simulator.get_bounding_box();
     auto positions_2 = random_fill_cylinder(bbox[5], gas_height, cylinder_diameter/2, radii_2);
-
+    std::vector<ParticleType*> particles_2 {};
     for (std::size_t i = 0; i != radii_2.size(); ++i) {
-        simulator.create_particle(radii_2[i], positions_2[i], Vec3(0,0,0), material);
+        particles_2.push_back(simulator.create_particle(radii_2[i], positions_2[i], Vec3(0,0,0), material));
     }
 
     simulator.setup();
@@ -134,6 +134,15 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     output2->print_surface_forces = true;
 
     simulator.run(run_for_time);
+
+    // The shear test
+    auto top_particle = std::max_element(particles_1.begin(), particles_1.end(),
+                                         [](const auto& p1, const auto& p2) {
+       return p1->get_position().z() < p2->get_position().z();
+    });
+    double z_max = (*top_particle)->get_position().z();
+    bottom_cylinder->set_length(z_max);
+    top_cylinder->set_point(Vec3(0, 0, z_max));
     top_cylinder->set_velocity(Vec3(0.025/60, 0, 0));
     run_for_time.reset(24s);
 

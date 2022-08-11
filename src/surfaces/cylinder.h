@@ -45,6 +45,9 @@ namespace DEM {
         }
         [[nodiscard]] std::string type() const override { return "Cylinder"; }
 
+        void set_point(const Vec3& point) { point_ = point; }
+        void set_length(double length) { length_ = length; }
+
     private:
         using Surface<ForceModel, ParticleType>::displacement_this_inc_;
         using Surface<ForceModel, ParticleType>::rotation_this_inc_;
