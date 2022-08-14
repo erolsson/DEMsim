@@ -136,16 +136,8 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     simulator.run(run_for_time);
 
     // The shear test
-    auto particle_z_compare =  [](const auto& p1, const auto& p2) {
-        return p1->get_position().z() < p2->get_position().z();
-    };
+    double z = top_surface->get_bounding_box_values()[5]/2;
 
-    auto top_particle = std::max_element(particles_1.begin(), particles_1.end(), particle_z_compare);
-    double z_max = (*top_particle)->get_position().z();
-
-    auto bottom_particle = std::min_element(particles_2.begin(), particles_2.end(), particle_z_compare);
-    double z_min = (*bottom_particle)->get_position().z();
-    double z = (z_max + z_min)/2;
     bottom_cylinder->set_length(z);
     top_cylinder->set_point(Vec3(0, 0, z));
     top_cylinder->set_velocity(Vec3(shear_velocity/60, 0, 0));

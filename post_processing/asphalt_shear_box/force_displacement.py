@@ -18,7 +18,7 @@ ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
 
-main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/mu_0_6").expanduser()
+main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/mu=0.6_mu_wall=0").expanduser()
 for sim, c in zip(["Small_Small", "Big_Big", "Big_Small"], ['g', 'r', 'b', 'm']):
     for p, line in zip(["100kPa", "400kPa"], ['--', '-']):
         directory = main_directory / (sim.lower() + "_" + p)

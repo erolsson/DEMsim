@@ -99,7 +99,7 @@ DEM::Vec3 DEM::Cylinder<ForceModel, ParticleType>::vector_to_point(const Vec3& p
             else {
                 double r2 = pow(point.x() - point_.x(), 2) + pow(point.y() - point_.y(), 2);
                 if (r2 <= radius_*radius_) {
-                    return Vec3(0., 0., position_on_axis);
+                    return {0., 0., position_on_axis};
                 }
                 point_on_surface = point_ + axis_*d +
                         radius_*Vec3(point.x() - point_.x(), point.y() - point_.y(), 0.)/sqrt(r2);
