@@ -144,7 +144,7 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     double z_max = (*top_particle)->get_position().z();
 
     auto bottom_particle = std::min_element(particles_2.begin(), particles_2.end(), particle_z_compare);
-    double z_min = (*top_particle)->get_position().z();
+    double z_min = (*bottom_particle)->get_position().z();
     double z = (z_max + z_min)/2;
     bottom_cylinder->set_length(z);
     top_cylinder->set_point(Vec3(0, 0, z));
