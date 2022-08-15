@@ -1,6 +1,6 @@
 diameter_1=0.0095
 diameter_2=0.0095
-kT=500e6
+kT=50e6
 mu=0.8
 mu_wall=0.0
 output_dir=../results/asphalt_shear_box/mu_0.8_mu_wall=0.0/big_big_400kPa/

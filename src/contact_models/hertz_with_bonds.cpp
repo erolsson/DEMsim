@@ -20,7 +20,7 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1, Spher
     kT_ = (mat1->kT + mat2->kT)/2*R0_;
     mu_ = (mat1->mu + mat2->mu)/2;
     ky_ = 6*pi*1.43*mat1->sY*R0_;
-    hy_ = 3*pi*1.43*mat1->sY/E0;
+    hy_ = pow(3*pi*1.43*mat1->sY/E0,2)*R0_;
 }
 
 DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1,
@@ -38,7 +38,7 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1,
     kT_ = 2*mat1->kT*R0_;
     mu_ = mat1->mu_wall;
     ky_ = 6*pi*1.43*mat1->sY*R0_;
-    hy_ = 3*pi*1.43*mat1->sY/E0*R0_;
+    hy_ = pow(3*pi*1.43*mat1->sY/E0, 2)*R0_;
 }
 
 void DEM::HertzWithBonds::update(double h, const Vec3& dt, const Vec3&, const Vec3& normal) {
