@@ -148,6 +148,6 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     output3->print_kinetic_energy = true;
     output3->print_surface_positions = true;
     output3->print_surface_forces = true;
-
+    simulator.set_rotation(false);
     simulator.run(run_for_time);
 }

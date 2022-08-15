@@ -18,13 +18,14 @@ ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
 
-main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/mu=0.6_mu_wall=0").expanduser()
+main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/mu=0.8_mu_wall=0").expanduser()
 for sim, c in zip(["Small_Small", "Big_Big", "Big_Small"], ['g', 'r', 'b', 'm']):
     for p, line in zip(["100kPa", "400kPa"], ['--', '-']):
         directory = main_directory / (sim.lower() + "_" + p)
         surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
         f = -surface_forces[:, -4]
         surface_positions = np.genfromtxt(directory / "surface_positions.dou", delimiter=",")
+        kinetic_energy = np.genfromtxt(directory / "kinetic_energy.dou", delimiter=",")
         d = surface_positions[:, -5]
         if d.shape[0] != f.shape[0]:
             n = min(d.shape[0], f.shape[0])
@@ -35,8 +36,12 @@ for sim, c in zip(["Small_Small", "Big_Big", "Big_Small"], ['g', 'r', 'b', 'm'])
         else:
             label = None
 
+        plt.figure(0)
         plt.plot(d*1000, f/1000, c + line, lw=2, label=label)
+        plt.figure(1)
+        plt.plot(d*1000, kinetic_energy[:, 1], c + line, lw=2)
 
+plt.figure(0)
 plt.ylim(0, 3)
 plt.xlim(0, 8)
 

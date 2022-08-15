@@ -45,13 +45,13 @@ class Snapshot:
             time = int(time)
 
         particle_data = np.genfromtxt(self.directory / ('particles/particles_' + str(time) + '.dou'), delimiter=',')
-        particle_data = particle_data[0:1, :]
         self.spheres_plotter.plot(particle_data)
         if self.mirror_particles:
             mirror_particle_data = np.genfromtxt(self.directory / ('mirror_particles/mirror_particles_'
                                                  + str(time) + '.dou'), delimiter=',')
             self.mirror_particles_plotter.plot(mirror_particle_data)
         if self.surfaces_plotter:
+            self.surfaces_plotter.surfaces_colors = self.surfaces_colors
             self.surfaces_plotter.plot(time)
         if self.plot_periodic_bc:
             self.periodic_bc_plotter.plot(time)
@@ -64,13 +64,12 @@ class Snapshot:
 
 def main():
     mlab.figure(size=(1024, 768), bgcolor=(1., 1., 1.), fgcolor=(0, 0., 0.))
-    snapshot = Snapshot(os.path.expanduser('~/DEMsim/results/battery_rve/Cathod'))
-    snapshot.mirror_particles = False
+    snapshot = Snapshot(os.path.expanduser('~/DEMsim/results/asphalt_shear_box/mu=0.8_mu_wall=0/big_big_400kPa'))
     snapshot.plot_periodic_bc = False
-    snapshot.surfaces_plotter = None
-    # snapshot.contact_plotter.color = colors.red
-    # snapshot.contact_plotter.binder_radius = 0.5*0.03
-    snapshot.plot(0.1)
+
+    snapshot.surfaces_colors[1] = colors.red
+    snapshot.surfaces_colors[3] = colors.red
+    snapshot.plot(14.83)
 
     mlab.show()
 
