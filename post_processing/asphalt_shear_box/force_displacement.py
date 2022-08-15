@@ -40,6 +40,8 @@ for sim, c in zip(["Small_Small", "Big_Big", "Big_Small"], ['g', 'r', 'b', 'm'])
         plt.plot(d*1000, f/1000, c + line, lw=2, label=label)
         plt.figure(1)
         plt.plot(d*1000, kinetic_energy[:, 1], c + line, lw=2)
+        plt.figure(2)
+        plt.plot(d*1000, surface_positions[:, 20], c + line, lw=2)
 
 plt.figure(0)
 plt.ylim(0, 3)

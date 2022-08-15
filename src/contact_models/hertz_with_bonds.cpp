@@ -61,7 +61,14 @@ void DEM::HertzWithBonds::update(double h, const Vec3& dt, const Vec3&, const Ve
         if (kT_*uT_.length() > mu_*F_) { // Slip
             uT_ = mu_*F_/kT_*uT_.normal();
         }
-        FT_ = -kT_*uT_;
+
+        if(!dt.is_zero()) {
+            FT_ = -kT_*uT_*0.9;
+            FT_ -= mu_*F_*dt.normal()*0.1;
+        }
+        else {
+            FT_ = -kT_*uT_;
+        }
     }
     else {
         h_ = 0;
