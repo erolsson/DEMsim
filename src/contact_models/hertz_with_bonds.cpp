@@ -62,6 +62,9 @@ void DEM::HertzWithBonds::update(double h, const Vec3& dt, const Vec3&, const Ve
             FT_ = -mu_*F_*uT_.normal();
             uT_ -= mu_*F_*uT_.normal()/kT_;
         }
+        else {
+            FT_ = -kT_*uT_;
+        }
     }
     else {
         h_ = 0;
