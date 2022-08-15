@@ -60,7 +60,7 @@ void DEM::HertzWithBonds::update(double h, const Vec3& dt, const Vec3&, const Ve
         uT_ += dt;
         if (kT_*uT_.length() > mu_*F_) { // Slip
             FT_ = -mu_*F_*uT_.normal();
-            uT_ -= mu_*F_*uT_.normal()/kT_;
+            uT_ = mu_*F_*uT_.normal()/kT_;
         }
         else {
             FT_ = -kT_*uT_;
@@ -76,7 +76,7 @@ void DEM::HertzWithBonds::update(double h, const Vec3& dt, const Vec3&, const Ve
 
 std::string DEM::HertzWithBonds::get_output_string() const {
     std::stringstream ss;
-    ss << F_;
+    ss << F_ << ", " << FT_.x() << ", " << FT_.y() << ", " << FT_.z() << ", " << FT_.length();
     return ss.str();
 }
 
