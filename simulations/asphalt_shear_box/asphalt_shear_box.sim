@@ -5,5 +5,5 @@ mu=0.8
 mu_wall=0.0
 output_dir=../results/asphalt_shear_box/mu_0.8_mu_wall=0.0/big_big_400kPa/
 shear_velocity=0.025
-pressure=1e5
+pressure=4e5
 yield_stress=500e3
