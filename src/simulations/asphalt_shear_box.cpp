@@ -127,7 +127,7 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
 
     auto amp = std::make_shared<DEM::Amplitude>(amp_func);
     top_surface->set_force_amplitude(amp, 'z');
-    run_for_time.reset(2s);
+    run_for_time.reset(3s);
     auto output2 = simulator.create_output(output_directory + "/compaction", 0.001s);
     output2->print_kinetic_energy = true;
     output2->print_surface_positions = true;
