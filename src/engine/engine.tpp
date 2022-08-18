@@ -751,9 +751,10 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
         double m = p->get_mass()*mass_scale_factor_;
 
         new_a = F/m + gravity_;
-        new_v = v+ new_a*dt;
+        new_v = v + new_a*dt;
         new_disp = new_v*dt;
         p->set_velocity(new_v);
+        p->set_acceleration(new_a);
         p->move(new_disp);
 
         if (rotation_) {
@@ -763,6 +764,7 @@ void DEM::Engine<ForceModel, ParticleType>::move_particles()
             new_ang_v = p->get_angular_velocity() + new_ang_a*dt;
             new_rot = new_ang_v*dt;
             p->set_angular_velocity(new_ang_v);
+            p->set_angular_acceleration(new_ang_a);
             p->rotate(new_rot);
         }
     }
@@ -784,7 +786,7 @@ void DEM::Engine<ForceModel, ParticleType>::move_surfaces()
             auto force_amp = surface_forces[axis];
             if (force_amp != nullptr) {
                 double f = force_amp->value() + surface->get_total_force()[axis];
-                double a = f/surface->get_mass() + gravity_[axis];
+                double a = f/(surface->get_mass()*mass_scale_factor_) + gravity_[axis];
                 velocity[axis] +=  a*dt;
                 distance[axis] = velocity[axis]*dt;
             }

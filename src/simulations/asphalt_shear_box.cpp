@@ -116,6 +116,7 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     top_surface->move(Vec3(0, 0, -(gas_height - bbox[5])), Vec3());
     top_surface->set_mass(1e-3);
 
+    simulator.set_mass_scale_factor(10);
     auto t0 = simulator.get_time();
     auto amp_func = [compaction_force, &simulator, t0]() {
         auto time = simulator.get_time() -t0;

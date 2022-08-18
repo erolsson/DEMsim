@@ -33,11 +33,15 @@ namespace DEM {
 
         const Vec3& get_position() const { return position_; }
         const Vec3& get_velocity() const { return velocity_; }
+        const Vec3& get_acceleration() const { return acceleration_; }
         void set_velocity(const Vec3& new_velocity) { velocity_ = new_velocity; }
+        void set_acceleration(const Vec3& new_acceleration) { acceleration_ = new_acceleration; }
 
         const Vec3& get_rotation() const { return rot_; }
         const Vec3& get_angular_velocity() const { return ang_vel_; }
+        const Vec3& get_angular_acceleration() const {return angular_acceleration_; }
         void set_angular_velocity(Vec3 new_ang_vel) { ang_vel_ = new_ang_vel; }
+        void set_angular_acceleration(Vec3 new_ang_acc) { angular_acceleration_ = new_ang_acc; }
 
         const Vec3& get_displacement_this_increment() const { return displacement_this_inc_; }
         const Vec3& get_rotation_this_increment() const { return rot_this_inc_; }
@@ -51,8 +55,10 @@ namespace DEM {
 
         Vec3 position_;
         Vec3 velocity_;
+        Vec3 acceleration_ {0, 0, 0};
         Vec3 rot_{ Vec3(0., 0., 0.) };
         Vec3 ang_vel_{ Vec3(0., 0., 0.) };
+        Vec3 angular_acceleration_ {0, 0, 0};
 
         // Forces
         Vec3 f_{ Vec3(0., 0., 0.) };
