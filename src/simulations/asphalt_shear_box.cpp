@@ -8,6 +8,7 @@
 # include "../engine/engine.h"
 # include "../utilities/filling_functions.h"
 # include "../utilities/amplitude.h"
+#include <fenv.h>
 
 void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     using namespace DEM;
@@ -16,6 +17,7 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     using EngineType = Engine<ForceModel, ParticleType>;
     using namespace std::chrono_literals;
     SimulationParameters parameters(settings_file_name);
+    feenableexcept(FE_ALL_EXCEPT & ~FE_INEXACT);
     auto output_directory = parameters.get_parameter<std::string>("output_dir");
 
     EngineType simulator(1us);
@@ -26,6 +28,10 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     material->sY = parameters.get_parameter<double>("yield_stress");
     material->mu_wall = parameters.get_parameter<double>("mu_wall");
     material->kT = parameters.get_parameter<double>("kT");
+    material->c_bond = parameters.get_parameter<double>("c_bond");
+    material->k_bond = parameters.get_parameter<double>("k_bond");
+    material->fracture_stress = parameters.get_parameter<double>("fracture_stress");
+    material->bond_radius_fraction = parameters.get_parameter<double>("bond_radius_fraction");
     auto pressure = parameters.get_parameter<double>("pressure");
     auto shear_velocity = parameters.get_parameter<double>("shear_velocity");
     double cylinder_diameter = 0.1;
@@ -134,6 +140,9 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     output2->print_surface_positions = true;
     output2->print_surface_forces = true;
 
+    if (material->k_bond > 0) {
+        material->bonded = true;
+    }
     simulator.run(run_for_time);
 
     // The shear test

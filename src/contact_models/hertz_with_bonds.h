@@ -43,6 +43,13 @@ namespace DEM {
         double kT_;
         double mu_;
         double F_{ 0 };
+        double F_bond_ { 0 };
+        Vec3 FT_bond_ {0, 0, 0};
+        bool fractured_ {false };
+        bool bonded_ {false};
+        double increment_;
+        double bond_area_;
+        double fracture_stress_;
 
         const ElasticBondedMaterial* material;
 

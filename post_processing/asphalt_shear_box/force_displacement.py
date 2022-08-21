@@ -18,30 +18,27 @@ ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
 
-main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/mu=0.8_mu_wall=0.0").expanduser()
-for sim, c in zip(["Big_Big"], ['g', 'r', 'b', 'm']):
-    for p, line in zip(["400kPa"], ['--', '-']):
-        directory = main_directory / (sim.lower() + "_" + p)
-        surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
-        f = -surface_forces[:, -4]
-        surface_positions = np.genfromtxt(directory / "surface_positions.dou", delimiter=",")
-        kinetic_energy = np.genfromtxt(directory / "kinetic_energy.dou", delimiter=",")
-        d = surface_positions[:, -5]
-        if d.shape[0] != f.shape[0]:
-            n = min(d.shape[0], f.shape[0])
-            f = f[0:n]
-            d = d[0:n]
+main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/mu=0.8_mu_wall=0.0/").expanduser()
+for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b', 'm']):
+    for p, line in zip(["100kPa", "400kPa"], ['--', '-']):
+        for sim in range(1, 4):
+            directory = main_directory / str(sim) / (simulation.lower() + "_" + p)/"shear_test"
+            surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
+            surface_positions = np.genfromtxt(directory / "surface_positions.dou", delimiter=",")
+            kinetic_energy = np.genfromtxt(directory / "kinetic_energy.dou", delimiter=",")
+            if sim == 1:
+                d = surface_positions[:, -5]
+                f = -surface_forces[:, -4]
+            else:
+                d += surface_positions[:, -5]
+                f += -surface_forces[:, -4]
         if line == '-':
-            label = sim.replace('_', '-')
+            label = simulation.replace('_', '-')
         else:
             label = None
 
         plt.figure(0)
-        plt.plot(d*1000, f/1000, c + line, lw=2, label=label)
-        plt.figure(1)
-        plt.plot(d*1000, kinetic_energy[:, 1], c + line, lw=2)
-        plt.figure(2)
-        plt.plot(d*1000, surface_positions[:, 20], c + line, lw=2)
+        plt.plot(d*1000/3, f/1000/3, c + line, lw=2, label=label)
 
 plt.figure(0)
 plt.ylim(0, 3)
@@ -52,7 +49,7 @@ plt.plot([-1, -2], [-1, -2], '--k', lw=2, label='100 kPa')
 plt.plot([-1, -2], [-1, -2], '-k', lw=2, label='400 kPa')
 
 legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
-# legend.get_texts()[3].set_color("white")
+legend.get_texts()[3].set_color("white")
 plt.gca().add_artist(legend)
 plt.xlabel("Displacement [mm]")
 plt.ylabel("Force [kN]")
