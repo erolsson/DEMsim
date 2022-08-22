@@ -90,7 +90,8 @@ void DEM::HertzWithBonds::update(double h, const Vec3& dt, const Vec3&, const Ve
     if (bonded()) {
         F_bond_ += k_bond_*dh - k_bond_/c_bond_*F_bond_*increment_;
         FT_bond_ -= (k_bond_*dt - k_bond_/c_bond_*FT_bond_*increment_);
-        double effective_contact_stress = -F_bond_/bond_area_;
+        double effective_contact_stress = -(0.5*F_bond_
+                + sqrt(F_bond_*F_bond_/4 + FT_bond_.length()*FT_bond_.length()))/bond_area_;
         if (effective_contact_stress > fracture_stress_) {
             fractured_ = true;
         }
