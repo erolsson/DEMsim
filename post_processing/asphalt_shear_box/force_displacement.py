@@ -18,7 +18,7 @@ ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
 
-main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded/mu=0.8_mu_wall=0.0/").expanduser()
+main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded/k_bond=100MPa_sf=10MPa/").expanduser()
 for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b', 'm']):
     for p, line in zip(["100kPa", "400kPa"], ['--', '-']):
         n = 1
