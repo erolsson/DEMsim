@@ -25,7 +25,8 @@ std::map<std::string, DEM::SimulationFunctionPtr> DEM::valid_simulations() {
             {"battery_rve_compaction",         DEM::battery_rve_compaction},
             {"restart_electrode",              DEM::restart_electrode},
             {"porous_electrode_rve",           DEM::porous_electrode_rve},
-            {"asphalt_shear_box",              DEM::asphalt_shear_box}
+            {"asphalt_shear_box",              DEM::asphalt_shear_box},
+            {"asphalt_shear_box_bonded",       DEM::asphalt_shear_box_bonded}
     };
 }
 

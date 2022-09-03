@@ -15,11 +15,12 @@
 namespace DEM {
     class Amplitude {
     public:
-        explicit Amplitude(std::function<double()> time_function) : func_(std::move(time_function)) {}
-        [[nodiscard]] double value() const { return  func_(); }
-
+        explicit Amplitude(std::function<double()> time_function, double factor=1.) :
+        func_(std::move(time_function)), factor_(factor) {}
+        [[nodiscard]] double value() const { return  func_()*factor_; }
     private:
         std::function<double()> func_;
+        double factor_;
     };
 }
 

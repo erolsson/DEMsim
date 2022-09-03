@@ -92,6 +92,7 @@ add_executable(DEMsim
                src/contact_models/hertz_with_bonds.h
                src/contact_models/hertz_with_bonds.cpp
                src/simulations/asphalt_shear_box.cpp
+               src/simulations/asphalt_shear_box_bonded.cpp
                )
 
 target_link_libraries (DEMsim stdc++fs "${OpenMP_CXX_FLAGS}" Eigen3::Eigen)

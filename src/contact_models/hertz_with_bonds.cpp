@@ -21,7 +21,8 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1, Spher
     bond_area_ = bond_radius*bond_radius*pi;
     k_bond_ = (mat1->k_bond + mat2->k_bond)/2*bond_area_/bond_height;
     c_bond_ = (mat1->c_bond + mat2->c_bond)/2*bond_area_/bond_height;
-    material = mat1;
+    material1 = mat1;
+    material2 = mat2;
     kT_ = (mat1->kT + mat2->kT)/2*R0_;
     mu_ = (mat1->mu + mat2->mu)/2;
     ky_ = 6*pi*1.43*mat1->sY*R0_;
@@ -43,7 +44,8 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1,
     auto mat1 = dynamic_cast<const ElasticBondedMaterial*>(p1->get_material());
     double E0 = mat1->E/(1-mat1->nu*mat1->nu);
     kHertz_ = 4./3*E0*sqrt(R0_);
-    material = mat1;
+    material1 = mat1;
+    material2 = mat1;
     kT_ = 2*mat1->kT*R0_;
     mu_ = mat1->mu_wall;
     ky_ = 6*pi*1.43*mat1->sY*R0_;
@@ -108,6 +110,6 @@ std::string DEM::HertzWithBonds::get_output_string() const {
 }
 
 bool DEM::HertzWithBonds::bonded() const {
-    return material->bonded && !fractured_ && bonded_ && k_bond_ > 0;
+    return material1->bonded && material2->bonded && !fractured_ && bonded_ && k_bond_ > 0;
 }
 

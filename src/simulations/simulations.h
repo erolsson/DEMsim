@@ -27,6 +27,7 @@ namespace DEM {
     void restart_electrode(const std::string& settings_file_name);
     void porous_electrode_rve(const std::string& settings_file_name);
     void asphalt_shear_box(const std::string& settings_file_name);
+    void asphalt_shear_box_bonded(const std::string& settings_file_name);
 
     std::map<std::string, SimulationFunctionPtr> valid_simulations();
 

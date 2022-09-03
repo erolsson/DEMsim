@@ -51,7 +51,8 @@ namespace DEM {
         double bond_area_;
         double fracture_stress_;
 
-        const ElasticBondedMaterial* material;
+        const ElasticBondedMaterial* material1;
+        const ElasticBondedMaterial* material2;
 
         Vec3 FT_{ Vec3(0., 0., 0.) };
         Vec3 uT_{ Vec3(0., 0., 0.) };
