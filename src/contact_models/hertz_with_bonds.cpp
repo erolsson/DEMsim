@@ -87,7 +87,7 @@ void DEM::HertzWithBonds::update(double h, const Vec3& dt, const Vec3&, const Ve
         FT_.set_zero();
         uT_.set_zero();
     }
-    if (bonded()) {
+    if (bonded() && k_bond_ > 0) {
         F_bond_ += k_bond_*dh - k_bond_/c_bond_*F_bond_*increment_;
         FT_bond_ -= (k_bond_*dt - k_bond_/c_bond_*FT_bond_*increment_);
         double effective_contact_stress = (-0.5*F_bond_
