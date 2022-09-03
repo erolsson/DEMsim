@@ -3,11 +3,12 @@ diameter_2=0.0095
 kT=500000e6
 mu=0.8
 mu_wall=0.0
-output_dir=../results/asphalt_shear_box/bonded_plane/mu=0.8_mu_wall=0.0/big_big_400kPa/
+output_dir=../results/asphalt_shear_box/bonded_plane/1/big_big_400kPa/
 shear_velocity=0.025
 pressure=4e5
 yield_stress=500e6
-k_bond=1e8
+k_bond=1e7
 c_bond=1e15.
 bond_radius_fraction=0.2
-fracture_stress=10e6
+fracture_stress=30e6
+
