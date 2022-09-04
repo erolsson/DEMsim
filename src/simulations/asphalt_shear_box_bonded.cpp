@@ -227,11 +227,11 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
             top_particle_2->get_position().z() + top_particle_2->get_radius())/2;
 
     top_cylinder->set_point(Vec3(0, 0, z));
-    bottom_cylinder->set_length(-bbox[4] + z);
+    top_cylinder->set_length(4*bbox[5]);
+    bottom_cylinder->set_point(Vec3(0, 0, 4*bbox[4]));
+    bottom_cylinder->set_length(-4*bbox[4] + z);
     top_cylinder->set_velocity(Vec3(shear_velocity/60, 0, 0));
     top_surface->set_velocity(Vec3(shear_velocity/60., 0, 0));
-    top_surface->remove_force_amplitude('z');
-    bottom_surface->remove_force_amplitude('z');
     run_for_time.reset(24s);
     auto output3 = simulator.create_output(output_directory + "/shear_test", 0.001s);
     output3->print_kinetic_energy = true;
