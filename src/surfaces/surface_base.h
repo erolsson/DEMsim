@@ -74,6 +74,7 @@ namespace DEM {
 
         const std::array<ForceAmpPtr, 3>& get_applied_forces() const { return force_control_amplitudes_; }
         void set_force_amplitude(ForceAmpPtr amplitude, char direction);
+        void remove_force_amplitude(char direction);
         [[nodiscard]] virtual std::string restart_data() const;
         [[nodiscard]] virtual std::string type() const = 0;
     protected:

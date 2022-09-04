@@ -134,6 +134,21 @@ void DEM::Surface<ForceModel, ParticleType>::set_force_amplitude(DEM::Surface<Fo
 }
 
 template<typename ForceModel, typename ParticleType>
+void DEM::Surface<ForceModel, ParticleType>::remove_force_amplitude(char direction)
+{
+    if( direction == 'x') {
+        force_control_amplitudes_[0] = nullptr;
+    }
+    if( direction == 'y') {
+        force_control_amplitudes_[1] = nullptr;
+    }
+    if( direction == 'z') {
+        force_control_amplitudes_[2] = nullptr;
+    }
+}
+
+
+template<typename ForceModel, typename ParticleType>
 std::string DEM::Surface<ForceModel, ParticleType>::restart_data() const {
     using DEM::named_print;
     std::ostringstream ss;

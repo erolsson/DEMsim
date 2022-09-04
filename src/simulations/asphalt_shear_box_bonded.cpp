@@ -96,6 +96,10 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
     output1->print_surface_positions = true;
     output1->print_surface_forces = true;
     output1->print_contacts = true;
+    //==================================================================================================================
+    // *** *** ***  Filling the first layer *** *** ***
+    //==================================================================================================================
+
     simulator.set_gravity(Vec3(0, 0, -9.82));
     simulator.setup(1.01);  // Needed to initialize everything
 
@@ -107,23 +111,46 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
     EngineType::ParticleVelocityLess max_velocity (simulator, 0.1, 0.01s);
     simulator.run(max_velocity);
 
+    //==================================================================================================================
+    // *** *** ***  Compacting the first layer *** *** ***
+    //==================================================================================================================
     auto bbox = simulator.get_bounding_box();
     bbox = simulator.get_bounding_box();
-    top_surface->move(Vec3(0, 0, -(gas_height/2 - bbox[5])), Vec3());
-    bottom_surface->move(Vec3(0, 0, -gas_height/2), Vec3());
     top_cylinder->set_length(bbox[5]);
+    top_surface->move(Vec3(0, 0, -(gas_height/2 - bbox[5])), Vec3());
     top_surface->set_mass(1e-3);
     bottom_surface->set_mass(1e-3);
-    materials[0]->bonded = true;
-    simulator.set_gravity(Vec3(0, 0, 9.82));
+    auto t0 = simulator.get_time();
 
+    auto amp_func_1 = [cylinder_diameter, &simulator, t0]() {
+        auto time = simulator.get_time() - t0;
+        double force = -1e5*DEM::pi*cylinder_diameter*cylinder_diameter/4;
+        if(time < 0.5s) {
+            return force*time/0.5s;
+        }
+        return force*(2 - time/0.5s);
+    };
+    auto amp_top1 = std::make_shared<DEM::Amplitude>(amp_func_1);
+    top_surface->set_force_amplitude(amp_top1, 'z');
+    run_for_time.reset(1s);
+    simulator.run(run_for_time);
+
+    materials[0]->bonded = true;
+    top_surface->remove_force_amplitude('z');
+
+    //==================================================================================================================
+    // *** *** ***  Filling the second layer *** *** ***
+    //==================================================================================================================
+
+    bottom_surface->move(Vec3(0, 0, -gas_height/2), Vec3());
     auto positions_2 = random_fill_cylinder(-gas_height/2, 0, cylinder_diameter/2,
                                             radii_2);
     std::vector<ParticleType*> particles_2 {};
     for (std::size_t i = 0; i != radii_2.size(); ++i) {
-        particles_2.push_back(simulator.create_particle(radii_2[i], positions_2[i],
-                                                        Vec3(0,0,0), materials[1]));
+        particles_2.push_back(simulator.create_particle(radii_2[i], positions_2[i],Vec3(0,0,0), materials[1]));
     }
+
+    simulator.set_gravity(Vec3(0, 0, 9.82));
 
     simulator.setup();
 
@@ -133,15 +160,37 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
 
     // Run until the fastest particle have a velocity of 0.1 and this is checked every 10 millisecond
     simulator.run(max_velocity);
-    materials[1]->bonded = true;
 
-    simulator.set_mass_scale_factor(10);
+    //==================================================================================================================
+    // *** *** ***  Compacting the second layer layer *** *** ***
+    //==================================================================================================================
+
+    t0 = simulator.get_time();
+    auto amp_func_2 = [cylinder_diameter, &simulator, t0]() {
+        auto time = simulator.get_time() - t0;
+        double force = 1e5*DEM::pi*cylinder_diameter*cylinder_diameter/4;
+        if(time < 0.5s) {
+            return force*time/0.5s;
+        }
+        return force*(2 - time/0.5s);
+    };
     bbox = simulator.get_bounding_box();
+    auto amp_top2 = std::make_shared<DEM::Amplitude>(amp_func_2);
+    bottom_surface->set_force_amplitude(amp_top2, 'z');
     bottom_surface->move(Vec3(0, 0, (gas_height/2 + bbox[4])), Vec3());
+    bbox = simulator.get_bounding_box();
     bottom_cylinder->set_point(Vec3(0., 0, bbox[4]));
     bottom_cylinder->set_length(-bbox[4]);
-    auto t0 = simulator.get_time();
 
+    run_for_time.reset(1s);
+    simulator.run(run_for_time);
+
+    //==================================================================================================================
+    // *** *** ***  Applying compaction pressure *** *** ***
+    //==================================================================================================================
+    simulator.set_mass_scale_factor(10);
+    materials[1]->bonded = true;
+    t0 = simulator.get_time();
     auto amp_func = [compaction_force, &simulator, t0]() {
         auto time = simulator.get_time() -t0;
         if(time < 2s) {
@@ -161,14 +210,29 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
     output2->print_kinetic_energy = true;
     output2->print_surface_positions = true;
     output2->print_surface_forces = true;
-
     simulator.run(run_for_time);
 
-    // The shear test
+    //==================================================================================================================
+    // *** *** ***  Shear test *** *** ***
+    //==================================================================================================================
+    auto particle_cmp = [](const auto& p1, const auto p2) {
+        return p1->get_position().z() < p2->get_position().z();
+    };
+    auto bottom_particle_1 = *std::min_element(particles_1.begin(), particles_1.end(),
+                                               particle_cmp);
+    auto top_particle_2 = *std::max_element(particles_2.begin(), particles_2.end(),
+                                               particle_cmp);
+
+    double z = (bottom_particle_1->get_position().z() - bottom_particle_1->get_radius() +
+            top_particle_2->get_position().z() + top_particle_2->get_radius())/2;
+
+    top_cylinder->set_point(Vec3(0, 0, z));
+    bottom_cylinder->set_length(-bbox[4] + z);
     top_cylinder->set_velocity(Vec3(shear_velocity/60, 0, 0));
     top_surface->set_velocity(Vec3(shear_velocity/60., 0, 0));
+    top_surface->remove_force_amplitude('z');
+    bottom_surface->remove_force_amplitude('z');
     run_for_time.reset(24s);
-
     auto output3 = simulator.create_output(output_directory + "/shear_test", 0.001s);
     output3->print_kinetic_energy = true;
     output3->print_surface_positions = true;
