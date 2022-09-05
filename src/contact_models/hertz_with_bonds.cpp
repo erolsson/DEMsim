@@ -16,8 +16,10 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1, Spher
 
     double E0 = 1/((1 - mat1->nu*mat1->nu)/mat1->E + (1 - mat2->nu*mat2->nu)/mat2->E);
     kHertz_ = 4./3*E0*sqrt(R0_);
-    double bond_radius = 2*(mat1->bond_radius_fraction + mat2->bond_radius_fraction)*R0_;
-    double bond_height = (2*R0_ - sqrt(4*R0_*R0_ - bond_radius*bond_radius))*2;
+    double bond_radius = (mat1->bond_radius_fraction + mat2->bond_radius_fraction)*(p1->get_radius() + p2->get_radius())/4;
+    double h1 = p1->get_radius() - sqrt(p1->get_radius()*p1->get_radius() - bond_radius*bond_radius);
+    double h2 = p2->get_radius() - sqrt(p2->get_radius()*p2->get_radius() - bond_radius*bond_radius);
+    double bond_height = h1 + h2;
     bond_area_ = bond_radius*bond_radius*pi;
     k_bond_ = (mat1->k_bond + mat2->k_bond)/2*bond_area_/bond_height;
     c_bond_ = (mat1->c_bond + mat2->c_bond)/2*bond_area_/bond_height;
@@ -27,7 +29,6 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1, Spher
     mu_ = (mat1->mu + mat2->mu)/2;
     ky_ = 6*pi*1.43*mat1->sY*R0_;
     hy_ = pow(3*pi*1.43*mat1->sY/E0,2)*R0_;
-    bond_area_ = (mat1->bond_radius_fraction*2*R0_)*(mat1->bond_radius_fraction*2*R0_)*pi;
     fracture_stress_ = (mat1->fracture_stress + mat2->fracture_stress);
 }
 
