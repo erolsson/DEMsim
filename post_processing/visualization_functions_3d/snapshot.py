@@ -65,14 +65,14 @@ class Snapshot:
 
 def main():
     mlab.figure(size=(1024, 768), bgcolor=(1., 1., 1.), fgcolor=(0, 0., 0.))
-    snapshot = Snapshot(os.path.expanduser('~/DEMsim/results/asphalt_shear_box/bonded_plane/1/big_big_400kPa'))
+    snapshot = Snapshot(os.path.expanduser('~/DEMsim/results/asphalt_shear_box/bonded_plane/sim/1/big_small_100kPa'))
     snapshot.plot_periodic_bc = False
     bbox = BoundingBox()
     bbox.z_max = lambda t: 0.04
     snapshot.bounding_boxes[3] = bbox
     snapshot.surfaces_colors[1] = colors.red
     snapshot.surfaces_colors[2] = colors.red
-    snapshot.plot(26.4)
+    snapshot.plot(20.62)
     mlab.view(10, -60, distance=0.25)
     mlab.savefig("shear.png")
     mlab.show()

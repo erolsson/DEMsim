@@ -53,6 +53,9 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1,
     hy_ = pow(3*pi*1.43*mat1->sY/E0, 2)*R0_;
     double bond_radius = mat1->bond_radius_fraction*R0_;
     bond_area_ = bond_radius*bond_radius*pi;
+    double bond_height = p1->get_radius() - sqrt(p1->get_radius()*p1->get_radius() - bond_radius*bond_radius);
+    k_bond_ = mat1->k_bond*bond_area_/bond_height;
+    c_bond_ = mat1->c_bond*bond_area_/bond_height;
     fracture_stress_ = mat1->fracture_stress;
 }
 
