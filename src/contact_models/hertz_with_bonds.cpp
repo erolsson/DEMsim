@@ -16,7 +16,8 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1, Spher
 
     double E0 = 1/((1 - mat1->nu*mat1->nu)/mat1->E + (1 - mat2->nu*mat2->nu)/mat2->E);
     kHertz_ = 4./3*E0*sqrt(R0_);
-    double bond_radius = (mat1->bond_radius_fraction + mat2->bond_radius_fraction)*(p1->get_radius() + p2->get_radius())/4;
+    double bond_radius = ((mat1->bond_radius_fraction + mat2->bond_radius_fraction)/
+            (1./p1->get_radius() + 1./p2->get_radius()));
     double h1 = p1->get_radius() - sqrt(p1->get_radius()*p1->get_radius() - bond_radius*bond_radius);
     double h2 = p2->get_radius() - sqrt(p2->get_radius()*p2->get_radius() - bond_radius*bond_radius);
     double bond_height = h1 + h2;

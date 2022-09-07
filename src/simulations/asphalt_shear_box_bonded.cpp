@@ -137,7 +137,7 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
 
     materials[0]->bonded = true;
     top_surface->remove_force_amplitude('z');
-
+    top_surface->rest();
     //==================================================================================================================
     // *** *** ***  Filling the second layer *** *** ***
     //==================================================================================================================
@@ -215,16 +215,25 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
     //==================================================================================================================
     // *** *** ***  Shear test *** *** ***
     //==================================================================================================================
-    auto particle_cmp = [](const auto& p1, const auto p2) {
+    auto min_z = [](const auto& p1, const auto p2) {
         return p1->get_position().z() < p2->get_position().z();
     };
-    auto bottom_particle_1 = *std::min_element(particles_1.begin(), particles_1.end(),
-                                               particle_cmp);
-    auto top_particle_2 = *std::max_element(particles_2.begin(), particles_2.end(),
-                                               particle_cmp);
 
-    double z = (bottom_particle_1->get_position().z() - bottom_particle_1->get_radius() +
-            top_particle_2->get_position().z() + top_particle_2->get_radius())/2;
+    auto max_z = [](const auto& p1, const auto p2) {
+        return p1->get_position().z() > p2->get_position().z();
+    };
+
+    std::sort(particles_1.begin(), particles_1.end(), min_z);
+    std::sort(particles_2.begin(), particles_2.end(), max_z);
+    unsigned n = 20;
+    double z1 = 0;
+    double z2 = 0;
+    for (unsigned i = 0; i != n; ++i) {
+        z1 += particles_1[i]->get_position().z() - particles_1[i]->get_radius();
+        z2 += particles_2[i]->get_position().z() + particles_2[i]->get_radius();
+    }
+
+    double z = (z1/n + z2/n)/2;
 
     top_cylinder->set_point(Vec3(0, 0, z));
     top_cylinder->set_length(4*bbox[5]);

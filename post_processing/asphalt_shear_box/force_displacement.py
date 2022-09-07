@@ -18,7 +18,7 @@ ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
 
-main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane/sim").expanduser()
+main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction/sim").expanduser()
 for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b', 'm']):
     for p, line in zip(["100kPa", "400kPa"], ['--', '-']):
         n = 1
@@ -30,6 +30,10 @@ for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b'
             if sim == 1:
                 d = surface_positions[:, -15]
                 f = -surface_forces[:, -4]
+                if d.shape != f.shape:
+                    size = min(d.shape[0], f.shape[0])
+                    d = d[0:size]
+                    f = f[0:size]
             else:
                 d += surface_positions[:, -15]
                 f += -surface_forces[:, -4]
