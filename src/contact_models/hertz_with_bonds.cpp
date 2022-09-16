@@ -22,7 +22,8 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1, Spher
     double h2 = p2->get_radius() - sqrt(p2->get_radius()*p2->get_radius() - bond_radius*bond_radius);
     double bond_height = h1 + h2;
     bond_area_ = bond_radius*bond_radius*pi;
-    k_bond_ = (mat1->k_bond + mat2->k_bond)/2*bond_area_/bond_height;
+    k_bond_ = 1.36*(mat1->E_bond + mat2->E_bond)/2*bond_area_/bond_height;
+    kt_bond_ = 0.38*(mat1->E_bond + mat2->E_bond)/2*bond_area_/bond_height;
     c_bond_ = (mat1->c_bond + mat2->c_bond)/2*bond_area_/bond_height;
     material1 = mat1;
     material2 = mat2;
@@ -55,7 +56,8 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1,
     double bond_radius = mat1->bond_radius_fraction*R0_;
     bond_area_ = bond_radius*bond_radius*pi;
     double bond_height = p1->get_radius() - sqrt(p1->get_radius()*p1->get_radius() - bond_radius*bond_radius);
-    k_bond_ = mat1->k_bond*bond_area_/bond_height;
+    k_bond_ = 1.36*mat1->E_bond*bond_area_/bond_height;
+    kt_bond_ = 0.38*mat1->E_bond*bond_area_/bond_height;
     c_bond_ = mat1->c_bond*bond_area_/bond_height;
     fracture_stress_ = mat1->fracture_stress;
 }
@@ -96,7 +98,7 @@ void DEM::HertzWithBonds::update(double h, const Vec3& dt, const Vec3&, const Ve
     }
     if (bonded() && k_bond_ > 0) {
         F_bond_ += k_bond_*dh - k_bond_/c_bond_*F_bond_*increment_;
-        FT_bond_ -= (k_bond_*dt - k_bond_/c_bond_*FT_bond_*increment_);
+        FT_bond_ -= (kt_bond_*dt - k_bond_/c_bond_*FT_bond_*increment_);
         double effective_contact_stress = (-0.5*F_bond_
                 + sqrt(F_bond_*F_bond_/4 + FT_bond_.length()*FT_bond_.length()))/bond_area_;
         if (effective_contact_stress > fracture_stress_) {

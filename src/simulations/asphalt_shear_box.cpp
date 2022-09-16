@@ -29,7 +29,7 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     material->mu_wall = parameters.get_parameter<double>("mu_wall");
     material->kT = parameters.get_parameter<double>("kT");
     material->c_bond = parameters.get_parameter<double>("c_bond");
-    material->k_bond = parameters.get_parameter<double>("k_bond");
+    material->E_bond = parameters.get_parameter<double>("E_bond");
     material->fracture_stress = parameters.get_parameter<double>("fracture_stress");
     material->bond_radius_fraction = parameters.get_parameter<double>("bond_radius_fraction");
     auto pressure = parameters.get_parameter<double>("pressure");
@@ -140,7 +140,7 @@ void DEM::asphalt_shear_box(const std::string& settings_file_name) {
     output2->print_surface_positions = true;
     output2->print_surface_forces = true;
 
-    if (material->k_bond > 0) {
+    if (material->E_bond > 0) {
         material->bonded = true;
     }
     simulator.run(run_for_time);

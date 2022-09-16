@@ -18,7 +18,7 @@ ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
 
-main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction/sim").expanduser()
+main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction/sim2").expanduser()
 for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b', 'm']):
     for p, line in zip(["100kPa", "400kPa"], ['--', '-']):
         n = 1
@@ -45,7 +45,7 @@ for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b'
         plt.figure(0)
         plt.plot(d*1000/n, -f/1000/n, c + line, lw=2, label=label)
 plt.figure(0)
-# plt.ylim(0, 3)
+plt.ylim(0, 15)
 plt.xlim(0, 8)
 
 plt.plot([-1, -2], [-1, -2], 'w', label='white')
@@ -57,5 +57,5 @@ legend.get_texts()[3].set_color("white")
 plt.gca().add_artist(legend)
 plt.xlabel("Displacement [mm]")
 plt.ylabel("Force [kN]")
-plt.savefig("no_bond.png")
+plt.savefig("bonded.png")
 plt.show()

@@ -20,7 +20,7 @@ namespace DEM {
         double kT{ 0. };
         double mu { 0. };
         double mu_wall { 0. };
-        double k_bond { 0. };
+        double E_bond {0. };
         double c_bond { 0. };
         double bond_radius_fraction { 0.};
         double fracture_stress { 0. };

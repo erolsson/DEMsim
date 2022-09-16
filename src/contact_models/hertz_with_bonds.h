@@ -35,6 +35,7 @@ namespace DEM {
         double h_{ 0. };
         double kHertz_;
         double k_bond_;
+        double kt_bond_;
         double c_bond_;
         double R0_;
         double ky_;
