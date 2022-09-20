@@ -29,7 +29,7 @@ with open("experiments_bonded.dat", 'r') as experiment_file:
         for sim in simulations:
             directory = simulation_directory / str(sim) / (config.lower() + "_" + str(int(pressure)) + "kPa") / "shear_test"
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
-            forces.append(-np.min(surface_forces[:, -4])/1000)
+            forces.append(np.max(surface_forces[:, -4])/1000)
         forces = np.array(forces)
         numerical_data_bonded[config][float(pressure)] = [np.mean(forces), np.std(forces, ddof=1)]
 print(numerical_data_bonded)
