@@ -32,7 +32,7 @@ with open("experiments_bonded.dat", 'r') as experiment_file:
             forces.append(-np.min(surface_forces[:, -4])/1000)
         forces = np.array(forces)
         numerical_data_bonded[config][pressure] = [np.mean(forces), np.std(forces, ddof=1)]
-
+print(numerical_data_bonded)
 counter = 0
 colors = {"Big_Big": 'b', "Small_Small": "g", "Big_Small": "r"}
 f0_exp = experimental_data_bonded["Big_Big"][100][0]
