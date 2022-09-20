@@ -18,16 +18,16 @@ ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
 
-main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction/sim2").expanduser()
+main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction_2/").expanduser()
 for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b', 'm']):
     for p, line in zip(["100kPa", "400kPa"], ['--', '-']):
-        n = 1
-        for sim in range(1, n+1):
+        simulations = [1, 2, 3]
+        for sim in simulations:
             directory = main_directory / str(sim) / (simulation.lower() + "_" + p)/"shear_test"
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             surface_positions = np.genfromtxt(directory / "surface_positions.dou", delimiter=",")
             kinetic_energy = np.genfromtxt(directory / "kinetic_energy.dou", delimiter=",")
-            if sim == 1:
+            if sim == simulations[2]:
                 d = surface_positions[:, -15]
                 f = -surface_forces[:, -4]
                 if d.shape != f.shape:
@@ -43,7 +43,7 @@ for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b'
             label = None
 
         plt.figure(0)
-        plt.plot(d*1000/n, -f/1000/n, c + line, lw=2, label=label)
+        plt.plot(d*1000/len(simulations), -f/1000/len(simulations), c + line, lw=2, label=label)
 plt.figure(0)
 plt.ylim(0, 15)
 plt.xlim(0, 8)
