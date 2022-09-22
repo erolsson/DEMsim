@@ -143,7 +143,7 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
     //==================================================================================================================
 
     bottom_surface->move(Vec3(0, 0, -gas_height/2), Vec3());
-    auto positions_2 = random_fill_cylinder(-gas_height/2, 0, cylinder_diameter/2,
+    auto positions_2 = random_fill_cylinder(-gas_height/2, -1e-3, cylinder_diameter/2,
                                             radii_2);
     std::vector<ParticleType*> particles_2 {};
     for (std::size_t i = 0; i != radii_2.size(); ++i) {
