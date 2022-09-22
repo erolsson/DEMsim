@@ -80,8 +80,7 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
                                                 Vec3(0, 0, 0), gas_height/2);
     auto bottom_cylinder = simulator.create_cylinder(cylinder_diameter/2, Vec3(0, 0, 1),
                               Vec3(0, 0, -gas_height/2), gas_height/2);
-    top_cylinder->set_adhesive(true);
-    bottom_cylinder->set_adhesive(true);
+
     std::vector<double> radii_1 = std::vector<double>(n1, radius_1);
     std::vector<double> radii_2 = std::vector<double>(n2, radius_2);
     auto positions_1 = random_fill_cylinder(0, gas_height/2, cylinder_diameter/2, radii_1);
