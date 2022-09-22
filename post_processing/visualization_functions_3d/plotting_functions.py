@@ -181,7 +181,6 @@ class SurfacesPlotter:
             self.surfaces_colors[surface_id] = surfaces_colors.get(surface_id, (0., 0., 1.))
             self.surfaces_opacities[surface_id] = surfaces_opacities.get(surface_id, 0.5)
             self.bounding_boxes[surface_id] = bounding_boxes.get(surface_id, BoundingBox())
-            print(self.bounding_boxes)
             self.visible_times[surface_id] = visible_times.get(surface_id, lambda t: True)
 
     def set_data_file(self, surface_file_name):

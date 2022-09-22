@@ -18,7 +18,7 @@ class Snapshot:
         self.periodic_bc_plotter = None
         self.mirror_particles = False
         self.bounding_boxes = defaultdict(BoundingBox)
-
+        self.particle_opacity = 1.
         self.directory = directory
         self.surfaces_colors = defaultdict(lambda: colors.blue)
         self.surfaces_opacities = defaultdict(lambda: 0.5)
@@ -43,7 +43,7 @@ class Snapshot:
     def plot(self, time):
         if time.is_integer():
             time = int(time)
-
+        self.spheres_plotter.opacity = self.particle_opacity
         particle_data = np.genfromtxt(self.directory / ('particles/particles_' + str(time) + '.dou'), delimiter=',')
         self.spheres_plotter.plot(particle_data)
         if self.mirror_particles:
