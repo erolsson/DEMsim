@@ -101,7 +101,7 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
     //==================================================================================================================
 
     simulator.set_gravity(Vec3(0, 0, -9.82));
-    simulator.setup(1.01);  // Needed to initialize everything
+    simulator.setup();  // Needed to initialize everything
 
     // Running everything for 0.1 second to get things moving
     EngineType::RunForTime run_for_time(simulator, 0.1s);
