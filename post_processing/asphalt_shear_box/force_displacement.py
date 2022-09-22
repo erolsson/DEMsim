@@ -27,7 +27,7 @@ for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b'
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             surface_positions = np.genfromtxt(directory / "surface_positions.dou", delimiter=",")
             kinetic_energy = np.genfromtxt(directory / "kinetic_energy.dou", delimiter=",")
-            if sim == simulations[1]:
+            if sim == simulations[0]:
                 d = surface_positions[:, -15]
                 f = -surface_forces[:, -4]
                 if d.shape != f.shape:
