@@ -91,11 +91,11 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
     }
 
     auto output1 = simulator.create_output(output_directory, 0.001s);
-    output1->print_particles = true;
+    // output1->print_particles = true;
     output1->print_kinetic_energy = true;
     output1->print_surface_positions = true;
     output1->print_surface_forces = true;
-    output1->print_contacts = true;
+    // output1->print_contacts = true;
     //==================================================================================================================
     // *** *** ***  Filling the first layer *** *** ***
     //==================================================================================================================
