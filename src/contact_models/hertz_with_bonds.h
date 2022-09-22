@@ -34,9 +34,9 @@ namespace DEM {
     private:
         double h_{ 0. };
         double kHertz_;
-        double k_bond_;
-        double kt_bond_;
-        double c_bond_;
+        double k_bond_ = 0;
+        double kt_bond_ = 0;
+        double c_bond_ = 1e99;
         double R0_;
         double ky_;
         double hy_;
@@ -50,7 +50,7 @@ namespace DEM {
         bool bonded_ {false};
         double increment_;
         double bond_area_;
-        double fracture_stress_;
+        double fracture_stress_ = 0;
 
         const ElasticBondedMaterial* material1;
         const ElasticBondedMaterial* material2;

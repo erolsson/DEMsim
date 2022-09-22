@@ -80,7 +80,8 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
                                                 Vec3(0, 0, 0), gas_height/2);
     auto bottom_cylinder = simulator.create_cylinder(cylinder_diameter/2, Vec3(0, 0, 1),
                               Vec3(0, 0, -gas_height/2), gas_height/2);
-
+    top_cylinder->set_adhesive(true);
+    bottom_cylinder->set_adhesive(true);
     std::vector<double> radii_1 = std::vector<double>(n1, radius_1);
     std::vector<double> radii_2 = std::vector<double>(n2, radius_2);
     auto positions_1 = random_fill_cylinder(0, gas_height/2, cylinder_diameter/2, radii_1);
@@ -135,14 +136,16 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
     run_for_time.reset(1s);
     simulator.run(run_for_time);
 
-    materials[0]->bonded = true;
-    top_surface->remove_force_amplitude('z');
-    top_surface->rest();
     //==================================================================================================================
     // *** *** ***  Filling the second layer *** *** ***
     //==================================================================================================================
 
+    materials[0]->bonded = true;
+    top_surface->remove_force_amplitude('z');
+    top_surface->rest();
     bottom_surface->move(Vec3(0, 0, -gas_height/2), Vec3());
+    simulator.set_gravity(Vec3(0, 0, 9.82));
+
     auto positions_2 = random_fill_cylinder(-gas_height/2, -1e-3, cylinder_diameter/2,
                                             radii_2);
     std::vector<ParticleType*> particles_2 {};
@@ -247,4 +250,5 @@ void DEM::asphalt_shear_box_bonded(const std::string& settings_file_name) {
     output3->print_surface_positions = true;
     output3->print_surface_forces = true;
     simulator.run(run_for_time);
+
 }

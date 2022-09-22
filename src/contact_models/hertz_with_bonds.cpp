@@ -35,7 +35,7 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1, Spher
 }
 
 DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1,
-                                    Surface<HertzWithBonds, SphericalParticle<HertzWithBonds>>*,
+                                    Surface<HertzWithBonds, SphericalParticle<HertzWithBonds>>* s,
                                     std::chrono::duration<double> increment) :
         k_bond_(0),
         c_bond_(0),
@@ -56,10 +56,12 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1,
     double bond_radius = mat1->bond_radius_fraction*R0_;
     bond_area_ = bond_radius*bond_radius*pi;
     double bond_height = p1->get_radius() - sqrt(p1->get_radius()*p1->get_radius() - bond_radius*bond_radius);
-    k_bond_ = 1.36*mat1->E_bond*bond_area_/bond_height;
-    kt_bond_ = 0.38*mat1->E_bond*bond_area_/bond_height;
-    c_bond_ = mat1->c_bond*bond_area_/bond_height;
-    fracture_stress_ = mat1->fracture_stress;
+    if (s->adhesive()) {
+        k_bond_ = 1.36*mat1->E_bond*bond_area_/bond_height;
+        kt_bond_ = 0.38*mat1->E_bond*bond_area_/bond_height;
+        c_bond_ = mat1->c_bond*bond_area_/bond_height;
+        fracture_stress_ = mat1->fracture_stress;
+    }
 }
 
 void DEM::HertzWithBonds::update(double h, const Vec3& dt, const Vec3&, const Vec3& normal) {

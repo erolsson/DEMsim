@@ -62,7 +62,7 @@ namespace DEM {
 
         Vec3 get_tangential_displacement_this_inc(const Vec3& point) const;
         void rest();
-
+        void set_adhesive(bool val) { adhesive_ = val; }
         bool adhesive() const { return adhesive_; }
 
         std::vector<ParticleType*> get_contacting_particles() const;
