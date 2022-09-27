@@ -28,7 +28,12 @@ for p in pressures:
                          / "shear_test")
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[i, j] = np.max(surface_forces[:, -4])
-    plt.plot(size_ratio, np.mean(max_f, axis=1), '-x', lw=2, ms=12)
-    plt.errorbar(size_ratio, np.mean(max_f, axis=1), np.std(max_f, axis=1))
+    plt.plot(size_ratio, np.mean(max_f, axis=1), '-x', lw=3, ms=12, mew=2, label=str(p) + " kPa")
+    plt.errorbar(size_ratio, np.mean(max_f, axis=1), np.std(max_f, axis=1), fmt=None, elinewidth=2)
+
+    plt.xlabel("Size ratio $D_1/D_2$ [-]", fontsize=24)
+    plt.ylabel("Maximum force [kN]", fontsize=24)
+    plt.legend(loc="best")
+    plt.tight_layout()
 
 plt.show()
