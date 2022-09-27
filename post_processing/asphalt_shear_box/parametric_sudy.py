@@ -20,7 +20,7 @@ simulations = [1, 2, 3]
 
 size_ratio = [c[0]/c[1] for c in configurations]
 
-for p in pressures:
+for p, color in zip(pressures, 'br'):
     max_f = np.zeros((len(configurations), len(simulations)))
     for i, config in enumerate(configurations):
         for j, sim in enumerate(simulations):
@@ -28,8 +28,9 @@ for p in pressures:
                          / "shear_test")
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[i, j] = np.max(surface_forces[:, -4])
-    plt.plot(size_ratio, np.mean(max_f, axis=1), '-', lw=3, label=str(p) + " kPa")
-    plt.errorbar(size_ratio, np.mean(max_f, axis=1), np.std(max_f, axis=1), fmt="none", elinewidth=2, ecolor="k")
+    plt.plot(size_ratio, np.mean(max_f, axis=1), '-' + color, lw=3, label=str(p) + " kPa")
+    plt.errorbar(size_ratio, np.mean(max_f, axis=1), np.std(max_f, axis=1), fmt="none", elinewidth=2,
+                 ecolor=color)
 
     plt.xlabel("Size ratio $D_1/D_2$ [-]", fontsize=24)
     plt.ylabel("Maximum force [kN]", fontsize=24)
