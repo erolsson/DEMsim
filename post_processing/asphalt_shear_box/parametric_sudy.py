@@ -8,13 +8,13 @@ matplotlib.style.use('classic')
 plt.rc('text', usetex=True)
 plt.rc('font', serif='Computer Modern Roman')
 plt.rcParams.update({'font.size': 24})
-plt.rcParams['text.latex.preamble'] = [r"\usepackage{amsmath}"]
+plt.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
 plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
 main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction_2/").expanduser()
 
-configurations = [(50, 100), (75, 100), (100, 100), (100, 75), (100, 50)]
+configurations = [(25, 100), (50, 100), (75, 100), (100, 100), (100, 75), (100, 50), (100, 25)]
 pressures = [100, 400]
 simulations = [1, 2, 3]
 
@@ -29,5 +29,6 @@ for p in pressures:
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[i, j] = np.max(surface_forces[:, -4])
     plt.plot(size_ratio, np.mean(max_f, axis=1), '-x', lw=2, ms=12)
+    plt.errorbar(size_ratio, np.mean(max_f, axis=1), np.std(max_f, axis=1))
 
 plt.show()
