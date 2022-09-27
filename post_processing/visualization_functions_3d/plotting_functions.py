@@ -32,20 +32,32 @@ class SpheresPlotter:
         self.ms = None
         self.color = color
         self.opacity = opacity
+        self.bounding_box = BoundingBox()
 
-    def plot(self, data, function=None, vmin=None, vmax=None):
+    def plot(self, data, function=None, vmin=None, vmax=None, time=0):
         if len(data) > 0:
             if len(data.shape) == 1:
                 data = np.expand_dims(data, 0)
-            x = data[:, 1]
-            y = data[:, 2]
-            z = data[:, 3]
-            r = data[:, 7]
+
+            idx_x = np.logical_and(data[:, 1] > self.bounding_box.values(time)[0],
+                                   data[:, 1] < self.bounding_box.values(time)[1])
+
+            idx_y = np.logical_and(data[:, 2] > self.bounding_box.values(time)[2],
+                                   data[:, 2] < self.bounding_box.values(time)[3])
+
+            idx_z = np.logical_and(data[:, 3] > self.bounding_box.values(time)[4],
+                                   data[:, 3] < self.bounding_box.values(time)[5])
+            idx = np.logical_and(np.logical_and(idx_x, idx_y), idx_z)
+            x = data[idx, 1]
+            y = data[idx, 2]
+            z = data[idx, 3]
+            r = data[idx, 7]
             if vmin is None:
                 vmin = np.min(function)
             if vmax is None:
                 vmax = np.max(function)
             if function is not None:
+                function = idx[function]
                 pts = mlab.points3d(x, y, z, resolution=32, opacity=self.opacity, transparent=self.opacity != 1.,
                                     scale_factor=1., vmax=vmax, vmin=vmin)
                 self.ms = pts.mlab_source
