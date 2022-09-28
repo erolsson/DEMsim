@@ -32,6 +32,7 @@ for p, color in zip(pressures, 'br'):
     plt.errorbar(size_ratio, np.mean(max_f, axis=1), np.std(max_f, axis=1), fmt="none", elinewidth=2,
                  ecolor=color)
 
+    plt.xlim(0, 4.5)
     plt.xlabel("Size ratio $D_1/D_2$ [-]", fontsize=24)
     plt.ylabel("Maximum force [kN]", fontsize=24)
     plt.legend(loc="best")
