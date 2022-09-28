@@ -97,9 +97,16 @@ class AsphaltContactPlotter:
                                 vmax=np.max(forces), vmin=np.min(forces))
             pts.glyph.scale_mode = 'scale_by_vector'
             pts.mlab_source.dataset.point_data.vectors = np.tile(2/np.sqrt(3)*1e-3, (3, 1)).transpose()
+            interval_length = (np.max(forces) - np.min(forces))/2
+            # Small forces,
 
-            c = (ft - np.min(forces))/(np.max(forces) - np.min(forces))
-            arrow(tan_point_1, tan_point_2, radius=5e-2, color=(0, 1 - c, c))
+            if ft < (interval_length + min(forces)):
+                c = (ft - np.min(forces))/interval_length
+                color = (0, 1-c, c)
+            else:
+                c = (ft - (interval_length + min(forces)))/interval_length
+                color = (c, 1-c, 0)
+            arrow(tan_point_1, tan_point_2, radius=5e-2, color=color)
 
         color_bar = mlab.colorbar(title="Contact force [kN]")
         color_bar.data_range = [np.min(forces), np.max(forces)]

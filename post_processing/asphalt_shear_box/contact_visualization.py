@@ -16,8 +16,10 @@ scene = fig.scene
 scene.camera.position = [-0, -0.5, -0.5]
 scene.camera.focal_point = [0., 0, 0]
 # scene.camera.view_angle = 45.0
+sim_name = "big_big_400kPa"
+time = 23.477
 
-directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded/big_big_100kPa").expanduser()
+directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded").expanduser() / sim_name
 snapshot = Snapshot(directory, contact_plotter_class=AsphaltContactPlotter)
 surface_positions = np.genfromtxt(directory / "surface_positions.dou", delimiter=",")
 mid_plane = surface_positions[-1, -3] + surface_positions[-1, -2]
@@ -31,8 +33,8 @@ bbox.z_min = lambda t: -0.03
 snapshot.surface_bounding_boxes[2] = bbox
 snapshot.surface_bounding_boxes[3] = bbox
 snapshot.surfaces_opacities = {0: 0., 1: 0.5, 2: 0.5, 3: 0.0}
-snapshot.plot(12.26)
+snapshot.plot(time)
 scene.camera.view_up = [0, 0, -1]
 mayavi.mlab.move(forward=0.05, right=None, up=-0.03)
-mlab.savefig("contact_forces_big_big_100kPa.png", size=(1024, 1024))
+mlab.savefig("contact_forces_" + sim_name + ".png", size=(1024, 1024))
 mlab.show()
