@@ -21,7 +21,7 @@ for simulation, c in zip(configurations, ['g', 'r', 'b', 'm']):
     max_f = np.zeros((len(pressures), len(simulations)))
     for i, p in enumerate(pressures):
         for j, sim in enumerate(simulations):
-            directory = (main_directory / str(sim) / (simulation + "_" + str(p) + "kPa")
+            directory = (main_directory / str(sim) / (simulation.lower() + "_" + str(p) + "kPa")
                          / "shear_test")
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[i, j] = np.max(surface_forces[:, -4])
