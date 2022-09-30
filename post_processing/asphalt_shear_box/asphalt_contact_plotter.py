@@ -86,27 +86,29 @@ class AsphaltContactPlotter:
 
         for point_1, point_2, tan_point_1, tan_point_2,  force, ft, in zip(points_1, points_2, tan_points_1,
                                                                            tan_points_2, forces, tangential_forces):
-            mlab.plot3d([point_1[0], point_2[0]], [point_1[1], point_2[1]], [point_1[2], point_2[2]],
-                        [force, force], tube_radius=1e-3, vmax=np.max(forces), vmin=np.min(forces),
-                        line_width=2)
-            pts = mlab.points3d([point_2[0]], [point_2[1]], [point_2[2]], [force], scale_factor=1,
-                                vmax=np.max(forces), vmin=np.min(forces))
-            pts.glyph.scale_mode = 'scale_by_vector'
-            pts.mlab_source.dataset.point_data.vectors = np.tile(2/np.sqrt(3)*1e-3, (3, 1)).transpose()
-            pts = mlab.points3d([point_1[0]], [point_1[1]], [point_1[2]], [force], scale_factor=1,
-                                vmax=np.max(forces), vmin=np.min(forces))
-            pts.glyph.scale_mode = 'scale_by_vector'
-            pts.mlab_source.dataset.point_data.vectors = np.tile(2/np.sqrt(3)*1e-3, (3, 1)).transpose()
-            interval_length = (np.max(forces) - np.min(forces))/2
+            # mlab.plot3d([point_1[0], point_2[0]], [point_1[1], point_2[1]], [point_1[2], point_2[2]],
+            #             [force, force], tube_radius=1e-3, vmax=np.max(forces), vmin=np.min(forces),
+            #             line_width=2)
+            # pts = mlab.points3d([point_2[0]], [point_2[1]], [point_2[2]], [force], scale_factor=1,
+            #                     vmax=np.max(forces), vmin=np.min(forces))
+            # pts.glyph.scale_mode = 'scale_by_vector'
+            # pts.mlab_source.dataset.point_data.vectors = np.tile(2/np.sqrt(3)*1e-3, (3, 1)).transpose()
+            # pts = mlab.points3d([point_1[0]], [point_1[1]], [point_1[2]], [force], scale_factor=1,
+            #                     vmax=np.max(forces), vmin=np.min(forces))
+            # pts.glyph.scale_mode = 'scale_by_vector'
+            # pts.mlab_source.dataset.point_data.vectors = np.tile(2/np.sqrt(3)*1e-3, (3, 1)).transpose()
+            # interval_length = (np.max(forces) - np.min(forces))/2
+            interval_length = np.max(tangential_forces)/2
             # Small forces,
 
-            if ft < (interval_length + min(forces)):
-                c = (ft - np.min(forces))/interval_length
-                color = (0, 1-c, c)
+            if ft < (interval_length + 0*min(forces)):
+                c = (ft - 0*np.min(forces))/interval_length
+                color = (0, c, 1 - c)
             else:
-                c = (ft - (interval_length + min(forces)))/interval_length
+                c = (ft - (interval_length + 0*min(forces)))/interval_length
                 color = (c, 1-c, 0)
+            print(ft, np.max(tangential_forces), color)
             arrow(tan_point_1, tan_point_2, radius=5e-2, color=color)
 
         color_bar = mlab.colorbar(title="Contact force [kN]")
-        color_bar.data_range = [np.min(forces), np.max(forces)]
+        color_bar.data_range = [0, np.max(tangential_forces)]
