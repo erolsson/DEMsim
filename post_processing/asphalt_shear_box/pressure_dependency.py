@@ -14,9 +14,8 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 
 main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction_2/").expanduser()
 configurations = ["Small_Small", "Big_Small", "Big_Big"]
-pressures = ["0kPa", "100kPa", "400kPa", "800kPa"]
+pressures = [0, 100, 400, 800]
 simulations = [1, 2, 3]
-pressure_vec = [float(p.replace("kPa", "")) for p in pressures]
 
 for simulation, c in zip(configurations, ['g', 'r', 'b', 'm']):
     max_f = np.zeros((len(pressures), len(simulations)))
@@ -27,8 +26,8 @@ for simulation, c in zip(configurations, ['g', 'r', 'b', 'm']):
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[i, j] = np.max(surface_forces[:, -4])
 
-    plt.plot(pressure_vec, np.mean(max_f, axis=1), '-' + c, lw=3, label=str(simulation).replace("_", "-") + " kPa")
-    plt.errorbar(pressure_vec, np.mean(max_f, axis=1), np.std(max_f, axis=1), fmt="none", elinewidth=2,
+    plt.plot(pressures, np.mean(max_f, axis=1), '-' + c, lw=3, label=str(simulation).replace("_", "-") + " kPa")
+    plt.errorbar(pressures, np.mean(max_f, axis=1), np.std(max_f, axis=1), fmt="none", elinewidth=2,
                  ecolor=c)
 
 plt.xlim(-50, 900)
