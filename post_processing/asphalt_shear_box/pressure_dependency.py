@@ -31,7 +31,7 @@ for simulation, c in zip(configurations, ['g', 'r', 'b', 'm']):
                  ecolor=c)
 
 plt.xlim(-50, 900)
-plt.xlabel("Pressure$ [kPa]", fontsize=24)
+plt.xlabel("Pressure [kPa]", fontsize=24)
 plt.ylabel("Maximum force [kN]", fontsize=24)
 plt.legend(loc="best")
 plt.tight_layout()
