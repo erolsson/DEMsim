@@ -16,11 +16,11 @@ scene = fig.scene
 scene.camera.position = [-0, -0.5, -0.5]
 scene.camera.focal_point = [0., 0, 0]
 # scene.camera.view_angle = 45.0
-sim_name = "small_small_100kPa"
+sim_name = "big_big_400kPa"
 times = {"small_small_100kPa": 10.193,
          "small_small_400kPa": 11.522,
-         "big_small_100kPa": 11.74,
-         "big_small_400kPa": 23.477,
+         "big_small_100kPa": 10.642,
+         "big_small_400kPa": 11.74,
          "big_big_100kPa": 12.26,
          "big_big_400kPa": 23.477}
 

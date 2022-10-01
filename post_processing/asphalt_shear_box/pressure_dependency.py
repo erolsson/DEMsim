@@ -14,7 +14,7 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 
 main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction_2/").expanduser()
 configurations = ["Small_Small", "Big_Small", "Big_Big"]
-pressures = [0, 100, 400]
+pressures = [0, 100, 400, 800]
 simulations = [1, 2, 3]
 
 for simulation, c in zip(configurations, ['g', 'r', 'b', 'm']):
