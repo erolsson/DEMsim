@@ -43,7 +43,6 @@ for fig, p in enumerate(["100kPa", "400kPa"]):
                 d += surface_positions[:, -15]
                 f += -surface_forces[:, -4]
 
-        plt.figure(0)
         plt.plot(d*1000/len(simulations), -f/1000/len(simulations), c + '--', lw=3, label=simulation.replace('_', '-'))
 
 for fig in range(2):
