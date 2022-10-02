@@ -13,17 +13,14 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
 
-for fig_number in [0, 1]:
+main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction_2/").expanduser()
+exp_directory = pathlib.Path("~/asphalt_bond_strength/experiments/bonded").expanduser()
+for fig_number, p in enumerate(["100kPa", "400kPa"]):
     fig = plt.figure(fig_number)
     fig.set_size_inches(11., 6., forward=True)
     ax = plt.subplot(111)
     box = ax.get_position()
     ax.set_position([0.1, 0.15, 0.55, box.height])
-
-main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction_2/").expanduser()
-exp_directory = pathlib.Path("~/asphalt_bond_strength/experiments/bonded").expanduser()
-for fig, p in enumerate(["100kPa", "400kPa"]):
-    plt.figure(fig)
     for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b', 'm']):
         simulations = [1, 2, 3]
         data = np.genfromtxt(exp_directory / (simulation.lower() + "_" + p + ".dat"))
@@ -47,8 +44,8 @@ for fig, p in enumerate(["100kPa", "400kPa"]):
 
         plt.plot(d[::10]*1000/len(simulations), -f[::10]/1000/len(simulations), c + '--', lw=3)
 
-for fig_number in [0, 1]:
     plt.figure(fig_number)
+    ax = plt.subplot(111)
     plt.ylim(0)
     plt.xlim(0, 8)
     plt.plot([-2, -1], [0, 0], 'w', label='white')
@@ -59,4 +56,5 @@ for fig_number in [0, 1]:
     legend.get_texts()[3].set_color("white")
     plt.xlabel("Displacement [mm]")
     plt.ylabel("Force [kN]")
+    plt.savefig("bonded_" + p + ".png")
 plt.show()
