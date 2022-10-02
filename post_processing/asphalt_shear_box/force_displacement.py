@@ -8,7 +8,7 @@ matplotlib.style.use('classic')
 plt.rc('text', usetex=True)
 plt.rc('font', serif='Computer Modern Roman')
 plt.rcParams.update({'font.size': 24})
-plt.rcParams['text.latex.preamble'] = [r"\usepackage{amsmath}"]
+plt.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
 plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
@@ -47,8 +47,8 @@ for fig, p in enumerate(["100kPa", "400kPa"]):
 
         plt.plot(d[::10]*1000/len(simulations), -f[::10]/1000/len(simulations), c + '--', lw=3)
 
-for fig in range(2):
-    plt.figure(fig)
+for fig_number in [0, 1]:
+    plt.figure(fig_number)
     plt.ylim(0)
     plt.xlim(0, 8)
     plt.plot([-2, -1], [0, 0], 'w', label='white')
