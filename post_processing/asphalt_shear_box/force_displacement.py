@@ -20,9 +20,9 @@ ax.set_position([0.1, 0.15, 0.55, box.height])
 
 main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction_2/").expanduser()
 exp_directory = pathlib.Path("~/asphalt_bond_strength/experiments/bonded").expanduser()
-for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b', 'm']):
-    for fig, p in enumerate(["100kPa", "400kPa"]):
-        plt.figure(fig)
+for fig, p in enumerate(["100kPa", "400kPa"]):
+    plt.figure(fig)
+    for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b', 'm']):
         simulations = [1, 2, 3]
         data = np.genfromtxt(exp_directory / (simulation.lower() + "_" + p + ".dat"))
         plt.plot(data[:, 0], data[:, 1], c, lw=3)
