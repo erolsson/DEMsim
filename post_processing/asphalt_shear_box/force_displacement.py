@@ -31,7 +31,7 @@ for fig, p in enumerate(["100kPa", "400kPa"]):
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             surface_positions = np.genfromtxt(directory / "surface_positions.dou", delimiter=",")
             kinetic_energy = np.genfromtxt(directory / "kinetic_energy.dou", delimiter=",")
-            plt.plot(surface_positions[:, -15], surface_forces[:, -4], c + '--')
+            plt.plot(surface_positions[:, -15]*1000, surface_forces[:, -4]/1000, c + '--')
             if sim == simulations[0]:
                 d = surface_positions[:, -15]
                 f = -surface_forces[:, -4]
