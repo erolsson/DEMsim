@@ -35,7 +35,7 @@ for p, color in zip(pressures, 'br'):
     for simulation, symbol in zip(["Small_Small", "Big_Small", "Big_Big"], ['o', 'x', 's']):
         max_f = np.zeros(3)
         for j, sim in enumerate(simulations):
-            directory = main_directory / str(sim) / (simulation.lower() + "_" + p + "kPa") / "shear_test"
+            directory = main_directory / str(sim) / (simulation.lower() + "_" + str(p) + "kPa") / "shear_test"
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[j] = np.max(surface_forces[:, -4])
         size_ratio = 1 if simulation != "Big_Small" else 9.5/5.5
