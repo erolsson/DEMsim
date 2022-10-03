@@ -41,7 +41,7 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
                     d = d[0:size]
                     f = f[0:size]
             else:
-                d += surface_positions[:, -15]
+                d += surface_positions[:, -5]
                 f += -surface_forces[:, -4]
 
         plt.plot(d*1000/len(simulations), uniform_filter1d(f, size=50)/1000/len(simulations), c + '--', lw=3)
