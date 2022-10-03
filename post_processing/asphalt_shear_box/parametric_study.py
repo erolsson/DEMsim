@@ -45,7 +45,7 @@ for p, color in zip(pressures, 'br'):
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[j] = np.max(surface_forces[:, -4])/1e3
         ratio = 1 if simulation != "Big_Small" else 9.5/5.5
-        plt.plot(ratio, np.mean(max_f), symbol + color, lw=3, mew=3, ms=12)
+        plt.plot(ratio, np.mean(max_f), symbol + color, lw=3, mew=3, ms=12, mfc='w')
         plt.errorbar(ratio, np.mean(max_f), np.std(max_f), fmt="none", elinewidth=2,
                      ecolor=color)
 
