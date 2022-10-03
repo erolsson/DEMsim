@@ -14,7 +14,7 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 
 main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction_2/").expanduser()
 
-configurations = [(25, 100), (50, 100), (75, 100), (100, 100), (100, 75), (100, 50), (1000, 375), (100, 25)]
+configurations = [(100, 100), (100, 75), (100, 50), (1000, 375), (100, 25)]
 pressures = [100, 400]
 simulations = [1, 2, 3]
 
@@ -43,7 +43,7 @@ for p, color in zip(pressures, 'br'):
         plt.errorbar(ratio, np.mean(max_f), np.std(max_f), fmt="none", elinewidth=2,
                      ecolor=color)
 
-plt.xlim(0, 4.5)
+plt.xlim(0.5, 4.5)
 plt.xlabel("Size ratio $D_1/D_2$ [-]", fontsize=24)
 plt.ylabel("Maximum force [kN]", fontsize=24)
 plt.legend(loc="best")
