@@ -32,11 +32,22 @@ for p, color in zip(pressures, 'br'):
     plt.errorbar(size_ratio, np.mean(max_f, axis=1), np.std(max_f, axis=1), fmt="none", elinewidth=2,
                  ecolor=color)
 
-    plt.xlim(0, 4.5)
-    plt.xlabel("Size ratio $D_1/D_2$ [-]", fontsize=24)
-    plt.ylabel("Maximum force [kN]", fontsize=24)
-    plt.legend(loc="best")
-    plt.tight_layout()
-    plt.savefig("parametric_study.png")
+    for simulation, symbol in zip(["Small_Small", "Big_Small", "Big_Big"], ['o', 'x', 's']):
+        max_f = np.zeros(3)
+        for j, sim in enumerate(simulations):
+            directory = main_directory / str(sim) / (simulation.lower() + "_" + p + "kPa") / "shear_test"
+            surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
+            max_f[j] = np.max(surface_forces[:, -4])
+        size_ratio = 1 if simulation != "Big_Small" else 9.5/5.5
+        plt.plot(size_ratio, np.mean(max_f), symbol + color, lw=3, mew=3, ms=12)
+        plt.errorbar(size_ratio, np.mean(max_f), np.std(max_f, axis=1), fmt="none", elinewidth=2,
+                     ecolor=color)
+
+plt.xlim(0, 4.5)
+plt.xlabel("Size ratio $D_1/D_2$ [-]", fontsize=24)
+plt.ylabel("Maximum force [kN]", fontsize=24)
+plt.legend(loc="best")
+plt.tight_layout()
+plt.savefig("parametric_study.png")
 
 plt.show()
