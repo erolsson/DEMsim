@@ -1,6 +1,8 @@
 import pathlib
 import numpy as np
 
+from scipy.ndimage import uniform_filter1d
+
 import matplotlib.pyplot as plt
 import matplotlib
 
@@ -42,7 +44,7 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
                 d += surface_positions[:, -15]
                 f += -surface_forces[:, -4]
 
-        plt.plot(d[::10]*1000/len(simulations), -f[::10]/1000/len(simulations), c + '--', lw=3)
+        plt.plot(d*1000/len(simulations), -uniform_filter1d(f, size=50)/1000/len(simulations), c + '--', lw=3)
 
     plt.figure(fig_number)
     ax = plt.subplot(111)
