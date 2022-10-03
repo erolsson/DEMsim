@@ -34,7 +34,7 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
             kinetic_energy = np.genfromtxt(directory / "kinetic_energy.dou", delimiter=",")
             # plt.plot(surface_positions[:, -15]*1000, surface_forces[:, -4]/1000, c + '--')
             if sim == simulations[0]:
-                d = surface_positions[:, -15]
+                d = surface_positions[:, -5]
                 f = -surface_forces[:, -4]
                 if d.shape != f.shape:
                     size = min(d.shape[0], f.shape[0])
@@ -44,7 +44,7 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
                 d += surface_positions[:, -15]
                 f += -surface_forces[:, -4]
 
-        plt.plot(d*1000/len(simulations), -uniform_filter1d(f, size=50)/1000/len(simulations), c + '--', lw=3)
+        plt.plot(d*1000/len(simulations), uniform_filter1d(f, size=50)/1000/len(simulations), c + '--', lw=3)
 
     plt.figure(fig_number)
     ax = plt.subplot(111)
