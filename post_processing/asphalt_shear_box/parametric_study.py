@@ -40,7 +40,7 @@ for p, color in zip(pressures, 'br'):
             max_f[j] = np.max(surface_forces[:, -4])
         size_ratio = 1 if simulation != "Big_Small" else 9.5/5.5
         plt.plot(size_ratio, np.mean(max_f), symbol + color, lw=3, mew=3, ms=12)
-        plt.errorbar(size_ratio, np.mean(max_f), np.std(max_f, axis=1), fmt="none", elinewidth=2,
+        plt.errorbar(size_ratio, np.mean(max_f), np.std(max_f), fmt="none", elinewidth=2,
                      ecolor=color)
 
 plt.xlim(0, 4.5)
