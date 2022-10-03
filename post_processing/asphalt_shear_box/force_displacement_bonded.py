@@ -45,6 +45,10 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
                 f += -surface_forces[:, -4]
 
         plt.plot(d*1000/len(simulations), -uniform_filter1d(f, size=50)/1000/len(simulations), c + '--', lw=3)
+        plt.text(0.5, 0.2, r"\bf{" + p.replace("kPa", " kPa") + "}",
+                 horizontalalignment='center',
+                 verticalalignment='center',
+                 transform=ax.transAxes)
 
     plt.figure(fig_number)
     ax = plt.subplot(111)
