@@ -20,7 +20,7 @@ ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
 
-configurations = [(100, 100), (100, 75), (100, 50), (1000, 375), (100, 25)]
+configurations = [(100, 130), (100, 100), (100, 75), (100, 50), (1000, 375), (100, 25)]
 pressures = [100, 400]
 simulations = [1, 2, 3]
 
