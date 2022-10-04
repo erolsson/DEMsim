@@ -27,7 +27,7 @@ for simulation, c in zip(configurations, ['g', 'r', 'b', 'm']):
             max_f[i, j] = np.max(surface_forces[:, -4])
 
     plt.plot(pressures, np.mean(max_f, axis=1)/1e3, '-' + c, lw=3, label=str(simulation).replace("_", "-"))
-    plt.errorbar(pressures, np.mean(max_f, axis=1)/1e3, np.std(max_f, axis=1), fmt="none", elinewidth=2,
+    plt.errorbar(pressures, np.mean(max_f, axis=1)/1e3, np.std(max_f, axis=1)/1e3, fmt="none", elinewidth=2,
                  ecolor=c)
 
 plt.xlim(-50, 900)
