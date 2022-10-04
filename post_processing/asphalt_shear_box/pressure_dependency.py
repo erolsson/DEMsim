@@ -49,7 +49,7 @@ def main():
 
     par = fmin(residual, [0, 0, 0, 0], args=(data, ))
     x = np.linspace(0, 800, 1000)
-    for i, simulation, c in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
+    for i, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         plt.plot(x, par[0]*x + par[i+1], '--' + c, lw=2)
     plt.xlim(-50, 900)
     plt.xlabel("Pressure [kPa]", fontsize=24)
