@@ -26,9 +26,13 @@ for simulation, c in zip(configurations, ['g', 'r', 'b', 'm']):
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[i, j] = np.max(surface_forces[:, -4])
 
-    plt.plot(pressures, np.mean(max_f, axis=1)/1e3, '-' + c, lw=3, label=str(simulation).replace("_", "-"))
-    plt.errorbar(pressures, np.mean(max_f, axis=1)/1e3, np.std(max_f, axis=1)/1e3, fmt="none", elinewidth=2,
+    f = np.mean(max_f, axis=1)/1e3
+    plt.plot(pressures, f, '-' + c, lw=3, label=str(simulation).replace("_", "-"))
+    plt.errorbar(pressures, f, np.std(max_f, axis=1)/1e3, fmt="none", elinewidth=2,
                  ecolor=c)
+    a, b = np.polyfit(pressures[1:], f[1:], 1)
+    x = np.linspace(0, 800, 1000)
+    plt.plot(x, a*x + b, '--c', lw=2)
 
 plt.xlim(-50, 900)
 plt.xlabel("Pressure [kPa]", fontsize=24)
