@@ -32,7 +32,7 @@ for simulation, c in zip(configurations, ['g', 'r', 'b', 'm']):
                  ecolor=c)
     a, b = np.polyfit(pressures[1:], f[1:], 1)
     x = np.linspace(0, 800, 1000)
-    plt.plot(x, a*x + b, '--c', lw=2)
+    plt.plot(x, a*x + b, '--' + c, lw=2)
 
 plt.xlim(-50, 900)
 plt.xlabel("Pressure [kPa]", fontsize=24)
