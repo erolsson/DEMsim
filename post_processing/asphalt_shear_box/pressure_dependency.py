@@ -47,7 +47,7 @@ def main():
         # x = np.linspace(0, 800, 1000)
         # plt.plot(x, a*x + b, '--' + c, lw=2)
 
-    print(fmin(residual, [0, 0, 0, 0], data=(data, )))
+    print(fmin(residual, [0, 0, 0, 0], args=(data, )))
 
     plt.xlim(-50, 900)
     plt.xlabel("Pressure [kPa]", fontsize=24)
