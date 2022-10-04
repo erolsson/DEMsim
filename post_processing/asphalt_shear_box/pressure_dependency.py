@@ -52,6 +52,7 @@ def main():
     for i, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         plt.plot(x, par[0]*x + par[i+1], '--' + c, lw=2)
     plt.xlim(-50, 900)
+    plt.ylim(0, 18)
     plt.xlabel("Pressure [kPa]", fontsize=24)
     plt.ylabel("Maximum force [kN]", fontsize=24)
     plt.legend(loc="best")
