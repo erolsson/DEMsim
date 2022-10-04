@@ -42,7 +42,7 @@ def main():
         plt.plot(pressures, f, '-' + c, lw=3, label=str(simulation).replace("_", "-"))
         plt.errorbar(pressures, f, np.std(max_f, axis=1)/1e3, fmt="none", elinewidth=2,
                      ecolor=c)
-        data.append((pressures[1:], f[1:]))
+        data.append((np.array(pressures[1:]), np.array(f[1:])))
         # a, b = np.polyfit(pressures[1:], f[1:], 1)
         # x = np.linspace(0, 800, 1000)
         # plt.plot(x, a*x + b, '--' + c, lw=2)
