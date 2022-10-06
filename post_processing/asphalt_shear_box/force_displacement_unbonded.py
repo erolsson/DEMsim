@@ -29,6 +29,7 @@ ax.set_position([0.1, 0.15, 0.55, box.height])
 area = np.pi*5*5
 sizes = {"Small_Small": "(5.5/5.5)", "Big_Small": "(5.5/9.5)", "Big_Big": "(9.5/9.5)"}
 for fig_number, p in enumerate(["100kPa", "400kPa"]):
+    plt.figure(fig_number)
     for simulation, c in zip(sizes.keys(), ['g', 'r', 'b', 'm']):
         simulations = [1, 2, 3]
         data = np.genfromtxt(exp_directory / (simulation.lower() + "_" + p + ".dat"))
@@ -62,7 +63,7 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
     plt.figure(fig_number)
     ax = plt.subplot(111)
     plt.ylim(0)
-    plt.xlim(0, 8)
+    plt.xlim(0, 7.5)
     plt.plot([-2, -1], [0, 0], 'w', label='white')
     plt.plot([-2, -1], [0, 0], 'k', lw=3, label='Experiments')
     plt.plot([-2, -1], [0, 0], '--k', lw=3, label='Simulations')
