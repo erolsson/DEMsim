@@ -23,7 +23,7 @@ ax.set_position([0.1, 0.15, 0.55, box.height])
 configurations = [(100, 130), (100, 100), (100, 75), (100, 50), (1000, 375), (100, 25)]
 pressures = [400]
 simulations = [1, 2, 3]
-
+plt.plot([-1, -2], [1, 1], 'w', label=r"\bf{\Table 2}")
 size_ratio = [c[1]/c[0] for c in configurations]
 area = np.pi*50*50
 for p, color in zip(pressures, 'br'):
@@ -49,15 +49,17 @@ for p, color in zip(pressures, 'br'):
         plt.errorbar(ratio, np.mean(max_f)/area, np.std(max_f)/area, fmt="none", elinewidth=2,
                      ecolor=color)
 
-plt.xlim(0.2, 2.)
+plt.xlim(0.2, 1.5)
 plt.ylim(0)
-plt.plot([-1, -2], [1, 1], 'w', label="white")
+
+plt.plot([-1, -2], [1, 1], 'w', label=r"white")
+plt.plot([-1, -2], [1, 1], 'w', label=r"\bf{Table 3}")
 for simulation, symbol in zip(["(5.5/5.5)", "(5.5/9.5)", "(9.5/9.5)"], ['o', 'x', 's']):
-    plt.plot([-2], [1], 'k' + symbol, ms=12, mew=3, mfc='w', label=simulation.replace('_', '-'))
+    plt.plot([-2], [1], 'b' + symbol, ms=12, mew=3, mfc='w', label=simulation.replace('_', '-'))
 plt.xlabel("Size ratio $D_2/D_1$ [-]", fontsize=24)
 plt.ylabel("Maximum shear stress [MPa]", fontsize=24)
 legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
-legend.get_texts()[1].set_color("white")
+legend.get_texts()[2].set_color("white")
 plt.savefig("parametric_study.png")
 
 plt.show()
