@@ -23,7 +23,7 @@ ax.set_position([0.1, 0.15, 0.55, box.height])
 configurations = [(100, 130), (100, 100), (100, 75), (100, 50), (1000, 375), (100, 25)]
 pressures = [400]
 simulations = [1, 2, 3]
-plt.plot([-1, -2], [1, 1], 'w', label=r"\bf{\Table 2}")
+plt.plot([-1, -2], [1, 1], 'w', label=r"\bf{Table 2}")
 size_ratio = [c[1]/c[0] for c in configurations]
 area = np.pi*50*50
 for p, color in zip(pressures, 'br'):
