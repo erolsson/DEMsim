@@ -20,6 +20,9 @@ exp_directory = pathlib.Path("~/asphalt_bond_strength/experiments/unbonded").exp
 
 fig = plt.figure(1)
 fig.set_size_inches(7., 6., forward=True)
+ax = plt.subplot(111)
+box = ax.get_position()
+ax.set_position([0.1, 0.15, 0.85, box.height])
 
 fig = plt.figure(1)
 fig.set_size_inches(11., 6., forward=True)
