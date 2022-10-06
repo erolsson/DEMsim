@@ -34,6 +34,7 @@ sizes = {"Small_Small": "(5.5/5.5)", "Big_Small": "(5.5/9.5)", "Big_Big": "(9.5/
 
 for fig_number, p in enumerate(["100kPa", "400kPa"]):
     plt.figure(fig_number)
+    ax = plt.subplot(111)
     for simulation, c in zip(sizes.keys(), ['g', 'r', 'b', 'm']):
         simulations = [1, 2, 3]
         data = np.genfromtxt(exp_directory / (simulation.lower() + "_" + p + ".dat"))
