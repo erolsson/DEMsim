@@ -18,17 +18,18 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/mu=0.8_mu_wall=0.0/").expanduser()
 exp_directory = pathlib.Path("~/asphalt_bond_strength/experiments/unbonded").expanduser()
 
-fig = plt.figure(0)
-fig.set_size_inches(7., 6., forward=True)
-ax = plt.subplot(111)
-box = ax.get_position()
-ax.set_position([0.1, 0.15, 0.85, box.height])
-
 fig = plt.figure(1)
 fig.set_size_inches(11., 6., forward=True)
 ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
+
+fig = plt.figure(0)
+fig.set_size_inches(8., 6., forward=True)
+ax = plt.subplot(111)
+ax.set_position([0.1*11/8, 0.15, 0.85, box.height])
+
+
 
 area = np.pi*50*50
 sizes = {"Small_Small": "(5.5/5.5)", "Big_Small": "(5.5/9.5)", "Big_Big": "(9.5/9.5)"}
