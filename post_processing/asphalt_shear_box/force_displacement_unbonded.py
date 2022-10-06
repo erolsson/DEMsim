@@ -23,7 +23,6 @@ fig.set_size_inches(11., 6., forward=True)
 ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
-0.65*11
 
 fig = plt.figure(0)
 fig.set_size_inches(8., 6., forward=True)
