@@ -29,8 +29,6 @@ fig.set_size_inches(8., 6., forward=True)
 ax = plt.subplot(111)
 ax.set_position([0.1*11/8, 0.15, 0.55*11/8, box.height])
 
-
-
 area = np.pi*50*50
 sizes = {"Small_Small": "(5.5/5.5)", "Big_Small": "(5.5/9.5)", "Big_Big": "(9.5/9.5)"}
 for fig_number, p in enumerate(["100kPa", "400kPa"]):
@@ -59,7 +57,7 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
 
         plt.plot(d*1000/len(simulations), uniform_filter1d(f, size=200)/len(simulations)/area, c + '--', lw=3)
         max_f_sim = np.max(uniform_filter1d(f, size=200)/1000/len(simulations))
-        print(simulation, p, (max_f_sim/max_f_exp - 1)*100)
+        print(simulation, p, max_f_sim, max_f_exp, (max_f_exp/max_f_sim - 1)*100)
         plt.text(0.5, 0.2, r"\bf{" + p.replace("kPa", " kPa") + "}",
                  horizontalalignment='center',
                  verticalalignment='center',

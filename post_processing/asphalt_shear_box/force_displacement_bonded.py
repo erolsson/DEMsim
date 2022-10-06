@@ -17,16 +17,27 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 
 main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction_2/").expanduser()
 exp_directory = pathlib.Path("~/asphalt_bond_strength/experiments/bonded").expanduser()
+
+fig = plt.figure(1)
+fig.set_size_inches(11., 6., forward=True)
+ax = plt.subplot(111)
+box = ax.get_position()
+ax.set_position([0.1, 0.15, 0.55, box.height])
+
+fig = plt.figure(0)
+fig.set_size_inches(8., 6., forward=True)
+ax = plt.subplot(111)
+ax.set_position([0.1*11/8, 0.15, 0.55*11/8, box.height])
+
+area = np.pi*50*50
+sizes = {"Small_Small": "(5.5/5.5)", "Big_Small": "(5.5/9.5)", "Big_Big": "(9.5/9.5)"}
+
 for fig_number, p in enumerate(["100kPa", "400kPa"]):
-    fig = plt.figure(fig_number)
-    fig.set_size_inches(11., 6., forward=True)
-    ax = plt.subplot(111)
-    box = ax.get_position()
-    ax.set_position([0.1, 0.15, 0.55, box.height])
-    for simulation, c in zip(["Small_Small", "Big_Small", "Big_Big"], ['g', 'r', 'b', 'm']):
+    plt.figure(fig_number)
+    for simulation, c in zip(sizes.keys(), ['g', 'r', 'b', 'm']):
         simulations = [1, 2, 3]
         data = np.genfromtxt(exp_directory / (simulation.lower() + "_" + p + ".dat"))
-        plt.plot(data[:, 0], data[:, 1], c, lw=3, label=simulation.replace('_', '-'))
+        plt.plot(data[:, 0], data[:, 1], c, lw=3, label=sizes[simulation])
         for sim in simulations:
             directory = main_directory / str(sim) / (simulation.lower() + "_" + p)/"shear_test"
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
