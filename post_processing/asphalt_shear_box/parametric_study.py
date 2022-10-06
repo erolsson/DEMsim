@@ -35,7 +35,7 @@ for p, color in zip(pressures, 'br'):
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[i, j] = np.max(surface_forces[:, -4])/1e3
     plt.plot(size_ratio, np.mean(max_f, axis=1)/area, '-' + color, lw=3, label=str(p) + " kPa")
-    plt.errorbar(size_ratio, np.mean(max_f, axis=1/area), np.std(max_f, axis=1), fmt="none", elinewidth=2,
+    plt.errorbar(size_ratio, np.mean(max_f, axis=1)/area, np.std(max_f, axis=1), fmt="none", elinewidth=2,
                  ecolor=color)
 
     for simulation, symbol in zip(["Small_Small", "Big_Small", "Big_Big"], ['o', 'x', 's']):
