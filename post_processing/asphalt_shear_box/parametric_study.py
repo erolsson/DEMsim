@@ -57,7 +57,7 @@ for simulation, symbol in zip(["(5.5/5.5)", "(5.5/9.5)", "(9.5/9.5)"], ['o', 'x'
 plt.xlabel("Size ratio $D_2/D_1$ [-]", fontsize=24)
 plt.ylabel("Maximum shear stress [MPa]", fontsize=24)
 legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
-legend.get_texts()[2].set_color("white")
+legend.get_texts()[1].set_color("white")
 plt.savefig("parametric_study.png")
 
 plt.show()
