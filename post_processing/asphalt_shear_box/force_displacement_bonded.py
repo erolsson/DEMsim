@@ -37,7 +37,7 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
     for simulation, c in zip(sizes.keys(), ['g', 'r', 'b', 'm']):
         simulations = [1, 2, 3]
         data = np.genfromtxt(exp_directory / (simulation.lower() + "_" + p + ".dat"))
-        plt.plot(data[:, 0], data[:, 1], c, lw=3, label=sizes[simulation])
+        plt.plot(data[:, 0], data[:, 1]*1000/area, c, lw=3, label=sizes[simulation])
         for sim in simulations:
             directory = main_directory / str(sim) / (simulation.lower() + "_" + p)/"shear_test"
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
@@ -54,7 +54,7 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
                 d += surface_positions[:, -15]
                 f += -surface_forces[:, -4]
 
-        plt.plot(d*1000/len(simulations), -uniform_filter1d(f, size=50)/1000/len(simulations), c + '--', lw=3)
+        plt.plot(d*1000/len(simulations), -uniform_filter1d(f, size=50)/len(simulations)/area, c + '--', lw=3)
         plt.text(0.5, 0.2, r"\bf{" + p.replace("kPa", " kPa") + "}",
                  horizontalalignment='center',
                  verticalalignment='center',
@@ -63,14 +63,16 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
     plt.figure(fig_number)
     ax = plt.subplot(111)
     plt.ylim(0)
-    plt.xlim(0, 8)
-    plt.plot([-2, -1], [0, 0], 'w', label='white')
-    plt.plot([-2, -1], [0, 0], 'k', lw=3, label='Experiments')
-    plt.plot([-2, -1], [0, 0], '--k', lw=3, label='Simulations')
+    plt.xlim(0, 7.5)
 
-    legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
-    legend.get_texts()[3].set_color("white")
+    if fig_number == 1:
+        plt.plot([-2, -1], [0, 0], 'w', label='white')
+        plt.plot([-2, -1], [0, 0], 'k', lw=3, label='Experiments')
+        plt.plot([-2, -1], [0, 0], '--k', lw=3, label='Simulations')
+
+        legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
+        legend.get_texts()[3].set_color("white")
     plt.xlabel("Displacement [mm]")
-    plt.ylabel("Force [kN]")
+    plt.ylabel("Shear stress [MPa]")
     plt.savefig("bonded_" + p + ".png")
 plt.show()
