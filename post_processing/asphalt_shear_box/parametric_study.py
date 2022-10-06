@@ -55,7 +55,7 @@ plt.ylim(0)
 plt.plot([-1, -2], [1, 1], 'w', label=r"white")
 plt.plot([-1, -2], [1, 1], 'w', label=r"\bf{Table 3}")
 for simulation, symbol in zip(["(5.5/5.5)", "(5.5/9.5)", "(9.5/9.5)"], ['o', 'x', 's']):
-    plt.plot([-2], [1], 'b' + symbol, ms=12, mew=3, mfc='w', label=simulation.replace('_', '-'))
+    plt.plot([-2], [1], 'b' + symbol, ms=12, mew=3, label=simulation.replace('_', '-'))
 plt.xlabel("Size ratio $D_2/D_1$ [-]", fontsize=24)
 plt.ylabel("Maximum shear stress [MPa]", fontsize=24)
 legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
