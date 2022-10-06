@@ -35,7 +35,7 @@ for p, color in zip(pressures, 'br'):
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[i, j] = np.max(surface_forces[:, -4])
     plt.plot(size_ratio, np.mean(max_f, axis=1)/area, '-' + color, lw=3, label=str(p) + " kPa")
-    plt.errorbar(size_ratio, np.mean(max_f, axis=1)/area, np.std(max_f, axis=1), fmt="none", elinewidth=2,
+    plt.errorbar(size_ratio, np.mean(max_f, axis=1)/area, np.std(max_f, axis=1)/area, fmt="none", elinewidth=2,
                  ecolor=color)
 
     for simulation, symbol in zip(["Small_Small", "Big_Small", "Big_Big"], ['o', 'x', 's']):
@@ -44,9 +44,9 @@ for p, color in zip(pressures, 'br'):
             directory = main_directory / str(sim) / (simulation.lower() + "_" + str(p) + "kPa") / "shear_test"
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[j] = np.max(surface_forces[:, -4])
-        ratio = 1 if simulation != "Big_Small" else 9.5/5.5
+        ratio = 1 if simulation != "Big_Small" else 5.5/9.5
         plt.plot(ratio, np.mean(max_f)/area, symbol + color, lw=3, mew=3, ms=12)
-        plt.errorbar(ratio, np.mean(max_f)/area, np.std(max_f), fmt="none", elinewidth=2,
+        plt.errorbar(ratio, np.mean(max_f)/area, np.std(max_f)/area, fmt="none", elinewidth=2,
                      ecolor=color)
 
 plt.xlim(0.2, 2.)
