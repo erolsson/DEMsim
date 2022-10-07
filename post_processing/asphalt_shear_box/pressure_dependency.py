@@ -48,7 +48,7 @@ def main():
 
         exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"))
         exp_p = np.round(exp_data[:, 0], 1)*1e3
-        plt.plot(exp_p, data[:, 1], c + "s", ms=8)
+        plt.plot(exp_p, exp_data[:, 1], c + "s", ms=8)
     par = fmin(residual, [0, 0, 0, 0], args=(data, ), maxfun=1e6, maxiter=1e6)
     x = np.linspace(0, 800, 1000)
     for i, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
