@@ -46,7 +46,7 @@ def main():
         plt.plot(pressures, f/area, '-x' + c, lw=3, label=str(simulation).replace("_", "-"), ms=16)
         data.append((np.array(pressures[1:]), np.array(f[1:]/area)))
 
-        exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"))
+        exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"), delimiter=",")
         exp_p = np.round(exp_data[:, 0], 1)*1e3
         plt.plot(exp_p, exp_data[:, 1], c + "s", ms=8)
     par = fmin(residual, [0, 0, 0, 0], args=(data, ), maxfun=1e6, maxiter=1e6)
