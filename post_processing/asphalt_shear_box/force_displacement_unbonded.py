@@ -31,7 +31,7 @@ ax.set_position([0.1*11/8, 0.15, 0.55*11/8, box.height])
 
 area = np.pi*50*50
 sizes = {"Small_Small": "(5.5/5.5)", "Big_Small": "(5.5/9.5)", "Big_Big": "(9.5/9.5)"}
-for fig_number, p in enumerate(["100kPa", "400kPa"]):
+for fig_number, (p, fig_label) in enumerate(zip(["100kPa", "400kPa"], ["(a)", "(b)"])):
     plt.figure(fig_number)
     ax = plt.subplot(111)
     for simulation, c in zip(sizes.keys(), ['g', 'r', 'b', 'm']):
@@ -76,5 +76,6 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
         legend.get_texts()[3].set_color("white")
     plt.xlabel("Displacement [mm]")
     plt.ylabel("Shear stress [MPa]")
+    plt.text(0.05, 0.92, r'\bf{(' + fig_label + ')}', transform=ax.transAxes)
     plt.savefig("unbonded_" + p + ".png")
 plt.show()
