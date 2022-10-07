@@ -44,7 +44,7 @@ def main():
                 max_f[i, j] = np.max(surface_forces[:, -4])
 
         f = np.mean(max_f, axis=1)
-        plt.plot(pressures, f/area, '-' + c, lw=3, label=str(simulation).replace("_", "-"))
+        plt.plot(pressures, f/area, '-o' + c, lw=3, label=str(simulation).replace("_", "-"), ms=10)
         data.append((np.array(pressures[1:]), np.array(f[1:])))
 
         mean = experiments[0, (1 + 2*k)::6]
@@ -52,12 +52,12 @@ def main():
         plt.plot([100, 400], mean, 'x' + c, lw=3, mew=3, ms=16 - 2*k)
         plt.errorbar([100, 400], mean, std, fmt="none", elinewidth=3,
                      ecolor=c)
-    # par = fmin(residual, [0, 0, 0, 0], args=(data, ), maxfun=1e6, maxiter=1e6)
-    # x = np.linspace(0, 800, 1000)
-    # for i, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
-    #     plt.plot(x, par[0]*x + par[i+1], '--' + c, lw=2)
+    par = fmin(residual, [0, 0, 0, 0], args=(data, ), maxfun=1e6, maxiter=1e6)
+    x = np.linspace(0, 800, 1000)
+    for i, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
+        plt.plot(x, par[0]*x + par[i+1], '--' + c, lw=2)
     plt.xlim(-50, 900)
-    plt.ylim(0, 2)
+    plt.ylim(0, 2.2)
     plt.xlabel(r"Confining stress $\sigma_n$ [kPa]", fontsize=24)
     plt.ylabel("Maximum shear stress [MPa]", fontsize=24)
     plt.legend(loc="best")
