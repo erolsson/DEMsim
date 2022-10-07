@@ -58,18 +58,23 @@ def main():
     par = fmin(residual, [0.001, 0.7, 0.8, 0.5], args=(data, ), maxfun=1e6, maxiter=1e6)
     x = np.linspace(0, 800, 1000)
     for i, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
-        plt.plot(x, par[0]*x + par[i+1], '--' + c, lw=2, label=sizes[simulation])
+        plt.plot(x, par[0]*x + par[i+1], '--' + c, lw=2)
 
+    print(par)
     plt.plot([-1, -2], [-1, -1], 'w', label="white")
     plt.plot([-1, -2], [-1, -1], '--k', label=r"Eq. (11)")
     plt.plot([-1, -2], [-1, -1], 'ks', ms=8, label=r"Exp.")
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"), delimiter=",")
         exp_p = np.round(exp_data[:, 0], 1)*1e3
-        plt.plot(exp_p, exp_data[:, 1], c + "s", ms=8, label=sizes[simulation])
+        plt.plot(exp_p, exp_data[:, 1], c + "s", ms=8)
 
     plt.xlim(-50, 900)
     plt.ylim(0, 2.2)
+    plt.text(500, 0.8, "(5.5/5.5) $c_0 = ??$", horizontalalignment='right')
+    plt.text(500, 0.6, "(5.5/9.5) $c_0 = ??$", horizontalalignment='right')
+    plt.text(500, 0.4, "(9.5/9.5) $c_0 = ??$", horizontalalignment='right')
+    plt.text(500, 0.2, r"$\varphi = ??$", horizontalalignment='right')
     plt.xlabel(r"Confining stress $\sigma_n$ [kPa]", fontsize=24)
     plt.ylabel("Maximum shear stress [MPa]", fontsize=24)
     legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
