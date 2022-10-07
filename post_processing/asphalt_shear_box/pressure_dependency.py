@@ -28,7 +28,7 @@ fig.set_size_inches(11., 6., forward=True)
 ax = plt.subplot(111)
 box = ax.get_position()
 ax.set_position([0.1, 0.15, 0.55, box.height])
-plt.plot([-1, -2], [-1, -1], 'w', label=r"\bf{DEM simulations}")
+plt.plot([-1, -2], [-1, -1], 'w', label=r"\bf{DEM}")
 
 
 def residual(par, data):
@@ -57,13 +57,12 @@ def main():
 
     par = fmin(residual, [0.001, 0.7, 0.8, 0.5], args=(data, ), maxfun=1e6, maxiter=1e6)
     x = np.linspace(0, 800, 1000)
-    plt.plot([-1, -2], [-1, -1], 'w', label="white")
-    plt.plot([-1, -2], [-1, -1], 'w', label=r"\bf{DEM linear fit}")
     for i, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         plt.plot(x, par[0]*x + par[i+1], '--' + c, lw=2, label=sizes[simulation])
 
     plt.plot([-1, -2], [-1, -1], 'w', label="white")
-    plt.plot([-1, -2], [-1, -1], 'w', label=r"\bf{Experiments}")
+    plt.plot([-1, -2], [-1, -1], '--k', label=r"Eq. (11)")
+    plt.plot([-1, -2], [-1, -1], 'ks', ms=8, label=r"Exp.")
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"), delimiter=",")
         exp_p = np.round(exp_data[:, 0], 1)*1e3
@@ -75,7 +74,6 @@ def main():
     plt.ylabel("Maximum shear stress [MPa]", fontsize=24)
     legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
     legend.get_texts()[4].set_color("white")
-    legend.get_texts()[8].set_color("white")
     plt.gca().add_artist(legend)
 
     plt.savefig("pressure_dependency.png")
