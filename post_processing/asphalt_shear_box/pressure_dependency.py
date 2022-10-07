@@ -41,7 +41,7 @@ def residual(par, data):
 def main():
     area = np.pi*50*50
     data = []
-    """
+
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         max_f = np.zeros((len(pressures), len(simulations)))
 
@@ -69,7 +69,7 @@ def main():
         exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"), delimiter=",")
         exp_p = np.round(exp_data[:, 0], 1)*1e3
         plt.plot(exp_p, exp_data[:, 1], c + "s", ms=8)
-    """
+
     plt.xlim(-50, 900)
     plt.ylim(0, 2.2)
     plt.text(800, 0.8, r"$\boldsymbol{(5.5/5.5)\, c_0 = 1.10\, \mathrm{MPa}}$", horizontalalignment='right', color='g')
