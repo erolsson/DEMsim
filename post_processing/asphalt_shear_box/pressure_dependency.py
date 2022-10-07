@@ -10,7 +10,7 @@ matplotlib.style.use('classic')
 plt.rc('text', usetex=True)
 plt.rc('font', serif='Computer Modern Roman')
 plt.rcParams.update({'font.size': 24})
-plt.rcParams['text.latex.preamble'] = r"\usepackage{amsmath} \usepackage{color}"
+plt.rcParams['text.latex.preamble'] = r"\usepackage{amsmath} \usepackage{gensymb}"
 plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
@@ -41,7 +41,7 @@ def residual(par, data):
 def main():
     area = np.pi*50*50
     data = []
-
+    """
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         max_f = np.zeros((len(pressures), len(simulations)))
 
@@ -69,13 +69,13 @@ def main():
         exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"), delimiter=",")
         exp_p = np.round(exp_data[:, 0], 1)*1e3
         plt.plot(exp_p, exp_data[:, 1], c + "s", ms=8)
-
+    """
     plt.xlim(-50, 900)
     plt.ylim(0, 2.2)
-    plt.text(800, 0.8, r"$\boldsymbol{(5.5/5.5)\, c_0 = ??}$", horizontalalignment='right', color='g')
-    plt.text(800, 0.6, r"$\boldsymbol{(5.5/9.5)\, c_0 = ??}$", horizontalalignment='right', color='r')
-    plt.text(800, 0.4, r"$\boldsymbol{(9.5/9.5)\, c_0 = ??}$", horizontalalignment='right', color='b')
-    plt.text(800, 0.2, r"$\boldsymbol{\varphi = ??}$", horizontalalignment='right')
+    plt.text(800, 0.8, r"$\boldsymbol{(5.5/5.5)\, c_0 = 1.10\, \mathrm{MPa}}$", horizontalalignment='right', color='g')
+    plt.text(800, 0.6, r"$\boldsymbol{(5.5/9.5)\, c_0 = 1.27\, \mathrm{MPa}}$", horizontalalignment='right', color='r')
+    plt.text(800, 0.4, r"$\boldsymbol{(9.5/9.5)\, c_0 = 0.85\, \mathrm{MPa}}$", horizontalalignment='right', color='b')
+    plt.text(680, 0.2, r"$\boldsymbol{\varphi = 41.5 \degree}$", horizontalalignment='right')
     plt.xlabel(r"Confining stress $\sigma_n$ [kPa]", fontsize=24)
     plt.ylabel("Maximum shear stress [MPa]", fontsize=24)
     legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
