@@ -32,7 +32,6 @@ def residual(par, data):
 def main():
     area = np.pi*50*50
     data = []
-    experiments = np.genfromtxt(exp_directory / "pressure_dependency.csv")
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         max_f = np.zeros((len(pressures), len(simulations)))
 
@@ -44,14 +43,12 @@ def main():
                 max_f[i, j] = np.max(surface_forces[:, -4])
 
         f = np.mean(max_f, axis=1)
-        plt.plot(pressures, f/area, '-o' + c, lw=3, label=str(simulation).replace("_", "-"), ms=10)
-        data.append((np.array(pressures[1:]), np.array(f[1:])))
+        plt.plot(pressures, f/area, '-x' + c, lw=3, label=str(simulation).replace("_", "-"), ms=16)
+        data.append((np.array(pressures[1:]), np.array(f[1:]/area)))
 
-        mean = experiments[0, (1 + 2*k)::6]
-        std = experiments[1, (1 + 2*k)::6]
-        plt.plot([100, 400], mean, 'x' + c, lw=3, mew=3, ms=16 - 2*k)
-        plt.errorbar([100, 400], mean, std, fmt="none", elinewidth=3,
-                     ecolor=c)
+        exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"))
+        exp_p = np.round(exp_data[:, 0], 1)*1e3
+        plt.plot(exp_p, data[:, 1], c + "s", ms=8)
     par = fmin(residual, [0, 0, 0, 0], args=(data, ), maxfun=1e6, maxiter=1e6)
     x = np.linspace(0, 800, 1000)
     for i, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
