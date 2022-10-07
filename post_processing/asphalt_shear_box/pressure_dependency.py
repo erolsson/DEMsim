@@ -10,7 +10,7 @@ matplotlib.style.use('classic')
 plt.rc('text', usetex=True)
 plt.rc('font', serif='Computer Modern Roman')
 plt.rcParams.update({'font.size': 24})
-plt.rcParams['text.latex.preamble'] = r"\usepackage{amsmath}"
+plt.rcParams['text.latex.preamble'] = r"\usepackage{amsmath} \usepackage{color}"
 plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
                   'monospace': ['Computer Modern Typewriter']})
 
@@ -41,6 +41,7 @@ def residual(par, data):
 def main():
     area = np.pi*50*50
     data = []
+
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         max_f = np.zeros((len(pressures), len(simulations)))
 
@@ -71,14 +72,14 @@ def main():
 
     plt.xlim(-50, 900)
     plt.ylim(0, 2.2)
-    plt.text(500, 0.8, "(5.5/5.5) $c_0 = ??$", horizontalalignment='right')
-    plt.text(500, 0.6, "(5.5/9.5) $c_0 = ??$", horizontalalignment='right')
-    plt.text(500, 0.4, "(9.5/9.5) $c_0 = ??$", horizontalalignment='right')
-    plt.text(500, 0.2, r"$\varphi = ??$", horizontalalignment='right')
+    plt.text(800, 0.8, r"$\boldsymbol{(5.5/5.5)\, c_0 = ??}$", horizontalalignment='right', color='g')
+    plt.text(800, 0.6, r"$\boldsymbol{(5.5/9.5)\, c_0 = ??}$", horizontalalignment='right', color='r')
+    plt.text(800, 0.4, r"$\boldsymbol{(9.5/9.5)\, c_0 = ??}$", horizontalalignment='right', color='b')
+    plt.text(800, 0.2, r"$\boldsymbol{\varphi = ??}$", horizontalalignment='right')
     plt.xlabel(r"Confining stress $\sigma_n$ [kPa]", fontsize=24)
     plt.ylabel("Maximum shear stress [MPa]", fontsize=24)
     legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
-    legend.get_texts()[4].set_color("white")
+    # legend.get_texts()[4].set_color("white")
     plt.gca().add_artist(legend)
 
     plt.savefig("pressure_dependency.png")
