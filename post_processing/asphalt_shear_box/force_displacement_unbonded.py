@@ -59,7 +59,7 @@ for fig_number, p in enumerate(["100kPa", "400kPa"]):
         plt.plot(d*1000/len(simulations), uniform_filter1d(f, size=200)/len(simulations)/area, c + '--', lw=3)
         max_f_sim = np.max(uniform_filter1d(f, size=200)/1000/len(simulations))
         print(simulation, p, max_f_sim, max_f_exp, (max_f_exp/max_f_sim - 1)*100)
-        plt.text(0.5, 0.2, r"\bf{" + p.replace("kPa", " kPa") + "}",
+        plt.text(0.5, 0.1, r"$\boldsymbol{\sigma_n = " + p.replace("kPa", r"\mathrm{ kPa}") + "}$",
                  horizontalalignment='center',
                  verticalalignment='center',
                  transform=ax.transAxes)
