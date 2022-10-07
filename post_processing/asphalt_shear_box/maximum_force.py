@@ -60,9 +60,8 @@ legend_entries[5] = l
 labels[5] = r"\textbf{Simulations}"
 
 for p in [100, 400]:
-    for config in ["Big_Big", "Small_Small", "Big_Small"]:
+    for config, label in zip(["Big_Big", "Small_Small", "Big_Small"], ["(9.5/9.5)", "(5.5/9.5)", "(5.5/5.5)"]):
         data = experimental_data_bonded[config][p]
-        label = config.replace("_", "-")
         bar = plt.bar(2*counter, data[0]/f0_exp, 1, yerr=data[1]/f0_exp, color=colors[config], linewidth=2, capsize=10,
                       align="edge", label=label)
         if p == 100:
@@ -86,12 +85,12 @@ for p in [100, 400]:
 plt.plot([6, 6], [0, 2.5], ':k', lw=2)
 plt.xlim(0, 12)
 plt.ylim(0, 2.2)
-plt.ylabel("Normalized maximum force", fontsize=24)
+plt.ylabel("Normalized maximum shear stress", fontsize=24)
 plt.text(0.5, 1.8, r'$\boldsymbol{\sigma_n = 100}$ \textbf{kPa}', fontsize=24)
 plt.text(6.5, 1.8, r'$\boldsymbol{\sigma_n = 400}$ \textbf{kPa}', fontsize=24)
 legend = ax.legend(legend_entries, labels, loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
 legend.get_texts()[4].set_color("white")
 plt.gca().add_artist(legend)
 plt.xticks([], ())
-plt.savefig("maximum_force")
+plt.savefig("maximum_force.png")
 plt.show()
