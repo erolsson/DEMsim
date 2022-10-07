@@ -76,6 +76,7 @@ for fig_number, (p, fig_label) in enumerate(zip(["100kPa", "400kPa"], ["a", "b"]
         legend.get_texts()[3].set_color("white")
     plt.xlabel("Displacement [mm]")
     plt.ylabel("Shear stress [MPa]")
-    plt.text(0.05, 0.92, r'\bf{(' + fig_label + ')}', transform=ax.transAxes)
+    plt.text(0.05, 0.95, r'\bf{(' + fig_label + ')}', horizontalalignment='center', verticalalignment='center',
+             transform=ax.transAxes)
     plt.savefig("unbonded_" + p + ".png")
 plt.show()
