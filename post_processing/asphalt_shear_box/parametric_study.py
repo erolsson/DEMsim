@@ -49,7 +49,6 @@ for p, color in zip(pressures, 'br'):
         plt.errorbar(ratio, np.mean(max_f)/area, np.std(max_f)/area, fmt="none", elinewidth=2,
                      ecolor=color)
 
-plt.plot([-1, -2], [-1, -2], '-b', lw=3, label="$D_2/D_1=x/10$ mm")
 plt.xlim(0.2, 1.5)
 plt.ylim(0)
 
