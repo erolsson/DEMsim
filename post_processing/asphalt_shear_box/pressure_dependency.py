@@ -64,7 +64,7 @@ def main():
     print(par)
     plt.plot([-1, -2], [-1, -1], 'w', label="white")
     plt.plot([-1, -2], [-1, -1], '--k', label=r"Eq. (11)")
-    plt.plot([-1, -2], [-1, -1], 'ks', ms=8, label=r"Exp. data \n Raab et al (2011)")
+    plt.plot([-1, -2], [-1, -1], 'ks', ms=8, label=r"Exp. data \\Raab et al (2011)")
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"), delimiter=",")
         exp_p = np.round(exp_data[:, 0], 1)*1e3
