@@ -3,6 +3,7 @@ from collections import defaultdict
 import os
 
 from mayavi import mlab
+import mayavi
 import numpy as np
 
 from visualization_functions_3d.plotting_functions import SpheresPlotter, SurfacesPlotter, BoundingBox
@@ -53,6 +54,7 @@ class Snapshot:
                                                  + str(time) + '.dou'), delimiter=',')
             self.mirror_particles_plotter.plot(mirror_particle_data)
         if self.surfaces_plotter:
+            self.surfaces_plotter.visible_times = self.visible_functions
             self.surfaces_plotter.bounding_boxes = self.surface_bounding_boxes
             self.surfaces_plotter.surfaces_colors = self.surfaces_colors
             self.surfaces_plotter.surfaces_opacities = self.surfaces_opacities
@@ -67,17 +69,28 @@ class Snapshot:
 
 
 def main():
-    mlab.figure(size=(1024, 768), bgcolor=(1., 1., 1.), fgcolor=(0, 0., 0.))
-    snapshot = Snapshot(os.path.expanduser('~/DEMsim/results/asphalt_shear_box/bonded/small_small_100kPa'))
+    fig = mlab.figure(size=(1024, 768), bgcolor=(1., 1., 1.), fgcolor=(0, 0., 0.))
+    scene = fig.scene
+    scene.camera.position = [-0, 0.5, 0.5]
+    scene.camera.focal_point = [0., 0, 0]
+    snapshot = Snapshot(os.path.expanduser('~/DEMsim/results/asphalt_shear_box/big_small_100kPa'))
     snapshot.plot_periodic_bc = False
     bbox = BoundingBox()
-    bbox.z_max = lambda t: 0.04
+    # bbox.z_max = lambda t: 0.025
+    bbox.z_min = lambda t: -0.001
     snapshot.surface_bounding_boxes[3] = bbox
-    snapshot.surfaces_colors[1] = colors.red
-    snapshot.surfaces_colors[2] = colors.red
-    snapshot.plot(1.22)
-    mlab.view(0, 0, distance=0.25)
-    mlab.savefig("shear.png")
+    snapshot.surface_bounding_boxes[2] = bbox
+    snapshot.visible_functions[1] = lambda t: False
+    # snapshot.visible_functions[3] = lambda t: False
+    snapshot.surfaces_colors[0] = colors.red
+    snapshot.surfaces_colors[3] = colors.red
+    snapshot.plot(0.1)
+    # mlab.view(0, 0, distance=0.25)
+    scene.camera.view_up = [0, 0, 1]
+    scene.camera.focal_point = [0., 0, 0]
+
+    # mayavi.mlab.move(forward=None, right=None, up=-0.03)
+    mlab.savefig("filling1.png", size=(1024, 1024))
     mlab.show()
 
 

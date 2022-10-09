@@ -15,10 +15,10 @@ plt.rc('font', **{'family': 'serif', 'serif': ['Computer Modern Roman'],
 main_directory = pathlib.Path("~/DEMsim/results/asphalt_shear_box/bonded_plane_wall_friction_2/").expanduser()
 
 fig = plt.figure(0)
-fig.set_size_inches(11., 6., forward=True)
+fig.set_size_inches(13., 6., forward=True)
 ax = plt.subplot(111)
 box = ax.get_position()
-ax.set_position([0.1, 0.15, 0.55, box.height])
+ax.set_position([0.1, 0.15, 0.5, box.height])
 
 configurations = [(100, 130), (100, 100), (100, 75), (100, 50), (1000, 375), (100, 25)]
 pressures = [400]
@@ -34,7 +34,7 @@ for p, color in zip(pressures, 'br'):
                          / "shear_test")
             surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
             max_f[i, j] = np.max(surface_forces[:, -4])
-    plt.plot(size_ratio, np.mean(max_f, axis=1)/area, '-' + color, lw=3, label=str(p) + " kPa")
+    plt.plot(size_ratio, np.mean(max_f, axis=1)/area, '-' + color, lw=3, label="$D_2/D_1=x/10$ mm")
     plt.errorbar(size_ratio, np.mean(max_f, axis=1)/area, np.std(max_f, axis=1)/area, fmt="none", elinewidth=2,
                  ecolor=color)
 
@@ -49,6 +49,7 @@ for p, color in zip(pressures, 'br'):
         plt.errorbar(ratio, np.mean(max_f)/area, np.std(max_f)/area, fmt="none", elinewidth=2,
                      ecolor=color)
 
+plt.plot([-1, -2], [-1, -2], '-b', lw=3, label="$D_2/D_1=x/10$ mm")
 plt.xlim(0.2, 1.5)
 plt.ylim(0)
 
