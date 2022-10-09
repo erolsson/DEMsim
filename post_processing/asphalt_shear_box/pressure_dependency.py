@@ -24,10 +24,10 @@ pressures = [0, 100, 400, 800]
 simulations = [1, 2, 3]
 
 fig = plt.figure(0)
-fig.set_size_inches(11., 6., forward=True)
+fig.set_size_inches(13., 6., forward=True)
 ax = plt.subplot(111)
 box = ax.get_position()
-ax.set_position([0.1, 0.15, 0.55, box.height])
+ax.set_position([0.1, 0.15, 0.5, box.height])
 plt.plot([-1, -2], [-1, -1], 'w', label=r"\bf{DEM}")
 
 
@@ -64,7 +64,7 @@ def main():
     print(par)
     plt.plot([-1, -2], [-1, -1], 'w', label="white")
     plt.plot([-1, -2], [-1, -1], '--k', label=r"Eq. (11)")
-    plt.plot([-1, -2], [-1, -1], 'ks', ms=8, label=r"Exp.")
+    plt.plot([-1, -2], [-1, -1], 'ks', ms=8, label=r"Exp. data \nRaab et al (2011)")
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"), delimiter=",")
         exp_p = np.round(exp_data[:, 0], 1)*1e3
