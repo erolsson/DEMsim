@@ -64,7 +64,7 @@ def main():
     print(par)
     plt.plot([-1, -2], [-1, -1], 'w', label="white")
     plt.plot([-1, -2], [-1, -1], '--k', label=r"Eq. (11)")
-    plt.plot([-1, -2], [-1, -1], 'ks', ms=8, label=r"Experimental data \\ Raab et al (2011)")
+    plt.plot([-1, -2], [-1, -1], 'ks', ms=8, label=r"Experimental data\\Raab et al (2011)")
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"), delimiter=",")
         exp_p = np.round(exp_data[:, 0], 1)*1e3
@@ -81,6 +81,8 @@ def main():
     legend = ax.legend(loc='upper left', bbox_to_anchor=(1., 1.035), numpoints=1)
     legend.get_texts()[4].set_color("white")
     plt.gca().add_artist(legend)
+    for t in legend.texts:
+        t.set_multialignment('left')
 
     plt.savefig("pressure_dependency.png")
 
