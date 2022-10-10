@@ -1,0 +1,15 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: DEMsim
+message: >-
+  If you use this software or part of it, please cite
+  it using the metadata from this file.
+type: software
+authors:
+  - given-names: Erik
+    email: erik.1.olsson@ltu.se
+    family-names: Olsson
+    affiliation: Luleå University of Technology
+    orcid: 'https://orcid.org/0000-0001-7674-8582'
