@@ -15,7 +15,7 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1, Spher
     auto mat2 = dynamic_cast<const ElasticBondedMaterial*>(p2->get_material());
 
     double E0 = 1/((1 - mat1->nu*mat1->nu)/mat1->E + (1 - mat2->nu*mat2->nu)/mat2->E);
-    kHertz_ = 4./3*E0*sqrt(R0_);
+    kHertz_ = 2*E0*sqrt(R0_);
     double bond_radius = ((mat1->bond_radius_fraction + mat2->bond_radius_fraction)/
             (1./p1->get_radius() + 1./p2->get_radius()));
     double h1 = p1->get_radius() - sqrt(p1->get_radius()*p1->get_radius() - bond_radius*bond_radius);
@@ -46,7 +46,7 @@ DEM::HertzWithBonds::HertzWithBonds(SphericalParticle<HertzWithBonds>* p1,
 {
     auto mat1 = dynamic_cast<const ElasticBondedMaterial*>(p1->get_material());
     double E0 = mat1->E/(1-mat1->nu*mat1->nu);
-    kHertz_ = 4./3*E0*sqrt(R0_);
+    kHertz_ = 2*E0*sqrt(R0_);
     material1 = mat1;
     material2 = mat1;
     kT_ = 2*mat1->kT*R0_;
@@ -68,19 +68,21 @@ void DEM::HertzWithBonds::update(double h, const Vec3& dt, const Vec3&, const Ve
     double dh = h - h_;
     h_ = h;
     if (h_ > 0) {
-        if (!fractured_) {
-           bonded_ = true;
-        }
-        if (h < hy_) {
-            F_ = kHertz_*pow(h_, 1.5);
+        if (dh > 0 && h_ > h_max && h_ > hy_) {
+            F_ += ky_*dh;
+            h_max = h_;
         }
         else {
-            double Fy = kHertz_*pow(hy_, 1.5);
-            F_ = ky_*(h - hy_) + Fy;
+            F_ += kHertz_*sqrt(h_)*dh;
         }
+
         if (F_ < 0) {
             F_ = 0;
         }
+        if (!fractured_) {
+            bonded_ = true;
+        }
+
         // Projecting uT on the new contact plane by removing the component in the contact normal direction
         uT_ -= dot_product(uT_, normal)*normal;
         uT_ += dt;

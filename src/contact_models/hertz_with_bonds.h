@@ -34,6 +34,7 @@ namespace DEM {
     private:
         double h_{ 0. };
         double kHertz_;
+        double h_max = 0;
         double k_bond_ = 0;
         double kt_bond_ = 0;
         double c_bond_ = 1e99;
