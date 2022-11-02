@@ -157,7 +157,8 @@ DEM::CollisionDetector<ForceModel, ParticleType>::check_other_axes(
 
     // checking the first of the axes
     for (unsigned i=0; i!=2; ++i) {
-        if (!( (idx1[2*i]<idx2[2*i] && idx2[2*i]<idx1[2*i+1]) || (idx2[2*i]<idx1[2*i] && idx1[2*i]<idx2[2*i+1]) )) {
+        if (!( (idx1[2*i] < idx2[2*i] && idx2[2*i] < idx1[2*i+1]) ||
+                (idx2[2*i] < idx1[2*i] && idx1[2*i] < idx2[2*i+1]) )) {
             return false;
         }
     }
@@ -211,6 +212,10 @@ template<typename ForceModel, typename ParticleType>
 void DEM::CollisionDetector<ForceModel, ParticleType>::destroy_contact_pair(const BoundingBoxProjectionType* b1,
         const BoundingBoxProjectionType* b2)
 {
+    if (contacts_to_create_.erase(std::make_pair(b1->get_collision_id(), b2->get_collision_id()))) {
+        return;        return;
+
+    }
     if (current_contacts_.erase(b1->get_collision_id(), b2->get_collision_id())) {
         // There is actually a contact to destroy
         if (b1->get_particle() != nullptr && b2->get_particle() != nullptr)

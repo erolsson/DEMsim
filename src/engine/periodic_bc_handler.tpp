@@ -173,10 +173,11 @@ PeriodicBCHandler<ForceModel, ParticleType>::PeriodicBCHandler(PeriodicBCHandler
 template<typename ForceModel, typename ParticleType>
 void DEM::PeriodicBCHandler<ForceModel, ParticleType>::fulfill_periodic_bc()
 {
+    jump_particles_.clear();
     move_periodic_boundaries();
     for (auto& p: simulation_particles_) {
-        respect_boundaries(p);
         move_mirror_particles(p);
+        respect_boundaries(p);
         create_mirror_particles(p);
         create_corner_particles(p);
         // remove_mirror_particles(p);
@@ -246,6 +247,7 @@ void PeriodicBCHandler<ForceModel, ParticleType>::move_mirror_particles(Particle
                         Vec3 new_pos = mp->get_position();
                         new_pos[j] -= 4*boundaries_[j].max*mp->get_position()[j]/abs(mp->get_position()[j]);
                         mp->set_position(new_pos);
+                        jump_particles_.insert(mp->get_id());
                     }
                 }
             }
@@ -537,7 +539,7 @@ void PeriodicBCHandler<ForceModel, ParticleType>::destroy_periodic_bc_contacts()
         auto p2 = c_data.particle2;
         auto s = c_data.surface;
         // if (!is_mirror_particle(p1) || !is_mirror_particle(p2)) {
-        if ( true ) {
+        if ( jump_particles_.find(id1) == jump_particles_.end() && jump_particles_.find(id2) == jump_particles_.end()) {
             if (contacts_.erase(id1, id2)) {
                 p1->remove_contact(id2);
                 if (s == nullptr) {

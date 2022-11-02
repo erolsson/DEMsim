@@ -387,6 +387,7 @@ template<typename ForceModel, typename ParticleType>
                                                                        contacts_);
     }
     periodic_bc_handler_->add_periodic_bc(axis, boundary_min, boundary_max);
+    periodic_bc_handler_->set_boundary_stretch(bounding_box_stretch_);
 }
 
 template<typename ForceModel, typename ParticleType>
@@ -702,7 +703,8 @@ void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
         auto p1 = c_data.particle1;
         auto p2 = c_data.particle2;
         auto s = c_data.surface;
-        if ( contacts_.erase(id1, id2)) {
+        auto c = contacts_.get(id1, id2);
+        if (contacts_.erase(id1, id2)) {
             p1->remove_contact(id2);
             if (s == nullptr) {
                 p2->remove_contact(id1);

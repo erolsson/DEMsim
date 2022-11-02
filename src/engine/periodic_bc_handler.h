@@ -7,6 +7,7 @@
 
 #include <array>
 #include <map>
+#include <set>
 #include <vector>
 
 namespace DEM {
@@ -72,6 +73,7 @@ namespace DEM {
         CollisionDetector<ForceModel, ParticleType>& collision_detector_;
         ContactMatrix<ContactType>& contacts_;
         std::size_t no_active_directions_ = 0;
+        std::set<std::size_t> jump_particles_;
 
         void move_periodic_boundaries();
         void move_mirror_particles(ParticleType* simulation_particle);

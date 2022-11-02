@@ -108,7 +108,7 @@ class AsphaltContactPlotter:
                 c = (ft - (interval_length + 0*min(forces)))/interval_length
                 color = (c, 1-c, 0)
             print(ft, np.max(tangential_forces), color)
-            arrow(tan_point_1, tan_point_2, radius=5e-2, color=color)
+            arr = arrow(tan_point_1, tan_point_2, radius=5e-2, color=color)
 
         color_bar = mlab.colorbar(title="Contact force [kN]")
         color_bar.data_range = [0, np.max(tangential_forces)]
