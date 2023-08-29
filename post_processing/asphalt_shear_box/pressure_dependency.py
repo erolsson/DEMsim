@@ -44,14 +44,14 @@ def main():
 
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         max_f = np.zeros((len(pressures), len(simulations)))
-
+        """
         for i, p in enumerate(pressures):
             for j, sim in enumerate(simulations):
                 directory = (main_directory / str(sim) / (simulation.lower() + "_" + str(p) + "kPa")
                              / "shear_test")
                 surface_forces = np.genfromtxt(directory / "surface_forces.dou", delimiter=",")
                 max_f[i, j] = np.max(surface_forces[:, -4])
-
+        """
         f = np.mean(max_f, axis=1)
         plt.plot(pressures, f/area, '-x' + c, lw=3, label=sizes[simulation], ms=16, mew=2)
         data.append((np.array(pressures[1:]), np.array(f[1:]/area)))
@@ -62,9 +62,10 @@ def main():
         plt.plot(x, par[0]*x + par[i+1], '--' + c, lw=2)
 
     print(par)
+
     plt.plot([-1, -2], [-1, -1], 'w', label="white")
     plt.plot([-1, -2], [-1, -1], '--k', label=r"Eq. (11)")
-    plt.plot([-1, -2], [-1, -1], 'ks', ms=8, label=r"Experimental data" + "\n" + "Raab et al (2011)")
+    plt.plot([-1, -2], [-1, -1], 'ks', ms=8, label=r"Experimental data" + "\n" + "Raab et al (2012)")
     for k, (simulation, c) in enumerate(zip(configurations, ['g', 'r', 'b', 'm'])):
         exp_data = np.genfromtxt(exp_directory / ("shear_stress_0kPa_" + simulation.lower() + ".csv"), delimiter=",")
         exp_p = np.round(exp_data[:, 0], 1)*1e3

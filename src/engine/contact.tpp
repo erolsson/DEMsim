@@ -219,6 +219,19 @@ Eigen::Matrix<double, 3, 3> DEM::Contact<ForceModel, ParticleType>::get_force_fa
     return tensor;
 }
 
+template<typename ForceModel, typename ParticleType>
+void DEM::Contact<ForceModel, ParticleType>::assign_new_contact_particles(ParticleType* p1, ParticleType* p2)
+{
+    p1_ = p1;
+    p2_ = p2;
+}
+
+template<typename ForceModel, typename ParticleType>
+void DEM::Contact<ForceModel, ParticleType>::assign_new_contact_particles(ParticleType* p1, SurfaceType* s){
+    p1_ = p1;
+    surface_ = s;
+}
+
 
 
 

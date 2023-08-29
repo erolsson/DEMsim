@@ -55,7 +55,7 @@ DEM::Vec3 DEM::PointSurface<ForceModel, ParticleType>::vector_to_point(const Vec
     if(infinite_)
         return v;
 
-    DEM::Vec3 plane_vector = point - v;  // Vector in the same plane as the surface going from origo to the point
+    DEM::Vec3 const plane_vector = point - v;  // Vector in the same plane as the surface going from origo to the point
 
     double min_distance = 1E99;
     DEM::Vec3 min_vector = Vec3(0, 0, 0);
@@ -63,7 +63,7 @@ DEM::Vec3 DEM::PointSurface<ForceModel, ParticleType>::vector_to_point(const Vec
 
     for (unsigned i = 0; i != points_.size(); ++i){
         DEM::Vec3 vec{};
-        DEM::Vec3 ps = plane_vector - points_[i];    // Vector from a corner to the point in the plane of the surfacve
+        DEM::Vec3 ps = plane_vector - points_[i];    // Vector from a corner to the point in the plane of the surface
         DEM::Vec3 edge{};
         if (i != points_.size() - 1)
             edge = points_[i+1] - points_[i];

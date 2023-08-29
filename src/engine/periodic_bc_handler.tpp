@@ -174,6 +174,7 @@ template<typename ForceModel, typename ParticleType>
 void DEM::PeriodicBCHandler<ForceModel, ParticleType>::fulfill_periodic_bc()
 {
     jump_particles_.clear();
+    contacts_to_move_.clear();
     move_periodic_boundaries();
     for (auto& p: simulation_particles_) {
         move_mirror_particles(p);
@@ -181,6 +182,7 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::fulfill_periodic_bc()
         create_mirror_particles(p);
         create_corner_particles(p);
         // remove_mirror_particles(p);
+        move_contacts();
     }
 }
 
@@ -242,6 +244,8 @@ void PeriodicBCHandler<ForceModel, ParticleType>::move_mirror_particles(Particle
 
                 mp->rotate(simulation_particle->get_rotation_this_increment());
                 mp->set_angular_velocity(simulation_particle->get_angular_velocity());
+
+                // Moves the particle to the other side of the periodic BC if it has moved to far away
                 for (unsigned j = 0; j != 3; ++j) {
                     if (abs(mp->get_position()[j]) > 2*boundaries_[j].max && active_directions_[j]) {
                         Vec3 new_pos = mp->get_position();
@@ -363,6 +367,16 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::respect_boundaries(Partic
                              - simulation_particles_.begin());
         simulation_particles_[particle_idx] = mirror_particle;
 
+        //  Check so that the new mirror particle does not contain any mirror - mirror contacts
+        auto contacts = simulation_particle->get_contacts().get_objects();
+        for (auto& c_pair: contacts) {
+            auto c = c_pair.first;
+            auto contact_pair = c->get_particles();
+            if (is_mirror_particle(contact_pair.first) && is_mirror_particle(contact_pair.second) ) {
+                contacts_to_move_.push_back(c_pair.first);
+            }
+        }
+
         switch (mirror_idx) {
             case 0:
                 std::swap(mirror_particles_[p_id][1], mirror_particles_[p_id][3]);
@@ -400,6 +414,28 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::respect_boundaries(Partic
                 std::swap(mirror_particles_[p_id][2], mirror_particles_[p_id][3]);
                 break;
         }
+    }
+}
+
+template<typename ForceModel, typename ParticleType>
+void PeriodicBCHandler<ForceModel, ParticleType>::move_contacts() {
+    for (auto c: contacts_to_move_) {
+        auto contact_pair = c->get_particles();
+        auto old_distance = (contact_pair.first->get_position() - contact_pair.second->get_position()).length();
+        // The particle p1 is arbitrary chosen as the one belonging to the simulation box
+        auto p1 = get_simulation_particle(contact_pair.first->get_id());
+
+        auto p2 = get_simulation_particle(contact_pair.second->get_id());
+        for (unsigned i = 0; i != 7; ++i) {
+            auto p = get_mirror_particle(p2, i);
+            if (p != nullptr) {
+                auto new_distance = (p1->get_position() - p->get_position()).length();
+                if (new_distance - old_distance < 1e-12) {
+                    p2 = p;
+                }
+            }
+        }
+        c->assign_new_contact_particles(p1, p2);
     }
 }
 
@@ -502,27 +538,27 @@ void PeriodicBCHandler<ForceModel, ParticleType>::create_periodic_bc_contacts() 
         std::size_t id2 = c_data.get_id_pair().second;
         auto p1 = c_data.particle1;
         auto p2 = c_data.particle2;
-        auto s = c_data.surface;
-        if (s == nullptr) {
-            if (is_mirror_particle(p1) && !is_mirror_particle(p2)) {
-                std::swap(p1, p2);
-                std::swap(id1, id2);
+        if (!(is_mirror_particle(p1) && is_mirror_particle(p2))) {
+            auto s = c_data.surface;
+            if (s == nullptr) {
+                if (is_mirror_particle(p1) && !is_mirror_particle(p2)) {
+                    std::swap(p1, p2);
+                    std::swap(id1, id2);
+                }
+                c = contacts_.create_item_inplace(id1, id2, p1, p2, engine_.get_time_increment());
+            } else {
+                c = contacts_.create_item_inplace(id1, id2, p1, s, engine_.get_time_increment());
             }
-            c = contacts_.create_item_inplace(id1, id2, p1, p2, engine_.get_time_increment());
-        }
-        else {
-            c = contacts_.create_item_inplace(id1, id2, p1, s, engine_.get_time_increment());
-        }
-        if (c != nullptr) {
-            p1->add_contact(c, id2, 1.);
-            if (p2 != nullptr) {
-                p2->add_contact(c, id1, -1);
+            if (c != nullptr) {
+                p1->add_contact(c, id2, 1.);
+                if (p2 != nullptr) {
+                    p2->add_contact(c, id1, -1);
+                } else {
+                    s->add_contact(c, id1);
+                }
+                handle_mirror_particles_add_contact(c, id1, id2, p1, 1);
+                handle_mirror_particles_add_contact(c, id2, id1, p2, -1);
             }
-            else {
-                s->add_contact(c, id1);
-            }
-            handle_mirror_particles_add_contact(c, id1, id2, p1, 1);
-            handle_mirror_particles_add_contact(c, id2, id1, p2, -1);
         }
     }
     contacts_to_create.clear();
@@ -698,7 +734,7 @@ std::vector<std::string> PeriodicBCHandler<ForceModel, ParticleType>::restart_da
 
 template<typename ForceModel, typename ParticleType>
 std::size_t PeriodicBCHandler<ForceModel, ParticleType>::direction_idx(char axis) {
-    std::string directions = "xyz";
+    const std::string directions = "xyz";
     const auto axis_idx = directions.find(axis);
     if (axis_idx == std::string::npos) {
         throw std::invalid_argument("axis argument must be x, y or z");

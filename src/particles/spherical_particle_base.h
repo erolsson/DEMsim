@@ -70,11 +70,7 @@ namespace DEM {
         std::size_t collision_id_;
         double radius_;   // Not const due to particle swelling
         double inertia_;
-        /*
-          Vector of all contacts, first is a pointer to the contact
-          second is a multiplier (1, -1) to get_parameter the correct direction.
-          Might be better done with another type than int
-        */
+
     };
 }
 

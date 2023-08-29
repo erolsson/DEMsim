@@ -703,7 +703,6 @@ void DEM::Engine<ForceModel, ParticleType>::destroy_contacts()
         auto p1 = c_data.particle1;
         auto p2 = c_data.particle2;
         auto s = c_data.surface;
-        auto c = contacts_.get(id1, id2);
         if (contacts_.erase(id1, id2)) {
             p1->remove_contact(id2);
             if (s == nullptr) {

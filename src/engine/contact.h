@@ -15,7 +15,10 @@
 
 namespace DEM {
     class ParameterMap;
+
     template<typename ForceModel, typename ParticleType> class Surface;
+
+    template<typename ForceModel, typename ParticleType> class PeriodicBCHandler;
 
     template<typename ForceModel, typename ParticleType>
     class Contact {
@@ -54,10 +57,13 @@ namespace DEM {
         [[nodiscard]] std::string restart_data() const;
         Eigen::Matrix<double, 3, 3> get_force_fabric_tensor() const;
 
+        template<typename ForceModel_, typename ParticleType_>
+        friend class DEM::PeriodicBCHandler;
+
     private:
-        ParticleType* const p1_;
-        ParticleType* const p2_;
-        SurfaceType*  const surface_;
+        ParticleType* p1_;
+        ParticleType* p2_;
+        SurfaceType*  surface_;
 
         double r2_;                       // r2 - distance between particles or particle plane is overlap
         char position_divider_;
@@ -81,6 +87,9 @@ namespace DEM {
 
         [[nodiscard]] Vec3 calculate_rotation_vector_particle() const;
         [[nodiscard]] Vec3 calculate_rotation_vector_surface() const;
+        void assign_new_contact_particles(ParticleType* p1, ParticleType* p2);
+        void assign_new_contact_particles(ParticleType* p1, SurfaceType* s);
+
     };
 }
 

@@ -213,9 +213,9 @@ void DEM::CollisionDetector<ForceModel, ParticleType>::destroy_contact_pair(cons
         const BoundingBoxProjectionType* b2)
 {
     if (contacts_to_create_.erase(std::make_pair(b1->get_collision_id(), b2->get_collision_id()))) {
-        return;        return;
-
+        return;
     }
+    
     if (current_contacts_.erase(b1->get_collision_id(), b2->get_collision_id())) {
         // There is actually a contact to destroy
         if (b1->get_particle() != nullptr && b2->get_particle() != nullptr)
