@@ -757,5 +757,4 @@ void PeriodicBCHandler<ForceModel, ParticleType>::handle_mirror_particles_add_co
         auto sim_particle_1 = get_simulation_particle(id1);
         sim_particle_1->add_contact(contact, id2, contact_direction);
     }
-
 }
