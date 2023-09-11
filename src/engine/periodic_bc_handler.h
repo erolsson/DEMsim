@@ -73,8 +73,7 @@ namespace DEM {
         CollisionDetector<ForceModel, ParticleType>& collision_detector_;
         ContactMatrix<ContactType>& contacts_;
         std::size_t no_active_directions_ = 0;
-        std::set<std::size_t> jump_particles_;
-        std::vector<ContactType*> contacts_to_move_;
+        std::vector<ParticleType*> jump_particles_;
 
         void move_periodic_boundaries();
         void move_mirror_particles(ParticleType* simulation_particle);
@@ -82,7 +81,7 @@ namespace DEM {
         void create_mirror_particles(ParticleType* simulation_particle);
         void remove_mirror_particles(ParticleType* particle);
         void respect_boundaries(ParticleType* simulation_particle);
-        void move_contacts();
+        void handle_jump_contacts();
 
         ParticleType* get_mirror_particle(ParticleType* simulation_particle, std::size_t direction);
         ParticleType* get_simulation_particle(std::size_t particle_id);
