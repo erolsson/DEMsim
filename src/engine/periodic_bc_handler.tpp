@@ -413,21 +413,23 @@ void PeriodicBCHandler<ForceModel, ParticleType>::handle_jump_contacts() {
     for (auto& jump_particle: jump_particles_){
         for (auto& c: jump_particle->get_contacts().get_objects()) {
             auto contact_pair = c.first->get_particles();
-            auto old_distance = (contact_pair.first->get_position() - contact_pair.second->get_position()).length();
-            // The particle p1 is arbitrary chosen as the one belonging to the simulation box
-            auto p1 = get_simulation_particle(contact_pair.first->get_id());
+            if (contact_pair.first && contact_pair.second) {
+                auto old_distance = (contact_pair.first->get_position() - contact_pair.second->get_position()).length();
+                // The particle p1 is arbitrary chosen as the one belonging to the simulation box
+                auto p1 = get_simulation_particle(contact_pair.first->get_id());
 
-            auto p2 = get_simulation_particle(contact_pair.second->get_id());
-            for (unsigned i = 0; i != 7; ++i) {
-                auto p = get_mirror_particle(p2, i);
-                if (p != nullptr) {
-                    auto new_distance = (p1->get_position() - p->get_position()).length();
-                    if (new_distance - old_distance < 1e-12) {
-                        p2 = p;
+                auto p2 = get_simulation_particle(contact_pair.second->get_id());
+                for (unsigned i = 0; i != 7; ++i) {
+                    auto p = get_mirror_particle(p2, i);
+                    if (p != nullptr) {
+                        auto new_distance = (p1->get_position() - p->get_position()).length();
+                        if (new_distance - old_distance < 1e-12) {
+                            p2 = p;
+                        }
                     }
                 }
+                c.first->assign_new_contact_particles(p1, p2);
             }
-            c.first->assign_new_contact_particles(p1, p2);
         }
     }
 }
