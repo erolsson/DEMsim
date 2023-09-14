@@ -410,13 +410,15 @@ void DEM::PeriodicBCHandler<ForceModel, ParticleType>::respect_boundaries(Partic
 
 template<typename ForceModel, typename ParticleType>
 void PeriodicBCHandler<ForceModel, ParticleType>::handle_jump_contacts() {
+    // Check all jump particles if they are used in a contact pair
     for (auto& jump_particle: jump_particles_){
         for (auto& c: jump_particle->get_contacts().get_objects()) {
             auto contact_pair = c.first->get_particles();
-            if (contact_pair.first && contact_pair.second) {
-                auto old_distance = (contact_pair.first->get_position() - contact_pair.second->get_position()).length();
+            if ((contact_pair.first == jump_particle || contact_pair.second == jump_particle) && contact_pair.second) {
+                auto old_distance = (contact_pair.first->get_position() -
+                                     contact_pair.second->get_position()).length();
                 // The particle p1 is arbitrary chosen as the one belonging to the simulation box
-                auto p1 = get_simulation_particle(contact_pair.first->get_id());
+                auto p1 = get_simulation_particle(jump_particle->get_id());
 
                 auto p2 = get_simulation_particle(contact_pair.second->get_id());
                 for (unsigned i = 0; i != 7; ++i) {
